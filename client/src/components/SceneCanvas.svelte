@@ -1,13 +1,13 @@
-<script>
-  import { Canvas, T, useThrelte } from "@threlte/core";
+<script lang="ts">
+  import { T, useThrelte } from "@threlte/core";
   import { World } from "@threlte/rapier";
   import Game from "./Game.svelte";
   import { onMount } from "svelte";
   import { camera_coords, sideViewMode } from "src/stores";
   import { writable } from "svelte/store";
 
-  let cameras = [];
-  let sideViewCamera;
+  let cameras: any = [];
+  let sideViewCamera!;
   const { renderer, scene } = useThrelte();
   // Subscribe to the camera_coords store to update camera positions
   camera_coords.subscribe((coords) => {
