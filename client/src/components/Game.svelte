@@ -65,10 +65,10 @@
 	<Ground />
   </CollisionGroups>
   <CollisionGroups groups={[0]}>
-	<Character
+	<!-- <Character
 	  bind:playerMesh
 	  position={[0, 2, 3]}
-	/>
+	/> -->
 	<AutoColliders shape={'cuboid'}>
 	  <T.Mesh
 		receiveShadow

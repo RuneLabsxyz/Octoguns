@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SceneCanvas from "../../components/SceneCanvas.svelte";
+    import { Canvas } from "@threlte/core";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
     import { getEntityIdFromKeys } from "@dojoengine/utils";
     import { setupStore } from "src/main";
@@ -37,7 +38,9 @@
 </script>
 
 <div class="container">
-    <SceneCanvas />
+    <Canvas>
+<SceneCanvas />
+    </Canvas>
     {#if !$gameStarted}
         <button class="start-button" on:click={startGame}>Start Game</button>
     {/if}

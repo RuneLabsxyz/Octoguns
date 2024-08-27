@@ -6,3 +6,4 @@ import { SessionMeta } from "./dojo/typescript/models.gen";
 export const bullets = writable<Bullet>();
 export const current_session_id = writable<number>();
 export const current_session = writable<SessionMeta>();
+export const camera_coords = writable<[number, number][]>([]);
