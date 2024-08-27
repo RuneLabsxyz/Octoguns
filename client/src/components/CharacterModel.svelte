@@ -5,7 +5,6 @@
     import { derived } from "svelte/store";
     import { camera_coords } from "src/stores";
     import type { Writable } from "svelte/store";
-    import type { SetupResult, Bullet, SessionMeta } from "./dojo/typescript/models.gen";
 
     export let id: number = 0;
     let entity: string | undefined;
@@ -47,9 +46,6 @@
 </script>
 
 {#if $character && $position && account}
-    {#if $character.player_id === AddressToBigInt(account.address)}
-        <T.PerspectiveCamera position={[$position.x / 100 - 51, 0.5, $position.y / 100 - 51]} />
-    {/if}
     <T.Mesh position={[$position.x / 100 - 51, 0.5, $position.y / 100 - 51]}>
         <T.BoxGeometry />
         <T.MeshStandardMaterial color="red" />
