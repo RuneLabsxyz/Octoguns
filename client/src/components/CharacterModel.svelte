@@ -48,7 +48,7 @@
 {#if $character && $position && account}
     <T.Mesh position={[$position.x / 100 - 51, 0.5, $position.y / 100 - 51]}>
         <T.BoxGeometry />
-        <T.MeshStandardMaterial color="red" />
+        <T.MeshStandardMaterial color={$character.player_id === AddressToBigInt(account.address) ? "blue" : "red"} />
     </T.Mesh>
 {/if}
 

@@ -33,7 +33,7 @@ mod spawn {
                 let id1 = world.uuid();
 
                 let default_steps = 10;
-                let c1 = CharacterTrait::new(id1, session_id, caller, default_steps);
+                let c1 = CharacterTrait::new(id1, session_id, session.player1, default_steps);
                 let p1 = PositionTrait::new(id1, position_1.x, position_1.y);
                 let h1 = HealthTrait::new(id1, 100);
                 session_meta.add_character(id1);
@@ -41,7 +41,7 @@ mod spawn {
        
 
                 let id2 = world.uuid();
-                let c2 = CharacterTrait::new(id2, session_id, caller, default_steps);
+                let c2 = CharacterTrait::new(id2, session_id, session.player2, default_steps);
                 let p2 = PositionTrait::new(id2, position_2.x, position_2.y);
                 let h2 = HealthTrait::new(id2, 100);
                 session_meta.add_character(id2);

@@ -7,14 +7,14 @@
 
   let cameras = [];
   const { renderer, scene } = useThrelte();
-
   // Subscribe to the camera_coords store to update camera positions
   $: $camera_coords, (coords) => {
     if (coords && coords.length > 0) {
       coords.forEach((coord, index) => {
         if (cameras[index]) {
           cameras[index].position.set(coord[0], 10, coord[1]);
-          // cameras[index].lookAt(0, 1, 0);
+          // Ensure the camera is rotated 90 degrees to look along the x-axis
+          cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
         }
       });
     }
@@ -57,13 +57,14 @@
   <!-- Setup 8 Cameras -->
   {#each Array(8) as _, i}
     <T.PerspectiveCamera
-      position={[0, 0, 0]}
+      position={[0, 10, 0]}
       on:create={({ ref }) => {
         cameras[i] = ref;
         // If initial camera coordinates are available, set position
         if ($camera_coords[i]) {
           ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
-          ref.lookAt(0, 1, 0);
+          // Rotate the camera 90 degrees to look along the x-axis
+          ref.lookAt($camera_coords[i][0] + 1, 10, $camera_coords[i][1]);
         }
       }}
     />
