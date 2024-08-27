@@ -1,16 +1,30 @@
 <script>
     import { selectionMode } from "src/stores";
+    let selectedCells = [];
 
-
-
+    function toggleCell(index) {
+        if (selectedCells.includes(index)) {
+            selectedCells = selectedCells.filter(i => i !== index);
+        } else {
+            selectedCells = [...selectedCells, index];
+        }
+    }
 </script>
 
 
-  <div class="grid-overlay">
-    {#each Array(8) as _}
-      <div></div>
-    {/each}
-  </div>
+  {#if $selectionMode}
+    <div class="grid-overlay">
+      {#each Array(8) as _, index}
+        <div class="cell">
+          <input
+              type="checkbox"
+              checked={selectedCells.includes(index)}
+              on:change={() => toggleCell(index)}
+          />
+        </div>
+      {/each}
+    </div>
+  {/if}
 
 <style>
     .grid-overlay {
@@ -19,7 +33,6 @@
       left: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none; /* Ensures the grid does not interfere with interactions */
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(2, 1fr);
@@ -38,6 +51,27 @@
     .grid-overlay div:nth-last-child(-n+4) {
       border-bottom: none; /* Remove the bottom border on the last row */
     }
-  </style>
   
+    .grid-overlay .cell {
+      position: relative;
+      border-right: 4px solid rgba(255, 0, 255, 0.5);
+      border-bottom: 4px solid rgba(255, 0, 255, 0.5);
+    }
   
+    .grid-overlay .cell:nth-child(4n) {
+      border-right: none;
+    }
+  
+    .grid-overlay .cell:nth-last-child(-n+4) {
+      border-bottom: none;
+    }
+
+    .grid-overlay input[type="checkbox"] {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
