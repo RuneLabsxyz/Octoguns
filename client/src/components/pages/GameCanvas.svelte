@@ -2,10 +2,10 @@
 	import SceneCanvas from "../../components/SceneCanvas.svelte";
     import { Canvas } from "@threlte/core";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
-    import { getEntityIdFromKeys } from "@dojoengine/utils";
     import { setupStore } from "src/main";
     import { derived, writable } from "svelte/store";
     import { current_session_id } from "src/stores";
+    import Ui from "./Ui.svelte";
 
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -37,6 +37,7 @@
     }
 </script>
 
+<Ui />
 <div class="container">
     <Canvas>
 <SceneCanvas />
