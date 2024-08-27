@@ -28,11 +28,6 @@
 	$: if (current_session_id) session = createComponentValueStore(clientComponents.Session, entity);
 	$: if (current_session_id) session_meta = createComponentValueStore(clientComponents.SessionMeta, entity);
 
-	console.log(session)
-	$: console.log($session);
-	$: console.log($session_meta)
-
-
 
 	let playerMesh: Mesh
 	let positionHasBeenSet = false

@@ -13,8 +13,6 @@
     let position: Writable<any>;
     let account: any;
 
-    console.log(id);
-
     // Subscribing to the setupStore and setting up necessary variables
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -33,13 +31,11 @@
     $: if ($position && $character && account) {
         if ($character.player_id === AddressToBigInt(account.address)) {
             camera_coords.update(coords => {
-                coords[id] = [$position.x / 100 - 51, $position.y / 100 - 51];
+                coords = [...coords, [$position.x / 100 - 51, $position.y / 100 - 51]];
                 return coords;
             });
         }
     }
-
-    $: console.log("first cooooords", $camera_coords);
 
     // Helper function to convert an address to BigInt
     function AddressToBigInt(address: string): bigint {

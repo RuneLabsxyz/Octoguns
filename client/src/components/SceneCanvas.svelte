@@ -5,41 +5,48 @@
   import { onMount } from "svelte";
   import { camera_coords } from "src/stores";
 
-  let camera1, camera2;
-
+  let cameras = [];
   const { renderer, scene } = useThrelte();
 
-  $: console.log("coords", $camera_coords);
+  // Subscribe to the camera_coords store to update camera positions
+  $: $camera_coords, (coords) => {
+    if (coords && coords.length > 0) {
+      coords.forEach((coord, index) => {
+        if (cameras[index]) {
+          cameras[index].position.set(coord[0], 10, coord[1]);
+          // cameras[index].lookAt(0, 1, 0);
+        }
+      });
+    }
+  };
+
+  function renderCameras() {
+    const { width, height } = renderer.domElement;
+
+    if (cameras.length === 8) {
+      const gridColumns = 4;
+      const gridRows = 2;
+      const viewWidth = width / gridColumns;
+      const viewHeight = height / gridRows;
+
+      for (let i = 0; i < cameras.length; i++) {
+        const col = i % gridColumns;
+        const row = Math.floor(i / gridColumns);
+
+        cameras[i].aspect = viewWidth / viewHeight;
+        cameras[i].updateProjectionMatrix();
+
+        renderer.setScissorTest(true);
+        renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.render(scene, cameras[i]);
+      }
+
+      renderer.setScissorTest(false);
+    }
+  }
 
   onMount(() => {
-    function renderCameras() {
-      const { width, height } = renderer.domElement;
-
-      // Check if cameras are defined
-      if (camera1 && camera2) {
-        // Update aspect ratio for camera1 and camera2
-        camera1.aspect = (width / 2) / height;
-        camera1.updateProjectionMatrix();
-
-        camera2.aspect = (width / 2) / height;
-        camera2.updateProjectionMatrix();
-
-        // Render First Camera - Left Half
-        renderer.setScissorTest(true);
-        renderer.setViewport(0, 0, width / 2, height);
-        renderer.setScissor(0, 0, width / 2, height);
-        renderer.render(scene, camera1);
-
-        // Render Second Camera - Right Half
-        renderer.setViewport(width / 2, 0, width / 2, height);
-        renderer.setScissor(width / 2, 0, width / 2, height);
-        renderer.render(scene, camera2);
-
-        // Reset Scissor Test
-        renderer.setScissorTest(false);
-      }
-    }
-
     renderer.setAnimationLoop(renderCameras);
   });
 </script>
@@ -47,21 +54,18 @@
 <World>
   <Game />
 
-  <!-- First Camera -->
-  <T.PerspectiveCamera
-    position={[10, 10, 10]}
-    on:create={({ ref }) => {
-      camera1 = ref;
-      ref.lookAt(0, 1, 0);
-    }}
-  />
-
-  <!-- Second Camera -->
-  <T.PerspectiveCamera
-    position={[-10, 10, 10]}
-    on:create={({ ref }) => {
-      camera2 = ref;
-      ref.lookAt(0, 1, 0);
-    }}
-  />
+  <!-- Setup 8 Cameras -->
+  {#each Array(8) as _, i}
+    <T.PerspectiveCamera
+      position={[0, 0, 0]}
+      on:create={({ ref }) => {
+        cameras[i] = ref;
+        // If initial camera coordinates are available, set position
+        if ($camera_coords[i]) {
+          ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
+          ref.lookAt(0, 1, 0);
+        }
+      }}
+    />
+  {/each}
 </World>
