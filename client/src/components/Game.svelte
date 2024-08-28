@@ -52,6 +52,10 @@
 		player_number.set(2);
 	}
 
+	$: users_turn = $session_meta.turn_count % 2
+	$: if (users_turn + 1 == $player_number) {
+		isYourTurn.set(true)
+	}
 
     function AddressToBigInt(address: string): bigint {
         if (!address.startsWith('0x')) {
