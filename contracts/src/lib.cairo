@@ -22,7 +22,7 @@ mod lib {
 
 mod tests {
     mod helpers;
-   // mod test_world;
+    mod test_world;
 }
 
 mod consts;

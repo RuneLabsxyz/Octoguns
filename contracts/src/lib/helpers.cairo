@@ -30,7 +30,6 @@ fn get_character_ids(moves: @Array<CharacterMove>) -> Array<u32> {
 
 fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array<u32>) -> Array<CharacterPosition> {
     let mut initial_positions: Array<CharacterPosition> = ArrayTrait::new();
-    let caller = get_caller_address();
 
     let mut char_index = 0;    
     loop {
@@ -42,9 +41,6 @@ fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array
         // Retrieve the Character and Position structs from the world
         let character = get!(world, character_id, (Character));
         let position = get!(world, character_id, (Position));
-
-        // Validate that the caller owns this character
-        assert(character.player_id == caller, 'Not character owner');
 
         let position = CharacterPositionTrait::new(character_id, position.x, position.y, character.steps_amount, 0 );
         // Store the initial position in our array

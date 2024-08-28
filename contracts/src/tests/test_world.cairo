@@ -33,7 +33,7 @@ mod tests {
 
                             ];
         // models
-        let mut world = spawn_test_world(["octoguns"].span(), models.span());
+        let mut world = spawn_test_world!();
 
         // deploy systems contract
         let actions_address = world

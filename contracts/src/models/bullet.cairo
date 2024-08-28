@@ -98,7 +98,9 @@ mod simulate_tests {
 
     #[test]
    fn test_bullet_sim_y_only()  {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
         let characters = get_test_character_array();
         let (res, id) = bullet.simulate(@characters);
         match res {
@@ -114,7 +116,9 @@ mod simulate_tests {
 
     #[test]
     fn test_bullet_sim_x_only()  {
-         let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 90 * 100_000_000);
+        let address = starknet::contract_address_const::<0x0>();
+
+         let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 90, address);
          let characters = get_test_character_array();
          let (res, id) = bullet.simulate(@characters);
          match res {
@@ -132,7 +136,9 @@ mod simulate_tests {
 
      #[test]
      fn test_collision() {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
         let characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
         let (res, id) = bullet.simulate(@characters);
         match res {
@@ -147,7 +153,9 @@ mod simulate_tests {
      #[test]
      #[should_panic]
      fn test_collision_fail() {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 1, 0);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 1, 0, address);
         let characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
         let (res, id) = bullet.simulate( @characters);
         match res {
