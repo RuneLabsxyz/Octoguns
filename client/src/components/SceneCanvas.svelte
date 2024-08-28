@@ -6,9 +6,10 @@
   import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles } from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './PointerLockControls.svelte'
+  import * as THREE from 'three';
 
-  const CAMERA_HEIGHT = 0.5;
-  const MESH_HEIGHT = 10;
+  const CAMERA_HEIGHT = 2;
+  const MESH_HEIGHT = 0.5;
 
   let cameras: any = [];
   let cameraMeshes: any = [];
@@ -44,18 +45,23 @@
     if (!isSimMode) return;
 
     let activeCamerasList = get(activeCameras);
-    const moveVector = { x: 0, z: 0 };
-
-    if (keyState.w) moveVector.x += moveSpeed;
-    if (keyState.s) moveVector.x -= moveSpeed;
-    if (keyState.a) moveVector.z -= moveSpeed;
-    if (keyState.d) moveVector.z += moveSpeed;
+    const moveVector = new THREE.Vector3();
 
     activeCamerasList.forEach((cameraIndex) => {
-      cameras[cameraIndex].position.x += moveVector.x;
-      cameras[cameraIndex].position.z += moveVector.z;
+      const camera = cameras[cameraIndex];
+      moveVector.set(0, 0, 0);
+
+      if (keyState.w) moveVector.z -= moveSpeed;
+      if (keyState.s) moveVector.z += moveSpeed;
+      if (keyState.a) moveVector.x -= moveSpeed;
+      if (keyState.d) moveVector.x += moveSpeed;
+
+      moveVector.applyQuaternion(camera.quaternion); // Apply camera's rotation to the movement vector
+      moveVector.y = 0; // Prevent movement in the up/down direction
+
+      camera.position.add(moveVector);
       if (cameraMeshes[cameraIndex]) {
-        cameraMeshes[cameraIndex].position.copy(cameras[cameraIndex].position);
+        cameraMeshes[cameraIndex].position.copy(camera.position);
       }
     });
   }
