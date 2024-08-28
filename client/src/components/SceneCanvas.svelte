@@ -191,87 +191,83 @@
   }
 
   function updateLogic() {
-    if (turn_over) return;
+  if (turn_over) return;
 
-    const activeCamerasList = get(activeCameras);
+  const activeCamerasList = get(activeCameras);
 
-    activeCamerasList.forEach((cameraIndex) => {
-      const camera = cameras[cameraIndex];
-      if (!camera) return;
+  activeCamerasList.forEach((cameraIndex) => {
+    const camera = cameras[cameraIndex];
+    if (!camera) return;
 
-      const moveDirection = new THREE.Vector3();
+    const moveDirection = new THREE.Vector3();
 
-      if (keyState.forward) moveDirection.z -= 1;
-      if (keyState.backward) moveDirection.z += 1;
-      if (keyState.left) moveDirection.x -= 1;
-      if (keyState.right) moveDirection.x += 1;
+    if (keyState.forward) moveDirection.z -= 1;
+    if (keyState.backward) moveDirection.z += 1;
+    if (keyState.left) moveDirection.x -= 1;
+    if (keyState.right) moveDirection.x += 1;
 
-      if (moveDirection.length() > 0) {
-        frame_counter += 1;
+    if (moveDirection.length() > 0) {
+      frame_counter += 1;
 
-        moveDirection.normalize().multiplyScalar(moveSpeed);
-        moveDirection.applyQuaternion(camera.quaternion);
-        moveDirection.x = truncateToDecimals(moveDirection.x, 2);
-        moveDirection.z = truncateToDecimals(moveDirection.z, 2);
+      moveDirection.normalize().multiplyScalar(moveSpeed);
+      moveDirection.applyQuaternion(camera.quaternion);
+      moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+      moveDirection.z = truncateToDecimals(moveDirection.z, 2);
 
-        if (frame_counter % 3 === 0) {
-          if (cooldown > 0) {
-            cooldown -= 1;
-          }
-
-          if (frame_counter === 300) {
-            turn_over = true;
-            document.exitPointerLock();
-            console.log(moves);
-            console.log(bullets);
-            let actions = [{ action_type: 0, step: 4 }];
-            let c_moves = { characters: [cameraIndex], moves, actions };
-            move_over.set(true);
-            pending_moves.set([c_moves]);
-          }
-
-          if (isMouseDown) {
-            if (bullets.length < 5 && cooldown === 0) {
-              let cam_position = camera.getWorldPosition(worldPosition).clone();
-              cam_position.x = truncateToDecimals(cam_position.x, 2);
-              cam_position.z = truncateToDecimals(cam_position.z, 2);
-
-              let bullet = {
-                x: cam_position.x,
-                y: cam_position.z,
-                direction: camera.quaternion.clone(),
-                speed: 25,
-                id: frame_counter % 3,
-              };
-              bullets.push(bullet);
-              cooldown = 5;
-            }
-          }
-
-          // Record camera coordinates instead of move directions
-          let cam_position = camera.getWorldPosition(worldPosition).clone();
-          cam_position.x = truncateToDecimals(cam_position.x, 2);
-          cam_position.z = truncateToDecimals(cam_position.z, 2);
-
-          let move = {
-            x: cam_position.x,
-            y: cam_position.z,
-          };
-          moves.push(move);
-
-          // Update bullets
-          bullets.forEach((bullet: any, i: any) => {
-            // Update bullet position logic here
-
-            // Remove bullets that have traveled too far
-            if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
-              bullets.splice(i, 1);
-            }
-          });
+      if (frame_counter % 3 === 0) {
+        if (cooldown > 0) {
+          cooldown -= 1;
         }
+
+        if (frame_counter === 300) {
+          turn_over = true;
+          document.exitPointerLock();
+          console.log(moves);
+          console.log(bullets);
+          let actions = [{ action_type: 0, step: 4 }];
+          let c_moves = { characters: [cameraIndex], moves, actions };
+          move_over.set(true);
+          pending_moves.set([c_moves]);
+        }
+
+        if (isMouseDown) {
+          if (bullets.length < 5 && cooldown === 0) {
+            let cam_position = camera.getWorldPosition(worldPosition).clone();
+            cam_position.x = truncateToDecimals(cam_position.x, 2);
+            cam_position.z = truncateToDecimals(cam_position.z, 2);
+
+            let bullet = {
+              x: cam_position.x,
+              y: cam_position.z,
+              direction: camera.quaternion.clone(),
+              speed: 25,
+              id: frame_counter % 3,
+            };
+            bullets.push(bullet);
+            cooldown = 5;
+          }
+        }
+
+        // Calculate movement since the last frame
+        let move = {
+          dx: moveDirection.x,
+          dy: moveDirection.z,
+        };
+        moves.push(move);
+
+        // Update bullets
+        bullets.forEach((bullet: any, i: any) => {
+          // Update bullet position logic here
+
+          // Remove bullets that have traveled too far
+          if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
+            bullets.splice(i, 1);
+          }
+        });
       }
-    });
-  }
+    }
+  });
+}
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
