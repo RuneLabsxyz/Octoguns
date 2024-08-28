@@ -16,7 +16,7 @@
       on:click={() => client.spawn.spawn({account: burnerManager.account, 
                                             session_id: 0})}
     >
-      End Turn
+      Start Game
     </button>
     <button
       class="over-button"

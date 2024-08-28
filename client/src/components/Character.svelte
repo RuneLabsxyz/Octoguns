@@ -114,7 +114,7 @@
               console.log(bullets)
               let actions = [{ action_type: 0, step: 4 }];
               let session_id = 0;
-              let c_moves = { characters: [4], moves, actions };
+              let c_moves = { characters: [0], moves, actions };
               move_over.set(true)
               pending_moves.set([c_moves]);
 
