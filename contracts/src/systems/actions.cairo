@@ -74,7 +74,9 @@ mod actions {
                     
 
                     let mut character = *initial_positions.at(user_count);
+                    println!(character.id);
                     let is_owner = check_is_character_owner(world, character.id, player);
+                    
                     assert!(is_owner, "Not piece owner");
                     // check character is out of moves
                     if character.current_step >= character.max_steps {
@@ -111,7 +113,7 @@ mod actions {
                     let mut next_bullet_shot = *character_move.actions.at(0);
                     if next_bullet_shot.step == step_count {
                         //Shoot
-                        let bullet = shoot(world, next_bullet_shot, character);
+                        let bullet = shoot(world, next_bullet_shot, character, player);
                         bullets.append(bullet);
                     }
                     user_count += 1;

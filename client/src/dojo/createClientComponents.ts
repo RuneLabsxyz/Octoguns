@@ -15,8 +15,10 @@ export function createClientComponents({
         Map: overridableComponent(contractComponents.Map),
         MapObjects: overridableComponent(contractComponents.MapObjects),
         Session: overridableComponent(contractComponents.Session),
+        SessionMeta: overridableComponent(contractComponents.SessionMeta),
         Position: overridableComponent(contractComponents.Position),
         Bullet: overridableComponent(contractComponents.Bullet),
-        Global: overridableComponent(contractComponents.Global)
+        Global: overridableComponent(contractComponents.Global),
+        Player: overridableComponent(contractComponents.Player)
     };
 }

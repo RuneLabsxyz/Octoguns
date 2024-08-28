@@ -18,7 +18,8 @@ async function initApp() {
 	const app = new App({
 	  target: document.body,
 	});
-  
+
+	console.log(setupStore);
 	return app;
   }
   

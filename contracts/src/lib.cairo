@@ -10,6 +10,7 @@ mod models {
     mod map;
     mod character;
     mod global;
+    mod player;
 }
 
 mod lib {

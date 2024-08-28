@@ -1,6 +1,7 @@
 use octoguns::types::{Vec2, CharacterPosition, CharacterPositionTrait}; 
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
+use starknet::ContractAddress;
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
@@ -10,6 +11,7 @@ pub struct Bullet {
     pub coords: Vec2,
     pub speed: u32, // pixels per step
     pub direction: u32, // in degrees
+    pub shot_by: ContractAddress
 }
 
 #[derive(Copy, Drop, Serde)]
@@ -22,8 +24,8 @@ pub struct Vec2_i64 {
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, speed: u32, direction: u32) -> Bullet {
-        Bullet { bullet_id: id, coords, speed, direction}
+    fn new(id: u32, coords: Vec2, speed: u32, direction: u32, player: ContractAddress) -> Bullet {
+        Bullet { bullet_id: id, coords, speed, direction, shot_by: player}
     }
 
 

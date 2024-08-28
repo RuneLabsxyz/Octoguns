@@ -8,6 +8,7 @@ writes = [
     "octoguns-Session",
     "octoguns-SessionMeta",
     "octoguns-Bullet",
-    "octoguns-Global"
+    "octoguns-Global",
+    "octoguns-Player"
 
 ]

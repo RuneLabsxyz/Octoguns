@@ -2,7 +2,7 @@
     import { T } from "@threlte/core";
     import { BoxGeometry, Euler, Mesh, MeshStandardMaterial, Vector3 } from "three";
 
-    export let position: [number, number, number] = [0,3,0];
+    export let position: Vector3 = new Vector3(0,0,0);
     const [x,y,z] = position;
 
     let material = new MeshStandardMaterial({color: "blue"});

@@ -13,6 +13,7 @@
 		"allowImportingTsExtensions": true,
 		"noEmit": true,
 		"noUnusedLocals": false,
+		"moduleResolution": "node",
 		"paths": {
 			"src/*": ["src/*"]
 		}

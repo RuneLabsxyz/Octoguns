@@ -7,7 +7,7 @@ struct Vec2 {
 
 #[derive(Copy, Drop, Serde)]
 struct Action {
-    action_type: u32, // actually an angle DO NOT CHANGE
+    action_type: u32, // actually an angle DO NOT CHANGE 360 degrees for shooting
     step: u8,
 }
 

@@ -34,7 +34,10 @@
 		"@threlte/rapier": "^2.0.1",
 		"@types/three": "^0.167.2",
 		"sass": "^1.77.8",
+		"svelte-navigator": "^3.2.2",
+		"svelte-routing": "^2.13.0",
 		"three": "^0.167.1",
+		"three.js": "^0.77.1",
 		"vite-plugin-top-level-await": "^1.4.4",
 		"vite-plugin-wasm": "^3.3.0"
 	}

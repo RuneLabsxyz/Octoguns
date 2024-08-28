@@ -2,6 +2,7 @@
     import { createEventDispatcher, onDestroy } from 'svelte'
     import { Euler, Camera } from 'three'
     import { useThrelte, useParent } from '@threlte/core'
+    import { camera_angles, activeCameras } from 'src/stores';
     // Set to constrain the pitch of the camera
     // Range is 0 to Math.PI radians
     export let minPolarAngle = 0 // radians
@@ -51,6 +52,21 @@
       _euler.x -= movementY * 0.002 * pointerSpeed
       _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x))
       $camera.quaternion.setFromEuler(_euler)
+      
+      // Update camera_angles store using camera's information
+      activeCameras.update(cameras => {
+        cameras.forEach((cam, index) => {
+          if (cam === $camera) {
+            camera_angles.update(angles => {
+              const cameraInfo = { x: _euler.x, y: _euler.y, z: _euler.z }
+              angles[index] = { ...angles[index], ...cameraInfo }
+              return angles
+            })
+          }
+        })
+        return cameras
+      })
+
       onChange()
     }
     function onPointerlockChange() {
