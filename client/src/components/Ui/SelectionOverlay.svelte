@@ -1,10 +1,13 @@
 <script lang="ts">
-    import { selectionMode, isYourTurn, simMode } from "src/stores";
-    import { activeCameras } from "src/stores";
+    import { selectionMode, isYourTurn, simMode, activeCameras } from "src/stores";
+    import { get } from 'svelte/store';
 
     let selectedCells: number[] = [];
     let canConfirm = false;
-    
+
+    // Reactive variables for grid layout
+    let gridColumns = 4;
+    let gridRows = 2;
 
     function toggleCell(index: number) {
         if (selectedCells.includes(index)) {
@@ -19,18 +22,32 @@
     } else {
         canConfirm = false;
     }
+
     function startRound() {
         simMode.set(true);
         activeCameras.set(selectedCells);
-        console.log('starting round with active cameras:', $activeCameras);
+        const activeCamerasList = get(activeCameras);
+        gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
+        gridRows = Math.ceil(activeCamerasList.length / gridColumns);
+        console.log('starting round with active cameras:', activeCamerasList);
+    }
+
+    // Reactive to simMode changes
+    $: if ($simMode) {
+        const activeCamerasList = get(activeCameras);
+        gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
+        gridRows = Math.ceil(activeCamerasList.length / gridColumns);
+    } else {
+        gridColumns = 4;
+        gridRows = 2;
     }
 </script>
 
 {#if $selectionMode}
-    <div class="grid-overlay">
+    <div class="grid-overlay" style="grid-template-columns: repeat({gridColumns}, 1fr); grid-template-rows: repeat({gridRows}, 1fr);">
         {#each Array(8) as _, index}
-            <div class="cell">
-                {#if isYourTurn}
+            <div class="cell" style="grid-column: span 1; grid-row: span 1;">
+                {#if isYourTurn && !$simMode}
                 <input
                     type="checkbox"
                     checked={selectedCells.includes(index)}
@@ -53,8 +70,6 @@
         width: 100%;
         height: 100%;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, 1fr);
         border: 4px solid rgba(255, 0, 200, 0.5); /* Outer border */
     }
   
@@ -62,29 +77,11 @@
         border-right: 4px solid rgba(255, 0, 255, 0.5); /* Vertical lines */
         border-bottom: 4px solid rgba(255, 0, 255, 0.5); /* Horizontal lines */
     }
-  
-    .grid-overlay div:nth-child(4n) {
-        border-right: none; /* Remove the right border on the last column */
-    }
-  
-    .grid-overlay div:nth-last-child(-n+4) {
-        border-bottom: none; /* Remove the bottom border on the last row */
-    }
-  
+
     .grid-overlay .cell {
         position: relative;
-        border-right: 4px solid rgba(255, 0, 255, 0.5);
-        border-bottom: 4px solid rgba(255, 0, 255, 0.5);
     }
   
-    .grid-overlay .cell:nth-child(4n) {
-        border-right: none;
-    }
-  
-    .grid-overlay .cell:nth-last-child(-n+4) {
-        border-bottom: none;
-    }
-
     .grid-overlay input[type="checkbox"] {
         position: absolute;
         bottom: 5px;
@@ -105,4 +102,3 @@
         cursor: pointer;
     }
 </style>
-
