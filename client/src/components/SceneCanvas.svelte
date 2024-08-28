@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { T, useThrelte } from "@threlte/core";
+  import { T, useThrelte, useFrame } from "@threlte/core";
   import { World } from "@threlte/rapier";
   import Game from "./Game.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles } from "src/stores";
+  import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves } from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './PointerLockControls.svelte'
   import * as THREE from 'three';
@@ -13,7 +13,7 @@
 
   let cameras: any = [];
   let cameraMeshes: any = [];
-  let sideViewCamera;
+  let sideViewCamera: any;
   const { renderer, scene } = useThrelte();
 
   $: console.log('angles', $camera_angles)
@@ -24,12 +24,45 @@
     w: false,
     a: false,
     s: false,
-    d: false
+    d: false,
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
   };
+
+  let isMouseDown = false;
+  let worldPosition = new THREE.Vector3();
+  let bullets: any = [];
+  let cooldown = 0;
+  let frame_counter = 0;
+  let turn_over = false;
+  let moves: any[] = [];
+
+  $: progressWidth = Math.min((frame_counter / 300) * 100, 100);
+
+  function truncateToDecimals(num: number, decimalPlaces: number) {
+    const multiplier = Math.pow(10, decimalPlaces);
+    return Math.floor(num * multiplier) / multiplier;
+  }
 
   function handleKeyDown(event) {
     if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
       keyState[event.key] = true;
+    }
+    switch (event.key.toLowerCase()) {
+      case 'w':
+        keyState.forward = true;
+        break;
+      case 's':
+        keyState.backward = true;
+        break;
+      case 'a':
+        keyState.left = true;
+        break;
+      case 'd':
+        keyState.right = true;
+        break;
     }
   }
 
@@ -37,12 +70,40 @@
     if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
       keyState[event.key] = false;
     }
+    switch (event.key.toLowerCase()) {
+      case 'w':
+        keyState.forward = false;
+        break;
+      case 's':
+        keyState.backward = false;
+        break;
+      case 'a':
+        keyState.left = false;
+        break;
+      case 'd':
+        keyState.right = false;
+        break;
+    }
+  }
+
+  function handleMouseDown(event: MouseEvent) {
+    if (event.button === 0) {
+      // Left mouse button
+      isMouseDown = true;
+    }
+  }
+
+  function handleMouseUp(event: MouseEvent) {
+    if (event.button === 0) {
+      // Left mouse button
+      isMouseDown = false;
+    }
   }
 
   function moveCameras() {
     const isSimMode = get(simMode);
 
-    if (!isSimMode) return;
+    if (!isSimMode || turn_over) return;
 
     let activeCamerasList = get(activeCameras);
     const moveVector = new THREE.Vector3();
@@ -65,35 +126,6 @@
       }
     });
   }
-
-  // Subscribe to the camera_coords store to update camera positions
-  camera_coords.subscribe((coords) => {
-    if (coords && coords.length > 0) {
-      coords.forEach((coord, index) => {
-        if (cameras[index]) {
-          cameras[index].position.set(coord[0], CAMERA_HEIGHT, coord[1]);
-          cameras[index].lookAt(coord[0] + 1, CAMERA_HEIGHT, coord[1]); // Adjust for 90 degrees rotation
-          if (cameraMeshes[index]) {
-            cameraMeshes[index].position.set(coord[0], MESH_HEIGHT, coord[1]);
-          }
-        }
-      });
-    }
-  });
-
-  // Subscribe to the camera_angles store to update camera angles
-  camera_angles.subscribe((angles) => {
-    if (angles && angles.length > 0) {
-      angles.forEach((angle, index) => {
-        if (cameras[index]) {
-          cameras[index].rotation.set(angle[0], angle[1], angle[2]);
-          if (cameraMeshes[index]) {
-            cameraMeshes[index].rotation.set(angle[0], angle[1], angle[2]);
-          }
-        }
-      });
-    }
-  });
 
   function renderCameras() {
     const { width, height } = renderer.domElement;
@@ -158,15 +190,107 @@
     }
   }
 
+  function updateLogic() {
+  if (turn_over) return;
+
+  const activeCamerasList = get(activeCameras);
+
+  activeCamerasList.forEach((cameraIndex) => {
+    const camera = cameras[cameraIndex];
+    if (!camera) return;
+
+    const moveDirection = new THREE.Vector3();
+
+    if (keyState.forward) moveDirection.z -= 1;
+    if (keyState.backward) moveDirection.z += 1;
+    if (keyState.left) moveDirection.x -= 1;
+    if (keyState.right) moveDirection.x += 1;
+
+    if (moveDirection.length() > 0 || isMouseDown && cooldown === 0) {
+      frame_counter += 1;
+
+      moveDirection.normalize().multiplyScalar(moveSpeed);
+      moveDirection.applyQuaternion(camera.quaternion);
+      moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+      moveDirection.z = truncateToDecimals(moveDirection.z, 2);
+
+      if (frame_counter % 3 === 0) {
+        if (cooldown > 0) {
+          cooldown -= 1;
+        }
+
+        if (frame_counter === 300) {
+          turn_over = true;
+          document.exitPointerLock();
+          console.log(moves);
+          console.log(bullets);
+          let actions = [{ action_type: 0, step: 4 }];
+          let c_moves = { characters: [cameraIndex], moves, actions };
+          move_over.set(true);
+          pending_moves.set([c_moves]);
+        }
+
+        if (isMouseDown) {
+          if (bullets.length < 5 && cooldown === 0) {
+            console.log('fire');
+            let cam_position = camera.getWorldPosition(worldPosition).clone();
+            cam_position.x = truncateToDecimals(cam_position.x, 2);
+            cam_position.z = truncateToDecimals(cam_position.z, 2);
+
+            cam_position.x = cam_position.x * 100;
+            cam_position.z = cam_position.z * 100;
+
+            // Calculate direction in degrees
+            let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
+            direction = Math.round((direction + 360) % 360);
+            let bullet = {
+              x: Math.round(cam_position.x),
+              y: Math.round(cam_position.z),
+              frame: frame_counter,
+              direction: direction,
+            };
+            bullets = [...bullets, bullet]; 
+            cooldown = 1;
+          }
+        }
+
+        // Calculate movement since the last frame
+        let move = {
+          dx: Math.round(moveDirection.x * 100),
+          dy: Math.round(moveDirection.z * 100),
+        };
+        moves.push(move);
+
+        // Update bullets
+        bullets.forEach((bullet: any, i: any) => {
+          // Update bullet position logic here
+
+          // Remove bullets that have traveled too far
+          if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
+            bullets.splice(i, 1);
+          }
+        });
+      }
+    }
+  });
+}
+
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    renderer.setAnimationLoop(renderCameras);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    renderer.setAnimationLoop(() => {
+      updateLogic();
+      renderCameras();
+    });
   });
 
   onDestroy(() => {
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
+    window.removeEventListener('mousedown', handleMouseDown);
+    window.removeEventListener('mouseup', handleMouseUp);
     renderer.setAnimationLoop(null);
   });
 </script>
