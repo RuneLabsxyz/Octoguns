@@ -1,10 +1,12 @@
 <script lang="ts">
-	import SceneCanvas from "../../components/SceneCanvas.svelte";
-
+    import { Canvas } from "@threlte/core"
+    import Game from '../Game.svelte'
 </script>
 
 <div class="container">
-    <SceneCanvas />
+    <Canvas>
+            <Game />
+    </Canvas>
 </div>
 
 <style>

@@ -32,14 +32,17 @@
       unadjustedMovement: true
     })
   export const unlock = () => document.exitPointerLock()
+
   domElement.addEventListener('mousemove', onMouseMove)
   domElement.ownerDocument.addEventListener('pointerlockchange', onPointerlockChange)
   domElement.ownerDocument.addEventListener('pointerlockerror', onPointerlockError)
+
   onDestroy(() => {
     domElement.removeEventListener('mousemove', onMouseMove)
     domElement.ownerDocument.removeEventListener('pointerlockchange', onPointerlockChange)
     domElement.ownerDocument.removeEventListener('pointerlockerror', onPointerlockError)
   })
+
   function onMouseMove(event: MouseEvent) {
     if (!isLocked) return
     if (!$camera) return
@@ -51,6 +54,7 @@
     $camera.quaternion.setFromEuler(_euler)
     onChange()
   }
+
   function onPointerlockChange() {
     if (document.pointerLockElement === domElement) {
       dispatch('lock')
@@ -60,6 +64,7 @@
       isLocked = false
     }
   }
+  
   function onPointerlockError() {
     console.error('PointerLockControls: Unable to use Pointer Lock API')
   }
