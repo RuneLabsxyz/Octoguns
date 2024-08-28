@@ -236,6 +236,9 @@
             cam_position.x = truncateToDecimals(cam_position.x, 2);
             cam_position.z = truncateToDecimals(cam_position.z, 2);
 
+            cam_position.x = cam_position.x * 100;
+            cam_position.z = cam_position.z * 100;
+
             let bullet = {
               x: cam_position.x,
               y: cam_position.z,
@@ -250,8 +253,8 @@
 
         // Calculate movement since the last frame
         let move = {
-          dx: moveDirection.x,
-          dy: moveDirection.z,
+          dx: Math.round(moveDirection.x * 100),
+          dy: Math.round(moveDirection.z * 100),
         };
         moves.push(move);
 
