@@ -16,6 +16,9 @@
     } else {
         canConfirm = false;
     }
+    function startRound() {
+        console.log('starting round');
+    }
 </script>
 
 {#if $selectionMode}
@@ -31,7 +34,7 @@
         {/each}
     </div>
     {#if canConfirm}
-        <button class="confirm-button">Confirm</button>
+        <button class="confirm-button" on:click={startRound}>Confirm</button>
     {/if}
 {/if}
 

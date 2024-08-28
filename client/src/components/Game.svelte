@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { T, useTask} from '@threlte/core'
-	import { Environment } from '@threlte/extras'
 	import { AutoColliders, CollisionGroups } from '@threlte/rapier'
 	import { spring } from 'svelte/motion'
 	import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three'
-	import Character from './Character.svelte'
 	import Ground from './Ground.svelte'
 	import { derived } from 'svelte/store'
 	import { setupStore } from 'src/main'
 	import { createComponentValueStore } from 'src/dojo/componentValueStore'
 	import { current_session_id } from 'src/stores'
 	import CharacterModel from './CharacterModel.svelte'
+	import { isYourTurn, player_number } from 'src/stores'
 
 	let entity: any;
 	let session: any;
@@ -46,7 +45,20 @@
 	  if (!positionHasBeenSet) positionHasBeenSet = true
 	})
 
+	$: account = burnerManager.getActiveAccount();
+	$: if (AddressToBigInt(account.address) == $session.player1) {
+		player_number.set(1);
+	} else {
+		player_number.set(2);
+	}
 
+
+    function AddressToBigInt(address: string): bigint {
+        if (!address.startsWith('0x')) {
+            address = '0x' + address;
+        }
+        return BigInt(address);
+    }
   </script>
   <T.DirectionalLight
 	castShadow
