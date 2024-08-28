@@ -206,7 +206,7 @@
     if (keyState.left) moveDirection.x -= 1;
     if (keyState.right) moveDirection.x += 1;
 
-    if (moveDirection.length() > 0) {
+    if (moveDirection.length() > 0 || isMouseDown && cooldown === 0) {
       frame_counter += 1;
 
       moveDirection.normalize().multiplyScalar(moveSpeed);
@@ -232,6 +232,7 @@
 
         if (isMouseDown) {
           if (bullets.length < 5 && cooldown === 0) {
+            console.log('fire');
             let cam_position = camera.getWorldPosition(worldPosition).clone();
             cam_position.x = truncateToDecimals(cam_position.x, 2);
             cam_position.z = truncateToDecimals(cam_position.z, 2);
@@ -239,15 +240,17 @@
             cam_position.x = cam_position.x * 100;
             cam_position.z = cam_position.z * 100;
 
+            // Calculate direction in degrees
+            let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
+            direction = Math.round((direction + 360) % 360);
             let bullet = {
-              x: cam_position.x,
-              y: cam_position.z,
-              direction: camera.quaternion.clone(),
-              speed: 25,
-              id: frame_counter % 3,
+              x: Math.round(cam_position.x),
+              y: Math.round(cam_position.z),
+              frame: frame_counter,
+              direction: direction,
             };
-            bullets.push(bullet);
-            cooldown = 5;
+            bullets = [...bullets, bullet]; 
+            cooldown = 1;
           }
         }
 
