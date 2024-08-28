@@ -6,6 +6,7 @@
 	import Ground from './Ground.svelte'
 
     let playerMesh: T.Mesh
+  
   </script>
 
 

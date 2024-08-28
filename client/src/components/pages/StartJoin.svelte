@@ -1,97 +1,135 @@
 <script lang="ts">
-
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
 	import { setupStore } from "../../main";
+	import { current_session_id } from "src/stores";
     import { derived, writable } from "svelte/store";
-    import { BurnerManager } from "@dojoengine/create-burner";
-	import { current_session } from "../../stores";
+
+	//TODO: Check if games are created by the current user
+	//TODO: route if the user creates or
 
 	$: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
-	$: global_entity = derived(setupStore, ($store) =>
+	$: entity = derived(setupStore, ($store) =>
 		$store
 		? torii.poseidonHash([BigInt(0).toString()])
 		: undefined
 	);
 
-	$: player_entity = derived(setupStore, ($store) =>
-		$store
-		? torii.poseidonHash([BigInt(burnerManager.getActiveAccount().address).toString()])
-		: undefined
-	);
+	$: global = createComponentValueStore(clientComponents.Global, entity);
 
-	$: global = createComponentValueStore(clientComponents.Global, global_entity);
-	$: player = createComponentValueStore(clientComponents.Player, player_entity);
-
-
-	$: console.log("Global Updated:", $global);
-
-    let pending_id = writable(null);
-
+	// Add this function to handle joining a session
+	async function joinSession(session: any) {
+		const account = burnerManager.getActiveAccount();
+		if (account) {
+			console.log("Joining session", session.value);
+			await client.start.join({ account: account, session_id: session.value });
+			current_session_id.set(session.value);
+			window.location.href = "/game";
+		} else {
+			console.error("No active account found");
+		}
+	}
 </script>
-
-	<div style="justify-content: space-evenly" >
-		<button on:click={async () => {
-			const account = burnerManager.getActiveAccount();
-			if (account) {
-			  await client.start.create({ account });
-			  window.location.href = '/game';
-			} else {
-			  console.error("No active account found");
-			}
-		  }}> Create Game </button>
-		<div>
-			{#if $global}
-            <select on:change={(e) => pending_id.set(e.target.value)}>
-				{#each $global.pending_sessions as pending, index} 
-					{console.log(pending)}
-					<option value={pending.value} key={index}> {pending.value} </option>
-				{/each}
-			</select>
-			<button on:click={async () => {
-				const account = burnerManager.getActiveAccount();
-				if (account) {
-				await client.start.join({ account: account, session_id: $pending_id.value });
-				window.location.href = '/game';
-				} else {
-				console.error("No active account found");
-				}
-            }}> Join game {$pending_id}</button>
-			{/if}
-		</div>
-		<div>
-			{#if $player}
-			<span> Render Game: </span>
-            <select on:change={(e) => current_session.set(e.target.value)}>
-				{#each $player.games as game, index} 
-					<option value={game.value} key={index}> {game.value} </option>
-				{/each}
-			</select>
-			<button on:click={async () => {
-				const account = burnerManager.getActiveAccount();
-				if (account) {
-				await client.spawn.spawn({ account: account, session_id: $current_session });
-				} else {
-				console.error("No active account found");
-				}
-            }}> Spawn game {$current_session}</button>
-			{/if}
-		</div>
+  
+  <div class="higher">
+	<h1>Octo Guns</h1>
+  
+	{#if !$setupStore}
+	  <p>Setting up...</p>
+	{/if}
+  
+	<div class="session-list">
+		{#if $global}
+	  {#each $global.pending_sessions.slice().reverse() as session}
+		  <div class="session-item">
+			  <p>{session.value}</p>
+			  <button on:click={() => joinSession(session)}>Join</button>
+		  </div>
+	  {/each}
+	  {/if}
 	</div>
+  
+	<div class="buttons">
+	  <button
+ 		on:click={() => {window.location.href = '/';}}>Back</button>
+ 
+	  <button
+		on:click={async () => {
+		  const account = burnerManager.getActiveAccount();
+		  if (account) {
+			await client.start.create({ account });
+			window.location.href = "/game";
+		  } else {
+			console.error("No active account found");
+		  }
+		}}>Create Game</button>
+	</div>
+</div>
+  
+  <style>
+	.higher {
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: center;
+	  align-items: center;
+	  height: 100vh;
+	  text-align: center;
+	}
+
+	h1 {
+		font-family: 'Block';
+        font-size: 5em;
+		padding: 60px;
+        line-height: 0.8;
+        margin-bottom: -0.1em;
+    }
 
 
-<style lang="scss">
-
-		h1 {
-			color: #ff3e00;
-			text-transform: uppercase;
-			font-size: 4em;
-			font-weight: 100;
-		}
-
-		.canvas {
-			justify-content: center;
-			align-content: center;
-			align-items: center;
-		}
-</style>
+	.session-list {
+	  flex: 1;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: flex-start;
+	  align-items: stretch;
+	  border: 2px solid #000;
+	  padding: 1rem;
+	  margin-bottom: 1rem;
+	  max-width: 80%;
+	  min-width: 40%;
+	  width: auto;
+	  max-height: 60%;
+	  overflow-y: auto;
+	}
+  
+	.session-item {
+	  margin: 0.5rem 0;
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  width: 100%;
+	  padding: 0.5rem;
+	}
+  
+	.session-item p {
+	  margin: 0;
+	  flex-grow: 1;
+	  text-align: left;
+	}
+  
+	.session-item button {
+	  margin-left: 1rem;
+	  white-space: nowrap;
+	}
+  
+	.buttons {
+	  display: flex;
+	  justify-content: space-between;
+	  width: 80%;
+	}
+  
+	button {
+	  padding: 0.5rem 1rem;
+	  font-size: 1rem;
+	}
+  </style>
+  
