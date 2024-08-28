@@ -6,8 +6,13 @@
   import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles } from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './PointerLockControls.svelte'
+  import * as THREE from 'three';
+
+  const CAMERA_HEIGHT = 2;
+  const MESH_HEIGHT = 0.5;
 
   let cameras: any = [];
+  let cameraMeshes: any = [];
   let sideViewCamera;
   const { renderer, scene } = useThrelte();
 
@@ -40,16 +45,24 @@
     if (!isSimMode) return;
 
     let activeCamerasList = get(activeCameras);
-    const moveVector = { x: 0, z: 0 };
-
-    if (keyState.w) moveVector.x += moveSpeed;
-    if (keyState.s) moveVector.x -= moveSpeed;
-    if (keyState.a) moveVector.z -= moveSpeed;
-    if (keyState.d) moveVector.z += moveSpeed;
+    const moveVector = new THREE.Vector3();
 
     activeCamerasList.forEach((cameraIndex) => {
-      cameras[cameraIndex].position.x += moveVector.x;
-      cameras[cameraIndex].position.z += moveVector.z;
+      const camera = cameras[cameraIndex];
+      moveVector.set(0, 0, 0);
+
+      if (keyState.w) moveVector.z -= moveSpeed;
+      if (keyState.s) moveVector.z += moveSpeed;
+      if (keyState.a) moveVector.x -= moveSpeed;
+      if (keyState.d) moveVector.x += moveSpeed;
+
+      moveVector.applyQuaternion(camera.quaternion); // Apply camera's rotation to the movement vector
+      moveVector.y = 0; // Prevent movement in the up/down direction
+
+      camera.position.add(moveVector);
+      if (cameraMeshes[cameraIndex]) {
+        cameraMeshes[cameraIndex].position.copy(camera.position);
+      }
     });
   }
 
@@ -58,8 +71,11 @@
     if (coords && coords.length > 0) {
       coords.forEach((coord, index) => {
         if (cameras[index]) {
-          cameras[index].position.set(coord[0], 10, coord[1]);
-          cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
+          cameras[index].position.set(coord[0], CAMERA_HEIGHT, coord[1]);
+          cameras[index].lookAt(coord[0] + 1, CAMERA_HEIGHT, coord[1]); // Adjust for 90 degrees rotation
+          if (cameraMeshes[index]) {
+            cameraMeshes[index].position.set(coord[0], MESH_HEIGHT, coord[1]);
+          }
         }
       });
     }
@@ -71,6 +87,9 @@
       angles.forEach((angle, index) => {
         if (cameras[index]) {
           cameras[index].rotation.set(angle[0], angle[1], angle[2]);
+          if (cameraMeshes[index]) {
+            cameraMeshes[index].rotation.set(angle[0], angle[1], angle[2]);
+          }
         }
       });
     }
@@ -159,13 +178,13 @@
     <!-- Setup 8 Cameras for Multi-Camera View -->
     {#each Array(8) as _, i}
       <T.PerspectiveCamera
-        position={[0, 10, 0]}
+        position={[0, CAMERA_HEIGHT, 0]}
         on:create={({ ref }) => {
           cameras[i] = ref;
           // If initial camera coordinates are available, set position
           if ($camera_coords[i]) {
-            ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
-            ref.lookAt($camera_coords[i][0] + 1, 10, $camera_coords[i][1]);
+            ref.position.set($camera_coords[i][0], CAMERA_HEIGHT, $camera_coords[i][1]);
+            ref.lookAt($camera_coords[i][0] + 1, CAMERA_HEIGHT, $camera_coords[i][1]);
           }
           // Store initial camera angles
           camera_angles.update(angles => {
@@ -176,6 +195,16 @@
       >
       <PointerLockControls />
       </T.PerspectiveCamera>
+      <T.Mesh
+      position={[$camera_coords[i] ? $camera_coords[i][0] : 0, MESH_HEIGHT, $camera_coords[i] ? $camera_coords[i][1] : 0]}
+      rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
+        on:create={({ ref }) => {
+          cameraMeshes[i] = ref;
+        }}
+      >
+        <T.BoxGeometry args={[1, 1, 1]} />
+        <T.MeshBasicMaterial color="#00ff00" />
+      </T.Mesh>
     {/each}
   {/if}
 
