@@ -20,11 +20,11 @@ impl CharacterImpl of CharacterTrait {
 // 10 000 x 10 000 x 10 000 map (high level position)
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
-pub struct Position {
-    #[key]
-    pub entity_id: u32, 
-    pub x: u32, 
-    pub y: u32,
+pub struct CharacterPosition {
+    pub id: u32,
+    pub coords: Vec2,
+    pub max_steps: u32,
+    pub current_step: u32,
 }
 
 #[generate_trait]

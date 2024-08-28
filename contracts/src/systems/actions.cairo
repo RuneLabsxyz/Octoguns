@@ -55,7 +55,7 @@ mod actions {
             //     pub max_steps: u32,
             //     pub current_step: u32,
             // }
-            let mut initial_positions = get_character_positions(world, ref user_character_ids);
+            let mut user_positions = get_character_positions(world, ref user_character_ids);
             let mut all_character_positions = get_character_positions(world, ref all_character_ids);
 
             let mut bullets = get_all_bullets(world, session_id);
@@ -103,8 +103,22 @@ mod actions {
                     let is_collision = false;
                     if !is_collision {
                         //Move character
-                        character.coords.x = (character.coords.x + movement_x);
-                        character.coords.y = (character.coords.y + movement_y);
+                        character.coords.x = ((character.coords.x + 100).into() + movement_x);
+                        character.coords.y = ((character.coords.y + 100).into() + movement_y);
+                        if character.coords.x < 100 {
+                            character.coords.x = 0;
+                        }
+                        else {
+                            character_move.x = character.coords.x - 100;
+                        }
+                        if character.coords.y < 100 {
+                            character.coords.y = 0;
+                        }
+                        else {
+                            character.coords.y -= 100;
+                        }
+                        
+                        
                         character.current_step += 1;
                     }
                     updated_positions.append(character);
@@ -118,16 +132,13 @@ mod actions {
                     }
                     user_count += 1;
                 };
-                // Replace initial_positions with updated_positions
-                initial_positions = updated_positions;
 
                 // simulate Bullets
                 let ( new_bullets, dead_characters ) = simulate_bullets(ref bullets, ref all_character_positions);
                 
                 // Update models in the world
-                let (new_user_character, new_user_character_ids) = filter_out_dead_characters(world, initial_positions, dead_characters.clone());
-                initial_positions = new_user_character;
-                user_character_ids = new_user_character_ids;
+                let (new_user_character, new_user_character_ids) = filter_out_dead_characters(world, all_character_positions, dead_characters.clone());
+
 
                 // Remove dead characters from all_character_ids
                 let (new_all_character, new_all_character_ids) = filter_out_dead_characters(world, all_character_positions, dead_characters.clone());
@@ -157,7 +168,7 @@ mod actions {
             session_meta.set_new_characters(all_character_ids);
             session_meta.set_new_bullets(bullet_ids);
             
-            set!(world, (session_meta, session));
+            set!(world, (session_meta, session, bullets, characters));
         }
     }
 }
