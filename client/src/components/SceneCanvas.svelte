@@ -3,20 +3,20 @@
   import { World } from "@threlte/rapier";
   import Game from "./Game.svelte";
   import { onMount } from "svelte";
-  import { camera_coords, sideViewMode } from "src/stores";
-  import { writable } from "svelte/store";
+  import { camera_coords, sideViewMode, activeCameras, simMode } from "src/stores";
+  import { get } from 'svelte/store';
+  
 
   let cameras: any = [];
-  let sideViewCamera!;
+  let sideViewCamera;
   const { renderer, scene } = useThrelte();
+
   // Subscribe to the camera_coords store to update camera positions
   camera_coords.subscribe((coords) => {
-    console.log("sub", coords);
     if (coords && coords.length > 0) {
       coords.forEach((coord, index) => {
         if (cameras[index]) {
           cameras[index].position.set(coord[0], 10, coord[1]);
-          // Ensure the camera is rotated 90 degrees to look along the x-axis
           cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
         }
       });
@@ -25,8 +25,11 @@
 
   function renderCameras() {
     const { width, height } = renderer.domElement;
+    const isSideViewMode = get(sideViewMode);
+    const isSimMode = get(simMode);
+    const activeCamerasList = get(activeCameras);
 
-    if ($sideViewMode) {
+    if (isSideViewMode) {
       // Render side view mode
       if (sideViewCamera) {
         sideViewCamera.aspect = width / height;
@@ -36,6 +39,27 @@
         renderer.setViewport(0, 0, width, height);
         renderer.render(scene, sideViewCamera);
       }
+    } else if (isSimMode) {
+      // Render only active cameras in sim mode
+      const gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
+      const gridRows = Math.ceil(activeCamerasList.length / gridColumns);
+      const viewWidth = width / gridColumns;
+      const viewHeight = height / gridRows;
+
+      activeCamerasList.forEach((cameraIndex, i) => {
+        const col = i % gridColumns;
+        const row = Math.floor(i / gridColumns);
+
+        cameras[cameraIndex].aspect = viewWidth / viewHeight;
+        cameras[cameraIndex].updateProjectionMatrix();
+
+        renderer.setScissorTest(true);
+        renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.render(scene, cameras[cameraIndex]);
+      });
+
+      renderer.setScissorTest(false);
     } else if (cameras.length === 8) {
       // Render multi-camera view
       const gridColumns = 4;
@@ -78,7 +102,6 @@
           // If initial camera coordinates are available, set position
           if ($camera_coords[i]) {
             ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
-            // Rotate the camera 90 degrees to look along the x-axis
             ref.lookAt($camera_coords[i][0] + 1, 10, $camera_coords[i][1]);
           }
         }}

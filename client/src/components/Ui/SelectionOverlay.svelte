@@ -1,7 +1,10 @@
 <script lang="ts">
-    import { selectionMode } from "src/stores";
+    import { selectionMode, isYourTurn, simMode } from "src/stores";
+    import { activeCameras } from "src/stores";
+
     let selectedCells: number[] = [];
     let canConfirm = false;
+    
 
     function toggleCell(index: number) {
         if (selectedCells.includes(index)) {
@@ -17,7 +20,9 @@
         canConfirm = false;
     }
     function startRound() {
-        console.log('starting round');
+        simMode.set(true);
+        activeCameras.set(selectedCells);
+        console.log('starting round with active cameras:', $activeCameras);
     }
 </script>
 
@@ -25,11 +30,13 @@
     <div class="grid-overlay">
         {#each Array(8) as _, index}
             <div class="cell">
+                {#if isYourTurn}
                 <input
                     type="checkbox"
                     checked={selectedCells.includes(index)}
                     on:change={() => toggleCell(index)}
                 />
+                {/if}
             </div>
         {/each}
     </div>

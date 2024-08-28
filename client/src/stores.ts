@@ -13,5 +13,9 @@ export const current_session = writable<SessionMeta>();
 export const camera_coords = writable<[number, number][]>([]);
 export const sideViewMode = writable(false);
 export const selectionMode = writable(true);
+export const simMode = writable(false);
 export const isYourTurn = writable(false);
 export const player_number = writable(0); // 1 or 2
+
+// SImulation
+export const activeCameras = writable([]);
