@@ -7,6 +7,9 @@
   import { get } from 'svelte/store';
   import PointerLockControls from './PointerLockControls.svelte'
 
+  const CAMERA_HEIGHT = 0.5;
+  const MESH_HEIGHT = 10;
+
   let cameras: any = [];
   let cameraMeshes: any = [];
   let sideViewCamera;
@@ -62,10 +65,10 @@
     if (coords && coords.length > 0) {
       coords.forEach((coord, index) => {
         if (cameras[index]) {
-          cameras[index].position.set(coord[0], 10, coord[1]);
-          cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
+          cameras[index].position.set(coord[0], CAMERA_HEIGHT, coord[1]);
+          cameras[index].lookAt(coord[0] + 1, CAMERA_HEIGHT, coord[1]); // Adjust for 90 degrees rotation
           if (cameraMeshes[index]) {
-            cameraMeshes[index].position.set(coord[0], 10, coord[1]);
+            cameraMeshes[index].position.set(coord[0], MESH_HEIGHT, coord[1]);
           }
         }
       });
@@ -169,13 +172,13 @@
     <!-- Setup 8 Cameras for Multi-Camera View -->
     {#each Array(8) as _, i}
       <T.PerspectiveCamera
-        position={[0, 10, 0]}
+        position={[0, CAMERA_HEIGHT, 0]}
         on:create={({ ref }) => {
           cameras[i] = ref;
           // If initial camera coordinates are available, set position
           if ($camera_coords[i]) {
-            ref.position.set($camera_coords[i][0], 0.5, $camera_coords[i][1]);
-            ref.lookAt($camera_coords[i][0] + 1, 0.5, $camera_coords[i][1]);
+            ref.position.set($camera_coords[i][0], CAMERA_HEIGHT, $camera_coords[i][1]);
+            ref.lookAt($camera_coords[i][0] + 1, CAMERA_HEIGHT, $camera_coords[i][1]);
           }
           // Store initial camera angles
           camera_angles.update(angles => {
@@ -187,8 +190,8 @@
       <PointerLockControls />
       </T.PerspectiveCamera>
       <T.Mesh
-        position={cameras[i] ? cameras[i].position : [0, 0.5, 0]}
-        rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
+      position={[$camera_coords[i] ? $camera_coords[i][0] : 0, MESH_HEIGHT, $camera_coords[i] ? $camera_coords[i][1] : 0]}
+      rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
         on:create={({ ref }) => {
           cameraMeshes[i] = ref;
         }}
