@@ -8,6 +8,7 @@
   import PointerLockControls from './PointerLockControls.svelte'
 
   let cameras: any = [];
+  let cameraMeshes: any = [];
   let sideViewCamera;
   const { renderer, scene } = useThrelte();
 
@@ -50,6 +51,9 @@
     activeCamerasList.forEach((cameraIndex) => {
       cameras[cameraIndex].position.x += moveVector.x;
       cameras[cameraIndex].position.z += moveVector.z;
+      if (cameraMeshes[cameraIndex]) {
+        cameraMeshes[cameraIndex].position.copy(cameras[cameraIndex].position);
+      }
     });
   }
 
@@ -60,6 +64,9 @@
         if (cameras[index]) {
           cameras[index].position.set(coord[0], 10, coord[1]);
           cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
+          if (cameraMeshes[index]) {
+            cameraMeshes[index].position.set(coord[0], 10, coord[1]);
+          }
         }
       });
     }
@@ -71,6 +78,9 @@
       angles.forEach((angle, index) => {
         if (cameras[index]) {
           cameras[index].rotation.set(angle[0], angle[1], angle[2]);
+          if (cameraMeshes[index]) {
+            cameraMeshes[index].rotation.set(angle[0], angle[1], angle[2]);
+          }
         }
       });
     }
@@ -164,8 +174,8 @@
           cameras[i] = ref;
           // If initial camera coordinates are available, set position
           if ($camera_coords[i]) {
-            ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
-            ref.lookAt($camera_coords[i][0] + 1, 10, $camera_coords[i][1]);
+            ref.position.set($camera_coords[i][0], 0.5, $camera_coords[i][1]);
+            ref.lookAt($camera_coords[i][0] + 1, 0.5, $camera_coords[i][1]);
           }
           // Store initial camera angles
           camera_angles.update(angles => {
@@ -176,6 +186,16 @@
       >
       <PointerLockControls />
       </T.PerspectiveCamera>
+      <T.Mesh
+        position={cameras[i] ? cameras[i].position : [0, 0.5, 0]}
+        rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
+        on:create={({ ref }) => {
+          cameraMeshes[i] = ref;
+        }}
+      >
+        <T.BoxGeometry args={[1, 1, 1]} />
+        <T.MeshBasicMaterial color="#00ff00" />
+      </T.Mesh>
     {/each}
   {/if}
 
