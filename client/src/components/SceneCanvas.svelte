@@ -2,14 +2,53 @@
   import { T, useThrelte } from "@threlte/core";
   import { World } from "@threlte/rapier";
   import Game from "./Game.svelte";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { camera_coords, sideViewMode, activeCameras, simMode } from "src/stores";
   import { get } from 'svelte/store';
-  
 
   let cameras: any = [];
   let sideViewCamera;
   const { renderer, scene } = useThrelte();
+
+  let moveSpeed = 0.5; // Speed at which cameras will move
+
+  const keyState = {
+    w: false,
+    a: false,
+    s: false,
+    d: false
+  };
+
+  function handleKeyDown(event) {
+    if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
+      keyState[event.key] = true;
+    }
+  }
+
+  function handleKeyUp(event) {
+    if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
+      keyState[event.key] = false;
+    }
+  }
+
+  function moveCameras() {
+    const isSimMode = get(simMode);
+
+    if (!isSimMode) return;
+
+    let activeCamerasList = get(activeCameras);
+    const moveVector = { x: 0, z: 0 };
+
+    if (keyState.w) moveVector.x += moveSpeed;
+    if (keyState.s) moveVector.x -= moveSpeed;
+    if (keyState.a) moveVector.z -= moveSpeed;
+    if (keyState.d) moveVector.z += moveSpeed;
+
+    activeCamerasList.forEach((cameraIndex) => {
+      cameras[cameraIndex].position.x += moveVector.x;
+      cameras[cameraIndex].position.z += moveVector.z;
+    });
+  }
 
   // Subscribe to the camera_coords store to update camera positions
   camera_coords.subscribe((coords) => {
@@ -28,6 +67,8 @@
     const isSideViewMode = get(sideViewMode);
     const isSimMode = get(simMode);
     const activeCamerasList = get(activeCameras);
+
+    moveCameras(); // Update camera positions based on controls
 
     if (isSideViewMode) {
       // Render side view mode
@@ -85,7 +126,15 @@
   }
 
   onMount(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
     renderer.setAnimationLoop(renderCameras);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleKeyDown);
+    window.removeEventListener('keyup', handleKeyUp);
+    renderer.setAnimationLoop(null);
   });
 </script>
 
