@@ -46,6 +46,25 @@
         <button class="start-button" on:click={startGame}>Start Game</button>
     {/if}
 </div>
+{#if $move_over}
+  <div class="over-container">
+    <button
+      class="over-button"
+      on:click={() => client.spawn.spawn({account: burnerManager.account, 
+                                            session_id: 0})}
+    >
+      Start Game
+    </button>
+    <button
+      class="over-button"
+      on:click={() => client.actions.move({account: burnerManager.account, 
+                                            session_id: 0, 
+                                            moves: $pending_moves})}
+    >
+      End Turn
+    </button>
+  </div>
+{/if}
 
 <style>
     .container {
@@ -59,6 +78,13 @@
         width: 100%;
         height: 100%;
         display: block;
+        cursor: pointer; /* Added line */
+    }
+
+    button {
+        font-size: 1em;
+        padding: 10px;
+        margin-top: 8%;
     }
 
     .start-button {

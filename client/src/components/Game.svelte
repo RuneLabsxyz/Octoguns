@@ -64,15 +64,10 @@
         return BigInt(address);
     }
   </script>
-  <T.DirectionalLight
-	castShadow
-	position={[8, 20, -3]}
-  />
-  <T.GridHelper
-	args={[50]}
-	position.y={0.01}
-  />
-  <CollisionGroups groups={[0, 15]}>
+
+
+<T.DirectionalLight castShadow position={[3, 10, 10]} />
+<T.AmbientLight intensity={0.2} />
 	<Ground />
   </CollisionGroups>
   <CollisionGroups groups={[0]}>

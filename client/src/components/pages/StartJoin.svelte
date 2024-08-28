@@ -2,13 +2,18 @@
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
 	import { setupStore } from "../../main";
 	import { current_session_id } from "src/stores";
+	import { current_session_id } from "src/stores";
     import { derived, writable } from "svelte/store";
+
+	//TODO: Check if games are created by the current user
+	//TODO: route if the user creates or
 
 	//TODO: Check if games are created by the current user
 	//TODO: route if the user creates or
 
 	$: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
+	$: entity = derived(setupStore, ($store) =>
 	$: entity = derived(setupStore, ($store) =>
 		$store
 		? torii.poseidonHash([BigInt(0).toString()])
