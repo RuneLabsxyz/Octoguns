@@ -9,3 +9,8 @@ export const current_session_id = writable<number>();
 export const current_session = writable<SessionMeta>();
 export const moves = writable<any>([]);
 
+export const move_over = writable<boolean>(false);
+export const pending_moves = writable<any>([]);
+export const setupStore = writable<SetupResult>();
+
+

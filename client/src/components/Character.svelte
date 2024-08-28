@@ -8,6 +8,7 @@
     import { writable } from 'svelte/store'
     import { Bullet } from 'src/dojo/typescript/models.gen'
     import * as THREE from 'three'
+    import { move_over, pending_moves } from 'src/stores';
   //  import { bullets, characters } from 'src/stores'
 
   export let position: [number, number, number] = [0, 0, 0]
@@ -99,8 +100,8 @@
 
           moveDirection.normalize().multiplyScalar(speed)
           moveDirection.applyQuaternion(cam.quaternion);
-          moveDirection.x = truncateToDecimals(moveDirection.x, 3);
-          moveDirection.z = truncateToDecimals(moveDirection.z, 3);
+          moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+          moveDirection.z = truncateToDecimals(moveDirection.z, 2);
 
           if (frame_counter % 3 == 0 && !turn_over) {
             if (cooldown > 0){
@@ -111,6 +112,11 @@
               document.exitPointerLock();
               console.log(moves)
               console.log(bullets)
+              let actions = [{ action_type: 0, step: 4 }];
+              let session_id = 0;
+              let c_moves = { characters: [4], moves, actions };
+              move_over.set(true)
+              pending_moves.set([c_moves]);
 
             }
             if (isMouseDown) {
@@ -131,7 +137,7 @@
               }
             }
 
-            let move = {x: moveDirection.x, y: moveDirection.y}
+            let move = {x: Math.round(moveDirection.x * 100), y: Math.round(moveDirection.z * 100)}
             moves.push(move);
 
             const currentVel = rigidBody.linvel()
@@ -150,8 +156,8 @@
           
           
           // Update the bullet's position
-          bullet.x += truncateToDecimals(bullet.direction.fast_cos * bullet.velocity * delta, 2);
-          bullet.y += truncateToDecimals(bullet.direction.fast_sin * bullet.velocity * delta,2);
+    //      bullet.x += truncateToDecimals(bullet.direction.fast_cos * bullet.velocity * delta, 2);
+    //      bullet.y += truncateToDecimals(bullet.direction.fast_sin * bullet.velocity * delta,2);
           
 
           // Optional: Remove bullets that have traveled too far
