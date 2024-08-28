@@ -68,6 +68,7 @@
 
 <T.DirectionalLight castShadow position={[3, 10, 10]} />
 <T.AmbientLight intensity={0.2} />
+	<CollisionGroups groups={[0, 15]}>
 	<Ground />
   </CollisionGroups>
   <CollisionGroups groups={[0]}>

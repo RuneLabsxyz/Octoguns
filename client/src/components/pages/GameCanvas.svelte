@@ -6,6 +6,7 @@
     import { derived, writable } from "svelte/store";
     import { current_session_id } from "src/stores";
     import Ui from "./Ui.svelte";
+    import {move_over, pending_moves} from "src/stores";
 
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -78,13 +79,6 @@
         width: 100%;
         height: 100%;
         display: block;
-        cursor: pointer; /* Added line */
-    }
-
-    button {
-        font-size: 1em;
-        padding: 10px;
-        margin-top: 8%;
     }
 
     .start-button {
