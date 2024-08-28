@@ -19,9 +19,10 @@ mod spawn {
             let positions_1 = generate_character_positions(1);
             let positions_2 = generate_character_positions(2);
             let mut session = get!(world, session_id, (Session));
-            assert!(session.status == 1, "Not spawnable");
+            assert!(session.state == 1, "Not spawnable");
             let caller = get_caller_address();
             let mut session_meta = get!(world, session_id, (SessionMeta));
+            let player2 = session.player2;
 
 
             let mut i = 0;
@@ -43,7 +44,7 @@ mod spawn {
        
 
                 let id2 = world.uuid();
-                let c2 = CharacterTrait::new(id2, session_id, caller, default_steps);
+                let c2 = CharacterTrait::new(id2, session_id, player2, default_steps);
                 let p2 = PositionTrait::new(id2, position_2.x, position_2.y);
                 let h2 = HealthTrait::new(id2, 100);
                 session_meta.add_character(id2);

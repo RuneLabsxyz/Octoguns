@@ -1,14 +1,18 @@
 <script lang="ts">
-  import { T, useFrame, useThrelte } from '@threlte/core';
-  import { PerspectiveCamera, Vector3 } from 'three';
-  import PointerLockControls from './PointerLockControls.svelte';
-  import Gun from './Gun.svelte';
-  import { writable } from 'svelte/store';
-  import * as THREE from 'three';
-  import { setupStore } from 'src/main';
+    import { T, useFrame, useThrelte } from '@threlte/core'
+  import { RigidBody, CollisionGroups, Collider } from '@threlte/rapier'
+  import { PerspectiveCamera, Vector2, Vector3 } from 'three'
+  import PointerLockControls from './PointerLockControls.svelte'
+  import Gun from './Gun.svelte'
+    import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat'
+    import { writable } from 'svelte/store'
+    import { Bullet } from 'src/dojo/typescript/models.gen'
+    import * as THREE from 'three'
+    import { move_over, pending_moves } from 'src/stores';
+  //  import { bullets, characters } from 'src/stores'
 
-  // Define types
-  export let position: [number, number, number] = [0, 0, 0];
+  export let position: [number, number, number] = [0, 0, 0]
+
   let playerMesh: T.Mesh;
 
   interface Bullet {
@@ -106,47 +110,49 @@
     if (keyState.left) moveDirection.x -= 1;
     if (keyState.right) moveDirection.x += 1;
 
-    if (moveDirection.length() > 0) {
-      frame_counter += 1;
-      moveDirection.normalize().multiplyScalar(speed);
-      moveDirection.applyQuaternion(cam.quaternion);
-      moveDirection.x = truncateToDecimals(moveDirection.x, 3);
-      moveDirection.z = truncateToDecimals(moveDirection.z, 3);
+        if (moveDirection.length() > 0) {
+          frame_counter += 1;
 
-      if (frame_counter % 3 === 0 && !turn_over) {
-        if (cooldown > 0) {
-          cooldown -= 1;
-        }
-        if (frame_counter === 300) {
-          turn_over = true;
-          document.exitPointerLock();
-          console.log(moves);
-          console.log(bullets);
-        }
-        if (isMouseDown) {
-          if (bullets.length < 5 && cooldown === 0) {
-            let cam_position = cam.getWorldPosition(worldPosition).clone();
-            cam_position.x = truncateToDecimals(cam_position.x, 2);
-            cam_position.z = truncateToDecimals(cam_position.z, 2);
-            console.log(cam_position);
+          moveDirection.normalize().multiplyScalar(speed)
+          moveDirection.applyQuaternion(cam.quaternion);
+          moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+          moveDirection.z = truncateToDecimals(moveDirection.z, 2);
 
-            let position: [number, number] = [cam_position.x, cam_position.z];
-            let bullet: Bullet = {
-              x: position[0],
-              y: position[1],
-              direction: cam.quaternion.clone(),
-              speed: 25,
-              id: frame_counter % 3,
-            };
-            console.log(bullet);
+          if (frame_counter % 3 == 0 && !turn_over) {
+            if (cooldown > 0){
+              cooldown -=1;
+            }
+            if (frame_counter == 300) {
+              turn_over = true;
+              document.exitPointerLock();
+              console.log(moves)
+              console.log(bullets)
+              let actions = [{ action_type: 0, step: 4 }];
+              let session_id = 0;
+              let c_moves = { characters: [0], moves, actions };
+              move_over.set(true)
+              pending_moves.set([c_moves]);
+
+            }
+            if (isMouseDown) {
+              if ( bullets.length < 5 && cooldown == 0) {
+                //TODO make sure to normailze so that (0,0) is corner rather than center
+                let cam_position = cam.getWorldPosition(worldPosition).clone()
+                cam_position.x = truncateToDecimals(cam_position.x, 2);
+                cam_position.z = truncateToDecimals(cam_position.z, 2);
+                console.log(cam_position)
+
+                let position: [number, number] = [cam_position.x, cam_position.z]
+                let bullet: Bullet = {x: position[0], y: position[1], direction: cam.quaternion.clone(), speed: 25, id:(frame_counter%3)};
+                console.log(bullet)
 
             bullets.push(bullet);
             cooldown = 5;
           }
         }
 
-        let move = { x: moveDirection.x, y: moveDirection.y };
-        moves.push(move);
+            let move = {x: Math.round(moveDirection.x * 100), y: Math.round(moveDirection.z * 100)}
+            moves.push(move);
 
         const pos = playerMesh.position;
         console.log(pos)
@@ -156,9 +162,16 @@
         for (let i = 0; i < bullets.length; i++) {
           let bullet = bullets[i];
           // Calculate the displacement
-          // TODO: Implement the bullet movement logic
-          // Remove bullets that have traveled too far
-          if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
+          //TODO use fast_sin / fast_cos to match cairo logic
+          
+          
+          // Update the bullet's position
+    //      bullet.x += truncateToDecimals(bullet.direction.fast_cos * bullet.velocity * delta, 2);
+    //      bullet.y += truncateToDecimals(bullet.direction.fast_sin * bullet.velocity * delta,2);
+          
+
+          // Optional: Remove bullets that have traveled too far
+          if (Math.sqrt(bullet.x**2 + bullet.y**2) > 1000) { // Adjust this value as needed
             bullets.splice(i, 1);
             i--;
           }

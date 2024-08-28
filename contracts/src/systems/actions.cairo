@@ -74,7 +74,9 @@ mod actions {
                     
 
                     let mut character = *initial_positions.at(user_count);
+                    println!(character.id);
                     let is_owner = check_is_character_owner(world, character.id, player);
+                    
                     assert!(is_owner, "Not piece owner");
                     // check character is out of moves
                     if character.current_step >= character.max_steps {

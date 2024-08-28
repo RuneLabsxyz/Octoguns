@@ -15,15 +15,16 @@ export async function setupWorld(provider: DojoProvider) {
 
         
         // Call the `move` system with the specified Account and calldata
-        const move = async (props: { account: Account, session_id: number, moves: RecsType.StringArray }) => {
+        const move = async (props: { account: Account, session_id: number, moves: any }) => {
+            console.log("move called")
+            console.log(props.moves)
             try {
                 return await provider.execute(
                     props.account,
                     {
                         contractName: contract_name,
                         entrypoint: "move",
-                        calldata: [props.session_id,
-                ...props.moves],
+                        calldata: [props.session_id, props.moves],
                     },
                     "octoguns"
                 );
