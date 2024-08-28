@@ -3,12 +3,15 @@
   import { World } from "@threlte/rapier";
   import Game from "./Game.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { camera_coords, sideViewMode, activeCameras, simMode } from "src/stores";
+  import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles } from "src/stores";
   import { get } from 'svelte/store';
+  import PointerLockControls from './PointerLockControls.svelte'
 
   let cameras: any = [];
   let sideViewCamera;
   const { renderer, scene } = useThrelte();
+
+  $: console.log('angles', $camera_angles)
 
   let moveSpeed = 0.5; // Speed at which cameras will move
 
@@ -57,6 +60,17 @@
         if (cameras[index]) {
           cameras[index].position.set(coord[0], 10, coord[1]);
           cameras[index].lookAt(coord[0] + 1, 10, coord[1]); // Adjust for 90 degrees rotation
+        }
+      });
+    }
+  });
+
+  // Subscribe to the camera_angles store to update camera angles
+  camera_angles.subscribe((angles) => {
+    if (angles && angles.length > 0) {
+      angles.forEach((angle, index) => {
+        if (cameras[index]) {
+          cameras[index].rotation.set(angle[0], angle[1], angle[2]);
         }
       });
     }
@@ -153,8 +167,15 @@
             ref.position.set($camera_coords[i][0], 10, $camera_coords[i][1]);
             ref.lookAt($camera_coords[i][0] + 1, 10, $camera_coords[i][1]);
           }
+          // Store initial camera angles
+          camera_angles.update(angles => {
+            angles[i] = [ref.rotation.x, ref.rotation.y, ref.rotation.z];
+            return angles;
+          });
         }}
-      />
+      >
+      <PointerLockControls />
+      </T.PerspectiveCamera>
     {/each}
   {/if}
 

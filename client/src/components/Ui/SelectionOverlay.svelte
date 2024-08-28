@@ -30,6 +30,12 @@
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
         gridRows = Math.ceil(activeCamerasList.length / gridColumns);
         console.log('starting round with active cameras:', activeCamerasList);
+        // Pointer lock the cursor
+        const canvas = document.querySelector('canvas');
+        if (canvas) {
+            canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+            canvas.requestPointerLock();
+        }
     }
 
     // Reactive to simMode changes

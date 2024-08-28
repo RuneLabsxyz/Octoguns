@@ -40,7 +40,7 @@
 <Ui />
 <div class="container">
     <Canvas>
-<SceneCanvas />
+        <SceneCanvas />
     </Canvas>
     {#if !$gameStarted}
         <button class="start-button" on:click={startGame}>Start Game</button>

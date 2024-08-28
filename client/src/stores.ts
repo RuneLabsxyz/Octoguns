@@ -19,3 +19,4 @@ export const player_number = writable(0); // 1 or 2
 
 // SImulation
 export const activeCameras = writable([]);
+export const camera_angles = writable([]);
