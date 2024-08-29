@@ -107,14 +107,29 @@ import { derived } from "svelte/store";
     }
   }
 
+  let matchingIndices: any = [];
+
+  $: {
+      const activeCamerasList = $activeCameras;
+      const ownedCamerasList = $ownedCameras;
+
+      matchingIndices = ownedCamerasList.reduce((indices, camera, index) => {
+          if (activeCamerasList.includes(camera.id)) {
+              indices.push(index);
+          }
+          return indices;
+      }, []);
+  }
+
+
   function moveCameras() {
     const isSimMode = get(simMode);
 
     if (!isSimMode || turn_over) return;
 
     const moveVector = new THREE.Vector3();
-    $ownedCameras.forEach((cameraIndex, i) => {
-      const camera = cameras[i];
+    $activeCameras.forEach((cameraIndex, i) => {
+      const camera = cameras[matchingIndices[i]];
 
       moveVector.set(0, 0, 0);
 
@@ -158,17 +173,17 @@ import { derived } from "svelte/store";
       const viewWidth = width / gridColumns;
       const viewHeight = height / gridRows;
 
-      activeCamerasList.forEach((cameraIndex, i) => {
+      $activeCameras.forEach((cameraIndex, i) => {
+        const camera = cameras[matchingIndices[i]];
         const col = i % gridColumns;
         const row = Math.floor(i / gridColumns);
-
-        cameras[i].aspect = viewWidth / viewHeight;
-        cameras[i].updateProjectionMatrix();
+        camera.aspect = viewWidth / viewHeight;
+        camera.updateProjectionMatrix();
 
         renderer.setScissorTest(true);
         renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
         renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
-        renderer.render(scene, cameras[i]);
+        renderer.render(scene, camera);
       });
 
       renderer.setScissorTest(false);
@@ -243,7 +258,6 @@ function updateLogic() {
         } else {
           move_state.update(state => state + 1);
           selectionMode.set(true);
-
         }
 
         submitCameras.update(currentArray => [...currentArray, c_moves]);
@@ -315,9 +329,10 @@ function updateLogic() {
 <World>
   <Game />
 
-  {#if !$sideViewMode}
     <!-- Setup 8 Cameras for Multi-Camera View -->
     {#each $ownedCameras as camera, i}
+    {#if !$sideViewMode}
+
       <T.PerspectiveCamera
         position={[camera.coords[0], CAMERA_HEIGHT, camera.coords[1]]}
         on:create={({ ref }) => {
@@ -333,6 +348,8 @@ function updateLogic() {
       >
       <PointerLockControls />
       </T.PerspectiveCamera>
+      {/if}
+
       <T.Mesh
       position={[camera.coords[0], MESH_HEIGHT, camera.coords[1]]}
       rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
@@ -344,7 +361,6 @@ function updateLogic() {
         <T.MeshBasicMaterial color="#00ff00" />
       </T.Mesh>
     {/each}
-  {/if}
 
   {#if $sideViewMode}
     <!-- Side View Camera -->

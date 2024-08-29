@@ -25,6 +25,8 @@
             selectedCameraIds = [...selectedCameraIds, id];
         }
     }
+    $: console.log("selection mode set to true", $selectionMode);
+
 
     $: canConfirm = selectedCameraIds.length > 0;
 
