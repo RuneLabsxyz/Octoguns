@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { Account } from "@dojoengine/torii-wasm";
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
 	import { setupStore } from "src/stores";
     import { derived, writable } from "svelte/store";
 	import { onMount } from 'svelte';
 	import { availableSessions, mySessions } from "src/stores";
+  import { copyFileSync, cp } from "fs";
 
 	$: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -26,21 +26,17 @@
 	$: player = createComponentValueStore(clientComponents.Player, entity2);
 
 	$: console.log("Player", $player);
-
-	onMount(() => {
-		if ($global && $player) {
-			const playerGames = new Set($player.games.map(game => game.value));
-			
-			$availableSessions = $global.pending_sessions.filter(session => !playerGames.has(session.value));
-			$mySessions = $global.pending_sessions.filter(session => playerGames.has(session.value));
-		}
-	});
+	$: console.log('global', $global)
 
 	$: if ($global && $player) {
-		const playerGames = new Set($player.games.map(game => game.value));
-		
+		console.log("pllayer", $player)
+		let playerGames = new Set($player.games.map(game => game.value));
 		availableSessions.set($global.pending_sessions.filter(session => !playerGames.has(session.value)));
 		mySessions.set($global.pending_sessions.filter(session => playerGames.has(session.value)));
+	}
+
+	$: if ($global && $player === undefined) {
+		$availableSessions = $global.pending_sessions;
 	}
 
 	$: console.log("Available sessions", $mySessions);

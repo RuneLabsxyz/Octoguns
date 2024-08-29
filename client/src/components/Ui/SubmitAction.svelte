@@ -1,11 +1,17 @@
 <script lang="ts">
- import { setupStore, move_over, current_session_id, pending_moves } from "src/stores";
+    import { setupStore, move_over, current_session_id, pending_moves } from "src/stores";
     import { derived } from "svelte/store";
-
+    import { createComponentValueStore } from "src/dojo/componentValueStore";
 
 	$: ({ clientComponents, torii, burnerManager, client } = $setupStore);
+    $: entity = derived(setupStore, ($store) =>
+        $store
+        ? torii.poseidonHash([BigInt($current_session_id).toString()])
+        : undefined
+    );
 
-
+    $: sessionMeta = createComponentValueStore(clientComponents.SessionMeta, entity);
+    $: console.log("SessionMeta", $sessionMeta);
 </script>
 
 
@@ -14,6 +20,7 @@
     <button
       class="end-turn-button"
       on:click={() => {
+        console.log($pending_moves);
         const account = burnerManager.getActiveAccount();
         client.actions.move({account: account, 
                                             session_id: $current_session_id, 
