@@ -1,35 +1,34 @@
 <script lang="ts">
-    import { selectionMode, isYourTurn, simMode, activeCameras } from "src/stores";
+    import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords } from "src/stores";
     import { get } from 'svelte/store';
 
-    let selectedCells: number[] = [];
+    let selectedCameraIds: number[] = [];
     let canConfirm = false;
 
     // Reactive variables for grid layout
     let gridColumns = 4;
     let gridRows = 2;
 
-    function toggleCell(index: number) {
-        if (selectedCells.includes(index)) {
-            selectedCells = selectedCells.filter(i => i !== index);
+    $: ownedCameras = $camera_coords.filter(camera => camera.isOwner);
+    $: console.log("owned cam", $camera_coords);
+
+    function toggleCamera(id: number) {
+        if (selectedCameraIds.includes(id)) {
+            selectedCameraIds = selectedCameraIds.filter(i => i !== id);
         } else {
-            selectedCells = [...selectedCells, index];
+            selectedCameraIds = [...selectedCameraIds, id];
         }
     }
 
-    $: if (selectedCells.length > 0) {
-        canConfirm = true;
-    } else {
-        canConfirm = false;
-    }
+    $: canConfirm = selectedCameraIds.length > 0;
 
     function startRound() {
         simMode.set(true);
-        activeCameras.set(selectedCells);
+        activeCameras.set(selectedCameraIds);
         const activeCamerasList = get(activeCameras);
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
         gridRows = Math.ceil(activeCamerasList.length / gridColumns);
-        console.log('starting round with active cameras:', activeCamerasList);
+        console.log('starting round with active camera IDs:', activeCamerasList);
         // Pointer lock the cursor
         const canvas = document.querySelector('canvas');
         if (canvas) {
@@ -40,7 +39,7 @@
 
     // Reactive to simMode changes
     $: if ($simMode) {
-        const activeCamerasList = get(activeCameras);
+        const activeCamerasList = $activeCameras;
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
         gridRows = Math.ceil(activeCamerasList.length / gridColumns);
     } else {
@@ -51,14 +50,15 @@
 
 {#if $selectionMode}
     <div class="grid-overlay" style="grid-template-columns: repeat({gridColumns}, 1fr); grid-template-rows: repeat({gridRows}, 1fr);">
-        {#each Array(8) as _, index}
+        {#each ownedCameras as camera (camera.id)}
             <div class="cell" style="grid-column: span 1; grid-row: span 1;">
                 {#if $isYourTurn && !$simMode}
                 <input
                     type="checkbox"
-                    checked={selectedCells.includes(index)}
-                    on:change={() => toggleCell(index)}
+                    checked={selectedCameraIds.includes(camera.id)}
+                    on:change={() => toggleCamera(camera.id)}
                 />
+                <span class="camera-label">Camera {camera.id}</span>
                 {/if}
             </div>
         {/each}
@@ -106,5 +106,16 @@
         border: none;
         border-radius: 3px;
         cursor: pointer;
+    }
+
+    .camera-label {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        color: white;
+        font-size: 12px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 2px 5px;
+        border-radius: 3px;
     }
 </style>
