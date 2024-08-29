@@ -9,7 +9,7 @@
 	import { createComponentValueStore } from 'src/dojo/componentValueStore'
 	import { current_session_id } from 'src/stores'
 	import CharacterModel from './CharacterModel.svelte'
-	import { isYourTurn, player_number, gameStarted } from 'src/stores'
+	import { isYourTurn, player_number, gameStarted, current_session} from 'src/stores'
 	import Bullet from './Bullet.svelte'
 
 	let entity: any;
@@ -27,7 +27,7 @@
 
 	$: if (current_session_id) session = createComponentValueStore(clientComponents.Session, entity);
 	$: if (current_session_id) session_meta = createComponentValueStore(clientComponents.SessionMeta, entity);
-
+	$: if (session_meta) current_session.set($session_meta);
 	$: if ($session.state >= 2 ) gameStarted.set(true); 
 
 	let playerMesh: Mesh
@@ -67,7 +67,7 @@
         }
         return BigInt(address);
     }
-  </script>
+</script>
 
 
 <T.DirectionalLight castShadow position={[3, 10, 10]} />

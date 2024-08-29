@@ -11,7 +11,6 @@
     let character: Writable<any>;
     let position: Writable<any>;
     let account: any;
-
     // Subscribing to the setupStore and setting up necessary variables
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -27,18 +26,16 @@
     $: position = entity ? createComponentValueStore(clientComponents.CharacterPosition, entity) : undefined;
 
     // Update camera coordinates if necessary
-    $: if ($position && $character) {
+    $: if ($position && $character && account) {
         const playerPosition = {
             x: $position.coords.x / 100 - 51,
             y: $position.coords.y / 100 - 51
         };
-        
-        if ($character.player_id === AddressToBigInt(account?.address)) {
-            camera_coords.update(coords => ({
-                ...coords,
-                [id]: playerPosition
-            }));
-        }
+        const isOwner = AddressToBigInt(account.address) === $character.player_id;
+        camera_coords.update(coords => ({
+            ...coords,
+            [$character.entity_id]: { id: $character.entity_id, coords: [playerPosition.x, playerPosition.y], isOwner }
+        }));
     }
 
     // Helper function to convert an address to BigInt
