@@ -3,6 +3,11 @@ import { SetupResult } from "./dojo/setup";
 import { Bullet } from "./dojo/typescript/models.gen";
 import { SessionMeta } from "./dojo/typescript/models.gen";
 
+
+export const availableSessions: any = writable([]);
+export const mySessions: any = writable([]);
+
+
 export const bullets = writable<any>();
 export const characters = writable<any>();
 export const current_session_id = writable<number>();
