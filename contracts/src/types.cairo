@@ -20,8 +20,10 @@ struct CharacterMove {
 
 #[derive(Copy, Drop, Serde)]
 struct IVec2 {
-    x: i32,
-    y: i32
+    x: u32,
+    y: u32,
+    xdir: bool,
+    ydir: bool
 }
 
 

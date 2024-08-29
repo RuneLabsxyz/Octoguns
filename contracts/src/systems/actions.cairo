@@ -102,8 +102,20 @@ mod actions {
                     let is_collision = false;
                     if !is_collision {
                         //Move character
-                        let mut new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x);
-                        let mut new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y);
+                        let mut new_x = 0;
+                        let mut new_y = 0;
+                        if movement.xdir {
+                            new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x);
+                        }
+                        else {
+                            new_x = ((character.coords.x + 100).try_into().unwrap() - movement_x);
+                        }
+                        if movement.ydir {
+                            new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y);
+                        }
+                        else {
+                            new_y = ((character.coords.y + 100).try_into().unwrap() - movement_y);
+                        }
                         if new_x < 100 {
                             new_x = 0;
                         }
