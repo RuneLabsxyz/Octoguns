@@ -191,90 +191,93 @@
     }
   }
 
-  function updateLogic() {
-    if (turn_over) return;
+  let globalFrameCounter = 0;
 
-    const activeCamerasList = get(activeCameras);
+function updateLogic() {
+  if (turn_over) return;
 
-    activeCamerasList.forEach((cameraIndex) => {
-      const camera = cameras[cameraIndex];
-      if (!camera) return;
+  const activeCamerasList = get(activeCameras);
+  let anyMovementOrAction = false; // Track if any movement or action occurs
 
-      const moveDirection = new THREE.Vector3();
+  // Only consider the first active camera
+  const cameraIndex = activeCamerasList[0];
+  const camera = cameras[cameraIndex];
+  if (!camera) return;
 
-      if (keyState.forward) moveDirection.z -= 1;
-      if (keyState.backward) moveDirection.z += 1;
-      if (keyState.left) moveDirection.x -= 1;
-      if (keyState.right) moveDirection.x += 1;
+  const moveDirection = new THREE.Vector3();
 
-      if (moveDirection.length() > 0 || isMouseDown && cooldown === 0) {
-        frame_counter += 1;
+  if (keyState.forward) moveDirection.z -= 1;
+  if (keyState.backward) moveDirection.z += 1;
+  if (keyState.left) moveDirection.x -= 1;
+  if (keyState.right) moveDirection.x += 1;
 
-        moveDirection.normalize().multiplyScalar(moveSpeed);
-        moveDirection.applyQuaternion(camera.quaternion);
-        moveDirection.x = truncateToDecimals(moveDirection.x, 2);
-        moveDirection.z = truncateToDecimals(moveDirection.z, 2);
+  // Check if there's any movement or if the mouse is down (indicating a potential shooting action)
+  if (moveDirection.length() > 0 || isMouseDown) {
+    anyMovementOrAction = true;
 
-        if (frame_counter % 3 === 0) {
-          if (cooldown > 0) {
-            cooldown -= 1;
-          }
+    moveDirection.normalize().multiplyScalar(moveSpeed);
+    moveDirection.applyQuaternion(camera.quaternion);
+    moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+    moveDirection.z = truncateToDecimals(moveDirection.z, 2);
 
-          if (frame_counter === 300) {
-            turn_over = true;
-            document.exitPointerLock();
-            console.log(moves);
-            console.log(bullets);
-            let actions = [{ action_type: 0, step: 4 }];
-            let c_moves = { characters: [cameraIndex], moves, actions };
-            move_over.set(true);
-            pending_moves.set([c_moves]);
-          }
+    // Record movement and other actions every 3 frames
+    if (globalFrameCounter % 3 === 0) {
+      if (cooldown > 0) {
+        cooldown -= 1;
+      }
 
-          if (isMouseDown) {
-            if (bullets.length < 5 && cooldown === 0) {
-              let cam_position = camera.getWorldPosition(worldPosition).clone();
-              cam_position.x = truncateToDecimals(cam_position.x, 2);
-              cam_position.z = truncateToDecimals(cam_position.z, 2);
+      if (globalFrameCounter === 300) {
+        turn_over = true;
+        document.exitPointerLock();
+        console.log(moves);
+        console.log(bullets);
+        let actions = [{ action_type: 0, step: 4 }];
+        let c_moves = { characters: [cameraIndex], moves, actions };
+        move_over.set(true);
+        pending_moves.set([c_moves]);
+      }
 
-              cam_position.x = cam_position.x * 100;
-              cam_position.z = cam_position.z * 100;
+      if (isMouseDown) {
+        if (bullets.length < 5 && cooldown === 0) {
+          let cam_position = camera.getWorldPosition(worldPosition).clone();
+          cam_position.x = truncateToDecimals(cam_position.x, 2);
+          cam_position.z = truncateToDecimals(cam_position.z, 2);
 
-              // Calculate direction in degrees
-              let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
-              direction = Math.round((direction + 360) % 360);
-              let bullet = {
-                x: Math.round(cam_position.x),
-                y: Math.round(cam_position.z),
-                frame: frame_counter,
-                direction: direction,
-              };
-              bullets.push(bullet);
-              bulletsStore.update(currentBullets => [...currentBullets, bullet]);
-              cooldown = 3;
-            }
-          }
+          cam_position.x = cam_position.x * 100;
+          cam_position.z = cam_position.z * 100;
 
-          // Calculate movement since the last frame
-          let move = {
-            dx: Math.round(moveDirection.x * 100),
-            dy: Math.round(moveDirection.z * 100),
+          // Calculate direction in degrees
+          let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
+          direction = Math.round((direction + 360) % 360);
+          let bullet = {
+            x: Math.round(cam_position.x),
+            y: Math.round(cam_position.z),
+            frame: globalFrameCounter,
+            direction: direction,
           };
-          moves.push(move);
-
-          // Update bullets
-          // bullets.forEach((bullet: any, i: any) => {
-          //   // Update bullet position logic here
-
-          //   // Remove bullets that have traveled too far
-          //   if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
-          //     bullets.splice(i, 1);
-          //   }
-          // });
+          bullets.push(bullet);
+          bulletsStore.update(currentBullets => [...currentBullets, bullet]);
+          cooldown = 3;
         }
       }
-    });
+
+      // Calculate movement since the last frame
+      let move = {
+        dx: Math.round(moveDirection.x * 100),
+        dy: Math.round(moveDirection.z * 100),
+      };
+      moves.push(move);
+
+      // Reset moveDirection for the next frame
+      moveDirection.set(0, 0, 0);
+    }
   }
+
+  // Only increment the frame counter if there was any movement or action
+  if (anyMovementOrAction) {
+    globalFrameCounter += 1;
+  }
+}
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
