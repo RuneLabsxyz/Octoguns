@@ -37,7 +37,6 @@
         const idFromUrl = url.pathname.split('/').pop();
         
         if (idFromUrl && !isNaN(Number(idFromUrl))) {
-            console.log("idFromUrl", idFromUrl);
             current_session_id.set(Number(idFromUrl));
         } else {
             current_session_id.subscribe(id => {

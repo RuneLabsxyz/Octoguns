@@ -30,7 +30,7 @@ mod start {
         }
 
         fn join(ref world: IWorldDispatcher, session_id: u32) {
-            let global = get!(world, GLOBAL_KEY, (Global));
+            let mut global = get!(world, GLOBAL_KEY, (Global));
             let address = get_caller_address();
             let mut session = get!(world, session_id, (Session));
             let mut player = get!(world, address, (Player));
@@ -39,10 +39,11 @@ mod start {
            
             assert!(session.player1 != address, "can't join own session");
             //TODO global.remove_session(session_id);
+            global.remove_session(session_id);
             session.join(address);
             player.games.append(session.session_id);
 
-            set!(world, (session, player));        
+            set!(world, (session, player, global));        
         }
     }
 }
