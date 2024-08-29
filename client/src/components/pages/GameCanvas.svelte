@@ -95,4 +95,12 @@
         cursor: pointer;
         z-index: 10;
     }
+
+    .over-container {
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 50;
+    }
 </style>
