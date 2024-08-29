@@ -2,7 +2,7 @@
 	import SceneCanvas from "../Canvas.svelte";
     import { Canvas } from "@threlte/core";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
-    import { setupStore } from "src/main";
+    import { setupStore } from "src/stores";
     import { derived, writable } from "svelte/store";
     import { current_session_id } from "src/stores";
     import Ui from "../Ui.svelte";
@@ -58,18 +58,7 @@
         <button class="start-button" on:click={startGame}>Start Game</button>
     {/if}
 </div>
-{#if $move_over}
-  <div class="over-container">
-    <button
-      class="over-button"
-      on:click={() => client.actions.move({account: burnerManager.account, 
-                                            session_id: $current_session_id, 
-                                            moves: $pending_moves})}
-    >
-      End Turn
-    </button>
-  </div>
-{/if}
+
 
 <style>
     .container {

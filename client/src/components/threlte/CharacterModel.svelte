@@ -1,6 +1,6 @@
 <script lang="ts">
     import { T } from "@threlte/core";
-    import { setupStore } from "src/main";
+    import { setupStore } from "src/stores";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
     import { derived } from "svelte/store";
     import { camera_coords } from "src/stores";

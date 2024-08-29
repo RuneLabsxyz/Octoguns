@@ -1,6 +1,7 @@
 <script>
     import ToggleView from './Ui/ToggleView.svelte';
     import SelectionOverlay from './Ui/SelectionOverlay.svelte';
+    import SubmitAction from './Ui/SubmitAction.svelte';
     import { sideViewMode, isYourTurn } from 'src/stores'; // Ensure you export this from your store file
   </script>
   
@@ -10,7 +11,7 @@
 
 
 <ToggleView />
-
+<SubmitAction />
 {#if !$sideViewMode}
   <SelectionOverlay />
 {/if}

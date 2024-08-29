@@ -1,5 +1,5 @@
 import { Account } from "@dojoengine/torii-wasm"
-import { setupStore } from "src/main"
+import { setupStore } from "src/stores"
 import { get } from "svelte/store"
 
 export type Vec = {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Account } from "@dojoengine/torii-wasm";
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
-	import { setupStore } from "../../main";
+	import { setupStore } from "src/stores";
     import { derived, writable } from "svelte/store";
 	import { onMount } from 'svelte';
 	import { availableSessions, mySessions } from "src/stores";

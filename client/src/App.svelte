@@ -5,7 +5,7 @@
 	import GameCanvas from "./components/pages/GamePage.svelte";
 	
 
-	
+
   export let url = "";
 
 </script>

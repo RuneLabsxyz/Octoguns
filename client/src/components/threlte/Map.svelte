@@ -5,7 +5,7 @@
 	import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three'
 	import Ground from './Ground.svelte'
 	import { derived } from 'svelte/store'
-	import { setupStore } from 'src/main'
+	import { setupStore } from 'src/stores'
 	import { createComponentValueStore } from 'src/dojo/componentValueStore'
 	import { current_session_id } from 'src/stores'
 	import CharacterModel from './CharacterModel.svelte'
@@ -55,7 +55,7 @@
 	}}
 	let users_turn;
 	$: if(session_meta) users_turn = $session_meta.turn_count % 2
-	$: if (users_turn + 1 == $player_number) {
+	$: if (users_turn + 2 == $player_number) {
 		isYourTurn.set(true)
 	}
 	$: console.log($session_meta.characters)
