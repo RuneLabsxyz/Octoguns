@@ -20,7 +20,7 @@
     <button
       class="end-turn-button"
       on:click={() => {
-        console.log($pending_moves);
+        console.log("pending moves", $pending_moves);
         const account = burnerManager.getActiveAccount();
         client.actions.move({account: account, 
                                             session_id: $current_session_id, 

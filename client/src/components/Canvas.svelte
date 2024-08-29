@@ -26,7 +26,6 @@ import { derived } from "svelte/store";
 
   let moveSpeed = 0.5; // Speed at which cameras will move
 
-  $: console.log('Camera Coords:', $camera_coords);
   const keyState = {
     w: false,
     a: false,
@@ -235,7 +234,6 @@ function updateLogic() {
   // Check if there's any movement or if the mouse is down (indicating a potential shooting action)
   if (moveDirection.length() > 0 || isMouseDown) {
     anyMovementOrAction = true;
-    console.log(globalFrameCounter);
     moveDirection.normalize().multiplyScalar(moveSpeed);
     moveDirection.applyQuaternion(camera.quaternion);
     moveDirection.x = truncateToDecimals(moveDirection.x, 2);
@@ -262,7 +260,7 @@ function updateLogic() {
           turn_over = false;
           globalFrameCounter = 0;
         }
-
+        move_over.set(true);  // TESTING
         submitCameras.update(currentArray => [...currentArray, c_moves]);
         pending_moves.set([c_moves]);
       }
@@ -294,8 +292,8 @@ function updateLogic() {
 
       // Calculate movement since the last frame
       let move = {
-        dx: Math.round(moveDirection.x * 100),
-        dy: Math.round(moveDirection.z * 100),
+        x: Math.round(moveDirection.x * 100),
+        y: Math.round(moveDirection.z * 100),
       };
       moves.push(move);
 
@@ -341,7 +339,6 @@ function updateLogic() {
         position={[camera.coords[0], CAMERA_HEIGHT, camera.coords[1]]}
         on:create={({ ref }) => {
           cameras[i] = ref;
-          console.log('Setting camera position:', camera.coords[0], camera.coords[1]);
           ref.lookAt(camera.coords[0] + 1, CAMERA_HEIGHT, camera.coords[1]);
           // Store initial camera angles
           camera_angles.update(angles => {

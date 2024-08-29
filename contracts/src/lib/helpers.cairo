@@ -158,7 +158,7 @@ fn check_win(ref user_character_ids: Array<u32>, ref all_character_ids: Array<u3
 }
 
 fn check_is_valid_move(x: i32, y: i32) -> bool {
-    let max_user_speed = 10;
+    let max_user_speed: i32 = 10;
     if (x*x) + (y*y) <= max_user_speed* max_user_speed {
         return true;
     }

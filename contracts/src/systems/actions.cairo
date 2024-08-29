@@ -51,6 +51,8 @@ mod actions {
 
             let mut updated_positions = ArrayTrait::new();
 
+            // Checks working until here
+
             let mut step_count = 0;
             while step_count < 100_u8{
                 let mut user_index = 0;
@@ -64,6 +66,7 @@ mod actions {
                     
 
                     let mut character = *user_positions.at(user_index);
+                    println!("Getting character id");
                     println!("{}",character.id);
                     let is_owner = check_is_character_owner(world, character.id, player);
                     
@@ -80,13 +83,20 @@ mod actions {
                     let movement = *character_move.movement.at(user_index); 
                     let movement_x = movement.x;
                     let movement_y = movement.y;
+                    
 
+                    println!("Extracted movement");
+                    println!("Movement x: {}", movement_x);
+                    println!("Movement y: {}", movement_y);
                     //Checks if the move is not to big
                     let is_valid = check_is_valid_move(movement_x, movement_y);
                     if !is_valid {
+                        println!("Invalid move");
                         updated_positions.append(character);
                         user_index += 1;
                     }
+
+                    println!("Valid move");
 
                     // TODO Check if the move collides
                     let is_collision = false;
@@ -111,6 +121,8 @@ mod actions {
                         
                         
                         character.current_step += 1;
+                        println!("No collision");
+                        println!("Character moved");
                     }
                     updated_positions.append(character);
 
@@ -121,6 +133,8 @@ mod actions {
                         let bullet = shoot(world, next_bullet_shot, character, player);
                         bullets.append(bullet);
                     }
+
+                    println!("Bullet shot");
                     user_index += 1;
                 };
 
