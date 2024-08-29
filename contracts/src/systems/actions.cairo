@@ -1,4 +1,4 @@
-use octoguns::types::{CharacterPosition, CharacterMove};
+use octoguns::types::{CharacterMove};
 use octoguns::models::bullet::{Bullet, BulletTrait};
 
 #[dojo::interface]
@@ -9,9 +9,9 @@ trait IActions {
 #[dojo::contract]
 mod actions {
     use super::IActions;
-    use octoguns::types::{Vec2, Action, CharacterMove, CharacterPosition};
+    use octoguns::types::{Vec2, Action, CharacterMove};
     use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
-    use octoguns::models::character::{Character, Position};
+    use octoguns::models::character::{Character, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::lib::helpers::{get_character_ids, get_character_positions, get_all_bullets, check_is_character_owner, filter_out_dead_characters, extract_bullet_ids, check_win, check_is_valid_move};
     use octoguns::lib::simulate::{simulate_bullets};
@@ -43,37 +43,27 @@ mod actions {
             let mut user_character_ids = get_character_ids(@moves);
             let mut all_character_ids = session_meta.characters.clone();
 
-            // TODO also get all the active character ids and iterate over them to remove the all_character_ids
-            // from the other team 
 
-            // Create an array to store initial positions
-            // @Note initial_position struct: Array<CharacterPosition>
-            // pub struct CharacterPosition {
-            //     pub id: u32,
-            //     pub x: u16,
-            //     pub y: u16,
-            //     pub max_steps: u32,
-            //     pub current_step: u32,
-            // }
             let mut user_positions = get_character_positions(world, ref user_character_ids);
             let mut all_character_positions = get_character_positions(world, ref all_character_ids);
 
             let mut bullets = get_all_bullets(world, session_id);
 
+            let mut updated_positions = ArrayTrait::new();
+
             let mut step_count = 0;
             while step_count < 100_u8{
-                let mut user_count = 0;
+                let mut user_index = 0;
                 moves = moves_clone.clone();
-                let mut updated_positions = ArrayTrait::new();
                 loop {
 
-                    if user_count == initial_positions.len() {
+                    if user_index == user_positions.len() {
                         break;
                     }
                     let character_move = moves.pop_front().unwrap(); 
                     
 
-                    let mut character = *initial_positions.at(user_count);
+                    let mut character = *user_positions.at(user_index);
                     println!("{}",character.id);
                     let is_owner = check_is_character_owner(world, character.id, player);
                     
@@ -81,13 +71,13 @@ mod actions {
                     // check character is out of moves
                     if character.current_step >= character.max_steps {
                         updated_positions.append(character);
-                        user_count += 1;    
+                        user_index += 1;    
                         break;
                     }
 
                     // TODO Check if move is valid
                     //Get movement vector
-                    let movement = *character_move.movement.at(user_count); 
+                    let movement = *character_move.movement.at(user_index); 
                     let movement_x = movement.x;
                     let movement_y = movement.y;
 
@@ -95,28 +85,29 @@ mod actions {
                     let is_valid = check_is_valid_move(movement_x, movement_y);
                     if !is_valid {
                         updated_positions.append(character);
-                        user_count += 1;
-                        break;
+                        user_index += 1;
                     }
 
                     // TODO Check if the move collides
                     let is_collision = false;
                     if !is_collision {
                         //Move character
-                        character.coords.x = ((character.coords.x + 100).into() + movement_x);
-                        character.coords.y = ((character.coords.y + 100).into() + movement_y);
-                        if character.coords.x < 100 {
-                            character.coords.x = 0;
+                        let mut new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x);
+                        let mut new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y);
+                        if new_x < 100 {
+                            new_x = 0;
                         }
                         else {
-                            character_move.x = character.coords.x - 100;
+                            new_x -= 100;
                         }
-                        if character.coords.y < 100 {
-                            character.coords.y = 0;
+                        if new_y < 100 {
+                            new_y = 0;
                         }
                         else {
-                            character.coords.y -= 100;
+                            new_y -= 100;
                         }
+                        character.coords.x = new_x.try_into().unwrap();
+                        character.coords.y = new_y.try_into().unwrap();
                         
                         
                         character.current_step += 1;
@@ -130,18 +121,18 @@ mod actions {
                         let bullet = shoot(world, next_bullet_shot, character, player);
                         bullets.append(bullet);
                     }
-                    user_count += 1;
+                    user_index += 1;
                 };
 
                 // simulate Bullets
                 let ( new_bullets, dead_characters ) = simulate_bullets(ref bullets, ref all_character_positions);
                 
                 // Update models in the world
-                let (new_user_character, new_user_character_ids) = filter_out_dead_characters(world, all_character_positions, dead_characters.clone());
+                let (new_user_character, new_user_character_ids) = filter_out_dead_characters(world, @all_character_positions, dead_characters.clone());
 
 
                 // Remove dead characters from all_character_ids
-                let (new_all_character, new_all_character_ids) = filter_out_dead_characters(world, all_character_positions, dead_characters.clone());
+                let (new_all_character, new_all_character_ids) = filter_out_dead_characters(world, @all_character_positions, dead_characters.clone());
                 all_character_positions = new_all_character;
                 all_character_ids = new_all_character_ids;
 
@@ -163,12 +154,28 @@ mod actions {
                 step_count += 1;
             };
 
-            let bullet_ids = extract_bullet_ids(bullets);
+            let bullet_ids = extract_bullet_ids(@bullets);
             session_meta.next_turn();
             session_meta.set_new_characters(all_character_ids);
             session_meta.set_new_bullets(bullet_ids);
+            let b_clone = bullets.clone();
+            let p_clone = updated_positions.clone();
+
+            let mut index = 0;
+            loop {
+                if index < bullets.len() {
+                    set!(world, (*b_clone.at(index)));
+                }
+                if index < updated_positions.len() {
+                    set!(world, (*p_clone.at(index)));
+                }
+                if index >= bullets.len() && index>= updated_positions.len() {
+                    break;
+                }
+                index += 1;
+            };
             
-            set!(world, (session_meta, session, bullets, characters));
+            set!(world, (session_meta, session));
         }
     }
 }

@@ -1,5 +1,5 @@
 use octoguns::lib::defaultSpawns::generate_character_positions;
-use octoguns::types::{CharacterPosition, CharacterPositionTrait};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
 
 
 fn get_test_character_array() -> Array<CharacterPosition>{
@@ -8,7 +8,7 @@ fn get_test_character_array() -> Array<CharacterPosition>{
     let mut res = ArrayTrait::new();
     while index < positions.len() {
         let position = *positions.at(index);
-        res.append(CharacterPositionTrait::new(index, position.x, position.y, 100, 0));
+        res.append(CharacterPositionTrait::new(index, position, 100, 0));
         index +=1;
     };
     res

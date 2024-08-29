@@ -1,6 +1,7 @@
 use array::ArrayTrait;
 use core::debug::PrintTrait;
-use octoguns::types::{Vec2, CharacterPosition};
+use octoguns::types::{Vec2};
+
 
 fn generate_character_positions(player_id: u8) -> Array<Vec2> {
     assert(player_id == 1 || player_id == 2, 'Invalid player ID');

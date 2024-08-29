@@ -24,10 +24,4 @@ struct IVec2 {
     y: i32
 }
 
-#[generate_trait]
-impl CharacterPositionImpl of CharacterPositionTrait {
-    fn new(id: u32, x: u32, y:u32, max_steps: u32, current_step: u32) -> CharacterPosition {
-        CharacterPosition {id, coords: Vec2 {x,y}, max_steps, current_step}
-    }
-}
 
