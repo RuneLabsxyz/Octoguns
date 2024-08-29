@@ -7,6 +7,7 @@
   import { get } from 'svelte/store';
   import PointerLockControls from './PointerLockControls.svelte'
   import * as THREE from 'three';
+  import Bullet from './Bullet.svelte';  // Add this import
 
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
@@ -33,11 +34,11 @@
 
   let isMouseDown = false;
   let worldPosition = new THREE.Vector3();
-  let bullets: any = [];
   let cooldown = 0;
   let frame_counter = 0;
   let turn_over = false;
   let moves: any[] = [];
+  let bullets: any[] = [];
 
   $: progressWidth = Math.min((frame_counter / 300) * 100, 100);
 
@@ -232,7 +233,6 @@
 
         if (isMouseDown) {
           if (bullets.length < 5 && cooldown === 0) {
-            console.log('fire');
             let cam_position = camera.getWorldPosition(worldPosition).clone();
             cam_position.x = truncateToDecimals(cam_position.x, 2);
             cam_position.z = truncateToDecimals(cam_position.z, 2);
@@ -249,8 +249,8 @@
               frame: frame_counter,
               direction: direction,
             };
-            bullets = [...bullets, bullet]; 
-            cooldown = 1;
+            bullets.push(bullet);
+            cooldown = 3;
           }
         }
 
@@ -262,14 +262,14 @@
         moves.push(move);
 
         // Update bullets
-        bullets.forEach((bullet: any, i: any) => {
-          // Update bullet position logic here
+        // bullets.forEach((bullet: any, i: any) => {
+        //   // Update bullet position logic here
 
-          // Remove bullets that have traveled too far
-          if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
-            bullets.splice(i, 1);
-          }
-        });
+        //   // Remove bullets that have traveled too far
+        //   if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
+        //     bullets.splice(i, 1);
+        //   }
+        // });
       }
     }
   });
@@ -342,4 +342,9 @@
       }}
     />
   {/if}
+
+  <!-- Add this section to render bullets -->
+  {#each bullets as bullet (bullet.id)}
+    <Bullet x={bullet.x} y={bullet.y} direction={bullet.direction} />
+  {/each}
 </World>
