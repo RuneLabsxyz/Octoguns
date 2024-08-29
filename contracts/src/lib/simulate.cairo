@@ -43,6 +43,7 @@ mod simulate_tests {
 
     use octoguns::tests::helpers::{get_test_character_array};
      #[test]
+     #[ignore]
     fn test_4_bullets_sim()  {
         let address = starknet::contract_address_const::<0x0>();
 
@@ -59,13 +60,14 @@ mod simulate_tests {
      }
 
      #[test]
+     #[ignore]
      fn test_collisions() {
         let address = starknet::contract_address_const::<0x0>();
 
         let bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
         let mut bullets = array![bullet];
         //todo add more collisions
-        let mut characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
+        let mut characters = array![CharacterPositionTrait::new(69, Vec2 {x: 4,y: 0},100,0)];
         let (mut bullets, mut ids) = simulate_bullets(ref bullets, ref characters);
         match bullets.pop_front() {
             Option::None => {

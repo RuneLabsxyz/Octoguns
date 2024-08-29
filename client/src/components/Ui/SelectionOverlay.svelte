@@ -1,6 +1,7 @@
 <script lang="ts">
     import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords } from "src/stores";
     import { get } from 'svelte/store';
+    import { derived } from 'svelte/store';
 
     let selectedCameraIds: number[] = [];
     let canConfirm = false;
@@ -9,8 +10,14 @@
     let gridColumns = 4;
     let gridRows = 2;
 
-    $: ownedCameras = $camera_coords.filter(camera => camera.isOwner);
-    $: console.log("owned cam", $camera_coords);
+    $: console.log("camera_coords", $camera_coords);
+
+    // Filter cameras where isOwner is true
+    const ownedCameras = derived(camera_coords, $camera_coords => {
+        const cameraArray = Object.values($camera_coords);
+        return cameraArray.filter(camera => camera.isOwner);
+    });
+    $: console.log("ownedCameras", $ownedCameras);
 
     function toggleCamera(id: number) {
         if (selectedCameraIds.includes(id)) {
@@ -28,7 +35,7 @@
         const activeCamerasList = get(activeCameras);
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
         gridRows = Math.ceil(activeCamerasList.length / gridColumns);
-        console.log('starting round with active camera IDs:', activeCamerasList);
+        console.log('starting round with active camera IDs:', selectedCameraIds);
         // Pointer lock the cursor
         const canvas = document.querySelector('canvas');
         if (canvas) {
@@ -50,7 +57,7 @@
 
 {#if $selectionMode}
     <div class="grid-overlay" style="grid-template-columns: repeat({gridColumns}, 1fr); grid-template-rows: repeat({gridRows}, 1fr);">
-        {#each ownedCameras as camera (camera.id)}
+        {#each $ownedCameras as camera (camera.id)}
             <div class="cell" style="grid-column: span 1; grid-row: span 1;">
                 {#if $isYourTurn && !$simMode}
                 <input

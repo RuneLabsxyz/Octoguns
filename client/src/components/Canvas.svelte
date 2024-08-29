@@ -233,7 +233,7 @@ function updateLogic() {
         console.log(moves);
         console.log(bullets);
         let actions = [{ action_type: 0, step: 4 }];
-        let c_moves = { characters: [40, 42, 44, 46, 48, 50, 52], moves, actions };
+        let c_moves = { characters: get(activeCameras), moves, actions };
         move_over.set(true);
         pending_moves.set([c_moves]);
       }
