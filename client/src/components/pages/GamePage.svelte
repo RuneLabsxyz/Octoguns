@@ -62,13 +62,6 @@
   <div class="over-container">
     <button
       class="over-button"
-      on:click={() => client.spawn.spawn({account: burnerManager.account, 
-                                            session_id: 0})}
-    >
-      Start Game
-    </button>
-    <button
-      class="over-button"
       on:click={() => client.actions.move({account: burnerManager.account, 
                                             session_id: 38, 
                                             moves: $pending_moves})}

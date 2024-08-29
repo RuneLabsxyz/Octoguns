@@ -53,7 +53,7 @@
     <div class="grid-overlay" style="grid-template-columns: repeat({gridColumns}, 1fr); grid-template-rows: repeat({gridRows}, 1fr);">
         {#each Array(8) as _, index}
             <div class="cell" style="grid-column: span 1; grid-row: span 1;">
-                {#if isYourTurn && !$simMode}
+                {#if $isYourTurn && !$simMode}
                 <input
                     type="checkbox"
                     checked={selectedCells.includes(index)}

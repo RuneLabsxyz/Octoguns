@@ -1,9 +1,16 @@
 <script>
-    import { sideViewMode } from 'src/stores'; // Ensure you export this from your store file
+    import { sideViewMode, isYourTurn } from 'src/stores'; // Ensure you export this from your store file
+    import { onMount } from 'svelte';
     
     function toggleSideView() {
         sideViewMode.update(mode => !mode);
     }
+
+    onMount(() => {
+        if ($isYourTurn === false) {
+            sideViewMode.set(true);
+        }
+    });
 </script>
 
 <div class="toggle-view-container">
