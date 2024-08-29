@@ -5,7 +5,7 @@
   import { onMount, onDestroy } from "svelte";
   import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves } from "src/stores";
   import { get } from 'svelte/store';
-  import PointerLockControls from './threlte/character/PointerLockControls.svelte'
+  import PointerLockControls from './threlte/PointerLockControls.svelte'
   import * as THREE from 'three';
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
