@@ -63,7 +63,7 @@
     <button
       class="over-button"
       on:click={() => client.actions.move({account: burnerManager.account, 
-                                            session_id: 38, 
+                                            session_id: $current_session_id, 
                                             moves: $pending_moves})}
     >
       End Turn
