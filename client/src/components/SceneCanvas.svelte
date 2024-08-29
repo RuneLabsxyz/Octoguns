@@ -8,6 +8,7 @@
   import PointerLockControls from './PointerLockControls.svelte'
   import * as THREE from 'three';
   import Bullet from './Bullet.svelte';  // Add this import
+  import { writable } from 'svelte/store';
 
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
@@ -16,8 +17,6 @@
   let cameraMeshes: any = [];
   let sideViewCamera: any;
   const { renderer, scene } = useThrelte();
-
-  $: console.log('angles', $camera_angles)
 
   let moveSpeed = 0.5; // Speed at which cameras will move
 
@@ -39,6 +38,7 @@
   let turn_over = false;
   let moves: any[] = [];
   let bullets: any[] = [];
+  let bulletsStore = writable([]);
 
   $: progressWidth = Math.min((frame_counter / 300) * 100, 100);
 
@@ -192,88 +192,89 @@
   }
 
   function updateLogic() {
-  if (turn_over) return;
+    if (turn_over) return;
 
-  const activeCamerasList = get(activeCameras);
+    const activeCamerasList = get(activeCameras);
 
-  activeCamerasList.forEach((cameraIndex) => {
-    const camera = cameras[cameraIndex];
-    if (!camera) return;
+    activeCamerasList.forEach((cameraIndex) => {
+      const camera = cameras[cameraIndex];
+      if (!camera) return;
 
-    const moveDirection = new THREE.Vector3();
+      const moveDirection = new THREE.Vector3();
 
-    if (keyState.forward) moveDirection.z -= 1;
-    if (keyState.backward) moveDirection.z += 1;
-    if (keyState.left) moveDirection.x -= 1;
-    if (keyState.right) moveDirection.x += 1;
+      if (keyState.forward) moveDirection.z -= 1;
+      if (keyState.backward) moveDirection.z += 1;
+      if (keyState.left) moveDirection.x -= 1;
+      if (keyState.right) moveDirection.x += 1;
 
-    if (moveDirection.length() > 0 || isMouseDown && cooldown === 0) {
-      frame_counter += 1;
+      if (moveDirection.length() > 0 || isMouseDown && cooldown === 0) {
+        frame_counter += 1;
 
-      moveDirection.normalize().multiplyScalar(moveSpeed);
-      moveDirection.applyQuaternion(camera.quaternion);
-      moveDirection.x = truncateToDecimals(moveDirection.x, 2);
-      moveDirection.z = truncateToDecimals(moveDirection.z, 2);
+        moveDirection.normalize().multiplyScalar(moveSpeed);
+        moveDirection.applyQuaternion(camera.quaternion);
+        moveDirection.x = truncateToDecimals(moveDirection.x, 2);
+        moveDirection.z = truncateToDecimals(moveDirection.z, 2);
 
-      if (frame_counter % 3 === 0) {
-        if (cooldown > 0) {
-          cooldown -= 1;
-        }
-
-        if (frame_counter === 300) {
-          turn_over = true;
-          document.exitPointerLock();
-          console.log(moves);
-          console.log(bullets);
-          let actions = [{ action_type: 0, step: 4 }];
-          let c_moves = { characters: [cameraIndex], moves, actions };
-          move_over.set(true);
-          pending_moves.set([c_moves]);
-        }
-
-        if (isMouseDown) {
-          if (bullets.length < 5 && cooldown === 0) {
-            let cam_position = camera.getWorldPosition(worldPosition).clone();
-            cam_position.x = truncateToDecimals(cam_position.x, 2);
-            cam_position.z = truncateToDecimals(cam_position.z, 2);
-
-            cam_position.x = cam_position.x * 100;
-            cam_position.z = cam_position.z * 100;
-
-            // Calculate direction in degrees
-            let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
-            direction = Math.round((direction + 360) % 360);
-            let bullet = {
-              x: Math.round(cam_position.x),
-              y: Math.round(cam_position.z),
-              frame: frame_counter,
-              direction: direction,
-            };
-            bullets.push(bullet);
-            cooldown = 3;
+        if (frame_counter % 3 === 0) {
+          if (cooldown > 0) {
+            cooldown -= 1;
           }
+
+          if (frame_counter === 300) {
+            turn_over = true;
+            document.exitPointerLock();
+            console.log(moves);
+            console.log(bullets);
+            let actions = [{ action_type: 0, step: 4 }];
+            let c_moves = { characters: [cameraIndex], moves, actions };
+            move_over.set(true);
+            pending_moves.set([c_moves]);
+          }
+
+          if (isMouseDown) {
+            if (bullets.length < 5 && cooldown === 0) {
+              let cam_position = camera.getWorldPosition(worldPosition).clone();
+              cam_position.x = truncateToDecimals(cam_position.x, 2);
+              cam_position.z = truncateToDecimals(cam_position.z, 2);
+
+              cam_position.x = cam_position.x * 100;
+              cam_position.z = cam_position.z * 100;
+
+              // Calculate direction in degrees
+              let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
+              direction = Math.round((direction + 360) % 360);
+              let bullet = {
+                x: Math.round(cam_position.x),
+                y: Math.round(cam_position.z),
+                frame: frame_counter,
+                direction: direction,
+              };
+              bullets.push(bullet);
+              bulletsStore.update(currentBullets => [...currentBullets, bullet]);
+              cooldown = 3;
+            }
+          }
+
+          // Calculate movement since the last frame
+          let move = {
+            dx: Math.round(moveDirection.x * 100),
+            dy: Math.round(moveDirection.z * 100),
+          };
+          moves.push(move);
+
+          // Update bullets
+          // bullets.forEach((bullet: any, i: any) => {
+          //   // Update bullet position logic here
+
+          //   // Remove bullets that have traveled too far
+          //   if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
+          //     bullets.splice(i, 1);
+          //   }
+          // });
         }
-
-        // Calculate movement since the last frame
-        let move = {
-          dx: Math.round(moveDirection.x * 100),
-          dy: Math.round(moveDirection.z * 100),
-        };
-        moves.push(move);
-
-        // Update bullets
-        // bullets.forEach((bullet: any, i: any) => {
-        //   // Update bullet position logic here
-
-        //   // Remove bullets that have traveled too far
-        //   if (Math.sqrt(bullet.x ** 2 + bullet.y ** 2) > 1000) {
-        //     bullets.splice(i, 1);
-        //   }
-        // });
       }
-    }
-  });
-}
+    });
+  }
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -343,8 +344,9 @@
     />
   {/if}
 
-  <!-- Add this section to render bullets -->
-  {#each bullets as bullet (bullet.id)}
-    <Bullet x={bullet.x} y={bullet.y} direction={bullet.direction} />
+  <!-- Update this section to use the reactive store -->
+  {#each $bulletsStore as bullet}
+  
+    <Bullet x={bullet.x / 100} y={bullet.y / 100} />
   {/each}
 </World>
