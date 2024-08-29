@@ -236,7 +236,7 @@ function updateLogic() {
         document.exitPointerLock();
         console.log(moves);
         console.log(bullets);
-        let actions = [{ action_type: 0, step: 4 }];
+        let actions = [{ action_type: 0, step: 4 }]; // actions are hard coded for now
         let c_moves = { characters: get(activeCameras), moves, actions };
         if ($move_state >= 3) {
           move_over.set(true);
