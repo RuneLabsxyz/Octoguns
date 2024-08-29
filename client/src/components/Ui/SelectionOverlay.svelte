@@ -2,6 +2,7 @@
     import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords } from "src/stores";
     import { get } from 'svelte/store';
     import { derived } from 'svelte/store';
+    import { onMount } from "svelte";
 
     let selectedCameraIds: number[] = [];
     let canConfirm = false;
@@ -9,8 +10,6 @@
     // Reactive variables for grid layout
     let gridColumns = 4;
     let gridRows = 2;
-
-    $: console.log("camera_coords", $camera_coords);
 
     // Filter cameras where isOwner is true
     const ownedCameras = derived(camera_coords, $camera_coords => {

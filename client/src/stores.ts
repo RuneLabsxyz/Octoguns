@@ -23,9 +23,10 @@ export const gameStarted = writable(false);
 
 
 
-
+export const move_state = writable<any>(0);
 // Camera stores
 export const camera_coords = writable<{ id: number; coords: [number, number]; isOwner: boolean }[]>([]);
+export const submitCameras = writable([]);
 export const sideViewMode = writable(false);
 export const selectionMode = writable(true);
 export const simMode = writable(false);

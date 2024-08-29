@@ -3,19 +3,24 @@
   import { World } from "@threlte/rapier";
   import Game from "./threlte/Map.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves } from "src/stores";
+  import { submitCameras, move_state, camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves, selectionMode } from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './threlte/PointerLockControls.svelte'
   import * as THREE from 'three';
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
-
+import { derived } from "svelte/store";
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
 
+  const ownedCameras = derived(camera_coords, $camera_coords => {
+        const cameraArray = Object.values($camera_coords);
+        return cameraArray.filter(camera => camera.isOwner);
+    });
   let cameras: any = [];
   let cameraMeshes: any = [];
   let sideViewCamera: any;
+  let activeCamerasList = get(activeCameras);
   const { renderer, scene } = useThrelte();
 
   let moveSpeed = 0.5; // Speed at which cameras will move
@@ -107,11 +112,10 @@
 
     if (!isSimMode || turn_over) return;
 
-    let activeCamerasList = get(activeCameras);
     const moveVector = new THREE.Vector3();
+    $ownedCameras.forEach((cameraIndex, i) => {
+      const camera = cameras[i];
 
-    activeCamerasList.forEach((cameraIndex) => {
-      const camera = cameras[cameraIndex];
       moveVector.set(0, 0, 0);
 
       if (keyState.w) moveVector.z -= moveSpeed;
@@ -123,8 +127,8 @@
       moveVector.y = 0; // Prevent movement in the up/down direction
 
       camera.position.add(moveVector);
-      if (cameraMeshes[cameraIndex]) {
-        cameraMeshes[cameraIndex].position.copy(camera.position);
+      if (cameraMeshes[i]) {
+        cameraMeshes[i].position.copy(camera.position);
       }
     });
   }
@@ -158,13 +162,13 @@
         const col = i % gridColumns;
         const row = Math.floor(i / gridColumns);
 
-        cameras[cameraIndex].aspect = viewWidth / viewHeight;
-        cameras[cameraIndex].updateProjectionMatrix();
+        cameras[i].aspect = viewWidth / viewHeight;
+        cameras[i].updateProjectionMatrix();
 
         renderer.setScissorTest(true);
         renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
         renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
-        renderer.render(scene, cameras[cameraIndex]);
+        renderer.render(scene, cameras[i]);
       });
 
       renderer.setScissorTest(false);
@@ -194,6 +198,7 @@
 
   let globalFrameCounter = 0;
 
+
 function updateLogic() {
   if (turn_over) return;
 
@@ -201,8 +206,7 @@ function updateLogic() {
   let anyMovementOrAction = false; // Track if any movement or action occurs
 
   // Only consider the first active camera
-  const cameraIndex = activeCamerasList[0];
-  const camera = cameras[cameraIndex];
+  const camera = cameras[0];
   if (!camera) return;
 
   const moveDirection = new THREE.Vector3();
@@ -234,7 +238,15 @@ function updateLogic() {
         console.log(bullets);
         let actions = [{ action_type: 0, step: 4 }];
         let c_moves = { characters: get(activeCameras), moves, actions };
-        move_over.set(true);
+        if ($move_state >= 3) {
+          move_over.set(true);
+        } else {
+          move_state.update(state => state + 1);
+          selectionMode.set(true);
+
+        }
+
+        submitCameras.update(currentArray => [...currentArray, c_moves]);
         pending_moves.set([c_moves]);
       }
 
@@ -305,17 +317,13 @@ function updateLogic() {
 
   {#if !$sideViewMode}
     <!-- Setup 8 Cameras for Multi-Camera View -->
-    {#each Array(8) as _, i}
+    {#each $ownedCameras as camera, i}
       <T.PerspectiveCamera
-        position={[0, CAMERA_HEIGHT, 0]}
+        position={[camera.coords[0], CAMERA_HEIGHT, camera.coords[1]]}
         on:create={({ ref }) => {
           cameras[i] = ref;
-          // If initial camera coordinates are available, set position
-          if ($camera_coords[i]) {
-            const [x, y] = $camera_coords[i].coords;
-            ref.position.set(x, CAMERA_HEIGHT, y);
-            ref.lookAt(x + 1, CAMERA_HEIGHT, y);
-          }
+          console.log('Setting camera position:', camera.coords[0], camera.coords[1]);
+          ref.lookAt(camera.coords[0] + 1, CAMERA_HEIGHT, camera.coords[1]);
           // Store initial camera angles
           camera_angles.update(angles => {
             angles[i] = [ref.rotation.x, ref.rotation.y, ref.rotation.z];
@@ -326,7 +334,7 @@ function updateLogic() {
       <PointerLockControls />
       </T.PerspectiveCamera>
       <T.Mesh
-      position={$camera_coords[i] ? [...$camera_coords[i].coords.slice(0, 1), MESH_HEIGHT, ...$camera_coords[i].coords.slice(1)] : [0, MESH_HEIGHT, 0]}
+      position={[camera.coords[0], MESH_HEIGHT, camera.coords[1]]}
       rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
         on:create={({ ref }) => {
           cameraMeshes[i] = ref;
