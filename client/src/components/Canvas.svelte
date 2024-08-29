@@ -10,6 +10,7 @@
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
 import { derived } from "svelte/store";
+  import { glob } from "fs";
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
 
@@ -216,7 +217,7 @@ import { derived } from "svelte/store";
 
 function updateLogic() {
   if (turn_over) return;
-
+  if (!$simMode) return;
   const activeCamerasList = get(activeCameras);
   let anyMovementOrAction = false; // Track if any movement or action occurs
 
@@ -234,12 +235,11 @@ function updateLogic() {
   // Check if there's any movement or if the mouse is down (indicating a potential shooting action)
   if (moveDirection.length() > 0 || isMouseDown) {
     anyMovementOrAction = true;
-
+    console.log(globalFrameCounter);
     moveDirection.normalize().multiplyScalar(moveSpeed);
     moveDirection.applyQuaternion(camera.quaternion);
     moveDirection.x = truncateToDecimals(moveDirection.x, 2);
     moveDirection.z = truncateToDecimals(moveDirection.z, 2);
-
     // Record movement and other actions every 3 frames
     if (globalFrameCounter % 3 === 0) {
       if (cooldown > 0) {
@@ -258,11 +258,15 @@ function updateLogic() {
         } else {
           move_state.update(state => state + 1);
           selectionMode.set(true);
+          simMode.set(false);
+          turn_over = false;
+          globalFrameCounter = 0;
         }
 
         submitCameras.update(currentArray => [...currentArray, c_moves]);
         pending_moves.set([c_moves]);
       }
+
 
       if (isMouseDown) {
         if (bullets.length < 5 && cooldown === 0) {

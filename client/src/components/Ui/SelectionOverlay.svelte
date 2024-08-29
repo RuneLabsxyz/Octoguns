@@ -32,6 +32,7 @@
 
     function startRound() {
         simMode.set(true);
+        console.log("SIMULATIOn",$simMode)
         activeCameras.set(selectedCameraIds);
         const activeCamerasList = get(activeCameras);
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
