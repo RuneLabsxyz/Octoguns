@@ -1,6 +1,6 @@
 
-use octoguns::types::{CharacterPosition, CharacterPositionTrait, CharacterMove};
-use octoguns::models::character::{Position, Character};
+use octoguns::types::{CharacterMove};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait, Character};
 use octoguns::models::bullet::{Bullet};
 use octoguns::models::sessions::{SessionMeta};
 use starknet::{ContractAddress, get_caller_address};
@@ -40,9 +40,9 @@ fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array
         
         // Retrieve the Character and Position structs from the world
         let character = get!(world, character_id, (Character));
-        let position = get!(world, character_id, (Position));
+        let position = get!(world, character_id, (CharacterPosition));
 
-        let position = CharacterPositionTrait::new(character_id, position.x, position.y, character.steps_amount, 0 );
+    //    let position = CharacterPositionTrait::new(character_id, position, character.steps_amount, 0 );
         // Store the initial position in our array
         initial_positions.append(position);
         char_index += 1;
@@ -74,7 +74,7 @@ fn check_is_character_owner(world: IWorldDispatcher, id: u32, player: ContractAd
     character.player_id == player
 }
 
-fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: Array<CharacterPosition>, dead_characters: Array<u32>) -> (Array<CharacterPosition>, Array<u32>) {
+fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: @Array<CharacterPosition>, dead_characters: Array<u32>) -> (Array<CharacterPosition>, Array<u32>) {
     let mut filtered_positions: Array<CharacterPosition> = ArrayTrait::new();
     let mut filtered_ids: Array<u32> = ArrayTrait::new();
     let mut i = 0;
@@ -104,7 +104,7 @@ fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: 
     return (filtered_positions, filtered_ids);
 }
 
-fn extract_bullet_ids(bullets: Array<Bullet>) -> Array<u32> {
+fn extract_bullet_ids(bullets: @Array<Bullet>) -> Array<u32> {
     let mut bullet_ids: Array<u32> = ArrayTrait::new();
     let mut i = 0;
     loop {

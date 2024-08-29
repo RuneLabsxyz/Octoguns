@@ -1,4 +1,5 @@
-use octoguns::types::{Vec2, CharacterPosition, CharacterPositionTrait}; 
+use octoguns::types::{Vec2};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait}; 
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
 use starknet::ContractAddress;

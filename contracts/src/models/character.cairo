@@ -1,4 +1,5 @@
 use starknet::ContractAddress;
+use octoguns::types::Vec2;
 
 #[derive(Drop, Serde)]
 #[dojo::model]
@@ -21,6 +22,7 @@ impl CharacterImpl of CharacterTrait {
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
 pub struct CharacterPosition {
+    #[key]
     pub id: u32,
     pub coords: Vec2,
     pub max_steps: u32,
@@ -28,23 +30,8 @@ pub struct CharacterPosition {
 }
 
 #[generate_trait]
-impl PositionImpl of PositionTrait {
-    fn new(entity_id: u32, x:  u32, y:u32) -> Position {
-        Position {entity_id, x, y}
-    }
-}
-
-#[derive(Copy, Drop, Serde)]
-#[dojo::model]
-struct Health {
-    #[key]
-    pub entity_id: u32,
-    pub health: u8,
-}
-
-#[generate_trait]
-impl HealthImpl of HealthTrait {
-    fn new(entity_id: u32, health: u8) -> Health {
-        Health {entity_id, health}
+impl CharacterPositionImpl of CharacterPositionTrait {
+    fn new(id: u32, coords: Vec2, max_steps: u32, current_step: u32) -> CharacterPosition {
+        CharacterPosition {id, coords, max_steps, current_step}
     }
 }
