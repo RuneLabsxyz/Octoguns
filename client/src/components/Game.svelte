@@ -10,6 +10,7 @@
 	import { current_session_id } from 'src/stores'
 	import CharacterModel from './CharacterModel.svelte'
 	import { isYourTurn, player_number } from 'src/stores'
+	import Bullet from './Bullet.svelte'
 
 	let entity: any;
 	let session: any;
@@ -68,6 +69,7 @@
 
 <T.DirectionalLight castShadow position={[3, 10, 10]} />
 <T.AmbientLight intensity={0.2} />
+  <Bullet />
 	<CollisionGroups groups={[0, 15]}>
 	<Ground />
   </CollisionGroups>

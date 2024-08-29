@@ -50,7 +50,7 @@ impl BulletImpl of BulletTrait {
         if new.x < 100 || new.x > 10_100 || new.y < 100 || new.y > 10_100 {
             return (Option::None(()), character_id);
         }
-        let new_vec2 = Vec2 { x: new.x.try_into().unwrap(), y: new.y.try_into().unwrap() };
+        let new_vec2 = Vec2 { x: new.x.try_into().unwrap() , y: new.y.try_into().unwrap() };
         self.coords = new_vec2;
 
         (Option::Some(self), character_id)
@@ -67,13 +67,14 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            let lower_bound_x = character.coords.x - 5;
-            let upper_bound_x = character.coords.x + 5;
-            let lower_bound_y = character.coords.y - 5;
-            let upper_bound_y = character.coords.y + 5;
+            //PLUS 100 OFFSET
+            let lower_bound_x = character.coords.x + 100 - 5;
+            let upper_bound_x = character.coords.x + 100 + 5;
+            let lower_bound_y = character.coords.y + 100 - 5;
+            let upper_bound_y = character.coords.y + 100 + 5;
 
-            if self.coords.x >= lower_bound_x && self.coords.x <= upper_bound_x &&
-            self.coords.y >= lower_bound_y && self.coords.y <= upper_bound_y {
+            if self.coords.x + 100 >= lower_bound_x && self.coords.x + 100 <= upper_bound_x &&
+            self.coords.y + 100 >= lower_bound_y && self.coords.y + 100 <= upper_bound_y {
                 character_id = character.id;
                 break;        
             }

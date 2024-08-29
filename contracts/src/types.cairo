@@ -7,23 +7,21 @@ struct Vec2 {
 
 #[derive(Copy, Drop, Serde)]
 struct Action {
-    action_type: u32, // actually an angle DO NOT CHANGE 360 degrees for shooting
+    angle: u32, // 0 to 360
     step: u8,
 }
 
 #[derive(Clone, Drop, Serde)]
 struct CharacterMove {
     character_ids: Array<u32>,
-    movement: Array<Vec2>,
+    movement: Array<IVec2>,
     actions: Array<Action>,
 }
 
-#[derive(Drop, Copy)]
-pub struct CharacterPosition {
-    pub id: u32,
-    pub coords: Vec2,
-    pub max_steps: u32,
-    pub current_step: u32,
+#[derive(Copy, Drop, Serde)]
+struct IVec2 {
+    x: i32,
+    y: i32
 }
 
 #[generate_trait]
