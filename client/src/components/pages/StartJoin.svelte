@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
 	import { setupStore } from "../../main";
-	import { current_session_id } from "src/stores";
     import { derived, writable } from "svelte/store";
 
 	//TODO: Check if games are created by the current user
@@ -26,7 +25,6 @@
 		if (account) {
 			console.log("Joining session", session.value);
 			await client.start.join({ account: account, session_id: session.value });
-			current_session_id.set(session.value);
 			window.location.href = "/game";
 		} else {
 			console.error("No active account found");

@@ -1,8 +1,7 @@
 tag = "octoguns-spawn"
 writes = [
-    "octoguns-Position",
+    "octoguns-CharacterPosition",
     "octoguns-Character",
-    "octoguns-Health",
     "octoguns-Map",
     "octoguns-MapObjects",
     "octoguns-Session",

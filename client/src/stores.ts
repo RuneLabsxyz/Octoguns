@@ -13,6 +13,7 @@ export const move_over = writable<boolean>(false);
 export const pending_moves = writable<any>([]);
 export const setupStore = writable<SetupResult>();
 
+export const gameStarted = writable(false);
 
 
 

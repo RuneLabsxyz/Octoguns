@@ -6,7 +6,8 @@
     import { derived, writable } from "svelte/store";
     import { current_session_id } from "src/stores";
     import Ui from "./Ui.svelte";
-    import {move_over, pending_moves} from "src/stores";
+    import {move_over, pending_moves, gameStarted} from "src/stores";
+    import { onMount } from "svelte";
 
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
 
@@ -18,24 +19,35 @@
     );
 
     $: player = createComponentValueStore(clientComponents.Player, entity);
-
-    $: highestIndexedGameValue = $player.games.length > 0 
-        ? $player.games[$player.games.length - 1].value 
-        : undefined;
-       
-    $: current_session_id.set(highestIndexedGameValue);
-
-    const gameStarted = writable(false);
+    $: if ($player) current_session_id.set($player.games[$player.games.length - 1]?.value);
+    $: console.log("sessionId", $current_session_id)
 
     function startGame() {
         const account = burnerManager.getActiveAccount();
         if (account) {
-            client.spawn.spawn({ account: account, session_id: $current_session_id });
+            client.spawn.spawn({ account: account, session_id: 38 });
             gameStarted.set(true);
         } else {
             console.error("No active account found");
         }
     }
+
+    onMount(() => {
+        const url = new URL(window.location.href);
+        const idFromUrl = url.pathname.split('/').pop();
+        
+        if (idFromUrl && !isNaN(Number(idFromUrl))) {
+            console.log("idFromUrl", idFromUrl);
+            current_session_id.set(Number(idFromUrl));
+        } else {
+            current_session_id.subscribe(id => {
+                if (id) {
+                    const newUrl = `${url.origin}${url.pathname}/${id}`;
+                    window.history.pushState({}, '', newUrl);
+                }
+            });
+        }
+    });
 </script>
 
 <Ui />
@@ -59,7 +71,7 @@
     <button
       class="over-button"
       on:click={() => client.actions.move({account: burnerManager.account, 
-                                            session_id: 0, 
+                                            session_id: 38, 
                                             moves: $pending_moves})}
     >
       End Turn

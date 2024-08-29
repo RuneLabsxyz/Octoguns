@@ -24,15 +24,20 @@
 
     // Create stores for character and position
     $: character = entity ? createComponentValueStore(clientComponents.Character, entity) : undefined;
-    $: position = entity ? createComponentValueStore(clientComponents.Position, entity) : undefined;
+    $: position = entity ? createComponentValueStore(clientComponents.CharacterPosition, entity) : undefined;
 
     // Update camera coordinates if necessary
-    $: if ($position && $character && account) {
-        if ($character.player_id === AddressToBigInt(account.address)) {
-            camera_coords.update(coords => {
-                coords = [...coords, [$position.x / 100 - 51, $position.y / 100 - 51]];
-                return coords;
-            });
+    $: if ($position && $character) {
+        const playerPosition = {
+            x: $position.coords.x / 100 - 51,
+            y: $position.coords.y / 100 - 51
+        };
+        
+        if ($character.player_id === AddressToBigInt(account?.address)) {
+            camera_coords.update(coords => ({
+                ...coords,
+                [id]: playerPosition
+            }));
         }
     }
 
@@ -46,7 +51,7 @@
 </script>
 
 {#if $character && $position && account}
-    <T.Mesh position={[$position.x / 100 - 51, 0.5, $position.y / 100 - 51]}>
+    <T.Mesh position={[$position.coords.x / 100 - 51, 0.5, $position.coords.y / 100 - 51]}>
         <T.BoxGeometry />
         <T.MeshStandardMaterial color={$character.player_id === AddressToBigInt(account.address) ? "blue" : "red"} />
     </T.Mesh>

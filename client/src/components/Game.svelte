@@ -47,16 +47,18 @@
 	})
 
 	$: account = burnerManager.getActiveAccount();
-	$: if (AddressToBigInt(account.address) == $session.player1) {
+	$: if ($session) {if (AddressToBigInt(account.address) == $session.player1) {
 		player_number.set(1);
 	} else {
 		player_number.set(2);
-	}
-
-	$: users_turn = $session_meta.turn_count % 2
+	}}
+	let users_turn;
+	$: if(session_meta) users_turn = $session_meta.turn_count % 2
 	$: if (users_turn + 1 == $player_number) {
 		isYourTurn.set(true)
 	}
+	$: console.log($session_meta.characters)
+	$: console.log($session)
 
     function AddressToBigInt(address: string): bigint {
         if (!address.startsWith('0x')) {

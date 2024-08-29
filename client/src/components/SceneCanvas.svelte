@@ -232,7 +232,8 @@ function updateLogic() {
         console.log(moves);
         console.log(bullets);
         let actions = [{ action_type: 0, step: 4 }];
-        let c_moves = { characters: [cameraIndex], moves, actions };
+        console.log("qsdfsqdfdsqfqdsf",cameraIndex);
+        let c_moves = { characters: [40, 42, 44, 46, 48, 50, 52], moves, actions };
         move_over.set(true);
         pending_moves.set([c_moves]);
       }
@@ -279,6 +280,8 @@ function updateLogic() {
   }
 }
 
+$: console.log("qsdqsdqsdsqd", $camera_coords);
+
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -311,8 +314,8 @@ function updateLogic() {
           cameras[i] = ref;
           // If initial camera coordinates are available, set position
           if ($camera_coords[i]) {
-            ref.position.set($camera_coords[i][0], CAMERA_HEIGHT, $camera_coords[i][1]);
-            ref.lookAt($camera_coords[i][0] + 1, CAMERA_HEIGHT, $camera_coords[i][1]);
+            ref.position.set($camera_coords[i].x, CAMERA_HEIGHT, $camera_coords[i].y);
+            ref.lookAt($camera_coords[i].x + 1, CAMERA_HEIGHT, $camera_coords[i].y);
           }
           // Store initial camera angles
           camera_angles.update(angles => {
@@ -324,7 +327,7 @@ function updateLogic() {
       <PointerLockControls />
       </T.PerspectiveCamera>
       <T.Mesh
-      position={[$camera_coords[i] ? $camera_coords[i][0] : 0, MESH_HEIGHT, $camera_coords[i] ? $camera_coords[i][1] : 0]}
+      position={[$camera_coords[i] ? $camera_coords[i].x : 0, MESH_HEIGHT, $camera_coords[i] ? $camera_coords[i].y : 0]}
       rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
         on:create={({ ref }) => {
           cameraMeshes[i] = ref;

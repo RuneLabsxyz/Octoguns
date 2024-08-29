@@ -15,6 +15,7 @@
   <div>
     <Route path="/start" component={StartJoin} />
     <Route path="/game" component={GameCanvas} />
+    <Route path="/game/:id" component={GameCanvas} />
     <Route path="/"><Home /></Route>
   </div>
 </Router>
