@@ -1,13 +1,13 @@
 <script lang="ts">
   import { T, useThrelte, useFrame } from "@threlte/core";
   import { World } from "@threlte/rapier";
-  import Game from "./Game.svelte";
+  import Game from "./threlte/Map.svelte";
   import { onMount, onDestroy } from "svelte";
   import { camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves } from "src/stores";
   import { get } from 'svelte/store';
-  import PointerLockControls from './PointerLockControls.svelte'
+  import PointerLockControls from './threlte/character/PointerLockControls.svelte'
   import * as THREE from 'three';
-  import Bullet from './Bullet.svelte';  // Add this import
+  import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
 
   const CAMERA_HEIGHT = 2;

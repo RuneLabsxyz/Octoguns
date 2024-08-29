@@ -1,12 +1,12 @@
 <script lang="ts">
-	import SceneCanvas from "../../components/SceneCanvas.svelte";
+	import SceneCanvas from "../Canvas.svelte";
     import { Canvas } from "@threlte/core";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
     import { setupStore } from "src/main";
     import { derived, writable } from "svelte/store";
     import { current_session_id } from "src/stores";
-    import Ui from "./Ui.svelte";
-    import {move_over, pending_moves, gameStarted} from "src/stores";
+    import Ui from "../Ui.svelte";
+    import {move_over, pending_moves, gameStarted, } from "src/stores";
     import { onMount } from "svelte";
 
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
@@ -25,7 +25,7 @@
     function startGame() {
         const account = burnerManager.getActiveAccount();
         if (account) {
-            client.spawn.spawn({ account: account, session_id: 38 });
+            client.spawn.spawn({ account: account, session_id: $current_session_id });
             gameStarted.set(true);
         } else {
             console.error("No active account found");

@@ -2,7 +2,7 @@
 	import { Router, Link, Route } from "svelte-routing";
 	import StartJoin from "./components/pages/StartJoin.svelte";
 	import Home from "./components/pages/Home.svelte";
-	import GameCanvas from "./components/pages/GameCanvas.svelte";
+	import GameCanvas from "./components/pages/GamePage.svelte";
 	
 
 	
