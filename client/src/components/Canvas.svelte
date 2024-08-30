@@ -386,7 +386,7 @@ function updateLogic() {
                 // Update camera position and rotation
                 if (cameras[index]) {
                   cameras[index].position.set(ownedCamera.coords[0], CAMERA_HEIGHT, ownedCamera.coords[1]);
-                  cameras[index].lookAt(ownedCamera.coords[0] + 1, CAMERA_HEIGHT, ownedCamera.coords[1]);
+                  cameras[index].lookAt(0, CAMERA_HEIGHT, 0);
                 }
               }
             });
