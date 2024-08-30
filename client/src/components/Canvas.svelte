@@ -260,7 +260,6 @@ function updateLogic() {
           turn_over = false;
           globalFrameCounter = 0;
         }
-        move_over.set(true);  // TESTING
         submitCameras.update(currentArray => [...currentArray, c_moves]);
         pending_moves.set([c_moves]);
       }

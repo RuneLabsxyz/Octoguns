@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords } from "src/stores";
+    import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords, submitCameras } from "src/stores";
     import { get } from 'svelte/store';
     import { derived } from 'svelte/store';
     import { onMount } from "svelte";
@@ -18,21 +18,33 @@
     });
     $: console.log("ownedCameras", $ownedCameras);
 
+    let usedCameras: number[] = [];
+
+    $: {
+        usedCameras = [];
+        $submitCameras.forEach((item) => {
+            usedCameras = [...usedCameras, ...item.characters];
+        });
+        // Remove cameras in usedCameras from selectedCameraIds
+        selectedCameraIds = selectedCameraIds.filter(id => !usedCameras.includes(id));
+    }
+
     function toggleCamera(id: number) {
-        if (selectedCameraIds.includes(id)) {
-            selectedCameraIds = selectedCameraIds.filter(i => i !== id);
-        } else {
-            selectedCameraIds = [...selectedCameraIds, id];
+        if (!usedCameras.includes(id)) {
+            if (selectedCameraIds.includes(id)) {
+                selectedCameraIds = selectedCameraIds.filter(i => i !== id);
+            } else {
+                selectedCameraIds = [...selectedCameraIds, id];
+            }
         }
     }
     $: console.log("selection mode set to true", $selectionMode);
-
 
     $: canConfirm = selectedCameraIds.length > 0;
 
     function startRound() {
         simMode.set(true);
-        console.log("SIMULATIOn",$simMode)
+        console.log("SIMULATION", $simMode);
         activeCameras.set(selectedCameraIds);
         const activeCamerasList = get(activeCameras);
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
@@ -55,6 +67,8 @@
         gridColumns = 4;
         gridRows = 2;
     }
+
+    $: console.log("usedCameras", usedCameras);
 </script>
 
 {#if $selectionMode}
@@ -66,6 +80,7 @@
                     type="checkbox"
                     checked={selectedCameraIds.includes(camera.id)}
                     on:change={() => toggleCamera(camera.id)}
+                    disabled={usedCameras.includes(camera.id)}
                 />
                 <span class="camera-label">Camera {camera.id}</span>
                 {/if}
