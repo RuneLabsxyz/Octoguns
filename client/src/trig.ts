@@ -51,7 +51,7 @@ function fast_sin_inner(x: number): [boolean, number] {
     return [sig, y];
 }
 
-function fast_sin(x: number): number {
+export function fast_sin(x: number): number {
     let a = x;
     if (x < 0) {
         a = -x;
@@ -68,7 +68,7 @@ function fast_sin(x: number): number {
     }
 }
 
-function fast_cos(x: number): number {
+export function fast_cos(x: number): number {
     let a = x + FAST_I90;
     if (x < 0) {
         a = -x;

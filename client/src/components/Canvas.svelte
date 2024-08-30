@@ -3,7 +3,8 @@
   import { World } from "@threlte/rapier";
   import Game from "./threlte/Map.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { usedCameras, submitCameras, move_state, camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves, selectionMode } from "src/stores";
+  import { usedCameras, submitCameras, move_state, camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves, selectionMode, bulletsStore } from "src/stores";
+  import {fast_sin, fast_cos} from"src/trig"
   import type { Action, Move, C_Move} from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './threlte/PointerLockControls.svelte'
@@ -73,10 +74,10 @@
   }
 
   function updateBullet(bullet: any) {
-    let x_change = bullet.speed * fast_cos(bullet.angle * 10_000_000);
-    let y_change = bullet.speed * fast_sin(bullet.angle * 10_000_000);
-    bullet.position.x += x_change;
-    bullet.position.y += y_change;
+    let x_change: number = bullet.speed * fast_cos(bullet.angle * 10_000_000);
+    let y_change: number = bullet.speed * fast_sin(bullet.angle * 10_000_000);
+    bullet.x += x_change;
+    bullet.y += y_change;
   }
 
   function update_all_bullets(bullets: any[]) {
@@ -358,6 +359,7 @@ function updateLogic() {
         ydir: moveDirection.z >= 0,
       };
       moves.push(move);
+      update_all_bullets($bulletsStore)
 
       lockedCameras.forEach((cameraId) => {
         const submittedMove = $submitCameras.find(cMove => cMove.characters.includes(cameraId));
