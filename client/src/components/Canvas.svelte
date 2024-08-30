@@ -12,6 +12,7 @@
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
   import { derived } from "svelte/store";
+  import { OrbitControls } from "@threlte/extras";
   // import { fast_cos, fast_sin} from "src/trig.ts"
 
   const CAMERA_HEIGHT = 2;
@@ -460,14 +461,15 @@ function updateLogic() {
   {/each}
 
   {#if $sideViewMode}
-    <!-- Side View Camera -->
     <T.PerspectiveCamera
       position={[0, 100, 0]}  
       on:create={({ ref }) => {
         sideViewCamera = ref;
         ref.lookAt(0, 0, 0);  
       }}
-    />
+    >
+      <OrbitControls />
+    </T.PerspectiveCamera>
   {/if}
 
   <!-- Update this section to use the reactive store -->
