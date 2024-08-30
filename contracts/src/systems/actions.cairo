@@ -132,16 +132,16 @@ mod actions {
                             let mut new_x = 0;
                             let mut new_y = 0;
                             if movement.xdir {
-                                new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x * 5);
+                                new_x = ((character.coords.x + 100).try_into().unwrap() + movement_y                       * 2);
                             }
                             else {
-                                new_x = ((character.coords.x + 100).try_into().unwrap() - movement_x * 5);
+                                new_x = ((character.coords.x + 100).try_into().unwrap() - movement_y * 2);
                             }
                             if movement.ydir {
-                                new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y * 5);
+                                new_y = ((character.coords.y + 100).try_into().unwrap() + movement_x * 2);
                             }
                             else {
-                                new_y = ((character.coords.y + 100).try_into().unwrap() - movement_y * 5);
+                                new_y = ((character.coords.y + 100).try_into().unwrap() - movement_x * 2);
                             }
                             if new_x < 100 {
                                 new_x = 0;
