@@ -3,13 +3,14 @@
   import { World } from "@threlte/rapier";
   import Game from "./threlte/Map.svelte";
   import { onMount, onDestroy } from "svelte";
-  import { submitCameras, move_state, camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves, selectionMode } from "src/stores";
+  import { usedCameras, submitCameras, move_state, camera_coords, sideViewMode, activeCameras, simMode, camera_angles, move_over, pending_moves, selectionMode } from "src/stores";
+  import type { Action, Move, C_Move} from "src/stores";
   import { get } from 'svelte/store';
   import PointerLockControls from './threlte/PointerLockControls.svelte'
   import * as THREE from 'three';
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
-import { derived } from "svelte/store";
+  import { derived } from "svelte/store";
   import { glob } from "fs";
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
@@ -255,8 +256,8 @@ function updateLogic() {
         document.exitPointerLock();
         console.log(moves);
         console.log(bullets);
-        let actions = [{ action_type: 0, step: 4 }]; // actions are hard coded for now
-        let c_moves = { characters: get(activeCameras), moves, actions };
+        let actions: Action[] = [{ action_type: 0, step: 4 }]; // actions are hard coded for now
+        let c_moves: C_Move = { characters: get(activeCameras), moves, actions };
         if ($move_state >= 3) {
           move_over.set(true);
         } else {

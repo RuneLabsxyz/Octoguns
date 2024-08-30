@@ -27,7 +27,23 @@ export const move_state = writable<any>(0);
 // Camera stores
 export const camera_coords = writable<{ id: number; coords: [number, number]; isOwner: boolean }[]>([]);
 export const usedCameras = writable([]);
-export const submitCameras = writable([]);
+export interface Move {
+    x: number;
+    y: number;
+    xdir: boolean;
+    ydir: boolean;
+}
+
+export interface Action {
+    action_type: number;
+    step: number;
+}
+export interface C_Move {
+    characters: Number[];
+    moves: Move[];
+    actions: Action[];
+}
+export const submitCameras = writable<Move[]>([]);
 export const sideViewMode = writable(false);
 export const selectionMode = writable(true);
 export const simMode = writable(false);
