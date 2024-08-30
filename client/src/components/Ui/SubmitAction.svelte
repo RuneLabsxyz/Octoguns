@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { setupStore, move_over, current_session_id, pending_moves } from "src/stores";
+    import { submitCameras, setupStore, move_over, current_session_id, pending_moves } from "src/stores";
     import { derived } from "svelte/store";
     import { createComponentValueStore } from "src/dojo/componentValueStore";
 
@@ -20,11 +20,11 @@
     <button
       class="end-turn-button"
       on:click={() => {
-        console.log("pending moves", $pending_moves);
+        console.log("submitCameras", $submitCameras);
         const account = burnerManager.getActiveAccount();
         client.actions.move({account: account, 
                                             session_id: $current_session_id, 
-                                            moves: $pending_moves})
+                                            moves: $submitCameras})
         }}
     >
       End Turn

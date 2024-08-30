@@ -307,8 +307,11 @@ function updateLogic() {
         document.exitPointerLock();
         console.log(moves);
         console.log(bullets);
-        let actions: Action[] = [{ action_type: 0, step: 4 }]; // actions are hard coded for now*
-        let c_moves: C_Move = { characters: get(activeCameras), moves: [...moves], actions };
+        let actions: Action[] = [];
+        bullets.forEach(bullet => {
+          actions.push({  action_type: bullet.direction ,step: bullet.frame / 3 });
+        });
+        let c_moves: C_Move = { characters: get(activeCameras), moves: [...moves], actions: actions };
         if ($move_state >= 2) {
           move_over.set(true);
         } else {
@@ -318,8 +321,7 @@ function updateLogic() {
           turn_over = false;
           globalFrameCounter = 0;
         }
-        const deepCopyCMoves = JSON.parse(JSON.stringify(c_moves));
-        submitCameras.update(submittedMoves => [...submittedMoves, deepCopyCMoves]);
+        submitCameras.update(submittedMoves => [...submittedMoves, c_moves]);
         console.log("submittedMoves", $submitCameras);
         pending_moves.set([c_moves]);
         moves = [];
