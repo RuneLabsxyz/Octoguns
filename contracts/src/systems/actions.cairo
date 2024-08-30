@@ -74,6 +74,8 @@ mod actions {
                     
                     let mut character_index = 0;
                     loop {
+                        let mut character_index = 0;
+
                         if moves.len() == 0 {
                             break;
                         }
