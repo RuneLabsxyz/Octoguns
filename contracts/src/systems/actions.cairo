@@ -50,22 +50,25 @@ mod actions {
             let mut bullets = get_all_bullets(world, session_id);
 
             let mut updated_positions = ArrayTrait::new();
+            let mut agg_user_positions = user_positions.clone();
 
             // Checks working until here
 
             let mut step_count = 0;
-            while step_count < 100_u8{
+            while step_count < 99_u8{
                 println!("TURN START HIGHEST LOOP");
                 let mut c_move_index = 0;
                 moves = moves_clone.clone();
                 let mut bullet_index = 0;
+                let mut temp_user_positions = ArrayTrait::new();
+                println!("AT STEP: {}", step_count);
 
                 loop {
 
                     if moves.len() == 0 {
                         break;
                     }
-                    println!("TURN START LOOP");
+                    println!("TURN START");
                     println!("C MOVE index: {}", c_move_index);
                     let character_move = moves.pop_front().unwrap();
                     
@@ -84,7 +87,7 @@ mod actions {
                         if character_index >= character_move.character_ids.len() {
                             break;
                         }
-                        let mut character = *user_positions.at(character_index);
+                        let mut character = *agg_user_positions.at(character_index);
                         println!("Getting character id");
                         println!("Character index: {}", character_index);
 
@@ -95,6 +98,7 @@ mod actions {
                         // check character is out of moves
                         if character.current_step >= character.max_steps {
                             updated_positions.append(character);
+                            temp_user_positions.append(character);
                             character_index += 1;    
                             continue;
                         }
@@ -114,6 +118,7 @@ mod actions {
                         if !is_valid {
                             println!("Invalid move");
                             updated_positions.append(character);
+                            temp_user_positions.append(character);
                             character_index += 1;
                             continue;
                         }
@@ -127,16 +132,16 @@ mod actions {
                             let mut new_x = 0;
                             let mut new_y = 0;
                             if movement.xdir {
-                                new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x);
+                                new_x = ((character.coords.x + 100).try_into().unwrap() + movement_x * 5);
                             }
                             else {
-                                new_x = ((character.coords.x + 100).try_into().unwrap() - movement_x);
+                                new_x = ((character.coords.x + 100).try_into().unwrap() - movement_x * 5);
                             }
                             if movement.ydir {
-                                new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y);
+                                new_y = ((character.coords.y + 100).try_into().unwrap() + movement_y * 5);
                             }
                             else {
-                                new_y = ((character.coords.y + 100).try_into().unwrap() - movement_y);
+                                new_y = ((character.coords.y + 100).try_into().unwrap() - movement_y * 5);
                             }
                             if new_x < 100 {
                                 new_x = 0;
@@ -155,6 +160,7 @@ mod actions {
                             
                             
                             character.current_step += 1;
+                            temp_user_positions.append(character);
                             println!("No collision");
                             println!("Character moved");
                         }
@@ -170,12 +176,11 @@ mod actions {
     
                         println!("Bullet shot");
                     };
-
                     // Compute shot bullets
                     c_move_index += 1;
-
-                    
                 };
+                println!("Aggrete user positions");
+                agg_user_positions = temp_user_positions;
 
                 // simulate Bullets
                 let ( new_bullets, dead_characters ) = simulate_bullets(ref bullets, ref all_character_positions);
@@ -191,35 +196,36 @@ mod actions {
 
                 bullets = new_bullets;
 
-                let is_win = check_win( ref user_character_ids, ref all_character_ids);
-                if is_win == 1 {
-                    // Player 1 wins
-                    session.state = 3;
-                    break;
-                } else if is_win == 2 {
-                    // Player 2 wins
-                    session.state = 4;
-                    break;
-                }
-                
+                // let is_win = check_win( ref user_character_ids, ref all_character_ids);
+                // if is_win == 1 {
+                //     // Player 1 wins
+                //     session.state = 3;
+                //     break;
+                // } else if is_win == 2 {
+                //     // Player 2 wins
+                //     session.state = 4;
+                //     break;
+                // }
                 
 
                 step_count += 1;
             };
+
+            println!("Update teh world");
 
             let bullet_ids = extract_bullet_ids(@bullets);
             session_meta.next_turn();
             session_meta.set_new_characters(all_character_ids);
             session_meta.set_new_bullets(bullet_ids);
             let b_clone = bullets.clone();
-            let p_clone = updated_positions.clone();
+            let p_clone = agg_user_positions.clone();
 
             let mut index = 0;
             loop {
                 if index < bullets.len() {
                     set!(world, (*b_clone.at(index)));
                 }
-                if index < updated_positions.len() {
+                if index < agg_user_positions.len() {
                     set!(world, (*p_clone.at(index)));
                 }
                 if index >= bullets.len() && index>= updated_positions.len() {

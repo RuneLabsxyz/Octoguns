@@ -14,7 +14,7 @@
     // Set the repeat and wrapping for the wall texture
     wallTexture.wrapS = THREE.RepeatWrapping;
     wallTexture.wrapT = THREE.RepeatWrapping;
-    wallTexture.repeat.set(20, 20); // Adjust for the number of tiles you want
+    wallTexture.repeat.set(20, 5); // Adjust for the number of tiles you want
 </script>
 
 <T.Group position={[0, -0.5, 0]}>
