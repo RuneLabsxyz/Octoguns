@@ -183,6 +183,7 @@
   //     }
   //   });
   // }
+  let i = 0;
 
   function renderCameras() {
     const { width, height } = renderer.domElement;
@@ -321,6 +322,7 @@ function updateLogic() {
         console.log("submittedMoves", $submitCameras);
         pending_moves.set([c_moves]);
         moves = [];
+        i = 0;
       }
 
 
@@ -359,7 +361,6 @@ function updateLogic() {
 
       lockedCameras.forEach((cameraId) => {
         const submittedMove = $submitCameras.find(cMove => cMove.characters.includes(cameraId));
-        let i = 0;
         // console.log("submittedMove", submittedMove?.moves);
         if (submittedMove && i < submittedMove.moves.length) {
           const coords = submittedMove.moves[i];
@@ -371,7 +372,7 @@ function updateLogic() {
                 // Update the ownedCamera coordinates
                 ownedCamera.coords[0] += xOffset / 35;
                 ownedCamera.coords[1] += yOffset / 35;
-                
+
                 if (cameraMeshes[index]) {
                   cameraMeshes[index].position.set(ownedCamera.coords[0], MESH_HEIGHT, ownedCamera.coords[1]);
                 }
@@ -384,6 +385,7 @@ function updateLogic() {
               }
             });
           }
+          i++;
         }
       });
 
