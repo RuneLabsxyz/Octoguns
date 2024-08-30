@@ -62,7 +62,7 @@ mod actions {
 
                 loop {
 
-                    if moves.len() == 0 {
+                    if c_move_index >= moves.len() {
                         break;
                     }
                     println!("TURN START LOWEST LOOP");
@@ -162,11 +162,11 @@ mod actions {
                         }
     
                         println!("Bullet shot");
-                        c_move_index += 1;
                     };
 
                     // Compute shot bullets
-                    
+                    c_move_index += 1;
+
                     
                 };
 
