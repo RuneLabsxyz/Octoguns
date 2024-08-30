@@ -1,9 +1,7 @@
 import App from './App.svelte';
 import { dojoConfig } from "../dojoConfig.ts";
 import { setup, SetupResult } from "./dojo/setup.ts";
-import { writable } from 'svelte/store';
-
-export const setupStore = writable<SetupResult>();
+import { setupStore } from './stores.ts';
 
 async function initApp() {
 	// Update the store with the setup result
@@ -19,7 +17,6 @@ async function initApp() {
 	  target: document.body,
 	});
 
-	console.log(setupStore);
 	return app;
   }
   

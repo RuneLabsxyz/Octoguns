@@ -1,6 +1,6 @@
 
-use octoguns::types::{CharacterPosition, CharacterPositionTrait, CharacterMove};
-use octoguns::models::character::{Position, Character};
+use octoguns::types::{CharacterMove};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait, Character};
 use octoguns::models::bullet::{Bullet};
 use octoguns::models::sessions::{SessionMeta};
 use starknet::{ContractAddress, get_caller_address};
@@ -30,7 +30,6 @@ fn get_character_ids(moves: @Array<CharacterMove>) -> Array<u32> {
 
 fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array<u32>) -> Array<CharacterPosition> {
     let mut initial_positions: Array<CharacterPosition> = ArrayTrait::new();
-    let caller = get_caller_address();
 
     let mut char_index = 0;    
     loop {
@@ -41,12 +40,9 @@ fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array
         
         // Retrieve the Character and Position structs from the world
         let character = get!(world, character_id, (Character));
-        let position = get!(world, character_id, (Position));
+        let position = get!(world, character_id, (CharacterPosition));
 
-        // Validate that the caller owns this character
-        assert(character.player_id == caller, 'Not character owner');
-
-        let position = CharacterPositionTrait::new(character_id, position.x, position.y, character.steps_amount, 0 );
+    //    let position = CharacterPositionTrait::new(character_id, position, character.steps_amount, 0 );
         // Store the initial position in our array
         initial_positions.append(position);
         char_index += 1;
@@ -78,7 +74,7 @@ fn check_is_character_owner(world: IWorldDispatcher, id: u32, player: ContractAd
     character.player_id == player
 }
 
-fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: Array<CharacterPosition>, dead_characters: Array<u32>) -> (Array<CharacterPosition>, Array<u32>) {
+fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: @Array<CharacterPosition>, dead_characters: Array<u32>) -> (Array<CharacterPosition>, Array<u32>) {
     let mut filtered_positions: Array<CharacterPosition> = ArrayTrait::new();
     let mut filtered_ids: Array<u32> = ArrayTrait::new();
     let mut i = 0;
@@ -108,7 +104,7 @@ fn filter_out_dead_characters(world: IWorldDispatcher, all_character_positions: 
     return (filtered_positions, filtered_ids);
 }
 
-fn extract_bullet_ids(bullets: Array<Bullet>) -> Array<u32> {
+fn extract_bullet_ids(bullets: @Array<Bullet>) -> Array<u32> {
     let mut bullet_ids: Array<u32> = ArrayTrait::new();
     let mut i = 0;
     loop {
@@ -162,7 +158,7 @@ fn check_win(ref user_character_ids: Array<u32>, ref all_character_ids: Array<u3
 }
 
 fn check_is_valid_move(x: u32, y: u32) -> bool {
-    let max_user_speed = 10;
+    let max_user_speed: u32 = 100;
     if (x*x) + (y*y) <= max_user_speed* max_user_speed {
         return true;
     }

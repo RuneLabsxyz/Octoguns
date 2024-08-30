@@ -11,12 +11,11 @@ export function createClientComponents({
     return {
         ...contractComponents,
         Character: overridableComponent(contractComponents.Character),
-        Health: overridableComponent(contractComponents.Health),
         Map: overridableComponent(contractComponents.Map),
         MapObjects: overridableComponent(contractComponents.MapObjects),
         Session: overridableComponent(contractComponents.Session),
         SessionMeta: overridableComponent(contractComponents.SessionMeta),
-        Position: overridableComponent(contractComponents.Position),
+        CharacterPosition: overridableComponent(contractComponents.CharacterPosition),
         Bullet: overridableComponent(contractComponents.Bullet),
         Global: overridableComponent(contractComponents.Global),
         Player: overridableComponent(contractComponents.Player)

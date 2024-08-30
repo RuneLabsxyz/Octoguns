@@ -13,8 +13,17 @@ impl GlobalImpl of GlobalTrait {
     } 
 
     fn remove_session(ref self: Global, id: u32) {
-        let sessions = @self.pending_sessions;
-        //let mut new = ArrayTrait::new();
-        //todo
+        let mut new_sessions = ArrayTrait::new();
+        let mut i = 0;
+        loop {
+            if i == self.pending_sessions.len() {
+                break;
+            }
+            if *self.pending_sessions.at(i) != id {
+                new_sessions.append(*self.pending_sessions.at(i));
+            }
+            i += 1;
+        };
+        self.pending_sessions = new_sessions;
     } 
 }

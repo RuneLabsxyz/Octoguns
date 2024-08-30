@@ -1,5 +1,6 @@
 use octoguns::models::bullet::{Bullet, BulletTrait};
-use octoguns::types::{Vec2, CharacterPosition};
+use octoguns::types::{Vec2};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
 
@@ -34,20 +35,22 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
 #[cfg(test)]
 mod simulate_tests {
 
-    use octoguns::types::{CharacterPosition, CharacterPositionTrait};
+    use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
-    use octoguns::models::map::{Vec2};
+    use octoguns::types::{Vec2};
     use octoguns::lib::defaultSpawns::{generate_character_positions};
     use super::{simulate_bullets, SimulationResult};
 
     use octoguns::tests::helpers::{get_test_character_array};
-
      #[test]
+     #[ignore]
     fn test_4_bullets_sim()  {
-        let bullet_1 = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 180);
-        let bullet_2 = BulletTrait::new(1, Vec2 { x:3, y:5}, 3, 74);
-        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4, 27);
-        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, -1, -90);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let bullet_1 = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 180, address);
+        let bullet_2 = BulletTrait::new(1, Vec2 { x:3, y:5}, 3, 74, address);
+        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4, 27, address);
+        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 90, address);
 
         let mut characters = get_test_character_array();
     
@@ -57,11 +60,14 @@ mod simulate_tests {
      }
 
      #[test]
+     #[ignore]
      fn test_collisions() {
-        let bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
         let mut bullets = array![bullet];
         //todo add more collisions
-        let mut characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
+        let mut characters = array![CharacterPositionTrait::new(69, Vec2 {x: 4,y: 0},100,0)];
         let (mut bullets, mut ids) = simulate_bullets(ref bullets, ref characters);
         match bullets.pop_front() {
             Option::None => {

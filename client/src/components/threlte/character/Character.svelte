@@ -2,7 +2,7 @@
     import { T, useFrame, useThrelte } from '@threlte/core'
   import { RigidBody, CollisionGroups, Collider } from '@threlte/rapier'
   import { PerspectiveCamera, Vector2, Vector3 } from 'three'
-  import PointerLockControls from './PointerLockControls.svelte'
+  import PointerLockControls from '../PointerLockControls.svelte'
   import Gun from './Gun.svelte'
     import type { RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat'
     import { writable } from 'svelte/store'

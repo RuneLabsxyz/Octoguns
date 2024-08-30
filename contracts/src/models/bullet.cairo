@@ -1,4 +1,5 @@
-use octoguns::types::{Vec2, CharacterPosition, CharacterPositionTrait}; 
+use octoguns::types::{Vec2};
+use octoguns::models::character::{CharacterPosition, CharacterPositionTrait}; 
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
 use starknet::ContractAddress;
@@ -31,10 +32,12 @@ impl BulletImpl of BulletTrait {
 
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>) -> (Option<Bullet>, u32) {
         let position = self.coords;
-        let position_x = position.x;
-        let position_y = position.y;
+        let position_x_w_offset = position.x + 100;
+        let position_y_w_offset = position.y + 100;
         let speed = self.speed;
-        let direction = self.direction;
+        let direction: i64 = self.direction.into() * TEN_E_8;
+
+
 
         let character_id = self.compute_hits(characters);
 
@@ -42,16 +45,18 @@ impl BulletImpl of BulletTrait {
             return (Option::None(()), character_id);
         }
 
-        let x_shift = (fast_sin(direction.into()) * speed.into()) / TEN_E_8;
-        let y_shift = (fast_cos(direction.into()) * speed.into()) / TEN_E_8;
+        let x_shift = (fast_sin(direction) * speed.into()) / TEN_E_8;
+        let y_shift = (fast_cos(direction) * speed.into()) / TEN_E_8;
 
-        let new = Vec2_i64 { x: position_x.into() + x_shift, y: position_y.into() + y_shift};
+        let new = Vec2_i64 { x: position_x_w_offset.into() + x_shift, y: position_y_w_offset.into() + y_shift};
 
+        println!("new position with offset: {} {}", new.x, new.y );
         if new.x < 100 || new.x > 10_100 || new.y < 100 || new.y > 10_100 {
             return (Option::None(()), character_id);
         }
-        let new_vec2 = Vec2 { x: new.x.try_into().unwrap(), y: new.y.try_into().unwrap() };
+        let new_vec2 = Vec2 { x: new.x.try_into().unwrap() - 100 , y: new.y.try_into().unwrap() - 100 };
         self.coords = new_vec2;
+        println!("new position: {} {}", new_vec2.x, new_vec2.y);
 
         (Option::Some(self), character_id)
     }
@@ -67,13 +72,14 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            let lower_bound_x = character.coords.x - 5;
-            let upper_bound_x = character.coords.x + 5;
-            let lower_bound_y = character.coords.y - 5;
-            let upper_bound_y = character.coords.y + 5;
+            //PLUS 100 OFFSET
+            let lower_bound_x = character.coords.x + 100 - 5;
+            let upper_bound_x = character.coords.x + 100 + 5;
+            let lower_bound_y = character.coords.y + 100 - 5;
+            let upper_bound_y = character.coords.y + 100 + 5;
 
-            if self.coords.x >= lower_bound_x && self.coords.x <= upper_bound_x &&
-            self.coords.y >= lower_bound_y && self.coords.y <= upper_bound_y {
+            if (self.coords.x + 100 >= lower_bound_x && self.coords.x + 100 <= upper_bound_x &&
+            self.coords.y + 100 >= lower_bound_y && self.coords.y + 100 <= upper_bound_y) {
                 character_id = character.id;
                 break;        
             }
@@ -91,14 +97,16 @@ impl BulletImpl of BulletTrait {
 #[cfg(test)]
 mod simulate_tests {
 
-    use octoguns::types::{CharacterPosition, CharacterPositionTrait};
+    use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};
 
     #[test]
    fn test_bullet_sim_y_only()  {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0);
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:323, y:0}, 1, 0, address);
         let characters = get_test_character_array();
         let (res, id) = bullet.simulate(@characters);
         match res {
@@ -107,14 +115,16 @@ mod simulate_tests {
             },
             Option::Some(bullet) => {
                 assert!(bullet.coords.y == 1, "y should have changed");
-                assert!(bullet.coords.x == 3, "x should not have changed")
+                assert!(bullet.coords.x == 323, "x should not have changed")
             }
         }
     }
 
     #[test]
     fn test_bullet_sim_x_only()  {
-         let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 90 * 100_000_000);
+        let address = starknet::contract_address_const::<0x0>();
+
+         let mut bullet = BulletTrait::new(1, Vec2 { x:753, y:0}, 1, 90, address);
          let characters = get_test_character_array();
          let (res, id) = bullet.simulate(@characters);
          match res {
@@ -123,7 +133,7 @@ mod simulate_tests {
              },
              Option::Some(bullet) => {
                 println!("x: {}, y: {}", bullet.coords.x, bullet.coords.y);
-                 assert!(bullet.coords.x == 4, "x should have changed");
+                 assert!(bullet.coords.x == 754, "x should have changed");
                  assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }
@@ -132,8 +142,10 @@ mod simulate_tests {
 
      #[test]
      fn test_collision() {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0);
-        let characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
+        let characters = array![CharacterPositionTrait::new(69, Vec2 {x: 4, y: 0},100,0)];
         let (res, id) = bullet.simulate(@characters);
         match res {
             Option::None => {
@@ -147,8 +159,10 @@ mod simulate_tests {
      #[test]
      #[should_panic]
      fn test_collision_fail() {
-        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 1, 0);
-        let characters = array![CharacterPositionTrait::new(69,4,0,100,0)];
+        let address = starknet::contract_address_const::<0x0>();
+
+        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 1, 0, address);
+        let characters = array![CharacterPositionTrait::new(69,Vec2 {x: 4,y: 0},100,0)];
         let (res, id) = bullet.simulate( @characters);
         match res {
             Option::None => {

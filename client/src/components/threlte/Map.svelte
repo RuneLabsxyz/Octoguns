@@ -5,11 +5,12 @@
 	import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three'
 	import Ground from './Ground.svelte'
 	import { derived } from 'svelte/store'
-	import { setupStore } from 'src/main'
+	import { setupStore } from 'src/stores'
 	import { createComponentValueStore } from 'src/dojo/componentValueStore'
 	import { current_session_id } from 'src/stores'
 	import CharacterModel from './CharacterModel.svelte'
-	import { isYourTurn, player_number } from 'src/stores'
+	import { isYourTurn, player_number, gameStarted, current_session} from 'src/stores'
+	import Bullet from './Bullet.svelte'
 
 	let entity: any;
 	let session: any;
@@ -26,7 +27,8 @@
 
 	$: if (current_session_id) session = createComponentValueStore(clientComponents.Session, entity);
 	$: if (current_session_id) session_meta = createComponentValueStore(clientComponents.SessionMeta, entity);
-
+	$: if (session_meta) current_session.set($session_meta);
+	$: if ($session.state >= 2 ) gameStarted.set(true); 
 
 	let playerMesh: Mesh
 	let positionHasBeenSet = false
@@ -46,16 +48,18 @@
 	})
 
 	$: account = burnerManager.getActiveAccount();
-	$: if (AddressToBigInt(account.address) == $session.player1) {
+	$: if ($session) {if (AddressToBigInt(account.address) == $session.player1) {
 		player_number.set(1);
 	} else {
 		player_number.set(2);
-	}
-
-	$: users_turn = $session_meta.turn_count % 2
-	$: if (users_turn + 1 == $player_number) {
+	}}
+	let users_turn: number;
+	$: if(session_meta) users_turn = $session_meta.turn_count % 2
+	$: if ((users_turn === 0 && $player_number === 2) || (users_turn === 1 && $player_number === 1)) {
 		isYourTurn.set(true)
 	}
+	$: console.log($session_meta.characters)
+	$: console.log($session)
 
     function AddressToBigInt(address: string): bigint {
         if (!address.startsWith('0x')) {
@@ -63,45 +67,13 @@
         }
         return BigInt(address);
     }
-  </script>
+</script>
 
 
 <T.DirectionalLight castShadow position={[3, 10, 10]} />
 <T.AmbientLight intensity={0.2} />
 	<CollisionGroups groups={[0, 15]}>
 	<Ground />
-  </CollisionGroups>
-  <CollisionGroups groups={[0]}>
-	<!-- <Character
-	  bind:playerMesh
-	  position={[0, 2, 3]}
-	/> -->
-	<AutoColliders shape={'cuboid'}>
-	  <T.Mesh
-		receiveShadow
-		castShadow
-		position.x={30 + 0.7 + 0.15}
-		position.y={1.275}
-		geometry={new BoxGeometry(60, 2.55, 0.15)}
-		material={new MeshStandardMaterial({
-		  transparent: true,
-		  opacity: 0.5,
-		  color: 0x333333
-		})}
-	  />
-	  <T.Mesh
-		receiveShadow
-		castShadow
-		position.x={-30 - 0.7 - 0.15}
-		position.y={1.275}
-		geometry={new BoxGeometry(60, 2.55, 0.15)}
-		material={new MeshStandardMaterial({
-		  transparent: true,
-		  opacity: 0.5,
-		  color: 0x333333
-		})}
-	  />
-	</AutoColliders>
   </CollisionGroups>
 
   {#if $session_meta}

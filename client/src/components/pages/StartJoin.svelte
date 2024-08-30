@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { createComponentValueStore } from "../../dojo/componentValueStore";
-	import { setupStore } from "../../main";
-	import { current_session_id } from "src/stores";
+	import { setupStore } from "src/stores";
     import { derived, writable } from "svelte/store";
-
-	//TODO: Check if games are created by the current user
-	//TODO: route if the user creates or
-
-	//TODO: Check if games are created by the current user
-	//TODO: route if the user creates or
+	import { onMount } from 'svelte';
+	import { availableSessions, mySessions } from "src/stores";
+  import { copyFileSync, cp } from "fs";
 
 	$: ({ clientComponents, torii, burnerManager, client } = $setupStore);
+
+	$: account = burnerManager.getActiveAccount();
 
 	$: entity = derived(setupStore, ($store) =>
 		$store
@@ -18,15 +16,35 @@
 		: undefined
 	);
 
-	$: global = createComponentValueStore(clientComponents.Global, entity);
+	$: entity2 = derived(setupStore, ($store) =>
+		$store
+		? torii.poseidonHash([account?.address])
+		: undefined
+	);
 
+	$: global = createComponentValueStore(clientComponents.Global, entity);
+	$: player = createComponentValueStore(clientComponents.Player, entity2);
+
+	$: console.log("Player", $player);
+	$: console.log('global', $global)
+
+	$: if ($global && $player) {
+		console.log("pllayer", $player)
+		let playerGames = new Set($player.games.map(game => game.value));
+		availableSessions.set($global.pending_sessions.filter(session => !playerGames.has(session.value)));
+		mySessions.set($global.pending_sessions.filter(session => playerGames.has(session.value)));
+	}
+
+	$: if ($global && $player === undefined) {
+		$availableSessions = $global.pending_sessions;
+	}
+
+	$: console.log("Available sessions", $mySessions);
 	// Add this function to handle joining a session
 	async function joinSession(session) {
-		const account = burnerManager.getActiveAccount();
 		if (account) {
 			console.log("Joining session", session.value);
 			await client.start.join({ account: account, session_id: session.value });
-			current_session_id.set(session.value);
 			window.location.href = "/game";
 		} else {
 			console.error("No active account found");
@@ -43,7 +61,7 @@
   
 	<div class="session-list">
 		{#if $global}
-	  {#each $global.pending_sessions.slice().reverse() as session}
+	  {#each $availableSessions.slice().reverse() as session}
 		  <div class="session-item">
 			  <p>{session.value}</p>
 			  <button on:click={() => joinSession(session)}>Join</button>
