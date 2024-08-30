@@ -69,7 +69,11 @@ mod actions {
                     println!("C MOVE index: {}", c_move_index);
                     let character_move = moves.pop_front().unwrap();
                     
-                    let mut next_bullet_shot = *character_move.actions.at(bullet_index);
+                    let mut next_bullet_shot = *character_move.actions.at(0);
+
+                    if bullet_index < character_move.actions.len() {
+                        next_bullet_shot = *character_move.actions.at(bullet_index);
+                    }
 
 
                     
