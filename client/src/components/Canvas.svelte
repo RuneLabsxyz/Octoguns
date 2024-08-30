@@ -72,8 +72,8 @@
   }
 
   function updateBullet(bullet: any) {
-    let x_change: number = fast_cos(((bullet.direction + 180) % 360) * 10_000_000) / 10**8;
-    let y_change: number = fast_sin(((bullet.direction + 180) % 360) * 10_000_000) / 10**8;
+    let y_change: number = Math.cos(bullet.direction * (Math.PI / 180));
+    let x_change: number = Math.sin(bullet.direction * (Math.PI / 180));
     bullet.x += x_change;
     bullet.y += y_change;
     return bullet;
@@ -339,6 +339,7 @@ function updateLogic() {
           // Calculate direction in degrees
           let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
           direction = Math.round((direction + 360) % 360);
+          console.log("direction", direction);
           let bullet = {
             x: cam_position.x,
             y: cam_position.z,
