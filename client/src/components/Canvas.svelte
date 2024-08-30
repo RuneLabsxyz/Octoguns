@@ -12,22 +12,38 @@
   import { writable } from 'svelte/store';
   import { derived } from "svelte/store";
   import { glob } from "fs";
-  import { fast_cos, fast_sin} from "src/trig.ts"
+  import { move } from "src/dojo/createSystemCalls";
+  // import { fast_cos, fast_sin} from "src/trig.ts"
 
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
+  let lockedCameras: number[] = [];
 
   const ownedCameras = derived(camera_coords, $camera_coords => {
         const cameraArray = Object.values($camera_coords);
         return cameraArray.filter(camera => camera.isOwner);
     });
+
+  $: if ($submitCameras && globalFrameCounter) {
+    lockedCameras = []; // Reset lockedCameras before updating
+    $ownedCameras.forEach(camera => {
+        const submittedMove = $submitCameras.find(cMove => cMove.characters.includes(camera.id));
+        if (submittedMove) {
+            lockedCameras = [...lockedCameras, camera.id]; // Use spread operator to create a new array
+        }
+    });
+  }
+
+  $: console.log("submitCameras", $submitCameras);
+
+
   let cameras: any = [];
   let cameraMeshes: any = [];
   let sideViewCamera: any;
   let activeCamerasList = get(activeCameras);
   const { renderer, scene } = useThrelte();
 
-  let moveSpeed = 0.5; // Speed at which cameras will move
+  let moveSpeed = 0.2; // Speed at which cameras will move
 
   const keyState = {
     w: false,
@@ -142,31 +158,31 @@
   }
 
 
-  function moveCameras() {
-    const isSimMode = get(simMode);
+  // function moveCameras() {
+  //   const isSimMode = get(simMode);
 
-    if (!isSimMode || turn_over) return;
+  //   if (!isSimMode || turn_over) return;
 
-    const moveVector = new THREE.Vector3();
-    $activeCameras.forEach((cameraIndex, i) => {
-      const camera = cameras[matchingIndices[i]];
+  //   const moveVector = new THREE.Vector3();
+  //   $activeCameras.forEach((cameraIndex, i) => {
+  //     const camera = cameras[matchingIndices[i]];
 
-      moveVector.set(0, 0, 0);
+  //     moveVector.set(0, 0, 0);
 
-      if (keyState.w) moveVector.z -= moveSpeed;
-      if (keyState.s) moveVector.z += moveSpeed;
-      if (keyState.a) moveVector.x -= moveSpeed;
-      if (keyState.d) moveVector.x += moveSpeed;
+  //     if (keyState.w) moveVector.z -= moveSpeed;
+  //     if (keyState.s) moveVector.z += moveSpeed;
+  //     if (keyState.a) moveVector.x -= moveSpeed;
+  //     if (keyState.d) moveVector.x += moveSpeed;
 
-      moveVector.applyQuaternion(camera.quaternion); // Apply camera's rotation to the movement vector
-      moveVector.y = 0; // Prevent movement in the up/down direction
+  //     moveVector.applyQuaternion(camera.quaternion); // Apply camera's rotation to the movement vector
+  //     moveVector.y = 0; // Prevent movement in the up/down direction
 
-      camera.position.add(moveVector);
-      if (cameraMeshes[i]) {
-        cameraMeshes[i].position.copy(camera.position);
-      }
-    });
-  }
+  //     camera.position.add(moveVector);
+  //     if (cameraMeshes[matchingIndices[i]]) {
+  //       cameraMeshes[matchingIndices[i]].position.copy(camera.position);
+  //     }
+  //   });
+  // }
 
   function renderCameras() {
     const { width, height } = renderer.domElement;
@@ -174,7 +190,7 @@
     const isSimMode = get(simMode);
     const activeCamerasList = get(activeCameras);
 
-    moveCameras(); // Update camera positions based on controls
+    // moveCameras(); // Update camera positions based on controls
 
     if (isSideViewMode) {
       // Render side view mode
@@ -247,7 +263,7 @@ function updateLogic() {
   let anyMovementOrAction = false; // Track if any movement or action occurs
 
   // Only consider the first active camera
-  const camera = cameras[0];
+  const camera = cameras[matchingIndices[0]];
   if (!camera) return;
 
   const moveDirection = new THREE.Vector3();
@@ -264,6 +280,20 @@ function updateLogic() {
     moveDirection.applyQuaternion(camera.quaternion);
     moveDirection.x = truncateToDecimals(moveDirection.x, 2);
     moveDirection.z = truncateToDecimals(moveDirection.z, 2);
+    moveDirection.y = 0;
+
+    $activeCameras.forEach((activeCamera, i) => {
+      const camera = cameras[matchingIndices[i]];
+
+      // Update the camera's position by adding the move vector to the current position
+      camera.position.add(moveDirection);
+
+      if (cameraMeshes[matchingIndices[i]]) {
+        cameraMeshes[matchingIndices[i]].position.copy(camera.position);
+      }
+    });
+
+
     // Record movement and other actions every 3 frames
     if (globalFrameCounter % 3 === 0) {
       if (cooldown > 0) {
@@ -275,8 +305,8 @@ function updateLogic() {
         document.exitPointerLock();
         console.log(moves);
         console.log(bullets);
-        let actions: Action[] = [{ action_type: 0, step: 4 }]; // actions are hard coded for now
-        let c_moves: C_Move = { characters: get(activeCameras), moves, actions };
+        let actions: Action[] = [{ action_type: 0, step: 4 }]; // actions are hard coded for now*
+        let c_moves: C_Move = { characters: get(activeCameras), moves: [...moves], actions };
         if ($move_state >= 3) {
           move_over.set(true);
         } else {
@@ -286,8 +316,11 @@ function updateLogic() {
           turn_over = false;
           globalFrameCounter = 0;
         }
-        submitCameras.update(currentArray => [...currentArray, c_moves]);
+        const deepCopyCMoves = JSON.parse(JSON.stringify(c_moves));
+        submitCameras.update(submittedMoves => [...submittedMoves, deepCopyCMoves]);
+        console.log("submittedMoves", $submitCameras);
         pending_moves.set([c_moves]);
+        moves = [];
       }
 
 
@@ -323,6 +356,36 @@ function updateLogic() {
         ydir: moveDirection.z >= 0,
       };
       moves.push(move);
+
+      lockedCameras.forEach((cameraId) => {
+        const submittedMove = $submitCameras.find(cMove => cMove.characters.includes(cameraId));
+        let i = 0;
+        // console.log("submittedMove", submittedMove?.moves);
+        if (submittedMove && i < submittedMove.moves.length) {
+          const coords = submittedMove.moves[i];
+          if (coords) {
+            $ownedCameras.forEach((ownedCamera, index) => {
+              if (ownedCamera.id === cameraId) {
+                const xOffset = coords.xdir ? coords.x  : -coords.x;
+                const yOffset = coords.ydir ? coords.y  : -coords.y;
+                // Update the ownedCamera coordinates
+                ownedCamera.coords[0] += xOffset / 35;
+                ownedCamera.coords[1] += yOffset / 35;
+                
+                if (cameraMeshes[index]) {
+                  cameraMeshes[index].position.set(ownedCamera.coords[0], MESH_HEIGHT, ownedCamera.coords[1]);
+                }
+
+                // Update camera position and rotation
+                if (cameras[index]) {
+                  cameras[index].position.set(ownedCamera.coords[0], CAMERA_HEIGHT, ownedCamera.coords[1]);
+                  cameras[index].lookAt(ownedCamera.coords[0] + 1, CAMERA_HEIGHT, ownedCamera.coords[1]);
+                }
+              }
+            });
+          }
+        }
+      });
 
       // Reset moveDirection for the next frame
       moveDirection.set(0, 0, 0);
@@ -373,21 +436,23 @@ function updateLogic() {
           });
         }}
       >
-      <PointerLockControls />
+        <PointerLockControls />
       </T.PerspectiveCamera>
-      {/if}
+    {/if}
+  
 
-      <T.Mesh
+    <T.Mesh
       position={[camera.coords[0], MESH_HEIGHT, camera.coords[1]]}
       rotation={cameras[i] ? cameras[i].rotation : [0, 0, 0]}
-        on:create={({ ref }) => {
-          cameraMeshes[i] = ref;
-        }}
-      >
-        <T.BoxGeometry args={[1, 1, 1]} />
-        <T.MeshBasicMaterial color="#00ff00" />
-      </T.Mesh>
-    {/each}
+      on:create={({ ref }) => {
+        cameraMeshes[i] = ref;
+      }}
+    >
+      <T.BoxGeometry args={[1, 1, 1]} />
+      <T.MeshBasicMaterial color="#00ff00" />
+    </T.Mesh>
+
+  {/each}
 
   {#if $sideViewMode}
     <!-- Side View Camera -->

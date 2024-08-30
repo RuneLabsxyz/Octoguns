@@ -43,7 +43,7 @@ export interface C_Move {
     moves: Move[];
     actions: Action[];
 }
-export const submitCameras = writable<Move[]>([]);
+export const submitCameras = writable<C_Move[]>([]);
 export const sideViewMode = writable(false);
 export const selectionMode = writable(true);
 export const simMode = writable(false);
