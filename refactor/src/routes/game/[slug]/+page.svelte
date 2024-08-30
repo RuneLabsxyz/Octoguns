@@ -3,6 +3,9 @@
     import Canvas from '$lib/3d/canvas.svelte';
 </script>
 
-
-<Ui />
-<Canvas />
+<div class="absolute h-full w-full z-10">
+    <Ui />  
+</div>
+<div class="absolute h-full w-full">
+    <Canvas />
+</div>

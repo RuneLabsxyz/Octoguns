@@ -3,7 +3,7 @@
     import Ground from './map/ground.svelte';
   
 </script>
-CANVAS
+
 <Canvas>
     <Ground />
 </Canvas>
