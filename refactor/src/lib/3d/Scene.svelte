@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Canvas } from '@threlte/core';
+    import { T } from '@threlte/core';
     import Map from './Map.svelte';
     import Cameras from './Cameras.svelte';
 </script>
 
-<Canvas>
+<T.Group>
     <Map />
     <Cameras />
-</Canvas>
+</T.Group>
