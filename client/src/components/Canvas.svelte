@@ -327,29 +327,30 @@ function updateLogic() {
       }
 
 
-      if (isMouseDown) {
-        if (bullets.length < 5 && cooldown === 0) {
-          let cam_position = camera.getWorldPosition(worldPosition).clone();
-          cam_position.x = truncateToDecimals(cam_position.x, 2);
-          cam_position.z = truncateToDecimals(cam_position.z, 2);
-
-          cam_position.x = cam_position.x * 100;
-          cam_position.z = cam_position.z * 100;
-
-          // Calculate direction in degrees
-          let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
-          direction = Math.round((direction + 360) % 360);
-          let bullet = {
-            x: Math.round(cam_position.x),
-            y: Math.round(cam_position.z),
-            frame: globalFrameCounter,
-            direction: direction,
-          };
-          bullets.push(bullet);
-          bulletsStore.update(currentBullets => [...currentBullets, bullet]);
-          cooldown = 3;
-        }
-      }
+      if (bullets.length < 3 && cooldown === 0) {
+          $activeCameras.forEach((cameraIndex, i) => {
+     
+            const camera: any = $activeCameras[matchingIndices[i]];
+        
+            let cam_position = camera.getWorldPosition(worldPosition).clone();
+            cam_position.x = truncateToDecimals(cam_position.x, 2);
+            cam_position.z = truncateToDecimals(cam_position.z, 2);
+            cam_position.x = cam_position.x * 100;
+            cam_position.z = cam_position.z * 100;
+            // Calculate direction in degrees
+            let direction = Math.atan2(cam_position.x, cam_position.z) * (180 / Math.PI);
+            direction = Math.round((direction + 360) % 360);
+            let bullet = {
+              x: Math.round(cam_position.x+100),
+              y: Math.round(cam_position.z*100),
+              frame: globalFrameCounter,
+              direction: direction,
+            };
+            console.log(bullet);
+            bullets.push(bullet);
+            bulletsStore.update(currentBullets => [...currentBullets, bullet]);
+            cooldown = 3;
+        })
 
       // Calculate movement since the last frame
       let move = {

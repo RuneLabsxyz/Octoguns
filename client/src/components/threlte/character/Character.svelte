@@ -198,10 +198,6 @@
   on:mouseup={handleMouseUp}
 />
 
-<div class="progress-container">
-  <div class="progress-bar" style="width: {progressWidth}%"></div>
-</div>
-
 {#if turn_over}
   <div class="over-container">
     <button
