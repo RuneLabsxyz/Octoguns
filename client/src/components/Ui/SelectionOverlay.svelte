@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords } from "src/stores";
+    import { selectionMode, isYourTurn, simMode, activeCameras, camera_coords, submitCameras, usedCameras } from "src/stores";
     import { get } from 'svelte/store';
     import { derived } from 'svelte/store';
     import { onMount } from "svelte";
@@ -18,21 +18,30 @@
     });
     $: console.log("ownedCameras", $ownedCameras);
 
+    $: {
+        $submitCameras.forEach((item) => {
+            usedCameras.update(cameras => [...cameras, ...item.characters]);
+        });
+        // Remove cameras in usedCameras from selectedCameraIds
+        selectedCameraIds = selectedCameraIds.filter(id => !$usedCameras.includes(id));
+    }
+
     function toggleCamera(id: number) {
-        if (selectedCameraIds.includes(id)) {
-            selectedCameraIds = selectedCameraIds.filter(i => i !== id);
-        } else {
-            selectedCameraIds = [...selectedCameraIds, id];
+        if (!$usedCameras.includes(id)) {
+            if (selectedCameraIds.includes(id)) {
+                selectedCameraIds = selectedCameraIds.filter(i => i !== id);
+            } else {
+                selectedCameraIds = [...selectedCameraIds, id];
+            }
         }
     }
     $: console.log("selection mode set to true", $selectionMode);
-
 
     $: canConfirm = selectedCameraIds.length > 0;
 
     function startRound() {
         simMode.set(true);
-        console.log("SIMULATIOn",$simMode)
+        console.log("SIMULATION", $simMode);
         activeCameras.set(selectedCameraIds);
         const activeCamerasList = get(activeCameras);
         gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
@@ -41,7 +50,7 @@
         // Pointer lock the cursor
         const canvas = document.querySelector('canvas');
         if (canvas) {
-            canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+            canvas.requestPointerLock = canvas.requestPointerLock || (canvas as any).mozRequestPointerLock;
             canvas.requestPointerLock();
         }
     }
@@ -55,6 +64,8 @@
         gridColumns = 4;
         gridRows = 2;
     }
+
+    $: console.log("usedCameras", $usedCameras);
 </script>
 
 {#if $selectionMode}
@@ -66,6 +77,7 @@
                     type="checkbox"
                     checked={selectedCameraIds.includes(camera.id)}
                     on:change={() => toggleCamera(camera.id)}
+                    disabled={$usedCameras.includes(camera.id)}
                 />
                 <span class="camera-label">Camera {camera.id}</span>
                 {/if}
