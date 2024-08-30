@@ -62,7 +62,7 @@ mod actions {
 
                 loop {
 
-                    if c_move_index >= moves.len() {
+                    if moves.len() == 0 {
                         break;
                     }
                     println!("TURN START LOWEST LOOP");
@@ -74,9 +74,9 @@ mod actions {
                     
                     let mut character_index = 0;
                     loop {
-                        let mut character_index = 0;
 
-                        if moves.len() == 0 {
+                        
+                        if character_index >= user_positions.len() {
                             break;
                         }
                         let mut character = *user_positions.at(character_index);
