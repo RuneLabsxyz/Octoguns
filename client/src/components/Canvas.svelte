@@ -170,19 +170,22 @@ import { derived } from "svelte/store";
       // Render only active cameras in sim mode
       const gridColumns = Math.ceil(Math.sqrt(activeCamerasList.length));
       const gridRows = Math.ceil(activeCamerasList.length / gridColumns);
-      const viewWidth = width / gridColumns;
-      const viewHeight = height / gridRows;
+      const viewWidth = Math.floor(width / gridColumns);
+      const viewHeight = Math.floor(height / gridRows);
 
-      $activeCameras.forEach((cameraIndex, i) => {
+      activeCamerasList.forEach((cameraIndex, i) => {
         const camera = cameras[matchingIndices[i]];
         const col = i % gridColumns;
         const row = Math.floor(i / gridColumns);
         camera.aspect = viewWidth / viewHeight;
         camera.updateProjectionMatrix();
 
+        const x = col * viewWidth;
+        const y = height - (row + 1) * viewHeight; // Invert Y-axis to start from bottom
+
         renderer.setScissorTest(true);
-        renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
-        renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.setViewport(x, y, viewWidth, viewHeight);
+        renderer.setScissor(x, y, viewWidth, viewHeight);
         renderer.render(scene, camera);
       });
 
@@ -191,8 +194,8 @@ import { derived } from "svelte/store";
       // Render multi-camera view
       const gridColumns = 4;
       const gridRows = 2;
-      const viewWidth = width / gridColumns;
-      const viewHeight = height / gridRows;
+      const viewWidth = Math.floor(width / gridColumns);
+      const viewHeight = Math.floor(height / gridRows);
 
       for (let i = 0; i < cameras.length; i++) {
         const col = i % gridColumns;
@@ -201,9 +204,12 @@ import { derived } from "svelte/store";
         cameras[i].aspect = viewWidth / viewHeight;
         cameras[i].updateProjectionMatrix();
 
+        const x = col * viewWidth;
+        const y = height - (row + 1) * viewHeight; // Invert Y-axis to start from bottom
+
         renderer.setScissorTest(true);
-        renderer.setViewport(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
-        renderer.setScissor(col * viewWidth, row * viewHeight, viewWidth, viewHeight);
+        renderer.setViewport(x, y, viewWidth, viewHeight);
+        renderer.setScissor(x, y, viewWidth, viewHeight);
         renderer.render(scene, cameras[i]);
       }
 
@@ -335,7 +341,6 @@ function updateLogic() {
     <!-- Setup 8 Cameras for Multi-Camera View -->
     {#each $ownedCameras as camera, i}
     {#if !$sideViewMode}
-
       <T.PerspectiveCamera
         position={[camera.coords[0], CAMERA_HEIGHT, camera.coords[1]]}
         on:create={({ ref }) => {
