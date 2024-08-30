@@ -1,5 +1,8 @@
 <script lang="ts">
-    import { T } from '@threlte/core';
+    import { T, useFrame } from '@threlte/core';
+
+    // This let's light load on mount
+    useFrame(() => {});
 </script>
 
 <T.Group>
