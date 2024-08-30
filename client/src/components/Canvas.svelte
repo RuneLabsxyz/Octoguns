@@ -12,8 +12,7 @@
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
   import { derived } from "svelte/store";
-  import { glob } from "fs";
-  import { move } from "src/dojo/createSystemCalls";
+  import { OrbitControls } from "@threlte/extras";
   // import { fast_cos, fast_sin} from "src/trig.ts"
 
   const CAMERA_HEIGHT = 2;
@@ -74,18 +73,19 @@
   }
 
   function updateBullet(bullet: any) {
-    let x_change: number = bullet.speed * fast_cos(bullet.angle * 10_000_000);
-    let y_change: number = bullet.speed * fast_sin(bullet.angle * 10_000_000);
+    let y_change: number = Math.cos(bullet.direction * (Math.PI / 180));
+    let x_change: number = Math.sin(bullet.direction * (Math.PI / 180));
     bullet.x += x_change;
     bullet.y += y_change;
+    return bullet;
   }
 
   function update_all_bullets(bullets: any[]) {
     let new_bullets = []
     for (let i = 0; i<bullets.length; i++) {
       let bullet = bullets[i];
-      updateBullet(bullet);
-      new_bullets.push(bullet);
+      let new_bullet = updateBullet(bullet);
+      new_bullets.push(new_bullet);
       bulletsStore.set(new_bullets);
     }
   }
@@ -327,30 +327,31 @@ function updateLogic() {
       }
 
 
-      if (bullets.length < 3 && cooldown === 0) {
-          $activeCameras.forEach((cameraIndex, i) => {
-     
-            const camera: any = $activeCameras[matchingIndices[i]];
-        
-            let cam_position = camera.getWorldPosition(worldPosition).clone();
-            cam_position.x = truncateToDecimals(cam_position.x, 2);
-            cam_position.z = truncateToDecimals(cam_position.z, 2);
-            cam_position.x = cam_position.x * 100;
-            cam_position.z = cam_position.z * 100;
-            // Calculate direction in degrees
-            let direction = Math.atan2(cam_position.x, cam_position.z) * (180 / Math.PI);
-            direction = Math.round((direction + 360) % 360);
-            let bullet = {
-              x: Math.round(cam_position.x+100),
-              y: Math.round(cam_position.z*100),
-              frame: globalFrameCounter,
-              direction: direction,
-            };
-            console.log(bullet);
-            bullets.push(bullet);
-            bulletsStore.update(currentBullets => [...currentBullets, bullet]);
-            cooldown = 3;
-        })
+      if (isMouseDown) {
+        if (bullets.length < 3 && cooldown === 0) { // set max bullets to 3
+          let cam_position = camera.getWorldPosition(worldPosition).clone();
+          cam_position.x = truncateToDecimals(cam_position.x, 2);
+          cam_position.z = truncateToDecimals(cam_position.z, 2);
+
+          cam_position.x = cam_position.x;
+          cam_position.z = cam_position.z;
+          console.log("cam_position.x", cam_position.x);
+          console.log("cam_position.z", cam_position.z);
+          // Calculate direction in degrees
+          let direction = Math.atan2(camera.getWorldDirection(new THREE.Vector3()).x, camera.getWorldDirection(new THREE.Vector3()).z) * (180 / Math.PI);
+          direction = Math.round((direction + 360) % 360);
+          console.log("direction", direction);
+          let bullet = {
+            x: cam_position.x,
+            y: cam_position.z,
+            frame: globalFrameCounter,
+            direction: direction,
+          };
+          bullets.push(bullet);
+          bulletsStore.update(currentBullets => [...currentBullets, bullet]);
+          cooldown = 3;
+        }
+      }
 
       // Calculate movement since the last frame
       let move = {
@@ -460,19 +461,20 @@ function updateLogic() {
   {/each}
 
   {#if $sideViewMode}
-    <!-- Side View Camera -->
     <T.PerspectiveCamera
       position={[0, 100, 0]}  
       on:create={({ ref }) => {
         sideViewCamera = ref;
         ref.lookAt(0, 0, 0);  
       }}
-    />
+    >
+      <OrbitControls />
+    </T.PerspectiveCamera>
   {/if}
 
   <!-- Update this section to use the reactive store -->
   {#each $bulletsStore as bullet}
   
-    <Bullet x={bullet.x / 100} y={bullet.y / 100} />
+    <Bullet x={bullet.x} y={bullet.y} />
   {/each}
 </World>
