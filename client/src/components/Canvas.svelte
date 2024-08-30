@@ -292,8 +292,10 @@ function updateLogic() {
 
       // Calculate movement since the last frame
       let move = {
-        x: Math.round(moveDirection.x * 100),
-        y: Math.round(moveDirection.z * 100),
+        x: Math.abs(Math.round(moveDirection.x * 100)),
+        y: Math.abs(Math.round(moveDirection.z * 100)),
+        xdir: moveDirection.x >= 0,
+        ydir: moveDirection.z >= 0,
       };
       moves.push(move);
 

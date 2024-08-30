@@ -55,13 +55,16 @@ mod actions {
 
             let mut step_count = 0;
             while step_count < 100_u8{
+                println!("TURN START HIGHEST LOOP");
                 let mut user_index = 0;
                 moves = moves_clone.clone();
                 loop {
 
-                    if user_index == user_positions.len() {
+                    if moves.len() == 0 {
                         break;
                     }
+                    println!("TURN START LOWEST LOOP");
+                    println!("User index: {}", user_index);
                     let character_move = moves.pop_front().unwrap(); 
                     
 
@@ -94,6 +97,7 @@ mod actions {
                         println!("Invalid move");
                         updated_positions.append(character);
                         user_index += 1;
+                        break;
                     }
 
                     println!("Valid move");
