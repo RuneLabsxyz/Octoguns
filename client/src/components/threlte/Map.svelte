@@ -53,9 +53,9 @@
 	} else {
 		player_number.set(2);
 	}}
-	let users_turn;
+	let users_turn: number;
 	$: if(session_meta) users_turn = $session_meta.turn_count % 2
-	$: if (users_turn + 2 == $player_number) {
+	$: if ((users_turn === 0 && $player_number === 2) || (users_turn === 1 && $player_number === 1)) {
 		isYourTurn.set(true)
 	}
 	$: console.log($session_meta.characters)

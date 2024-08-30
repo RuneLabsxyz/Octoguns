@@ -308,7 +308,7 @@ function updateLogic() {
         console.log(bullets);
         let actions: Action[] = [{ action_type: 0, step: 4 }]; // actions are hard coded for now*
         let c_moves: C_Move = { characters: get(activeCameras), moves: [...moves], actions };
-        if ($move_state >= 3) {
+        if ($move_state >= 2) {
           move_over.set(true);
         } else {
           move_state.update(state => state + 1);
