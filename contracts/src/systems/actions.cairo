@@ -77,7 +77,7 @@ mod actions {
                     loop {
 
                         
-                        if character_index >= character_move.characters.len() {
+                        if character_index >= character_move.character_ids.len() {
                             break;
                         }
                         let mut character = *user_positions.at(character_index);
