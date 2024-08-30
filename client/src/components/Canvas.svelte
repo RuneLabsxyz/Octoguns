@@ -9,8 +9,10 @@
   import * as THREE from 'three';
   import Bullet from './threlte/Bullet.svelte';  // Add this import
   import { writable } from 'svelte/store';
-import { derived } from "svelte/store";
+  import { derived } from "svelte/store";
   import { glob } from "fs";
+  import { fast_cos, fast_sin} from "src/trig.ts"
+
   const CAMERA_HEIGHT = 2;
   const MESH_HEIGHT = 0.5;
 
@@ -51,6 +53,23 @@ import { derived } from "svelte/store";
   function truncateToDecimals(num: number, decimalPlaces: number) {
     const multiplier = Math.pow(10, decimalPlaces);
     return Math.floor(num * multiplier) / multiplier;
+  }
+
+  function updateBullet(bullet: any) {
+    let x_change = bullet.speed * fast_cos(bullet.angle * 10_000_000);
+    let y_change = bullet.speed * fast_sin(bullet.angle * 10_000_000);
+    bullet.position.x += x_change;
+    bullet.position.y += y_change;
+  }
+
+  function update_all_bullets(bullets: any[]) {
+    let new_bullets = []
+    for (let i = 0; i<bullets.length; i++) {
+      let bullet = bullets[i];
+      updateBullet(bullet);
+      new_bullets.push(bullet);
+      bulletsStore.set(new_bullets);
+    }
   }
 
   function handleKeyDown(event) {
