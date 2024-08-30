@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { T } from '@threlte/core';
-    import { OrbitControls } from '@threlte/extras'
+    import Splitscreen from './Cameras/SplitScreen.svelte';
+    import BirdView from './Cameras/BirdView.svelte';
     // TEMPORARY
-    let birdView: boolean = false;
+    let birdView: boolean = true;
 </script>
 
-<T.PerspectiveCamera
-    makeDefault
-    position={[10, 10, 10]}
-  >
-  <OrbitControls />
-</T.PerspectiveCamera>
+{#if birdView}
+    <BirdView />
+{:else}
+    <Splitscreen />
+{/if}

@@ -5,6 +5,6 @@
 </script>
 
 <T.Group>
-    <Map />
     <Cameras />
+    <Map />
 </T.Group>
