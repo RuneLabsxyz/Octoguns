@@ -65,9 +65,10 @@ mod actions {
                     if moves.len() == 0 {
                         break;
                     }
-                    println!("TURN START LOWEST LOOP");
+                    println!("TURN START LOOP");
                     println!("C MOVE index: {}", c_move_index);
                     let character_move = moves.pop_front().unwrap();
+                    
                     let mut next_bullet_shot = *character_move.actions.at(bullet_index);
 
 
@@ -76,7 +77,7 @@ mod actions {
                     loop {
 
                         
-                        if character_index >= user_positions.len() {
+                        if character_index >= character_move.characters.len() {
                             break;
                         }
                         let mut character = *user_positions.at(character_index);
