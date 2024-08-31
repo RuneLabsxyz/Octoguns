@@ -1,60 +1,49 @@
 <script lang="ts">
-    import type { PerspectiveCamera } from 'three';
-    import { T, useTask, useThrelte } from '@threlte/core';
-    import { onMount } from 'svelte';
-    import { OrbitControls } from '@threlte/extras';
+    import { Canvas, T, useThrelte, useTask } from "@threlte/core";
+    import { PerspectiveCamera } from "three";
 
-    let leftCamera: PerspectiveCamera;
-    let rightCamera: PerspectiveCamera;
+    let cameras: PerspectiveCamera[] = [];
+    let numCameras: number = 8; 
 
-    const { autoRender, renderStage, renderer, scene, size } = useThrelte();
+    const { renderer, scene } = useThrelte();
 
-    onMount(() => {
-        const before = autoRender.current;
-        autoRender.set(false);
-        return () => {
-            autoRender.set(before);
-        };
+    useTask(() => {
+      function renderCameras() {
+        const { width, height } = renderer.domElement;
+
+        if (cameras.length === numCameras) {
+          const rows = Math.ceil(Math.sqrt(numCameras));
+          const cols = Math.ceil(numCameras / rows);
+          const cameraWidth = width / cols;
+          const cameraHeight = height / rows;
+
+          cameras.forEach((camera, index) => {
+            const row = Math.floor(index / cols);
+            const col = index % cols;
+
+            camera.aspect = cameraWidth / cameraHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setScissorTest(true);
+            renderer.setViewport(col * cameraWidth, row * cameraHeight, cameraWidth, cameraHeight);
+            renderer.setScissor(col * cameraWidth, row * cameraHeight, cameraWidth, cameraHeight);
+            renderer.render(scene, camera);
+          });
+
+          renderer.setScissorTest(false);
+        }
+      }
+
+      renderer.setAnimationLoop(renderCameras);
     });
-
-    $: halfWidth = 0.5 * $size.width;
-
-    $: aspect = halfWidth / $size.height;
-
-    $: if (leftCamera !== undefined) {
-        leftCamera.aspect = aspect;
-        leftCamera.updateProjectionMatrix();
-    }
-
-    $: if (rightCamera !== undefined) {
-        rightCamera.aspect = aspect;
-        rightCamera.updateProjectionMatrix();
-    }
-
-    useTask(
-        () => {
-            const before = renderer.getScissorTest();
-            renderer.setViewport(0, 0, halfWidth, $size.height);
-            renderer.setScissor(0, 0, halfWidth, $size.height);
-            renderer.render(scene, leftCamera);
-            renderer.setViewport(halfWidth, 0, halfWidth, $size.height);
-            renderer.setScissor(halfWidth, 0, halfWidth, $size.height);
-            renderer.render(scene, rightCamera);
-            renderer.setScissorTest(before);
-        },
-        { stage: renderStage, autoInvalidate: false },
-    );
-</script>
-
-<T.PerspectiveCamera
-    position={[10, 10, 10]}
-    lookAt={[0, 0, 0]}
-    bind:ref={leftCamera}
-/>
-
-<T.PerspectiveCamera 
-    position={[10, 10, 10]}
-    lookAt={[0, 0, 0]}
-    bind:ref={rightCamera} 
-/>
-
+  </script>
+  
+{#each Array(numCameras) as _, index}
+  <T.PerspectiveCamera
+    position={[10 * (index % 2 === 0 ? 1 : -1), 10, 10]}
+    on:create={({ ref }) => {
+      cameras[index] = ref;
+      ref.lookAt(0, 1, 0);
+    }}
+  />
+{/each}
