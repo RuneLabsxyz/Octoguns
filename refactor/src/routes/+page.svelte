@@ -1,7 +1,8 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { isSetup } from '../stores/dojoStore';
-    import { get } from 'svelte/store';
+
+    $: console.log($isSetup);
 
 </script>
 
@@ -11,7 +12,7 @@
         <h1 class="font-Block">OCTO</h1>
         <h2 class="font-Block">GUNS</h2>
     </div>
-    {#if get(isSetup)}
+    {#if $isSetup}
         <button class="p-5 pt-20" on:click={() => goto('/games')}>
             Play
         </button>

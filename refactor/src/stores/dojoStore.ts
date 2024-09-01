@@ -8,8 +8,6 @@ export const setupStore = writable<SetupResult | null>(null);
 export const isSetup = writable(false);
 
 export async function initializeStore() {
-    console.log('test');
-
   try {
     console.log('Initializing store...');
     const result = await setup(dojoConfig);
