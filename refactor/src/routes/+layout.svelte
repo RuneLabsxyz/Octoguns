@@ -1,14 +1,16 @@
 <script lang="ts">
-    export const ssr = false;
-    export const prerender = false;
-
-
     import "../app.css";
     import { onMount } from "svelte";
-    import { initializeStore } from '../stores/dojoStore';    
+    import { initializeStore, isSetup } from '../stores/dojoStore';    
     
     onMount(() => {
-        initializeStore();
+        try {
+            initializeStore();
+            isSetup.set(true);
+        } catch (error) {
+            console.error('Failed to initialize store:', error);
+            isSetup.set(false);
+        }
     });
 </script>
 

@@ -1,13 +1,17 @@
-import { dojoConfig } from "../../dojoConfig";
+import { dojoConfig } from "../dojoConfig";
 import { setup } from "../dojo/setup";
 import { writable } from 'svelte/store';
 
 type SetupResult = ReturnType<typeof setup> extends Promise<infer R> ? R : never;
 
 export const setupStore = writable<SetupResult | null>(null);
+export const isSetup = writable(false);
 
 export async function initializeStore() {
+    console.log('test');
+
   try {
+    console.log('Initializing store...');
     const result = await setup(dojoConfig);
     setupStore.set(result);
 

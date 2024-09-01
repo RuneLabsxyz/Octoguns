@@ -19,5 +19,8 @@ export default defineConfig({
   resolve: {
     alias: {
     }
+  },
+  ssr: {
+    noExternal: ['@dojoengine/torii-client'],
   }
 });

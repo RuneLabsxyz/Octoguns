@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import { isSetup } from '../stores/dojoStore';
+    import { get } from 'svelte/store';
 
 </script>
 
@@ -10,8 +11,13 @@
         <h1 class="font-Block">OCTO</h1>
         <h2 class="font-Block">GUNS</h2>
     </div>
-    <button class="p-5 pt-20" on:click={() => goto('/games')}>
-        Play
-    </button>
+    {#if get(isSetup)}
+        <button class="p-5 pt-20" on:click={() => goto('/games')}>
+            Play
+        </button>
+    {:else}
+        <button class="p-5 pt-20" disabled>
+            Sorry we are having issues with torii
+        </button>
+    {/if}
 </div>
-
