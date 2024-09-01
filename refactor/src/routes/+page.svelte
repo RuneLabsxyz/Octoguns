@@ -2,8 +2,6 @@
     import { goto } from '$app/navigation';
     import { isSetup } from '../stores/dojoStore';
 
-    $: console.log($isSetup);
-
 </script>
 
 
