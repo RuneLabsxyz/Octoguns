@@ -12,6 +12,7 @@ export async function initializeStore() {
     console.log('Initializing store...');
     const result = await setup(dojoConfig);
     setupStore.set(result);
+    isSetup.set(true);
 
     setupStore.subscribe((value) => {
       console.log(value);
@@ -19,5 +20,6 @@ export async function initializeStore() {
   } catch (error) {
     console.error('Failed to initialize store:', error);
     setupStore.set(null);
+    isSetup.set(false);
   }
 }
