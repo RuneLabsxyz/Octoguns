@@ -38,7 +38,7 @@ mod simulate_tests {
     use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
-    use octoguns::lib::defaultSpawns::{generate_character_positions};
+    use octoguns::lib::default_spawns::{generate_character_positions};
     use super::{simulate_bullets, SimulationResult};
 
     use octoguns::tests::helpers::{get_test_character_array};

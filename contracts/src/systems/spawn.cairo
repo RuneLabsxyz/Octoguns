@@ -10,7 +10,7 @@ mod spawn {
     use octoguns::models::character::{Character,CharacterTrait,
                                       CharacterPosition,CharacterPositionTrait, 
                                       };
-    use octoguns::lib::defaultSpawns::{generate_character_positions};
+    use octoguns::lib::default_spawns::{generate_character_positions};
     use starknet::{ContractAddress, get_caller_address};
 
     #[abi(embed_v0)]

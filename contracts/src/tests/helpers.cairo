@@ -1,4 +1,4 @@
-use octoguns::lib::defaultSpawns::generate_character_positions;
+use octoguns::lib::default_spawns::generate_character_positions;
 use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
 
 

@@ -14,7 +14,7 @@ mod models {
 }
 
 mod lib {
-    mod defaultSpawns;
+    mod default_spawns;
     mod helpers;
     mod simulate;
     mod shoot;
