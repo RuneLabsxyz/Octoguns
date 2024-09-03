@@ -1,0 +1,17 @@
+kind = "DojoModel"
+class_hash = "0x947872a91e45d228623e088d7e47ba2fc8d4d6dffe5c47023a78a4f4f4e57"
+original_class_hash = "0x947872a91e45d228623e088d7e47ba2fc8d4d6dffe5c47023a78a4f4f4e57"
+abi = "manifests/dev/base/abis/models/octoguns-Map-6508b277.json"
+tag = "octoguns-Map"
+qualified_path = "octoguns::models::map::map"
+manifest_name = "octoguns-Map-6508b277"
+
+[[members]]
+name = "map_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "map_objects_id"
+type = "Array<u32>"
+key = false

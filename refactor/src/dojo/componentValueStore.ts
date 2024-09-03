@@ -11,15 +11,21 @@ import type {
   Entity,
   Schema,
 } from "@dojoengine/recs";
+import { dojoStore } from "../stores/dojoStore";
 
-export function createComponentValueStore<S extends Schema>(
+export type ComponentStore = ReturnType<typeof componentValueStore>;
+
+export function componentValueStore<S extends Schema>(
   component: Component<S>,
-  entityStore: {
-    subscribe: (callback: (value: Entity | undefined) => void) => () => void;
-  },
+  entityId: Entity | undefined,
   defaultValue?: ComponentValue<S>
 ) {
-  const store = writable<ComponentValue<S> | undefined>(undefined);
+
+  let entityStore = derived(dojoStore, ($store) =>
+    $store
+      ? entityId
+      : undefined
+  );
 
   return derived(
     entityStore,

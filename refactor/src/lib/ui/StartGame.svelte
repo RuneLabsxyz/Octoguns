@@ -1,8 +1,8 @@
 <script lang="ts">
     import { gameState, sessionId } from "../../stores/gameStores";
-    import { setupStore } from "../../stores/dojoStore";
+    import { dojoStore } from "../../stores/dojoStore";
 
-    $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
+    $: ({ clientComponents, torii, burnerManager, client } = $dojoStore);
 
     $: account = burnerManager.getActiveAccount();
 

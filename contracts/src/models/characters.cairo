@@ -3,7 +3,7 @@ use octoguns::types::Vec2;
 
 #[derive(Drop, Serde)]
 #[dojo::model]
-pub struct Character {
+pub struct CharacterModel {
     #[key]
     pub entity_id: u32,
     pub session_id: u32,
@@ -12,9 +12,9 @@ pub struct Character {
 }
 
 #[generate_trait]
-impl CharacterImpl of CharacterTrait {
-    fn new(id: u32, session_id: u32, player_id: ContractAddress, steps_amount: u32) -> Character {
-        Character {entity_id: id, session_id, player_id, steps_amount}
+impl CharacterModelImpl of CharacterModelTrait {
+    fn new(id: u32, session_id: u32, player_id: ContractAddress, steps_amount: u32) -> CharacterModel {
+        CharacterModel {entity_id: id, session_id, player_id, steps_amount}
     }
 }
 

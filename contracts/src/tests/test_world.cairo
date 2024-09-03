@@ -2,16 +2,18 @@
 mod tests {
     // import world dispatcher
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+    use dojo::model::{Model, ModelTest, ModelIndex, ModelEntityTest};
     // import test utils
     use dojo::utils::test::{spawn_test_world, deploy_contract};
     use starknet::testing::{set_caller_address};
     use starknet::ContractAddress;
     // import test utils
-    use octoguns::models::character::{Character, Position, Health, character, position, health};
+    use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, character_model, character_position};
     use octoguns::models::map::{Map, MapObjects, map, map_objects};
     use octoguns::models::sessions::{Session, session, SessionMeta, session_meta};
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
-    use octoguns::types::{CharacterMove, CharacterPosition, CharacterPositionTrait, Vec2, Action};
+    use octoguns::models::global::{Global, global};
+    use octoguns::types::{CharacterMove, Vec2, IVec2, Action};
 
     use octoguns::systems::start::{start, IStartDispatcher, IStartDispatcherTrait}; 
     use octoguns::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
@@ -22,18 +24,8 @@ mod tests {
                     IActionsDispatcher,
                     ISpawnDispatcher) {
 
-        let models = array![ character::TEST_CLASS_HASH,
-                            position::TEST_CLASS_HASH,
-                            health::TEST_CLASS_HASH,
-                            map::TEST_CLASS_HASH,
-                            map_objects::TEST_CLASS_HASH,
-                            bullet::TEST_CLASS_HASH,
-                            session::TEST_CLASS_HASH,
-                            session_meta::TEST_CLASS_HASH
+        let world = spawn_test_world!(["octoguns"]);
 
-                            ];
-        // models
-        let mut world = spawn_test_world!();
 
         // deploy systems contract
         let actions_address = world

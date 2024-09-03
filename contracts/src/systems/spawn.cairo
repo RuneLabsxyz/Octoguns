@@ -7,10 +7,10 @@ trait ISpawn {
 mod spawn {
     use super::ISpawn;
     use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
-    use octoguns::models::character::{Character,CharacterTrait,
+    use octoguns::models::characters::{CharacterModel,CharacterModelTrait,
                                       CharacterPosition,CharacterPositionTrait, 
                                       };
-    use octoguns::lib::defaultSpawns::{generate_character_positions};
+    use octoguns::lib::default_spawns::{generate_character_positions};
     use starknet::{ContractAddress, get_caller_address};
 
     #[abi(embed_v0)]
@@ -35,14 +35,14 @@ mod spawn {
                 let id1 = world.uuid();
 
                 let default_steps = 10;
-                let c1 = CharacterTrait::new(id1, session_id, session.player1, default_steps);
+                let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
                 let p1 = CharacterPositionTrait::new(id1, position_1, 100, 0);
                 session_meta.add_character(id1);
                         
        
 
                 let id2 = world.uuid();
-                let c2 = CharacterTrait::new(id2, session_id, session.player2, default_steps);
+                let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
                 let p2 = CharacterPositionTrait::new(id2, position_2, 100, 0);
                 session_meta.add_character(id2);
                 set!(world,(c1,p1,c2,p2));

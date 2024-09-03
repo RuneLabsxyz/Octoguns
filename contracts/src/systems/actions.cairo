@@ -11,7 +11,7 @@ mod actions {
     use super::IActions;
     use octoguns::types::{Vec2, Action, CharacterMove};
     use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
-    use octoguns::models::character::{Character, CharacterPosition, CharacterPositionTrait};
+    use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::lib::helpers::{get_character_ids, get_character_positions, get_all_bullets, check_is_character_owner, filter_out_dead_characters, extract_bullet_ids, check_win, check_is_valid_move};
     use octoguns::lib::simulate::{simulate_bullets};

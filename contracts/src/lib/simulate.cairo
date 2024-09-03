@@ -1,6 +1,6 @@
 use octoguns::models::bullet::{Bullet, BulletTrait};
 use octoguns::types::{Vec2};
-use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
+use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
 
@@ -35,10 +35,10 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
 #[cfg(test)]
 mod simulate_tests {
 
-    use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
+    use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
-    use octoguns::lib::defaultSpawns::{generate_character_positions};
+    use octoguns::lib::default_spawns::{generate_character_positions};
     use super::{simulate_bullets, SimulationResult};
 
     use octoguns::tests::helpers::{get_test_character_array};

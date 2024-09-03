@@ -2,27 +2,22 @@
     import { Canvas } from '@threlte/core'
     import Scene from '$lib/3d/Scene.svelte';
     import Ui from '$lib/ui/Ui.svelte';
-    import { createComponentValueStore } from "../../../dojo/componentValueStore";
-    import { setupStore } from "../../../stores/dojoStore";
+    import { componentValueStore } from "../../../dojo/componentValueStore";
+    import { dojoStore } from "../../../stores/dojoStore";
     import { gameState, sessionId, characterIds } from '../../../stores/gameStores';
     import { derived } from "svelte/store";
 
     export let data;
     let gameId = data.gameId;
 
-    $: sessionId.set(gameId)
+    $: sessionId.set(parseInt(gameId))
 
-    $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
+    $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
+	$: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
 
-	$: sessionEntity = derived(setupStore, ($store) =>
-		$store
-		? torii.poseidonHash([BigInt(gameId).toString()])
-		: undefined
-	);
-
-    $: sessionData = createComponentValueStore(clientComponents.Session, sessionEntity);
-    $: sessionMetaData = createComponentValueStore(clientComponents.SessionMeta, sessionEntity);
+    $: sessionData = componentValueStore(clientComponents.Session, sessionEntity);
+    $: sessionMetaData = componentValueStore(clientComponents.SessionMeta, sessionEntity);
 
     $: gameState.set($sessionData.state)
 
@@ -42,12 +37,8 @@
     // Extract charcter data
     $: if ($characterIds) {
         $characterIds.forEach(characterId => {
-            let characterEntity = derived(setupStore, ($store) =>
-                $store
-                ? torii.poseidonHash([BigInt(characterId).toString()])
-                : undefined
-            );
-            let characterData = createComponentValueStore(clientComponents.Character, characterEntity);
+            let characterEntity = torii.poseidonHash([BigInt(characterId).toString()])
+            let characterData = componentValueStore(clientComponents.Character, characterEntity);
 
             // Subscribe to characterData to access the value
             characterData.subscribe(value => {
