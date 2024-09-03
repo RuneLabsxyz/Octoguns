@@ -4,7 +4,7 @@
     import Ui from '$lib/ui/Ui.svelte';
     import { createComponentValueStore } from "../../../dojo/componentValueStore";
     import { setupStore } from "../../../stores/dojoStore";
-    import { gameState, sessionId } from '../../../stores/gameStores';
+    import { gameState, sessionId, characterIds } from '../../../stores/gameStores';
     import { derived } from "svelte/store";
 
     export let data;
@@ -24,15 +24,37 @@
     $: sessionData = createComponentValueStore(clientComponents.Session, sessionEntity);
     $: sessionMetaData = createComponentValueStore(clientComponents.SessionMeta, sessionEntity);
 
+    $: gameState.set($sessionData.state)
+
 
     $: console.log("session", $sessionData);
     $: console.log("sessionMeta", $sessionMetaData);
 
     $: console.log("sessionMeta bullets", $sessionMetaData.bullets)
-    $: console.log("sessionMeta characters", $sessionMetaData.characters)
 
-    $: gameState.set($sessionData.state)
-    
+
+    // Get all character Ids
+    $: if ($sessionMetaData.characters) {
+        const characterIdsArray = $sessionMetaData.characters.map((character: { value: any; }) => character.value);
+        characterIds.set(characterIdsArray);
+    }
+
+    // Extract charcter data
+    $: if ($characterIds) {
+        $characterIds.forEach(characterId => {
+            let characterEntity = derived(setupStore, ($store) =>
+                $store
+                ? torii.poseidonHash([BigInt(characterId).toString()])
+                : undefined
+            );
+            let characterData = createComponentValueStore(clientComponents.Character, characterEntity);
+
+            // Subscribe to characterData to access the value
+            characterData.subscribe(value => {
+                console.log("Character Data for ID", characterId, ":", value);
+            });
+        });
+    }
 
 </script>
 
