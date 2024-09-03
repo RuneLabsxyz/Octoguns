@@ -4,7 +4,9 @@
     import { createComponentValueStore } from "../../dojo/componentValueStore";
     import GameList from "$lib/games/GameList.svelte";
 
-    $: ({ clientComponents, torii, burnerManager, client } = $setupStore);
+    let availableSessions: any = null;
+
+    $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
 
     $: account = burnerManager.getActiveAccount();
 
@@ -22,31 +24,45 @@
 
 	$: global = createComponentValueStore(clientComponents.Global, globalentity);
 	$: player = createComponentValueStore(clientComponents.Player, playerEntity);
-    
+
+    //Filter out the sessions that the player is already in
+	$: if ($global) {
+		if ($player) {
+			console.log("player", $player);
+			let playerGames = new Set($player.games.map(game => game.value));
+			availableSessions = $global.pending_sessions.filter(session => !playerGames.has(session.value));
+		} else {
+			availableSessions = $global.pending_sessions;
+		}
+	}
 </script>
 
 
-<div>
-    GAMES
-</div>
-
-
-{#if $global}
     <div class="flex justify-center items-center">
-        <GameList {global} />
+        {#if availableSessions}
+            <GameList {availableSessions} />
+        {/if}
     </div>
 
-    <button
-        on:click={async () => {
-        const account = burnerManager.getActiveAccount();
-        if (account) {
-            await client.start.create({ account });
-        } else {
-            console.error("No active account found");
-        }
-    }}>Create Game</button>
+    <div class="flex justify-between">
+        <button
+            class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
+            on:click={() => {
+                // Add your back button logic here
+                console.log("Back button clicked");
+            }}>Back</button>
+        <button
+            class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+            on:click={async () => {
+            const account = burnerManager.getActiveAccount();
+            if (account) {
+                await client.start.create({ account });
+            } else {
+                console.error("No active account found");
+            }
+        }}>Create Game</button>
+    </div>
 
-{/if}
 
 
 

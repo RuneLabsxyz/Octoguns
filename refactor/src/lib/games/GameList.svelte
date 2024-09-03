@@ -1,19 +1,17 @@
 <script lang="ts">
-    export let global;
+    export let availableSessions;
 
-    $: pendingSessions = $global.pending_sessions;
+    $: pendingSessions = availableSessions;
 
     async function joinSession(session: any) {
         console.log(`Joining session: ${session.value}`);
     }
 </script>
-
-<div class="flex flex-col items-center h-screen text-center">
+<div class="flex flex-col items-center text-center">
     <h1 class="font-Block text-6xl py-10">Octo Guns</h1>
-
+    <div class="w-full max-w-3xl border-2 border-black p-4 overflow-y-auto" style="max-height: 75vh;">
     {#if pendingSessions}
-        <div class="w-full max-w-3xl border-2 border-black p-4 overflow-y-auto">
-            {#each pendingSessions as session}
+            {#each availableSessions.slice().reverse() as session}
                 <div class="flex justify-between items-center py-2">
                     <p class="flex-grow text-left">{session.value}</p>
                     <button 
@@ -23,6 +21,6 @@
                     </button>
                 </div>
             {/each}
-        </div>
-    {/if}
+        {/if}
+    </div>
 </div>
