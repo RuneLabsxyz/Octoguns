@@ -1,21 +1,17 @@
 <script lang="ts">
      import { derived } from "svelte/store";
-    import { setupStore } from "../../stores/dojoStore";
-    import { createComponentValueStore } from "../../dojo/componentValueStore";
+    import { dojoStore } from "../../stores/dojoStore";
+    import { componentValueStore } from "../../dojo/componentValueStore";
     import { goto } from "$app/navigation";
 
     let availableSessions: any = null;
-    $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
+    $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
     $: account = burnerManager.getActiveAccount();
 
-	$: playerEntity = derived(setupStore, ($store) =>
-		$store
-		? torii.poseidonHash([account?.address])
-		: undefined
-	);
+	let playerEntity = torii.poseidonHash([account?.address])
 
-	$: player = createComponentValueStore(clientComponents.Player, playerEntity);
+	$: player = componentValueStore(clientComponents.Player, playerEntity);
 
     $: if ($player) {
         let playerGames = new Set($player.games.map((game: { value: any; }) => game.value));
