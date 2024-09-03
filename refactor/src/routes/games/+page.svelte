@@ -30,8 +30,8 @@
 	$: if ($global) {
 		if ($player) {
 			console.log("player", $player);
-			let playerGames = new Set($player.games.map(game => game.value));
-			availableSessions = $global.pending_sessions.filter(session => !playerGames.has(session.value));
+			let playerGames = new Set($player.games.map((game: { value: any; }) => game.value));
+			availableSessions = $global.pending_sessions.filter((session: { value: unknown; }) => !playerGames.has(session.value));
 		} else {
 			availableSessions = $global.pending_sessions;
 		}
