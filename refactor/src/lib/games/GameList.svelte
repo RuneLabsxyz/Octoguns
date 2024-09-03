@@ -1,11 +1,25 @@
 <script lang="ts">
+    import { setupStore } from "../../stores/dojoStore";
+
+
+    $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
+
     export let availableSessions;
 
     $: pendingSessions = availableSessions;
 
-    async function joinSession(session: any) {
-        console.log(`Joining session: ${session.value}`);
-    }
+    $: account = burnerManager.getActiveAccount();
+
+
+	async function joinSession(session: any) {
+		if (account) {
+			console.log("Joining session", session.value);
+			await client.start.join({ account: account, session_id: session.value });
+			window.location.href = `/game/${session.value}`;
+		} else {
+			console.error("No active account found");
+		}
+	}
 </script>
 <div class="flex flex-col items-center text-center">
     <h1 class="font-Block text-6xl py-10">Octo Guns</h1>
