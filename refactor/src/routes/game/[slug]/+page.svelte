@@ -4,14 +4,16 @@
     import Ui from '$lib/ui/Ui.svelte';
     import { createComponentValueStore } from "../../../dojo/componentValueStore";
     import { setupStore } from "../../../stores/dojoStore";
+    import { gameState, sessionId } from '../../../stores/gameStores';
     import { derived } from "svelte/store";
 
     export let data;
     let gameId = data.gameId;
 
+    $: sessionId.set(gameId)
+
     $: ({ clientComponents, torii, burnerManager, client } = $setupStore as any);
 
-    $: account = burnerManager.getActiveAccount();
 
 	$: sessionEntity = derived(setupStore, ($store) =>
 		$store
@@ -19,11 +21,18 @@
 		: undefined
 	);
 
-    $: session = createComponentValueStore(clientComponents.Session, sessionEntity);
-    $: sessionMeta = createComponentValueStore(clientComponents.SessionMeta, sessionEntity);
+    $: sessionData = createComponentValueStore(clientComponents.Session, sessionEntity);
+    $: sessionMetaData = createComponentValueStore(clientComponents.SessionMeta, sessionEntity);
 
-    $: console.log("session", $session);
-    $: console.log("sessionMeta", $sessionMeta);
+
+    $: console.log("session", $sessionData);
+    $: console.log("sessionMeta", $sessionMetaData);
+
+    $: console.log("sessionMeta bullets", $sessionMetaData.bullets)
+    $: console.log("sessionMeta characters", $sessionMetaData.characters)
+
+    $: gameState.set($sessionData.state)
+    
 
 </script>
 
