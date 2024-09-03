@@ -1,0 +1,330 @@
+[world]
+kind = "WorldContract"
+class_hash = "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597"
+original_class_hash = "0xa349b743d361ce4567361475a89b84a386bb383448c6926954e5fe0b525597"
+abi = "manifests/dev/deployment/abis/dojo-world.json"
+address = "0x7cd341086eccfe177c487d51fe457cd1be2f730f52312cd2a4bc88f9e1fa349"
+transaction_hash = "0x52fd2898880c0df1ab501e15c7efe206a617bd8ff539d64ff0821101b31070c"
+block_number = 3
+seed = "octoguns"
+manifest_name = "dojo-world"
+
+[world.metadata]
+profile_name = "dev"
+rpc_url = "http://localhost:5050/"
+
+[base]
+kind = "Class"
+class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+original_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/dev/deployment/abis/dojo-base.json"
+tag = "dojo-base"
+manifest_name = "dojo-base"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x332e648985463af4463d338a51b3553981390f4888de9d2a60f14fb49732242"
+class_hash = "0x47f308b7bc225e84e604b58de512b845124f1e3ef83b9b49a66507c91f5c395"
+original_class_hash = "0x47f308b7bc225e84e604b58de512b845124f1e3ef83b9b49a66507c91f5c395"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/dev/deployment/abis/contracts/octoguns-actions-3f08332a.json"
+reads = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-MapObjects",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+]
+init_calldata = []
+tag = "octoguns-actions"
+systems = ["move"]
+manifest_name = "octoguns-actions-3f08332a"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x2a05c0dd95f75878a0e3fce212030b027a1215c354296e3d2884c79da267f45"
+class_hash = "0x479a5e5c14eb807ee8e669babdb9054852d1015cbc5eb87f3e1e900d3e266bc"
+original_class_hash = "0x479a5e5c14eb807ee8e669babdb9054852d1015cbc5eb87f3e1e900d3e266bc"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/dev/deployment/abis/contracts/octoguns-spawn-1acb0980.json"
+reads = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-MapObjects",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-Player",
+]
+init_calldata = []
+tag = "octoguns-spawn"
+systems = ["spawn"]
+manifest_name = "octoguns-spawn-1acb0980"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x5ca3b54dfce38ac89891911cb873bc60f22d8cd2d3b8c1309209084c59a10d7"
+class_hash = "0x22c262a943c21ba54cb71adfc90231d75b5c1de90c9582dbc18ddc6a13e1d73"
+original_class_hash = "0x22c262a943c21ba54cb71adfc90231d75b5c1de90c9582dbc18ddc6a13e1d73"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/dev/deployment/abis/contracts/octoguns-start-5506b80f.json"
+reads = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-MapObjects",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-Global",
+    "octoguns-Player",
+]
+init_calldata = []
+tag = "octoguns-start"
+systems = [
+    "create",
+    "join",
+]
+manifest_name = "octoguns-start-5506b80f"
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
+original_class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
+abi = "manifests/dev/deployment/abis/models/octoguns-Bullet-69e7a9ab.json"
+tag = "octoguns-Bullet"
+qualified_path = "octoguns::models::bullet::bullet"
+manifest_name = "octoguns-Bullet-69e7a9ab"
+
+[[models.members]]
+name = "bullet_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "coords"
+type = "Vec2"
+key = false
+
+[[models.members]]
+name = "speed"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "direction"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "shot_by"
+type = "ContractAddress"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x660f2f126db3f73a49645f5a1db074be8c3dafc090bc0afe81cefa4d10b7f3d"
+original_class_hash = "0x660f2f126db3f73a49645f5a1db074be8c3dafc090bc0afe81cefa4d10b7f3d"
+abi = "manifests/dev/deployment/abis/models/octoguns-CharacterModel-66c7439d.json"
+tag = "octoguns-CharacterModel"
+qualified_path = "octoguns::models::characters::character_model"
+manifest_name = "octoguns-CharacterModel-66c7439d"
+
+[[models.members]]
+name = "entity_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "session_id"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "player_id"
+type = "ContractAddress"
+key = false
+
+[[models.members]]
+name = "steps_amount"
+type = "u32"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x5c56063ed45085f40248fcdf9193e329a90f429095c2a9c65304745ed1f2a69"
+original_class_hash = "0x5c56063ed45085f40248fcdf9193e329a90f429095c2a9c65304745ed1f2a69"
+abi = "manifests/dev/deployment/abis/models/octoguns-CharacterPosition-66fdf8ab.json"
+tag = "octoguns-CharacterPosition"
+qualified_path = "octoguns::models::characters::character_position"
+manifest_name = "octoguns-CharacterPosition-66fdf8ab"
+
+[[models.members]]
+name = "id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "coords"
+type = "Vec2"
+key = false
+
+[[models.members]]
+name = "max_steps"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "current_step"
+type = "u32"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x185ce619ef334780061f6293598274fbbd6c4d8aa0e445fd20710209f66bfd6"
+original_class_hash = "0x185ce619ef334780061f6293598274fbbd6c4d8aa0e445fd20710209f66bfd6"
+abi = "manifests/dev/deployment/abis/models/octoguns-Global-23c9ff90.json"
+tag = "octoguns-Global"
+qualified_path = "octoguns::models::global::global"
+manifest_name = "octoguns-Global-23c9ff90"
+
+[[models.members]]
+name = "id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "pending_sessions"
+type = "Array<u32>"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x947872a91e45d228623e088d7e47ba2fc8d4d6dffe5c47023a78a4f4f4e57"
+original_class_hash = "0x947872a91e45d228623e088d7e47ba2fc8d4d6dffe5c47023a78a4f4f4e57"
+abi = "manifests/dev/deployment/abis/models/octoguns-Map-6508b277.json"
+tag = "octoguns-Map"
+qualified_path = "octoguns::models::map::map"
+manifest_name = "octoguns-Map-6508b277"
+
+[[models.members]]
+name = "map_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "map_objects_id"
+type = "Array<u32>"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x166e4b805f01fdae39e4f53e8242504ed50cdadcb5ee31df36b9a9693714ca4"
+original_class_hash = "0x166e4b805f01fdae39e4f53e8242504ed50cdadcb5ee31df36b9a9693714ca4"
+abi = "manifests/dev/deployment/abis/models/octoguns-MapObjects-393fad91.json"
+tag = "octoguns-MapObjects"
+qualified_path = "octoguns::models::map::map_objects"
+manifest_name = "octoguns-MapObjects-393fad91"
+
+[[models.members]]
+name = "map_object_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "dimensions"
+type = "Vec2"
+key = false
+
+[[models.members]]
+name = "coords"
+type = "Vec2"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
+original_class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
+abi = "manifests/dev/deployment/abis/models/octoguns-Player-5a4c6c7b.json"
+tag = "octoguns-Player"
+qualified_path = "octoguns::models::player::player"
+manifest_name = "octoguns-Player-5a4c6c7b"
+
+[[models.members]]
+name = "player"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "games"
+type = "Array<u32>"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x3fc1d9de1c4b38b0e29db41d9c3b9bc32276aafc0088c21f4d92b4bd9f3e49d"
+original_class_hash = "0x3fc1d9de1c4b38b0e29db41d9c3b9bc32276aafc0088c21f4d92b4bd9f3e49d"
+abi = "manifests/dev/deployment/abis/models/octoguns-Session-41d1f2ce.json"
+tag = "octoguns-Session"
+qualified_path = "octoguns::models::sessions::session"
+manifest_name = "octoguns-Session-41d1f2ce"
+
+[[models.members]]
+name = "session_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "player1"
+type = "ContractAddress"
+key = false
+
+[[models.members]]
+name = "player2"
+type = "ContractAddress"
+key = false
+
+[[models.members]]
+name = "map_id"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "state"
+type = "u8"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
+original_class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
+abi = "manifests/dev/deployment/abis/models/octoguns-SessionMeta-4f7fd982.json"
+tag = "octoguns-SessionMeta"
+qualified_path = "octoguns::models::sessions::session_meta"
+manifest_name = "octoguns-SessionMeta-4f7fd982"
+
+[[models.members]]
+name = "session_id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "turn_count"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "bullets"
+type = "Array<u32>"
+key = false
+
+[[models.members]]
+name = "characters"
+type = "Array<u32>"
+key = false

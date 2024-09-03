@@ -1,7 +1,7 @@
 tag = "octoguns-actions"
 writes = [
     "octoguns-CharacterPosition",
-    "octoguns-Character",
+    "octoguns-CharacterModel",
     "octoguns-Map",
     "octoguns-MapObjects",
     "octoguns-Session",

@@ -1,0 +1,17 @@
+kind = "DojoModel"
+class_hash = "0x185ce619ef334780061f6293598274fbbd6c4d8aa0e445fd20710209f66bfd6"
+original_class_hash = "0x185ce619ef334780061f6293598274fbbd6c4d8aa0e445fd20710209f66bfd6"
+abi = "manifests/dev/base/abis/models/octoguns-Global-23c9ff90.json"
+tag = "octoguns-Global"
+qualified_path = "octoguns::models::global::global"
+manifest_name = "octoguns-Global-23c9ff90"
+
+[[members]]
+name = "id"
+type = "u32"
+key = true
+
+[[members]]
+name = "pending_sessions"
+type = "Array<u32>"
+key = false

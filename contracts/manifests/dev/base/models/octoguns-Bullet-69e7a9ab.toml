@@ -1,0 +1,32 @@
+kind = "DojoModel"
+class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
+original_class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
+abi = "manifests/dev/base/abis/models/octoguns-Bullet-69e7a9ab.json"
+tag = "octoguns-Bullet"
+qualified_path = "octoguns::models::bullet::bullet"
+manifest_name = "octoguns-Bullet-69e7a9ab"
+
+[[members]]
+name = "bullet_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "coords"
+type = "Vec2"
+key = false
+
+[[members]]
+name = "speed"
+type = "u32"
+key = false
+
+[[members]]
+name = "direction"
+type = "u32"
+key = false
+
+[[members]]
+name = "shot_by"
+type = "ContractAddress"
+key = false
