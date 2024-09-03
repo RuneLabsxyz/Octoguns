@@ -1,6 +1,6 @@
 use octoguns::types::{Action};
 use octoguns::models::bullet::{Bullet, BulletTrait};
-use octoguns::models::character::{CharacterPosition};
+use octoguns::models::characters::{CharacterPosition};
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 use starknet::ContractAddress;
 

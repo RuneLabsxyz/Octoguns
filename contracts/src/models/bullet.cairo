@@ -1,5 +1,5 @@
 use octoguns::types::{Vec2};
-use octoguns::models::character::{CharacterPosition, CharacterPositionTrait}; 
+use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait}; 
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
 use starknet::ContractAddress;
@@ -97,7 +97,7 @@ impl BulletImpl of BulletTrait {
 #[cfg(test)]
 mod simulate_tests {
 
-    use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
+    use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};

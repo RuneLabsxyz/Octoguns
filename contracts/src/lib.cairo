@@ -8,7 +8,7 @@ mod models {
     mod bullet;
     mod sessions;
     mod map;
-    mod character;
+    mod characters;
     mod global;
     mod player;
 }

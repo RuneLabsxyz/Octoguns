@@ -1,6 +1,6 @@
 
 use octoguns::types::{CharacterMove};
-use octoguns::models::character::{CharacterPosition, CharacterPositionTrait, Character};
+use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait, CharacterModel};
 use octoguns::models::bullet::{Bullet};
 use octoguns::models::sessions::{SessionMeta};
 use starknet::{ContractAddress, get_caller_address};
@@ -39,7 +39,7 @@ fn get_character_positions(world: IWorldDispatcher, ref all_character_ids: Array
         let character_id = *all_character_ids.at(char_index);
         
         // Retrieve the Character and Position structs from the world
-        let character = get!(world, character_id, (Character));
+        let character = get!(world, character_id, (CharacterModel));
         let position = get!(world, character_id, (CharacterPosition));
 
     //    let position = CharacterPositionTrait::new(character_id, position, character.steps_amount, 0 );
@@ -70,7 +70,7 @@ fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
 }
 
 fn check_is_character_owner(world: IWorldDispatcher, id: u32, player: ContractAddress) -> bool {
-    let character = get!(world, id, (Character));
+    let character = get!(world, id, (CharacterModel));
     character.player_id == player
 }
 

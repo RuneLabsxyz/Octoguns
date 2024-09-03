@@ -2,15 +2,17 @@
 mod tests {
     // import world dispatcher
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+    use dojo::model::{Model, ModelTest, ModelIndex, ModelEntityTest};
     // import test utils
     use dojo::utils::test::{spawn_test_world, deploy_contract};
     use starknet::testing::{set_caller_address};
     use starknet::ContractAddress;
     // import test utils
-    use octoguns::models::character::{Character, CharacterPosition, CharacterPositionTrait, character, character_position};
+    use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, character_model, character_position};
     use octoguns::models::map::{Map, MapObjects, map, map_objects};
     use octoguns::models::sessions::{Session, session, SessionMeta, session_meta};
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
+    use octoguns::models::global::{Global, global};
     use octoguns::types::{CharacterMove, Vec2, IVec2, Action};
 
     use octoguns::systems::start::{start, IStartDispatcher, IStartDispatcherTrait}; 

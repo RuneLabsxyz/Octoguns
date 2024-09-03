@@ -1,5 +1,5 @@
 use octoguns::lib::default_spawns::generate_character_positions;
-use octoguns::models::character::{CharacterPosition, CharacterPositionTrait};
+use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 
 
 fn get_test_character_array() -> Array<CharacterPosition>{
