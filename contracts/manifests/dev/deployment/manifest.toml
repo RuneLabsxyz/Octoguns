@@ -24,8 +24,8 @@ manifest_name = "dojo-base"
 [[contracts]]
 kind = "DojoContract"
 address = "0x332e648985463af4463d338a51b3553981390f4888de9d2a60f14fb49732242"
-class_hash = "0x47f308b7bc225e84e604b58de512b845124f1e3ef83b9b49a66507c91f5c395"
-original_class_hash = "0x47f308b7bc225e84e604b58de512b845124f1e3ef83b9b49a66507c91f5c395"
+class_hash = "0x372373ec645bc64476b615612781930508032f238fb97e26a31bb5fb8f2fa1b"
+original_class_hash = "0x372373ec645bc64476b615612781930508032f238fb97e26a31bb5fb8f2fa1b"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/octoguns-actions-3f08332a.json"
 reads = []
@@ -46,8 +46,8 @@ manifest_name = "octoguns-actions-3f08332a"
 [[contracts]]
 kind = "DojoContract"
 address = "0x2a05c0dd95f75878a0e3fce212030b027a1215c354296e3d2884c79da267f45"
-class_hash = "0x479a5e5c14eb807ee8e669babdb9054852d1015cbc5eb87f3e1e900d3e266bc"
-original_class_hash = "0x479a5e5c14eb807ee8e669babdb9054852d1015cbc5eb87f3e1e900d3e266bc"
+class_hash = "0x13eed46d5acf1c35b4de3e6bd5866f175497ad378e7ebc72cf3bd2f448caf47"
+original_class_hash = "0x13eed46d5acf1c35b4de3e6bd5866f175497ad378e7ebc72cf3bd2f448caf47"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/octoguns-spawn-1acb0980.json"
 reads = []
@@ -69,8 +69,8 @@ manifest_name = "octoguns-spawn-1acb0980"
 [[contracts]]
 kind = "DojoContract"
 address = "0x5ca3b54dfce38ac89891911cb873bc60f22d8cd2d3b8c1309209084c59a10d7"
-class_hash = "0x22c262a943c21ba54cb71adfc90231d75b5c1de90c9582dbc18ddc6a13e1d73"
-original_class_hash = "0x22c262a943c21ba54cb71adfc90231d75b5c1de90c9582dbc18ddc6a13e1d73"
+class_hash = "0x5f4c1c05458b56c458d30bdc50723329595b6b2b849f4ac6b0b79159c03a5"
+original_class_hash = "0x5f4c1c05458b56c458d30bdc50723329595b6b2b849f4ac6b0b79159c03a5"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/octoguns-start-5506b80f.json"
 reads = []
@@ -95,8 +95,8 @@ manifest_name = "octoguns-start-5506b80f"
 
 [[models]]
 kind = "DojoModel"
-class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
-original_class_hash = "0x74d05ffaede77e5a7d165054ba2063a139465a572d725ab24f60d182986c7da"
+class_hash = "0x39e6ae568ba31ee834a8ad49221ae8c2722af9c2cb860b4dfa5c5c049db8dcd"
+original_class_hash = "0x39e6ae568ba31ee834a8ad49221ae8c2722af9c2cb860b4dfa5c5c049db8dcd"
 abi = "manifests/dev/deployment/abis/models/octoguns-Bullet-69e7a9ab.json"
 tag = "octoguns-Bullet"
 qualified_path = "octoguns::models::bullet::bullet"
@@ -118,7 +118,7 @@ type = "u32"
 key = false
 
 [[models.members]]
-name = "direction"
+name = "angle"
 type = "u32"
 key = false
 
@@ -302,8 +302,8 @@ key = false
 
 [[models]]
 kind = "DojoModel"
-class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
-original_class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
+class_hash = "0x28f28d0f03544299f5be80803fd6c00c5226857cfb2580d4f5de12ccc4aab82"
+original_class_hash = "0x28f28d0f03544299f5be80803fd6c00c5226857cfb2580d4f5de12ccc4aab82"
 abi = "manifests/dev/deployment/abis/models/octoguns-SessionMeta-4f7fd982.json"
 tag = "octoguns-SessionMeta"
 qualified_path = "octoguns::models::sessions::session_meta"
@@ -320,11 +320,16 @@ type = "u32"
 key = false
 
 [[models.members]]
-name = "bullets"
-type = "Array<u32>"
+name = "p1_character"
+type = "u32"
 key = false
 
 [[models.members]]
-name = "characters"
+name = "p2_character"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "bullets"
 type = "Array<u32>"
 key = false

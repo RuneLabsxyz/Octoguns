@@ -3,18 +3,20 @@
     import Scene from '$lib/3d/Scene.svelte';
     import Ui from '$lib/ui/Ui.svelte';
     import { componentValueStore } from "../../../dojo/componentValueStore";
-    import { dojoStore } from "../../../stores/dojoStore";
+    import { dojoStore, accountStore } from "../../../stores/dojoStore";
     import { gameState, sessionId, characterIds, playerCharacterCoords, enemyCharacterCoords, setPlayerCharacterCoords, setEnemyCharacterCoords } from '../../../stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
+    import type { Account } from 'starknet';
 
     export let data;
     let gameId = data.gameId;
+    let account: Account;
 
     $: sessionId.set(parseInt(gameId));
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
-    $: account = burnerManager.getActiveAccount();
+    $: if ($accountStore) account = $accountStore;
 
 	$: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()]);
 
@@ -28,33 +30,31 @@
     $: console.log("sessionMeta", $sessionMetaData);
     $: console.log("sessionMeta bullets", $sessionMetaData.bullets);
 
+    $: if ($sessionMetaData) characterIds.set([$sessionMetaData.pl_character, $sessionMetaData.p2_character]);
 
-    // Get all character Ids
-    $: if ($sessionMetaData.characters) {
-        const characterIdsArray = $sessionMetaData.characters.map((character: { value: any; }) => character.value);
-        characterIds.set(characterIdsArray);
-    }
 
     // Extract character data w/ characterIds
     $: if ($characterIds) {
         $characterIds.forEach(characterId => {
-            let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
-            let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
-            let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
-            // To get the actual data, you can subscribe to the store:
-            let characterOwner: string;
-            characterData.subscribe(value => {
-                characterOwner  = value.player_id;
-            });
+            if (characterId) {
+                let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
+                let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
+                let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
+                // To get the actual data, you can subscribe to the store:
+                let characterOwner: string;
+                characterData.subscribe(characterModel => {
+                    characterOwner  = characterModel.player_id;
+                });
 
-            characterPosition.subscribe(value => {
-                let res = areAddressesEqual(characterOwner, account.address);
-                if (res) {
-                    setPlayerCharacterCoords(characterId, value.coords);
-                } else {
-                    setEnemyCharacterCoords(characterId, value.coords);
-                }
-            });
+                characterPosition.subscribe(position => {
+                    let res = areAddressesEqual(characterOwner, account.address);
+                    if (res) {
+                        setPlayerCharacterCoords(characterId, position.coords);
+                    } else {
+                        setEnemyCharacterCoords(characterId, position.coords);
+                    }
+                });
+            }
 
         });
     }

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { dojoStore } from "../../stores/dojoStore";
+    import { accountStore, dojoStore } from "../../stores/dojoStore";
     import { componentValueStore } from "../../dojo/componentValueStore";
     import { goto } from "$app/navigation";
 
     let availableSessions: any = null;
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
-    $: account = burnerManager.getActiveAccount();
+    $: account = $accountStore;
 
 	let playerEntity = torii.poseidonHash([account?.address])
 
