@@ -10,22 +10,21 @@
     export let data;
     let gameId = data.gameId;
 
-    $: sessionId.set(parseInt(gameId))
+    $: sessionId.set(parseInt(gameId));
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
-	$: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
+	$: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()]);
 
     $: sessionData = componentValueStore(clientComponents.Session, sessionEntity);
     $: sessionMetaData = componentValueStore(clientComponents.SessionMeta, sessionEntity);
 
-    $: gameState.set($sessionData.state)
+    $: gameState.set($sessionData.state);
 
-
+    // Some logs to see what's going on
     $: console.log("session", $sessionData);
     $: console.log("sessionMeta", $sessionMetaData);
-
-    $: console.log("sessionMeta bullets", $sessionMetaData.bullets)
+    $: console.log("sessionMeta bullets", $sessionMetaData.bullets);
 
 
     // Get all character Ids
@@ -34,15 +33,15 @@
         characterIds.set(characterIdsArray);
     }
 
-    // Extract charcter data
+    // Extract character data w/ characterIds
     $: if ($characterIds) {
         $characterIds.forEach(characterId => {
-            let characterEntity = torii.poseidonHash([BigInt(characterId).toString()])
-            let characterData = componentValueStore(clientComponents.Character, characterEntity);
+            let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
+            let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
 
-            // Subscribe to characterData to access the value
+            // To get the actual data, you can subscribe to the store:
             characterData.subscribe(value => {
-                console.log("Character Data for ID", characterId, ":", value);
+                console.log("Character Data Value:", value); 
             });
         });
     }
