@@ -1,12 +1,16 @@
 <script lang="ts">
     import Splitscreen from './Cameras/SplitScreen.svelte';
     import BirdView from './Cameras/BirdView.svelte';
-    // TEMPORARY
-    let birdView: boolean = true;
+    import { birdView } from '../../stores/cameraStores';
+
+    let birdViewValue: boolean;
+
+    $: birdViewValue = $birdView
 </script>
 
-{#if birdView}
-    <BirdView />
-{:else}
+{#if birdViewValue}
+    <BirdView />    
+{/if}
+{#if !birdViewValue}
     <Splitscreen />
 {/if}

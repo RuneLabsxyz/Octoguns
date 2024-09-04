@@ -4,6 +4,7 @@
     import { componentValueStore } from "../../dojo/componentValueStore";
     import GameList from "$lib/games/GameList.svelte";
     import { goto } from "$app/navigation";
+    import { type Entity } from "@dojoengine/recs";
 
     let availableSessions: any = null;
     let loadingToGame = false; // TODO add loading thingy

@@ -3,7 +3,7 @@
     import { PerspectiveCamera } from "three";
 
     let cameras: PerspectiveCamera[] = [];
-    let numCameras: number = 8; 
+    let numCameras: number = 1; 
 
     const { renderer, scene } = useThrelte();
 
@@ -33,8 +33,8 @@
           renderer.setScissorTest(false);
         }
       }
+      renderCameras()
 
-      renderer.setAnimationLoop(renderCameras);
     });
   </script>
   
