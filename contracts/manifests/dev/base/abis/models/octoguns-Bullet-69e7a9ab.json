@@ -397,7 +397,7 @@
         "type": "core::integer::u32"
       },
       {
-        "name": "direction",
+        "name": "angle",
         "type": "core::integer::u32"
       },
       {

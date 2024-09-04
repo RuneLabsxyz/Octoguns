@@ -23,7 +23,7 @@ impl BulletIntrospect<> of dojo::model::introspect::Introspect<Bullet<>> {
                     layout: dojo::model::introspect::Introspect::<u32>::layout()
                 },
                 dojo::model::FieldLayout {
-                    selector: 614499057413201613508653200066187686724488589622048075426255068221310241069,
+                    selector: 1755856302283101431544936574641461975417678802753214389107530761822752330666,
                     layout: dojo::model::introspect::Introspect::<u32>::layout()
                 },
                 dojo::model::FieldLayout {
@@ -58,7 +58,7 @@ impl BulletIntrospect<> of dojo::model::introspect::Introspect<Bullet<>> {
                         ty: dojo::model::introspect::Introspect::<u32>::ty()
                     },
                     dojo::model::introspect::Member {
-                        name: 'direction',
+                        name: 'angle',
                         attrs: array![].span(),
                         ty: dojo::model::introspect::Introspect::<u32>::ty()
                     },
@@ -79,7 +79,7 @@ pub struct BulletEntity {
     __id: felt252, // private field
     pub coords: Vec2,
     pub speed: u32,
-    pub direction: u32,
+    pub angle: u32,
     pub shot_by: ContractAddress,
 }
 
@@ -156,31 +156,31 @@ pub impl BulletEntityStoreImpl of BulletEntityStore {
             );
     }
 
-    fn get_direction(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> u32 {
+    fn get_angle(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> u32 {
         let mut values = dojo::model::ModelEntity::<
             BulletEntity
         >::get_member(
             world,
             entity_id,
-            614499057413201613508653200066187686724488589622048075426255068221310241069
+            1755856302283101431544936574641461975417678802753214389107530761822752330666
         );
         let field_value = core::serde::Serde::<u32>::deserialize(ref values);
 
         if core::option::OptionTrait::<u32>::is_none(@field_value) {
-            panic!("Field `Bullet::direction`: deserialization failed.");
+            panic!("Field `Bullet::angle`: deserialization failed.");
         }
 
         core::option::OptionTrait::<u32>::unwrap(field_value)
     }
 
-    fn set_direction(self: @BulletEntity, world: dojo::world::IWorldDispatcher, value: u32) {
+    fn set_angle(self: @BulletEntity, world: dojo::world::IWorldDispatcher, value: u32) {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(@value, ref serialized);
 
         self
             .set_member(
                 world,
-                614499057413201613508653200066187686724488589622048075426255068221310241069,
+                1755856302283101431544936574641461975417678802753214389107530761822752330666,
                 serialized.span()
             );
     }
@@ -325,7 +325,7 @@ pub impl BulletStoreImpl of BulletStore {
             );
     }
 
-    fn get_direction(world: dojo::world::IWorldDispatcher, bullet_id: u32) -> u32 {
+    fn get_angle(world: dojo::world::IWorldDispatcher, bullet_id: u32) -> u32 {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(@bullet_id, ref serialized);
 
@@ -334,26 +334,26 @@ pub impl BulletStoreImpl of BulletStore {
         >::get_member(
             world,
             serialized.span(),
-            614499057413201613508653200066187686724488589622048075426255068221310241069
+            1755856302283101431544936574641461975417678802753214389107530761822752330666
         );
 
         let field_value = core::serde::Serde::<u32>::deserialize(ref values);
 
         if core::option::OptionTrait::<u32>::is_none(@field_value) {
-            panic!("Field `Bullet::direction`: deserialization failed.");
+            panic!("Field `Bullet::angle`: deserialization failed.");
         }
 
         core::option::OptionTrait::<u32>::unwrap(field_value)
     }
 
-    fn set_direction(self: @Bullet, world: dojo::world::IWorldDispatcher, value: u32) {
+    fn set_angle(self: @Bullet, world: dojo::world::IWorldDispatcher, value: u32) {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(@value, ref serialized);
 
         self
             .set_member(
                 world,
-                614499057413201613508653200066187686724488589622048075426255068221310241069,
+                1755856302283101431544936574641461975417678802753214389107530761822752330666,
                 serialized.span()
             );
     }
@@ -401,7 +401,7 @@ pub impl BulletModelEntityImpl of dojo::model::ModelEntity<BulletEntity> {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(self.coords, ref serialized);
         core::serde::Serde::serialize(self.speed, ref serialized);
-        core::serde::Serde::serialize(self.direction, ref serialized);
+        core::serde::Serde::serialize(self.angle, ref serialized);
         core::serde::Serde::serialize(self.shot_by, ref serialized);
 
         core::array::ArrayTrait::span(@serialized)
@@ -640,7 +640,7 @@ pub impl BulletModelImpl of dojo::model::Model<Bullet> {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(self.coords, ref serialized);
         core::serde::Serde::serialize(self.speed, ref serialized);
-        core::serde::Serde::serialize(self.direction, ref serialized);
+        core::serde::Serde::serialize(self.angle, ref serialized);
         core::serde::Serde::serialize(self.shot_by, ref serialized);
 
         core::array::ArrayTrait::span(@serialized)

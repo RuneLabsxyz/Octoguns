@@ -169,7 +169,7 @@
   },
   {
     "type": "struct",
-    "name": "octoguns::types::Action",
+    "name": "octoguns::types::Shot",
     "members": [
       {
         "name": "angle",
@@ -183,19 +183,15 @@
   },
   {
     "type": "struct",
-    "name": "octoguns::types::CharacterMove",
+    "name": "octoguns::types::TurnMove",
     "members": [
       {
-        "name": "character_ids",
-        "type": "core::array::Array::<core::integer::u32>"
-      },
-      {
-        "name": "movement",
+        "name": "sub_moves",
         "type": "core::array::Array::<octoguns::types::IVec2>"
       },
       {
-        "name": "actions",
-        "type": "core::array::Array::<octoguns::types::Action>"
+        "name": "shots",
+        "type": "core::array::Array::<octoguns::types::Shot>"
       }
     ]
   },
@@ -213,7 +209,7 @@
           },
           {
             "name": "moves",
-            "type": "core::array::Array::<octoguns::types::CharacterMove>"
+            "type": "octoguns::types::TurnMove"
           }
         ],
         "outputs": [],

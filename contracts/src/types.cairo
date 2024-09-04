@@ -6,16 +6,15 @@ struct Vec2 {
 } 
 
 #[derive(Copy, Drop, Serde)]
-struct Action {
+struct Shot {
     angle: u32, // 0 to 360
     step: u8,
 }
 
 #[derive(Clone, Drop, Serde)]
-struct CharacterMove {
-    character_ids: Array<u32>,
-    movement: Array<IVec2>,
-    actions: Array<Action>,
+struct TurnMove {
+    sub_moves: Array<IVec2>,
+    shots: Array<Shot>,
 }
 
 #[derive(Copy, Drop, Serde)]

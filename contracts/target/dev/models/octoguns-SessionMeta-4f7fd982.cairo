@@ -12,11 +12,15 @@ impl SessionMetaIntrospect<> of dojo::model::introspect::Introspect<SessionMeta<
                     layout: dojo::model::introspect::Introspect::<u32>::layout()
                 },
                 dojo::model::FieldLayout {
-                    selector: 937767295702124354420787697265174939173153106381800505936902334422534990348,
-                    layout: dojo::model::introspect::Introspect::<Array<u32>>::layout()
+                    selector: 128321575940958285562153927656423268117249006033863000347643251811109251498,
+                    layout: dojo::model::introspect::Introspect::<u32>::layout()
                 },
                 dojo::model::FieldLayout {
-                    selector: 1347744468848603792163423619361117413852387405864043963991576798942708354723,
+                    selector: 1518652711324629812385680852336538456702608973173079436249590480105867639192,
+                    layout: dojo::model::introspect::Introspect::<u32>::layout()
+                },
+                dojo::model::FieldLayout {
+                    selector: 937767295702124354420787697265174939173153106381800505936902334422534990348,
                     layout: dojo::model::introspect::Introspect::<Array<u32>>::layout()
                 }
             ]
@@ -42,14 +46,17 @@ impl SessionMetaIntrospect<> of dojo::model::introspect::Introspect<SessionMeta<
                         ty: dojo::model::introspect::Introspect::<u32>::ty()
                     },
                     dojo::model::introspect::Member {
-                        name: 'bullets',
+                        name: 'p1_character',
                         attrs: array![].span(),
-                        ty: dojo::model::introspect::Ty::Array(
-                            array![dojo::model::introspect::Introspect::<u32>::ty()].span()
-                        )
+                        ty: dojo::model::introspect::Introspect::<u32>::ty()
                     },
                     dojo::model::introspect::Member {
-                        name: 'characters',
+                        name: 'p2_character',
+                        attrs: array![].span(),
+                        ty: dojo::model::introspect::Introspect::<u32>::ty()
+                    },
+                    dojo::model::introspect::Member {
+                        name: 'bullets',
                         attrs: array![].span(),
                         ty: dojo::model::introspect::Ty::Array(
                             array![dojo::model::introspect::Introspect::<u32>::ty()].span()
@@ -66,8 +73,9 @@ impl SessionMetaIntrospect<> of dojo::model::introspect::Introspect<SessionMeta<
 pub struct SessionMetaEntity {
     __id: felt252, // private field
     pub turn_count: u32,
+    pub p1_character: u32,
+    pub p2_character: u32,
     pub bullets: Array<u32>,
-    pub characters: Array<u32>,
 }
 
 #[generate_trait]
@@ -114,6 +122,68 @@ pub impl SessionMetaEntityStoreImpl of SessionMetaEntityStore {
             );
     }
 
+    fn get_p1_character(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> u32 {
+        let mut values = dojo::model::ModelEntity::<
+            SessionMetaEntity
+        >::get_member(
+            world,
+            entity_id,
+            128321575940958285562153927656423268117249006033863000347643251811109251498
+        );
+        let field_value = core::serde::Serde::<u32>::deserialize(ref values);
+
+        if core::option::OptionTrait::<u32>::is_none(@field_value) {
+            panic!("Field `SessionMeta::p1_character`: deserialization failed.");
+        }
+
+        core::option::OptionTrait::<u32>::unwrap(field_value)
+    }
+
+    fn set_p1_character(
+        self: @SessionMetaEntity, world: dojo::world::IWorldDispatcher, value: u32
+    ) {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@value, ref serialized);
+
+        self
+            .set_member(
+                world,
+                128321575940958285562153927656423268117249006033863000347643251811109251498,
+                serialized.span()
+            );
+    }
+
+    fn get_p2_character(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> u32 {
+        let mut values = dojo::model::ModelEntity::<
+            SessionMetaEntity
+        >::get_member(
+            world,
+            entity_id,
+            1518652711324629812385680852336538456702608973173079436249590480105867639192
+        );
+        let field_value = core::serde::Serde::<u32>::deserialize(ref values);
+
+        if core::option::OptionTrait::<u32>::is_none(@field_value) {
+            panic!("Field `SessionMeta::p2_character`: deserialization failed.");
+        }
+
+        core::option::OptionTrait::<u32>::unwrap(field_value)
+    }
+
+    fn set_p2_character(
+        self: @SessionMetaEntity, world: dojo::world::IWorldDispatcher, value: u32
+    ) {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@value, ref serialized);
+
+        self
+            .set_member(
+                world,
+                1518652711324629812385680852336538456702608973173079436249590480105867639192,
+                serialized.span()
+            );
+    }
+
     fn get_bullets(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> Array<u32> {
         let mut values = dojo::model::ModelEntity::<
             SessionMetaEntity
@@ -141,37 +211,6 @@ pub impl SessionMetaEntityStoreImpl of SessionMetaEntityStore {
             .set_member(
                 world,
                 937767295702124354420787697265174939173153106381800505936902334422534990348,
-                serialized.span()
-            );
-    }
-
-    fn get_characters(world: dojo::world::IWorldDispatcher, entity_id: felt252) -> Array<u32> {
-        let mut values = dojo::model::ModelEntity::<
-            SessionMetaEntity
-        >::get_member(
-            world,
-            entity_id,
-            1347744468848603792163423619361117413852387405864043963991576798942708354723
-        );
-        let field_value = core::serde::Serde::<Array<u32>>::deserialize(ref values);
-
-        if core::option::OptionTrait::<Array<u32>>::is_none(@field_value) {
-            panic!("Field `SessionMeta::characters`: deserialization failed.");
-        }
-
-        core::option::OptionTrait::<Array<u32>>::unwrap(field_value)
-    }
-
-    fn set_characters(
-        self: @SessionMetaEntity, world: dojo::world::IWorldDispatcher, value: Array<u32>
-    ) {
-        let mut serialized = core::array::ArrayTrait::new();
-        core::serde::Serde::serialize(@value, ref serialized);
-
-        self
-            .set_member(
-                world,
-                1347744468848603792163423619361117413852387405864043963991576798942708354723,
                 serialized.span()
             );
     }
@@ -252,6 +291,72 @@ pub impl SessionMetaStoreImpl of SessionMetaStore {
             );
     }
 
+    fn get_p1_character(world: dojo::world::IWorldDispatcher, session_id: u32) -> u32 {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@session_id, ref serialized);
+
+        let mut values = dojo::model::Model::<
+            SessionMeta
+        >::get_member(
+            world,
+            serialized.span(),
+            128321575940958285562153927656423268117249006033863000347643251811109251498
+        );
+
+        let field_value = core::serde::Serde::<u32>::deserialize(ref values);
+
+        if core::option::OptionTrait::<u32>::is_none(@field_value) {
+            panic!("Field `SessionMeta::p1_character`: deserialization failed.");
+        }
+
+        core::option::OptionTrait::<u32>::unwrap(field_value)
+    }
+
+    fn set_p1_character(self: @SessionMeta, world: dojo::world::IWorldDispatcher, value: u32) {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@value, ref serialized);
+
+        self
+            .set_member(
+                world,
+                128321575940958285562153927656423268117249006033863000347643251811109251498,
+                serialized.span()
+            );
+    }
+
+    fn get_p2_character(world: dojo::world::IWorldDispatcher, session_id: u32) -> u32 {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@session_id, ref serialized);
+
+        let mut values = dojo::model::Model::<
+            SessionMeta
+        >::get_member(
+            world,
+            serialized.span(),
+            1518652711324629812385680852336538456702608973173079436249590480105867639192
+        );
+
+        let field_value = core::serde::Serde::<u32>::deserialize(ref values);
+
+        if core::option::OptionTrait::<u32>::is_none(@field_value) {
+            panic!("Field `SessionMeta::p2_character`: deserialization failed.");
+        }
+
+        core::option::OptionTrait::<u32>::unwrap(field_value)
+    }
+
+    fn set_p2_character(self: @SessionMeta, world: dojo::world::IWorldDispatcher, value: u32) {
+        let mut serialized = core::array::ArrayTrait::new();
+        core::serde::Serde::serialize(@value, ref serialized);
+
+        self
+            .set_member(
+                world,
+                1518652711324629812385680852336538456702608973173079436249590480105867639192,
+                serialized.span()
+            );
+    }
+
     fn get_bullets(world: dojo::world::IWorldDispatcher, session_id: u32) -> Array<u32> {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(@session_id, ref serialized);
@@ -284,39 +389,6 @@ pub impl SessionMetaStoreImpl of SessionMetaStore {
                 serialized.span()
             );
     }
-
-    fn get_characters(world: dojo::world::IWorldDispatcher, session_id: u32) -> Array<u32> {
-        let mut serialized = core::array::ArrayTrait::new();
-        core::serde::Serde::serialize(@session_id, ref serialized);
-
-        let mut values = dojo::model::Model::<
-            SessionMeta
-        >::get_member(
-            world,
-            serialized.span(),
-            1347744468848603792163423619361117413852387405864043963991576798942708354723
-        );
-
-        let field_value = core::serde::Serde::<Array<u32>>::deserialize(ref values);
-
-        if core::option::OptionTrait::<Array<u32>>::is_none(@field_value) {
-            panic!("Field `SessionMeta::characters`: deserialization failed.");
-        }
-
-        core::option::OptionTrait::<Array<u32>>::unwrap(field_value)
-    }
-
-    fn set_characters(self: @SessionMeta, world: dojo::world::IWorldDispatcher, value: Array<u32>) {
-        let mut serialized = core::array::ArrayTrait::new();
-        core::serde::Serde::serialize(@value, ref serialized);
-
-        self
-            .set_member(
-                world,
-                1347744468848603792163423619361117413852387405864043963991576798942708354723,
-                serialized.span()
-            );
-    }
 }
 
 pub impl SessionMetaModelEntityImpl of dojo::model::ModelEntity<SessionMetaEntity> {
@@ -327,8 +399,9 @@ pub impl SessionMetaModelEntityImpl of dojo::model::ModelEntity<SessionMetaEntit
     fn values(self: @SessionMetaEntity) -> Span<felt252> {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(self.turn_count, ref serialized);
+        core::serde::Serde::serialize(self.p1_character, ref serialized);
+        core::serde::Serde::serialize(self.p2_character, ref serialized);
         core::serde::Serde::serialize(self.bullets, ref serialized);
-        core::serde::Serde::serialize(self.characters, ref serialized);
 
         core::array::ArrayTrait::span(@serialized)
     }
@@ -565,8 +638,9 @@ pub impl SessionMetaModelImpl of dojo::model::Model<SessionMeta> {
     fn values(self: @SessionMeta) -> Span<felt252> {
         let mut serialized = core::array::ArrayTrait::new();
         core::serde::Serde::serialize(self.turn_count, ref serialized);
+        core::serde::Serde::serialize(self.p1_character, ref serialized);
+        core::serde::Serde::serialize(self.p2_character, ref serialized);
         core::serde::Serde::serialize(self.bullets, ref serialized);
-        core::serde::Serde::serialize(self.characters, ref serialized);
 
         core::array::ArrayTrait::span(@serialized)
     }

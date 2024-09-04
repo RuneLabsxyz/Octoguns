@@ -18,7 +18,7 @@ impl CharacterModelImpl of CharacterModelTrait {
     }
 }
 
-// 10 000 x 10 000 x 10 000 map (high level position)
+// 10 000 x 10 000 map (high level position)
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
 pub struct CharacterPosition {

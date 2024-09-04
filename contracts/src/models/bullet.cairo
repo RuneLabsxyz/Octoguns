@@ -11,7 +11,7 @@ pub struct Bullet {
     pub bullet_id: u32,
     pub coords: Vec2,
     pub speed: u32, // pixels per step
-    pub direction: u32, // in degrees
+    pub angle: u32, // in degrees
     pub shot_by: ContractAddress
 }
 
@@ -25,8 +25,8 @@ pub struct Vec2_i64 {
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, speed: u32, direction: u32, player: ContractAddress) -> Bullet {
-        Bullet { bullet_id: id, coords, speed, direction, shot_by: player}
+    fn new(id: u32, coords: Vec2, angle: u32, player: ContractAddress) -> Bullet {
+        Bullet { bullet_id: id, coords, speed: 75, angle, shot_by: player}
     }
 
 
@@ -35,7 +35,7 @@ impl BulletImpl of BulletTrait {
         let position_x_w_offset = position.x + 100;
         let position_y_w_offset = position.y + 100;
         let speed = self.speed;
-        let direction: i64 = self.direction.into() * TEN_E_8;
+        let direction: i64 = self.angle.into() * TEN_E_8;
 
 
 

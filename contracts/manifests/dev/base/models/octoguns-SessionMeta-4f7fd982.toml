@@ -1,6 +1,6 @@
 kind = "DojoModel"
-class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
-original_class_hash = "0x588ccd89bb4fd5e8638903a4497ac4a7da3856ce29b2ef010737ef8118727db"
+class_hash = "0x28f28d0f03544299f5be80803fd6c00c5226857cfb2580d4f5de12ccc4aab82"
+original_class_hash = "0x28f28d0f03544299f5be80803fd6c00c5226857cfb2580d4f5de12ccc4aab82"
 abi = "manifests/dev/base/abis/models/octoguns-SessionMeta-4f7fd982.json"
 tag = "octoguns-SessionMeta"
 qualified_path = "octoguns::models::sessions::session_meta"
@@ -17,11 +17,16 @@ type = "u32"
 key = false
 
 [[members]]
-name = "bullets"
-type = "Array<u32>"
+name = "p1_character"
+type = "u32"
 key = false
 
 [[members]]
-name = "characters"
+name = "p2_character"
+type = "u32"
+key = false
+
+[[members]]
+name = "bullets"
 type = "Array<u32>"
 key = false
