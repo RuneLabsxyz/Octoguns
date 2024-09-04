@@ -4,7 +4,7 @@
     import Ui from '$lib/ui/Ui.svelte';
     import { componentValueStore } from "../../../dojo/componentValueStore";
     import { dojoStore } from "../../../stores/dojoStore";
-    import { gameState, sessionId, characterIds } from '../../../stores/gameStores';
+    import { gameState, sessionId, characterIds, characterCoords, setCharacterCoords } from '../../../stores/gameStores';
 
     export let data;
     let gameId = data.gameId;
@@ -44,7 +44,7 @@
             });
 
             characterPosition.subscribe(value => {
-                console.log("Character Position Value:", value); 
+                setCharacterCoords(characterId, value.coords);
             });
 
         });
