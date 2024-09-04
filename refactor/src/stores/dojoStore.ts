@@ -13,8 +13,10 @@ export async function initializeStore() {
   try {
     console.log('Initializing store...');
     const result = await setup(dojoConfig);
+    console.log("setup complete")
     dojoStore.set(result);
     accountStore.set(result.burnerManager.getActiveAccount());
+    console.log("set stores")
     isSetup.set(true);
 
     dojoStore.subscribe((value) => {

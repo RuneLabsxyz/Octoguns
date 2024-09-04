@@ -30,13 +30,14 @@
     $: console.log("sessionMeta", $sessionMetaData);
     $: console.log("sessionMeta bullets", $sessionMetaData.bullets);
 
-    $: if ($sessionMetaData) characterIds.set([$sessionMetaData.pl_character, $sessionMetaData.p2_character]);
-
+    $: if ($sessionMetaData) characterIds.set([$sessionMetaData.p1_character, $sessionMetaData.p2_character]);
 
     // Extract character data w/ characterIds
     $: if ($characterIds) {
+        console.log($characterIds)
         $characterIds.forEach(characterId => {
             if (characterId) {
+                console.log(characterId)
                 let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
                 let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
                 let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);

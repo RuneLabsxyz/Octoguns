@@ -7,6 +7,7 @@
 
     let availableSessions: any = null;
     let loadingToGame = false; // TODO add loading thingy
+    let playerEntity: Entity;
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
 
@@ -14,7 +15,7 @@
 
 	$: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-	$: playerEntity = torii.poseidonHash([account?.address])
+	$: if ($accountStore) playerEntity = torii.poseidonHash([account?.address])
 
 	$: global = componentValueStore(clientComponents.Global, globalentity);
 	$: player = componentValueStore(clientComponents.Player, playerEntity);
