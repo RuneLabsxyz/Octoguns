@@ -4,7 +4,8 @@
     import Ui from '$lib/ui/Ui.svelte';
     import { componentValueStore } from "../../../dojo/componentValueStore";
     import { dojoStore } from "../../../stores/dojoStore";
-    import { gameState, sessionId, characterIds, characterCoords, setCharacterCoords } from '../../../stores/gameStores';
+    import { gameState, sessionId, characterIds, playerCharacterCoords, enemyCharacterCoords, setPlayerCharacterCoords, setEnemyCharacterCoords } from '../../../stores/gameStores';
+    import { areAddressesEqual } from '$lib/helper.';
 
     export let data;
     let gameId = data.gameId;
@@ -12,6 +13,8 @@
     $: sessionId.set(parseInt(gameId));
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any);
+
+    $: account = burnerManager.getActiveAccount();
 
 	$: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()]);
 
@@ -39,12 +42,18 @@
             let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
             let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
             // To get the actual data, you can subscribe to the store:
+            let characterOwner: string;
             characterData.subscribe(value => {
-                console.log("Character Data Value:", value); 
+                characterOwner  = value.player_id;
             });
 
             characterPosition.subscribe(value => {
-                setCharacterCoords(characterId, value.coords);
+                let res = areAddressesEqual(characterOwner, account.address);
+                if (res) {
+                    setPlayerCharacterCoords(characterId, value.coords);
+                } else {
+                    setEnemyCharacterCoords(characterId, value.coords);
+                }
             });
 
         });
