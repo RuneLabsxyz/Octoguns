@@ -5,7 +5,6 @@
     import { componentValueStore } from "../../../dojo/componentValueStore";
     import { dojoStore } from "../../../stores/dojoStore";
     import { gameState, sessionId, characterIds } from '../../../stores/gameStores';
-    import { derived } from "svelte/store";
 
     export let data;
     let gameId = data.gameId;
