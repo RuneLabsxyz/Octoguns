@@ -37,11 +37,16 @@
         $characterIds.forEach(characterId => {
             let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
             let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
-
+            let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
             // To get the actual data, you can subscribe to the store:
             characterData.subscribe(value => {
                 console.log("Character Data Value:", value); 
             });
+
+            characterPosition.subscribe(value => {
+                console.log("Character Position Value:", value); 
+            });
+
         });
     }
 
