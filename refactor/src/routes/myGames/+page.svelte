@@ -1,5 +1,4 @@
 <script lang="ts">
-     import { derived } from "svelte/store";
     import { dojoStore } from "../../stores/dojoStore";
     import { componentValueStore } from "../../dojo/componentValueStore";
     import { goto } from "$app/navigation";
