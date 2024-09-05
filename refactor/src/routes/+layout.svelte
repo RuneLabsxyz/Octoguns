@@ -11,6 +11,7 @@
         try {
             await initializeStore(); 
             isStoreInitialized.set(true);
+            console.log("store initialized")
         } catch (error) {
             console.error('Failed to initialize store:', error);
             isStoreInitialized.set(false);
