@@ -30,8 +30,12 @@
     $: console.log("sessionMeta", $sessionMetaData);
     $: console.log("sessionMeta bullets", $sessionMetaData.bullets);
 
-    $: if ($sessionMetaData) characterIds.set([$sessionMetaData.p1_character, $sessionMetaData.p2_character]);
 
+    // Get all character Ids
+    $: if ($sessionMetaData.characters) {
+        const characterIdsArray = $sessionMetaData.characters.map((character: { value: any; }) => character.value);
+        characterIds.set(characterIdsArray);
+    }
     // Extract character data w/ characterIds
     $: if ($characterIds) {
         console.log($characterIds)

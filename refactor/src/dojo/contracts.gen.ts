@@ -15,7 +15,7 @@ export async function setupWorld(provider: DojoProvider) {
 
         
         // Call the `move` system with the specified Account and calldata
-        const move = async (props: { account: Account, session_id: number, moves: models.TurnMove }) => {
+        const move = async (props: { account: Account, session_id: number, moves: any  }) => {
             try {
                 return await provider.execute(
                     props.account,

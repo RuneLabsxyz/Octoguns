@@ -186,7 +186,11 @@
     "name": "octoguns::types::TurnMove",
     "members": [
       {
-        "name": "sub_moves",
+        "name": "character_ids",
+        "type": "core::array::Array::<core::integer::u32>"
+      },
+      {
+        "name": "movement",
         "type": "core::array::Array::<octoguns::types::IVec2>"
       },
       {
@@ -209,7 +213,7 @@
           },
           {
             "name": "moves",
-            "type": "octoguns::types::TurnMove"
+            "type": "core::array::Array::<octoguns::types::TurnMove>"
           }
         ],
         "outputs": [],

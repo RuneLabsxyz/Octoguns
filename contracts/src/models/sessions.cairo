@@ -29,16 +29,14 @@ impl SessionImpl of SessionTrait {
     
 }
 
-#[derive(Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 #[dojo::model]
 pub struct SessionMeta {
     #[key]
     pub session_id: u32,
     pub turn_count: u32, // mod 2 = 1 is player 2 and mod 2 = 0 is player 1
-    pub p1_character: u32,
-    pub p2_character: u32 ,
     pub bullets: Array<u32>,
-
+    pub characters: Array<u32>,
 }
 
 #[generate_trait]
@@ -48,8 +46,7 @@ impl SessionMetaImpl of SessionMetaTrait {
             session_id, 
             turn_count: 0, 
             bullets: ArrayTrait::new(), 
-            p1_character: 0,
-            p2_character: 0
+            characters: ArrayTrait::new()
         }
     }
     fn next_turn(ref self: SessionMeta) {
@@ -57,6 +54,12 @@ impl SessionMetaImpl of SessionMetaTrait {
     }
     fn add_bullet(ref self: SessionMeta, bullet_id: u32) {
         self.bullets.append(bullet_id);
+    }
+    fn add_character(ref self: SessionMeta, character_id: u32) {
+        self.characters.append(character_id);
+    }
+    fn set_new_characters(ref self: SessionMeta, characters: Array<u32>) {
+        self.characters = characters;
     }
     fn set_new_bullets(ref self: SessionMeta, bullets: Array<u32>) {
         self.bullets = bullets;

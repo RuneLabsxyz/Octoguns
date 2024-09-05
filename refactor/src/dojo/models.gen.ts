@@ -185,19 +185,18 @@ export const SessionDefinition = {
 export interface SessionMeta {
     session_id: Number;
     turn_count: Number;
-    p1_character: Number;
-    p2_character: Number;
     bullets: Number[];
+    characters: Number[];
     
 }
 export const SessionMetaDefinition = {
     session_id: RecsType.Number,
     turn_count: RecsType.Number,
-    p1_character: RecsType.Number,
-    p2_character: RecsType.Number,
     bullets: RecsType.NumberArray,
+    characters: RecsType.NumberArray,
     
 };
+
 
 
 export function defineContractComponents(world: World) {
@@ -373,15 +372,14 @@ export function defineContractComponents(world: World) {
                 {
                     session_id: RecsType.Number,
                     turn_count: RecsType.Number,
-                    p1_character: RecsType.Number,
-                    p2_character: RecsType.Number,
                     bullets: RecsType.NumberArray,
+                    characters: RecsType.NumberArray,
                 },
                 {
                     metadata: {
                         namespace: "octoguns",
                         name: "SessionMeta",
-                        types: ["u32", "u32", "u32", "u32", "array"],
+                        types: ["u32", "u32", "array", "array"],
                         customTypes: [],
                     },
                 }

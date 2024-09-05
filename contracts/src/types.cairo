@@ -1,4 +1,3 @@
-
 #[derive(Copy, Drop, Serde, Introspect)]
 struct Vec2 {
     x: u32,
@@ -13,7 +12,8 @@ struct Shot {
 
 #[derive(Clone, Drop, Serde)]
 struct TurnMove {
-    sub_moves: Array<IVec2>,
+    character_ids: Array<u32>,
+    movement: Array<IVec2>,
     shots: Array<Shot>,
 }
 
@@ -24,5 +24,3 @@ struct IVec2 {
     xdir: bool,
     ydir: bool
 }
-
-
