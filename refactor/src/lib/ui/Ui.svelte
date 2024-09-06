@@ -2,17 +2,31 @@
     import StartGame from "./StartGame.svelte";
     import { birdView } from "../../stores/cameraStores";
     import { recordingMode, replayMode } from "../../stores/gameStores";
+    import { currentSubMove, recordedMove } from "../../stores/gameStores";
     
-    function handleSwitch(e: Event) {
+    function setRecordingMode(e: Event) {
         recordingMode.set(!$recordingMode);
-        replayMode.set(!$recordingMode);
-        console.log($recordingMode)
-
+        replayMode.set(false);
     }
+
+    function setReplayMode(e: Event) {
+        recordingMode.set(false);
+        replayMode.set(!$recordingMode)
+    }
+
+    function reset(e: Event) {
+        currentSubMove.set({x:0, y:0});
+        recordedMove.set({sub_moves: [], shots: []});
+    }
+
+
 </script>
 
-<div class="pointer-events-auto">
+<div class="pointer-events-auto" style="align-content: space-between;">
     <button on:click={() => {console.log($birdView); birdView.set(!$birdView)}}>Switch view</button>
-    <button on:click={handleSwitch}> Switch To {$recordingMode ? "replay" : "recording"} mode </button>
+    <button on:click={setRecordingMode}> Record </button>
+    <button on:click={setReplayMode}> Replay </button>
+    <button on:click={reset}> Reset </button>
+
     <StartGame />
 </div>

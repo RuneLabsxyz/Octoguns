@@ -14,7 +14,7 @@
 
     let frame_counter = 0;
     let move_speed = 1/3;
-    const moveDirection = new Vector3();
+    let moveDirection = new Vector3();
 
 
     onMount(() => {
@@ -67,6 +67,7 @@
         if(frame_counter == 300) {
             recordingMode.set(false);
             console.log($recordedMove);
+            frame_counter = 0;
         }
 
         moveDirection.x =0;
@@ -75,6 +76,15 @@
     }
 
     const replayMove = (move: TurnData) => {
+        let move_index = frame_counter / 3;
+        let sub_move = move.sub_moves[move_index];
+
+        if (frame_counter % 3 == 0) {
+            moveDirection = new Vector3(sub_move.x, 0, sub_move.y);
+            $camera.position.add(moveDirection);
+        }
+
+        frame_counter += 1;
 
     }
 
