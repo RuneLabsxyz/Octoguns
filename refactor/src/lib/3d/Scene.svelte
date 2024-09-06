@@ -5,7 +5,7 @@
     import Map from './Map.svelte';
     import Cameras from './Cameras.svelte';
     import Characters from './Characters.svelte';
-    import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, frameCounter } from '../../stores/gameStores';
+    import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, currentSubMove } from '../../stores/gameStores';
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
     import type { TurnData } from '../../stores/gameStores';
     import { truncateToDecimals } from '$lib/helper.';
@@ -13,7 +13,7 @@
     let {renderer, scene, camera} = useThrelte();
 
     let frame_counter = 0;
-    let move_speed = 1;
+    let move_speed = 1/3;
     const moveDirection = new Vector3();
 
 
@@ -33,7 +33,6 @@
     });
 
     const recordMove = () => {
-        console.log($recordedMove + " at frame: " + frame_counter);
         if ($keyStateStore.forward) moveDirection.z -= 1;
         if ($keyStateStore.backward) moveDirection.z += 1;
         if ($keyStateStore.left) moveDirection.x -= 1;
@@ -49,17 +48,20 @@
 
             $camera.position.add(moveDirection);
 
-            
-            let move = {
-                x: Math.abs(Math.round(moveDirection.x * 100)),
-                y: Math.abs(Math.round(moveDirection.z * 100)),
-                xdir: moveDirection.x >= 0,
-                ydir: moveDirection.z >= 0,
-            };
-            $recordedMove.sub_moves.push(move);
+            $currentSubMove.x += moveDirection.x;
+            $currentSubMove.y += moveDirection.z;
 
+            if (frame_counter % 3 == 0){
+                let move = {
+                    x: Math.abs(Math.round($currentSubMove.x * 100)),
+                    y: Math.abs(Math.round($currentSubMove.y * 100)),
+                    xdir: moveDirection.x >= 0,
+                    ydir: moveDirection.z >= 0,
+                };
+                $recordedMove.sub_moves.push(move);
+                currentSubMove.set({x:0, y:0});
+            }
             frame_counter+=1;
-
         }
 
         if(frame_counter == 300) {
