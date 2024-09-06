@@ -9,11 +9,21 @@ export const sessionId = writable<number>();
 export const characterIds = writable<number[]>([]);
 
 //true for recording, false for replaying
-export const recordingMode = writable<boolean>(true);
+export const recordingMode = writable<boolean>(false);
+export const replayMode = writable<boolean>(false);
 
-interface TurnData {
-	sub_moves: {x: number, y: number}[],
-	shots: {index: number, angle: number}
+export const recordedMove = writable<TurnData>( {
+  sub_moves: [],
+  shots: []
+});
+
+export const currentSubMove = writable<{x: number, y: number}>({x:0, y:0});
+
+export const frameCounter = writable<number>();
+
+export type TurnData = {
+	sub_moves: {x: number, y: number, xdir: boolean, ydir: boolean}[],
+	shots: {index: number, angle: number}[]
 }
 
 export const keyStateStore = writable<{
@@ -75,4 +85,3 @@ export function setEnemyCharacterCoords(key: number, coords: { x: number, y: num
     };
   });
 }
-
