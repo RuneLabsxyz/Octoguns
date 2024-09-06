@@ -9,10 +9,15 @@ export const sessionId = writable<number>();
 export const characterIds = writable<number[]>([]);
 
 //true for recording, false for replaying
-export const recordingMode = writable<boolean>(true);
+export const recordingMode = writable<boolean>(false);
+export const replayMode = writable<boolean>(false);
 
-interface TurnData {
-	sub_moves: {x: number, y: number}[],
+export const recordedMove = writable<TurnData>();
+
+export const frameCounter = writable<number>();
+
+export type TurnData = {
+	sub_moves: {x: number, y: number, xdir: boolean, ydir: boolean}[],
 	shots: {index: number, angle: number}
 }
 
