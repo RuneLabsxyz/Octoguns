@@ -80,6 +80,10 @@
         let sub_move = move.sub_moves[move_index];
 
         if (frame_counter % 3 == 0) {
+            let x_dif = sub_move.x;
+            let y_dif = sub_move.y;
+            if (!sub_move.xdir) x_dif *= -1;
+            if (!sub_move.ydir) y_dif *= -1;
             moveDirection = new Vector3(sub_move.x, 0, sub_move.y);
             $camera.position.add(moveDirection);
         }

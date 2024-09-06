@@ -22,7 +22,7 @@
 
 </script>
 
-<div class="pointer-events-auto" style="align-content: space-between;">
+<div class="pointer-events-auto" style="justify-content: space-between;">
     <button on:click={() => {console.log($birdView); birdView.set(!$birdView)}}>Switch view</button>
     <button on:click={setRecordingMode}> Record </button>
     <button on:click={setReplayMode}> Replay </button>
