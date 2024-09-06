@@ -49,6 +49,7 @@
 
             $camera.position.add(moveDirection);
 
+            
             let move = {
                 x: Math.abs(Math.round(moveDirection.x * 100)),
                 y: Math.abs(Math.round(moveDirection.z * 100)),
@@ -57,7 +58,17 @@
             };
             $recordedMove.sub_moves.push(move);
 
+            frame_counter+=1;
+
         }
+
+        if(frame_counter == 300) {
+            recordingMode.set(false);
+            console.log($recordedMove);
+        }
+
+        moveDirection.x =0;
+        moveDirection.z =0;
 
     }
 
@@ -66,19 +77,16 @@
     }
 
     useTask( (delta) => {
-        console.log(delta);
+        console.log($recordingMode)
 
-        if (frame_counter % 3 ==0) {
-            if ($recordingMode) {
-                recordMove();
-            }
-            if ($replayMode) {
-                replayMove($recordedMove);
-            }
+        if ($recordingMode) {
+            console.log("recording")
+            recordMove();
+        }
+        if ($replayMode) {
+            replayMove($recordedMove);
         }
 
-        //renderCameras()
-        frame_counter+=1;
     })
 
 </script>

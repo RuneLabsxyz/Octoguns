@@ -12,13 +12,16 @@ export const characterIds = writable<number[]>([]);
 export const recordingMode = writable<boolean>(false);
 export const replayMode = writable<boolean>(false);
 
-export const recordedMove = writable<TurnData>();
+export const recordedMove = writable<TurnData>( {
+  sub_moves: [],
+  shots: []
+});
 
 export const frameCounter = writable<number>();
 
 export type TurnData = {
 	sub_moves: {x: number, y: number, xdir: boolean, ydir: boolean}[],
-	shots: {index: number, angle: number}
+	shots: {index: number, angle: number}[]
 }
 
 export const keyStateStore = writable<{
