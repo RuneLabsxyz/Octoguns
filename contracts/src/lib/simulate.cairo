@@ -17,7 +17,7 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
             break;
         }
         let mut bullet = *bullets.at(character_index);
-        let (updated_bullet, character_id) = bullet.simulate(@character_positions);
+        let (updated_bullet, res) = bullet.simulate(@character_positions);
         match updated_bullet {
             Option::Some(bullet) => {
                 println!("bullet ({}, {}) angle {}", bullet.coords.x, bullet.coords.y, bullet.angle);
@@ -25,9 +25,11 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
             },
             Option::None => {},
         }
-        if character_id != 0 {
-            // Only append character if not hit
+        match res {
+            Option::Some(character_id) => {
                 dead_characters_ids.append(character_id);
+            },
+            Option::None => {},
         }
         character_index += 1;
     };
