@@ -35,14 +35,14 @@ impl BulletImpl of BulletTrait {
         let direction: i64 = self.angle.try_into().unwrap();
         let mut res: (Option<Bullet>, Option<u32>) = (Option::None(()), Option::None(())); 
 
-        let mut i: u8 = 10;
-        while i <= 10 {
+        let mut i: u8 = 0;
+        while i < 10 {
             let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 10);
             let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 10);
             let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
             let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
 
-            if new_x < 0 || new_x > 10_000 || new_y < 0 || new_y > 10_000 {
+            if new_x <= 0 || new_x >= 10_000 || new_y <= 0 || new_y >= 10_000 {
                 // out of bounds    
                 res = (Option::None(()), Option::None(()));
                 break;
@@ -58,17 +58,17 @@ impl BulletImpl of BulletTrait {
                 },
                 // hit a character
                 Option::Some(character_id) => {
-                    res = (Option::None(()), Option::Some(character_id));
+                    res = (Option::Some(self), Option::Some(character_id));
                     break;
                 }
             }
         };
 
-        let (_ , hit_result) = res;
+        let ( bullet, hit_result) = res;
 
         match hit_result {
             Option::None => {
-                return (Option::Some(self), Option::None(()));
+                return (bullet, Option::None(()));
             },
             Option::Some(character_id) => {
                 return (Option::None(()), Option::Some(character_id));
