@@ -1,4 +1,4 @@
-use octoguns::types::{Vec2};
+use octoguns::types::{Vec2, IVec2};
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait}; 
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8;
@@ -32,12 +32,8 @@ impl BulletImpl of BulletTrait {
 
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>) -> (Option<Bullet>, u32) {
         let position = self.coords;
-        let position_x_w_offset = position.x + 100;
-        let position_y_w_offset = position.y + 100;
         let speed = self.speed;
         let direction: i64 = self.angle.into() * TEN_E_8;
-
-
 
         let character_id = self.compute_hits(characters);
 
@@ -48,15 +44,15 @@ impl BulletImpl of BulletTrait {
         let x_shift = (fast_sin(direction) * speed.into()) / TEN_E_8;
         let y_shift = (fast_cos(direction) * speed.into()) / TEN_E_8;
 
-        let new = Vec2_i64 { x: position_x_w_offset.into() + x_shift, y: position_y_w_offset.into() + y_shift};
+        let new_x: i64 = position.x.try_into().unwrap() + x_shift;
+        let new_y: i64 = position.y.try_into().unwrap() + y_shift;
 
-        println!("new position with offset: {} {}", new.x, new.y );
-        if new.x < 100 || new.x > 10_100 || new.y < 100 || new.y > 10_100 {
+        println!("new position: {} {}", new_x, new_y);
+        if new_x < 0 || new_x > 10_000 || new_y < 0 || new_y > 10_000 {
             return (Option::None(()), character_id);
         }
-        let new_vec2 = Vec2 { x: new.x.try_into().unwrap() - 100 , y: new.y.try_into().unwrap() - 100 };
-        self.coords = new_vec2;
-        println!("new position: {} {}", new_vec2.x, new_vec2.y);
+
+        self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
 
         (Option::Some(self), character_id)
     }
@@ -114,7 +110,7 @@ mod simulate_tests {
                 panic!("Should not be none");
             },
             Option::Some(bullet) => {
-                assert!(bullet.coords.y == 1, "y should have changed");
+                assert!(bullet.coords.y == 75, "y should have changed by 75");
                 assert!(bullet.coords.x == 323, "x should not have changed")
             }
         }
@@ -133,7 +129,7 @@ mod simulate_tests {
              },
              Option::Some(bullet) => {
                 println!("x: {}, y: {}", bullet.coords.x, bullet.coords.y);
-                 assert!(bullet.coords.x == 754, "x should have changed");
+                 assert!(bullet.coords.x == 828, "x should have changed by 75");
                  assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }
