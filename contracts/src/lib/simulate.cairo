@@ -77,4 +77,55 @@ mod simulate_tests {
             }
         }
     }
+
+    #[test]
+    fn test_no_collisions() {
+        let address = starknet::contract_address_const::<0x0>();
+
+        let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 45, address);
+        let mut bullets = array![bullet];
+        let mut characters = array![
+            CharacterPositionTrait::new(1, Vec2 { x: 10, y: 10 }, 100, 0),
+            CharacterPositionTrait::new(2, Vec2 { x: -10, y: -10 }, 100, 0)
+        ];
+
+        let (updated_bullets, dead_characters_ids) = simulate_bullets(ref bullets, ref characters);
+
+        assert!(updated_bullets.len() == 1, "Bullet should not be removed");
+        assert!(dead_characters_ids.is_empty(), "No characters should be hit");
+    }
+
+    #[test]
+    fn test_multiple_collisions() {
+        let address = starknet::contract_address_const::<0x0>();
+
+        let bullet1 = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, address);
+        let bullet2 = BulletTrait::new(1, Vec2 { x: 5, y: 5 }, 180, address);
+        let mut bullets = array![bullet1, bullet2];
+        let mut characters = array![
+            CharacterPositionTrait::new(1, Vec2 { x: 1, y: 0 }, 100, 0),
+            CharacterPositionTrait::new(2, Vec2 { x: 5, y: 4 }, 100, 0)
+        ];
+
+        let (updated_bullets, dead_characters_ids) = simulate_bullets(ref bullets, ref characters);
+
+        assert!(updated_bullets.is_empty(), "Both bullets should be removed");
+        assert!(dead_characters_ids.len() == 2, "Both characters should be hit");
+        assert!(*dead_characters_ids.at(0) == 1, "First character should be hit");
+        assert!(*dead_characters_ids.at(1) == 2, "Second character should be hit");
+    }
+
+    #[test]
+    fn test_bullet_out_of_bounds() {
+        let address = starknet::contract_address_const::<0x0>();
+
+        let bullet = BulletTrait::new(1, Vec2 { x: 1000, y: 1000 }, 0, address);
+        let mut bullets = array![bullet];
+        let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 }, 100, 0)];
+
+        let (updated_bullets, dead_characters_ids) = simulate_bullets(ref bullets, ref characters);
+
+        assert!(updated_bullets.is_empty(), "Bullet should be removed when out of bounds");
+        assert!(dead_characters_ids.is_empty(), "No characters should be hit");
+    }
 }

@@ -24,7 +24,7 @@ mod spawn {
             assert!(session.state == 1, "Not spawnable");
             let caller = get_caller_address();
             let mut session_meta = get!(world, session_id, (SessionMeta));
-            let player2 = session.player2;
+            assert!(caller == session.player1 || caller == session.player2, "Not player");
 
             let id1 = world.uuid();
 

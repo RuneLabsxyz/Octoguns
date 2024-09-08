@@ -5,8 +5,8 @@ mod tests {
     use dojo::model::{Model, ModelTest, ModelIndex, ModelEntityTest};
     // import test utils
     use dojo::utils::test::{spawn_test_world, deploy_contract};
-    use starknet::testing::{set_caller_address};
-    use starknet::ContractAddress;
+    use starknet::testing::{set_contract_address};
+    use starknet::{ContractAddress, contract_address_const};
     // import test utils
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, character_model, character_position};
     use octoguns::models::map::{Map, MapObjects, map, map_objects};
@@ -46,9 +46,30 @@ mod tests {
         (world, start_system, actions_system, spawn_system)
     }
 
+    fn setup_game(start_system: IStartDispatcher, spawn_system: ISpawnDispatcher, p1: ContractAddress, p2: ContractAddress) -> u32 {
+        set_contract_address(p1);
+        let session_id = start_system.create();
+        set_contract_address(p2);
+        start_system.join(session_id);
+        spawn_system.spawn(session_id);
+        session_id
+    }
+
     #[test]
     fn test_setup() {
         let (world, _, _, _) = setup();
+    }
+
+    #[test]
+    fn test_game_setup() {
+        let (world, start, _, spawn) = setup();
+        let player1: ContractAddress = contract_address_const::<0x01>();
+        let player2: ContractAddress = contract_address_const::<0x02>();
+        let session_id = setup_game(start, spawn, player1, player2);
+        let session_meta = get!(world, session_id, (Session));
+        assert_eq!(session_meta.player1, player1, "p1 is not set");
+        assert_eq!(session_meta.player2, player2, "p2 is not set");
+
     }
 
 

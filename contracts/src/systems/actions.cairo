@@ -9,7 +9,7 @@ trait IActions {
 #[dojo::contract]
 mod actions {
     use super::IActions;
-    use octoguns::types::{Vec2, Shot, TurnMove};
+    use octoguns::types::{Vec2, IVec2, Shot, TurnMove};
     use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
@@ -73,8 +73,7 @@ mod actions {
                     Option::Some(mut vec) => {
                         //check move valid 
                         if !check_is_valid_move(vec){
-                            vec.x = 0;
-                            vec.y = 0;
+                            vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
                         }
                         //apply move
                         if vec.xdir{
@@ -121,8 +120,10 @@ mod actions {
                 }
 
                 //advance bullets + check collisions
-                let (bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
-                let (positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
+                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
+                bullets = new_bullets;
+                let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
+                positions = new_positions;
 
                 if filtered_character_ids.len() < 2 {
                     match filtered_character_ids.len() {

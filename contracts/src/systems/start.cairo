@@ -1,6 +1,6 @@
 #[dojo::interface]
 trait IStart {
-    fn create(ref world: IWorldDispatcher);
+    fn create(ref world: IWorldDispatcher) -> u32;
     fn join(ref world: IWorldDispatcher, session_id: u32);
 }
 
@@ -15,7 +15,7 @@ mod start {
 
     #[abi(embed_v0)]
     impl StartImpl of IStart<ContractState> {
-        fn create(ref world: IWorldDispatcher) {
+        fn create(ref world: IWorldDispatcher) -> u32 {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             // Do shit
             let address = get_caller_address();
@@ -27,6 +27,7 @@ mod start {
             let session = SessionTrait::new(id, address, 1);
             let session_meta = SessionMetaTrait::new(id);
             set!(world, (session, session_meta, global, player));
+            id
         }
 
         fn join(ref world: IWorldDispatcher, session_id: u32) {
