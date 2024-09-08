@@ -34,12 +34,12 @@ mod actions {
 
             match session_meta.turn_count % 2 {
                 0 => {
-                    assert!(player == session.player1, "not turn player");
+                    assert!(player == session.player1, "not turn player, 1s turn");
                     player_character_id = session_meta.p1_character;
                     opp_character_id = session_meta.p2_character;
                 },
                 1 => {
-                    assert!(player == session.player2, "not turn player");
+                    assert!(player == session.player2, "not turn player, 2s turn");
                     player_character_id = session_meta.p2_character;
                     opp_character_id = session_meta.p1_character;
                 },
@@ -91,12 +91,15 @@ mod actions {
                             player_position.coords.y -= vec.y;
                         }
 
+
                     },
                     Option::None => {
                         break;
                     }
 
                 }
+                positions = array![player_position, opp_position];
+
 
                 if sub_move_index == next_shot {
                     let shot = moves.shots.pop_front();
