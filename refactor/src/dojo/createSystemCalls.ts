@@ -1,6 +1,8 @@
-import { Account } from "@dojoengine/torii-wasm"
+import { Account } from "starknet"
 import { dojoStore } from "../stores/dojoStore"
 import { get } from "svelte/store"
+import { type TurnData } from "../stores/gameStores"
+import type { IWorld } from "./contracts.gen"
 
 export type Vec = {
     x: number,
@@ -19,8 +21,7 @@ export type CharacterMove = {
 
 }
 
-let {client} = get(setupStore);
 
-export const move = async (client: any, account: Account, session_id: number, moves: CharacterMove[]) => {
+export const move = async (client: IWorld, account: Account, session_id: number, moves: TurnData) => {
     client.actions.move({account, session_id, moves});
 }

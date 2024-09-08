@@ -3,6 +3,7 @@
 // Import the necessary types from the recs SDK
 // generate again with `sozo build --typescript` 
 import { Account, byteArray } from "starknet";
+import { type TurnData } from "../stores/gameStores";
 import { DojoProvider } from "@dojoengine/core";
 import * as models from "./models.gen";
 
@@ -15,7 +16,7 @@ export async function setupWorld(provider: DojoProvider) {
 
         
         // Call the `move` system with the specified Account and calldata
-        const move = async (props: { account: Account, session_id: number, moves: models.TurnMove }) => {
+        const move = async (props: { account: Account, session_id: number, moves: TurnData }) => {
             try {
                 return await provider.execute(
                     props.account,

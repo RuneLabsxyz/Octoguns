@@ -9,6 +9,7 @@
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
     import type { TurnData } from '../../stores/gameStores';
     import { truncateToDecimals } from '$lib/helper.';
+    import { isMoveRecorded } from '../../stores/gameStores';
 
     let {renderer, scene, camera} = useThrelte();
 
@@ -66,7 +67,8 @@
 
         if(frame_counter == 300) {
             recordingMode.set(false);
-            console.log($recordedMove);
+            isMoveRecorded.set(true);
+            console.log($isMoveRecorded);
             frame_counter = 0;
         }
 
@@ -93,10 +95,8 @@
     }
 
     useTask( (delta) => {
-        console.log($recordingMode)
 
         if ($recordingMode) {
-            console.log("recording")
             recordMove();
         }
         if ($replayMode) {

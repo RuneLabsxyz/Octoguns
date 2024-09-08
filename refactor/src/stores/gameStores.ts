@@ -20,6 +20,7 @@ export const recordedMove = writable<TurnData>( {
 export const currentSubMove = writable<{x: number, y: number}>({x:0, y:0});
 
 export const frameCounter = writable<number>();
+export const isMoveRecorded = writable<boolean>(false);
 
 export type TurnData = {
 	sub_moves: {x: number, y: number, xdir: boolean, ydir: boolean}[],
