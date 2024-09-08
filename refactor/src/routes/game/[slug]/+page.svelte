@@ -13,11 +13,14 @@
     import type { Account } from 'starknet';
     import { move } from '../../../dojo/createSystemCalls';
     import { type TurnData } from '../../../stores/gameStores';
+    import { type ComponentStore } from '../../../dojo/componentValueStore';
 
     export let data;
     let gameId = data.gameId;
     let account: Account;
     let calldata : TurnData;
+    let characterData: ComponentStore;
+    let characterPosition: ComponentStore;
 
     $: sessionId.set(parseInt(gameId));
 
@@ -44,19 +47,15 @@
     $: if ($characterIds) {
         console.log($characterIds)
         $characterIds.forEach(characterId => {
-            if (characterId) {
+            $: if (characterId) {
                 console.log(characterId)
                 let characterEntity = torii.poseidonHash([BigInt(characterId).toString()]);
-                let characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
-                let characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
-                // To get the actual data, you can subscribe to the store:
-                let characterOwner: string;
-                characterData.subscribe(characterModel => {
-                    characterOwner  = characterModel.player_id;
-                });
+                characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
+                characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
+                
 
                 characterPosition.subscribe(position => {
-                    let res = areAddressesEqual(characterOwner, account.address);
+                    let res = areAddressesEqual($characterData.player_id, account.address);
                     if (res) {
                         setPlayerCharacterCoords(characterId, position.coords);
                     } else {
