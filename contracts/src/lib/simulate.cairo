@@ -42,29 +42,27 @@ mod simulate_tests {
     use super::{simulate_bullets, SimulationResult};
 
     use octoguns::tests::helpers::{get_test_character_array};
-     #[test]
-     #[ignore]
+
+    #[test]
     fn test_4_bullets_sim()  {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet_1 = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 180, address);
-        let bullet_2 = BulletTrait::new(1, Vec2 { x:3, y:5}, 3, 74, address);
-        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4, 27, address);
-        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 90, address);
+        let bullet_1 = BulletTrait::new(1, Vec2 { x:3, y:0}, 180, address);
+        let bullet_2 = BulletTrait::new(1, Vec2 { x:3, y:5}, 74, address);
+        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4, address);
+        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, 90, address);
 
         let mut characters = get_test_character_array();
     
         let mut bullets = array![bullet_1, bullet_2, bullet_3, bullet_4];
         let res = simulate_bullets(ref bullets, ref characters);
-         
-     }
+    }
 
-     #[test]
-     #[ignore]
-     fn test_collisions() {
+    #[test]
+    fn test_collisions() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 1, 0, address);
+        let bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 0, address);
         let mut bullets = array![bullet];
         //todo add more collisions
         let mut characters = array![CharacterPositionTrait::new(69, Vec2 {x: 4,y: 0},100,0)];
@@ -78,5 +76,5 @@ mod simulate_tests {
                 panic!("bullet should have collided");
             }
         }
-     }
+    }
 }

@@ -13,7 +13,7 @@ mod tests {
     use octoguns::models::sessions::{Session, session, SessionMeta, session_meta};
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
     use octoguns::models::global::{Global, global};
-    use octoguns::types::{CharacterMove, Vec2, IVec2, Action};
+    use octoguns::types::{TurnMove, Vec2, IVec2, Shot};
 
     use octoguns::systems::start::{start, IStartDispatcher, IStartDispatcherTrait}; 
     use octoguns::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};

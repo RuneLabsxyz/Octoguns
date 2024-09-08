@@ -169,6 +169,7 @@ mod actions {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
+                        println!("setting new positions: x: {} y: {}" , pos.coords.x, pos.coords.y);
                         set!(world, (pos));
                     },
                     Option::None => {
