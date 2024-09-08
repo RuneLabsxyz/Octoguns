@@ -30,13 +30,13 @@ mod spawn {
 
             let default_steps = 10;
             let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
-            let p1 = CharacterPositionTrait::new(id1, position_1, 100, 0);
+            let p1 = CharacterPositionTrait::new(id1, position_1);
             session_meta.p1_character = id1;
                     
 
             let id2 = world.uuid();
             let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
-            let p2 = CharacterPositionTrait::new(id2, position_2, 100, 0);
+            let p2 = CharacterPositionTrait::new(id2, position_2);
             session_meta.p2_character = id2;                
 
             session.state = 2;

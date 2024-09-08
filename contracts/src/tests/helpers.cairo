@@ -8,7 +8,7 @@ fn get_test_character_array() -> Array<CharacterPosition>{
     let mut res = ArrayTrait::new();
     while index < positions.len() {
         let position = *positions.at(index);
-        res.append(CharacterPositionTrait::new(index, position, 100, 0));
+        res.append(CharacterPositionTrait::new(index, position));
         index +=1;
     };
     res

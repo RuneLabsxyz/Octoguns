@@ -31,7 +31,7 @@ pub struct CharacterPosition {
 
 #[generate_trait]
 impl CharacterPositionImpl of CharacterPositionTrait {
-    fn new(id: u32, coords: Vec2, max_steps: u32, current_step: u32) -> CharacterPosition {
-        CharacterPosition {id, coords, max_steps, current_step}
+    fn new(id: u32, coords: Vec2) -> CharacterPosition {
+        CharacterPosition {id, coords, max_steps: 100, current_step: 0}
     }
 }
