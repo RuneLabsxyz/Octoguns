@@ -71,7 +71,7 @@
         });
     }
 
-    function handleMove(move: any) {
+    function handleMove() {
         move(client, account, $sessionId, calldata)   
      }
 
