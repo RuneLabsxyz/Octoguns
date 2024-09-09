@@ -8,7 +8,9 @@
             playerCharacterCoords, 
             enemyCharacterCoords, 
             setPlayerCharacterCoords, 
-            setEnemyCharacterCoords } from '../../../stores/gameStores';
+            setEnemyCharacterCoords,
+            currentSubMove,
+         } from '../../../stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
     import type { Account } from 'starknet';
     import { move } from '../../../dojo/createSystemCalls';
@@ -53,7 +55,6 @@
                 characterData = componentValueStore(clientComponents.CharacterModel, characterEntity);
                 characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
                 
-
                 characterPosition.subscribe(position => {
                     let res = areAddressesEqual($characterData.player_id, account.address);
                     if (res) {
@@ -65,6 +66,12 @@
             }
 
         });
+    }
+
+
+    function reset(e: Event) {
+        currentSubMove.set({x:0, y:0});
+        recordedMove.set({sub_moves: [], shots: []});
     }
 
 </script>
@@ -79,11 +86,17 @@
             >
                 Submit Move
             </button>
+            <button 
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+                on:click={reset}
+            >
+                Reset
+            </button>
         </div>
     {/if}
 </div>
 <div class="absolute h-full w-full">
     <Canvas>
-        <Scene />
+        <Scene characterId={$sessionMetaData.p1_character} />
     </Canvas>
 </div>

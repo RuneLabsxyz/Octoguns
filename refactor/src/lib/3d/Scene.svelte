@@ -9,13 +9,14 @@
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
     import type { TurnData } from '../../stores/gameStores';
     import { truncateToDecimals } from '$lib/helper.';
-    import { isMoveRecorded } from '../../stores/gameStores';
+    import { isMoveRecorded, playerCharacterCoords, characterIds } from '../../stores/gameStores';
 
     let {renderer, scene, camera} = useThrelte();
 
     let frame_counter = 0;
     let move_speed = 1/3;
     let moveDirection = new Vector3();
+    export let characterId: number;
 
 
     onMount(() => {
@@ -47,7 +48,8 @@
             moveDirection.z = truncateToDecimals(moveDirection.z, 2);
             moveDirection.y = 0;
 
-            $camera.position.add(moveDirection);
+            $playerCharacterCoords[characterId].x += moveDirection.x;
+            $playerCharacterCoords[characterId].y += moveDirection.z;
 
             $currentSubMove.x += moveDirection.x;
             $currentSubMove.y += moveDirection.z;

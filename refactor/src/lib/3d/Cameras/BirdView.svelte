@@ -5,7 +5,7 @@
 
 <T.PerspectiveCamera
     makeDefault
-    position={[15, 15, 15]}
+    position={[15, 30, 20]}
   >
   <OrbitControls />
 </T.PerspectiveCamera>
