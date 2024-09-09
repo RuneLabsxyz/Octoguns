@@ -89,9 +89,8 @@
             let y_dif = sub_move.y;
             if (!sub_move.xdir) x_dif *= -1;
             if (!sub_move.ydir) y_dif *= -1;
-            moveDirection = new Vector3(sub_move.x/100, 0, sub_move.y/100);
-            $playerCharacterCoords[characterId].x += moveDirection.x;
-            $playerCharacterCoords[characterId].y += moveDirection.z;
+            $playerCharacterCoords[characterId].x += x_dif/100;
+            $playerCharacterCoords[characterId].y += y_dif/100;
         }
 
         $frameCounter += 1;

@@ -29,7 +29,7 @@
         unadjustedMovement: true
       })
     export const unlock = () => document.exitPointerLock()
-    
+
     domElement.addEventListener('mousemove', onMouseMove)
     domElement.ownerDocument.addEventListener('pointerlockchange', onPointerlockChange)
     domElement.ownerDocument.addEventListener('pointerlockerror', onPointerlockError)
@@ -61,6 +61,7 @@
         isLocked = false
       }
     }
+    
     function onPointerlockError() {
       console.error('PointerLockControls: Unable to use Pointer Lock API')
     }
