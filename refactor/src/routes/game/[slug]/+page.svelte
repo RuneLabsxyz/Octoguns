@@ -68,32 +68,17 @@
         });
     }
 
+    function handleMove(move: any) {
+        move(client, account, $sessionId, calldata)   
+     }
 
-    function reset(e: Event) {
-        currentSubMove.set({x:0, y:0});
-        recordedMove.set({sub_moves: [], shots: []});
-    }
+
+
 
 </script>
 
 <div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
-    <Ui />  
-    {#if $isMoveRecorded}
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-            <button 
-                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-                on:click={() => move(client, account, $sessionId, calldata)}
-            >
-                Submit Move
-            </button>
-            <button 
-                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-                on:click={reset}
-            >
-                Reset
-            </button>
-        </div>
-    {/if}
+    <Ui moveHandler={handleMove} />  
 </div>
 <div class="absolute h-full w-full">
     <Canvas>
