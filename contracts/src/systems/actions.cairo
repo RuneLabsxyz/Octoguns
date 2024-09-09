@@ -83,11 +83,11 @@ mod actions {
                             vec.x = min( vec.x, player_position.coords.x );
                             player_position.coords.x -= vec.x;
                         }
-                        if vec.xdir{
+                        if vec.ydir{
                             player_position.coords.y = max(10_000, player_position.coords.y + vec.y); 
                         }
                         else {
-                            vec.x = min( vec.y, player_position.coords.y );
+                            vec.y = min( vec.y, player_position.coords.y );
                             player_position.coords.y -= vec.y;
                         }
 
@@ -132,6 +132,7 @@ mod actions {
                     match filtered_character_ids.len() {
                         0 => {
                             //draw
+                            break;
                         },
                         1 => {
                             let winner = filtered_character_ids.pop_front().unwrap();
@@ -141,17 +142,14 @@ mod actions {
                             if session_meta.p2_character == winner {
                                 //p2 wins
                             }
+                            break;
                         },
                         _ => {
-                            
+                         sub_move_index+=1;
+                         continue;   
                         }
                     }
-                    break;
                 }
-
-                // in real game set all_positions and all_ids to filtered ones
-                // not necessary in 1v1
-                sub_move_index+=1;
                 //END MOVE LOOP
             };
 
