@@ -47,8 +47,8 @@
             moveDirection.z = truncateToDecimals(moveDirection.z, 2);
             moveDirection.y = 0;
 
-            $playerCharacterCoords[characterId].staged.x += moveDirection.x;
-            $playerCharacterCoords[characterId].staged.y += moveDirection.z;
+            $playerCharacterCoords[characterId].x += moveDirection.x;
+            $playerCharacterCoords[characterId].y += moveDirection.z;
 
             $currentSubMove.x += moveDirection.x;
             $currentSubMove.y += moveDirection.z;
@@ -90,8 +90,8 @@
             if (!sub_move.xdir) x_dif *= -1;
             if (!sub_move.ydir) y_dif *= -1;
             moveDirection = new Vector3(sub_move.x/100, 0, sub_move.y/100);
-            $playerCharacterCoords[characterId].staged.x += moveDirection.x;
-            $playerCharacterCoords[characterId].staged.y += moveDirection.z;
+            $playerCharacterCoords[characterId].x += moveDirection.x;
+            $playerCharacterCoords[characterId].y += moveDirection.z;
         }
 
         $frameCounter += 1;

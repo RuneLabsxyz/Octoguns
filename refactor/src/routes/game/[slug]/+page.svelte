@@ -9,6 +9,7 @@
             setEnemyCharacterCoords,
             playerCharacterId,
             enemyCharacterId,
+            playerStartCoords,
          } from '../../../stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
     import type { Account } from 'starknet';
@@ -55,8 +56,9 @@
                 characterPosition =  componentValueStore(clientComponents.CharacterPosition, characterEntity);
                 
                 characterPosition.subscribe(position => {
-                    let res = areAddressesEqual($characterData.player_id, account.address);
-                    if (res) {
+                    let isPlayer = areAddressesEqual($characterData.player_id, account.address);
+                    if (isPlayer) {
+                        playerStartCoords.set({x: position.coords.x + 50, y: position.coords.y + 50});
                         setPlayerCharacterCoords(characterId, position.coords);
                         playerCharacterId.set(characterId);
                     } else {

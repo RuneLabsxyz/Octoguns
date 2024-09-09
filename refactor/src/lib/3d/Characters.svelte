@@ -14,7 +14,7 @@
 <T.Group>
     <T.Group>
         {#each Object.entries(player_coords) as [key, data]}
-            <T.Mesh position={[data.staged.x, 0, data.staged.y]} key={key}>
+            <T.Mesh position={[data.x, 0, data.y]} key={key}>
                 <T.BoxGeometry args={[1, 1, 1]} />
                 <T.MeshStandardMaterial color="blue" />
             </T.Mesh>
@@ -22,7 +22,7 @@
     </T.Group>
     <T.Group>
         {#each Object.entries(enemy_coords) as [key, data]}
-            <T.Mesh position={[data.staged.x, 0, data.staged.y]} key={key}>
+            <T.Mesh position={[data.x, 0, data.y]} key={key}>
                 <T.BoxGeometry args={[1, 1, 1]} />
                 <T.MeshStandardMaterial color="red" />
             </T.Mesh>

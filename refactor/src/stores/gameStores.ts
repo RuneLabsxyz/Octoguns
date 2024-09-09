@@ -21,6 +21,7 @@ export const currentSubMove = writable<{x: number, y: number}>({x:0, y:0});
 
 export const frameCounter = writable<number>(0);
 export const isMoveRecorded = writable<boolean>(false);
+export const playerStartCoords = writable<Coords>({x:0, y:0});
 
 export type TurnData = {
 	sub_moves: {x: number, y: number, xdir: boolean, ydir: boolean}[],
@@ -50,25 +51,21 @@ export const keyStateStore = writable<{
   export const isMouseDownStore = writable<boolean>(false);
 
 
-export interface Data {
-  start: Coords;
-  staged: Coords;
-}
 
 interface Coords {
   x: number;
   y: number;
 }
 
-export type CharacterCoordsStore = Record<number, Data>;
+export type CharacterCoordsStore = Record<number, Coords>;
 
 export const playerCharacterCoords = writable<CharacterCoordsStore>({});
 export const enemyCharacterCoords = writable<CharacterCoordsStore>({});
 
 function normalizeCoords(coords: Coords): Coords {
   return {
-      x: ((coords.x - 100) / 1000) - 50,
-      y: ((coords.y - 100) / 1000) - 50,
+      x: (coords.x  / 1000) - 50,
+      y: (coords.y  / 1000) - 50,
   };
 }
 
@@ -79,10 +76,7 @@ export function setPlayerCharacterCoords(key: number, coords: { x: number, y: nu
   playerCharacterCoords.update(store => {
     return {
       ...store,
-      [key]: {
-        start: coords,
-        staged: coords
-      }
+      [key]: coords
     };
   });
 }
@@ -94,11 +88,8 @@ export function setEnemyCharacterCoords(key: number, coords: { x: number, y: num
   enemyCharacterCoords.update(store => {
     return {
       ...store,
-      [key]: {
-        start: coords,
-        staged: coords
+      [key]: coords
       }
-    };
-  });
+    });
 }
 
