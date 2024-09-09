@@ -1,5 +1,4 @@
-import { writable } from "svelte/store";
-
+import { writable,get } from "svelte/store";
 
 // Game meta data
 export const gameState = writable<number>();
@@ -7,7 +6,8 @@ export const sessionId = writable<number>();
 
 //characters
 export const characterIds = writable<number[]>([]);
-
+export const playerCharacterId = writable<number>(0);
+export const enemyCharacterId = writable<number>(1);
 //true for recording, false for replaying
 export const recordingMode = writable<boolean>(false);
 export const replayMode = writable<boolean>(false);
@@ -19,7 +19,7 @@ export const recordedMove = writable<TurnData>( {
 
 export const currentSubMove = writable<{x: number, y: number}>({x:0, y:0});
 
-export const frameCounter = writable<number>();
+export const frameCounter = writable<number>(0);
 export const isMoveRecorded = writable<boolean>(false);
 
 export type TurnData = {
@@ -50,20 +50,25 @@ export const keyStateStore = writable<{
   export const isMouseDownStore = writable<boolean>(false);
 
 
+interface Data {
+  start: Coords;
+  staged: Coords;
+}
+
 interface Coords {
   x: number;
   y: number;
 }
 
-type CharacterCoordsStore = Record<number, Coords>;
+type CharacterCoordsStore = Record<number, Data>;
 
 export const playerCharacterCoords = writable<CharacterCoordsStore>({});
 export const enemyCharacterCoords = writable<CharacterCoordsStore>({});
 
 function normalizeCoords(coords: Coords): Coords {
   return {
-      x: ((coords.x - 100) / 100) - 50,
-      y: ((coords.y - 100) / 100) - 50,
+      x: ((coords.x - 100) / 1000) - 50,
+      y: ((coords.y - 100) / 1000) - 50,
   };
 }
 
@@ -72,7 +77,10 @@ export function setPlayerCharacterCoords(key: number, coords: { x: number, y: nu
   playerCharacterCoords.update(store => {
     return {
       ...store,
-      [key]: normalizedCoords
+      [key]: {
+        start: normalizedCoords,
+        staged: normalizedCoords
+      }
     };
   });
 }
@@ -82,7 +90,10 @@ export function setEnemyCharacterCoords(key: number, coords: { x: number, y: num
   enemyCharacterCoords.update(store => {
     return {
       ...store,
-      [key]: normalizedCoords
+      [key]: {
+        start: normalizedCoords,
+        staged: normalizedCoords
+      }
     };
   });
 }

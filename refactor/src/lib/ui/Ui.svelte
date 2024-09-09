@@ -2,7 +2,9 @@
     import StartGame from "./StartGame.svelte";
     import { birdView } from "../../stores/cameraStores";
     import { recordingMode, replayMode } from "../../stores/gameStores";
-    import { currentSubMove, recordedMove, isMoveRecorded } from "../../stores/gameStores";
+    import { currentSubMove, recordedMove, isMoveRecorded, playerCharacterId, playerCharacterCoords, frameCounter } from "../../stores/gameStores";
+    import { setPlayerCharacterCoords, setEnemyCharacterCoords } from "../../stores/gameStores";
+    
     
     export let moveHandler: any;
 
@@ -13,11 +15,15 @@
 
     function setReplayMode(e: Event) {
         recordingMode.set(false);
-        replayMode.set(!$recordingMode)
+        frameCounter.set(0);
+        setPlayerCharacterCoords($playerCharacterId, $playerCharacterCoords[$playerCharacterId].start);
+        replayMode.set(!$recordingMode);
     }
 
     function reset(e: Event) {
         currentSubMove.set({x:0, y:0});
+        setPlayerCharacterCoords($playerCharacterId, $playerCharacterCoords[$playerCharacterId].start);
+        frameCounter.set(0);
         recordedMove.set({sub_moves: [], shots: []});
         isMoveRecorded.set(false);
         recordingMode.set(false);

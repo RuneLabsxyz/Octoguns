@@ -5,11 +5,10 @@
     import { componentValueStore } from "../../../dojo/componentValueStore";
     import { dojoStore, accountStore } from "../../../stores/dojoStore";
     import { gameState, sessionId, characterIds, recordedMove, isMoveRecorded,
-            playerCharacterCoords, 
-            enemyCharacterCoords, 
             setPlayerCharacterCoords, 
             setEnemyCharacterCoords,
-            currentSubMove,
+            playerCharacterId,
+            enemyCharacterId,
          } from '../../../stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
     import type { Account } from 'starknet';
@@ -59,8 +58,10 @@
                     let res = areAddressesEqual($characterData.player_id, account.address);
                     if (res) {
                         setPlayerCharacterCoords(characterId, position.coords);
+                        playerCharacterId.set(characterId);
                     } else {
                         setEnemyCharacterCoords(characterId, position.coords);
+                        enemyCharacterId.set(characterId);
                     }
                 });
             }
