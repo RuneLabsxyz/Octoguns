@@ -2,9 +2,9 @@
     import { T, useTask, useThrelte } from '@threlte/core';
     import { Vector3 } from 'three';
     import { onDestroy, onMount } from 'svelte';
-    import Map from './Map.svelte';
-    import Cameras from './Cameras.svelte';
-    import Characters from './Characters.svelte';
+    import Map from './components/Map.svelte';
+    import Cameras from './components/Cameras.svelte';
+    import Characters from './components/Characters.svelte';
     import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, currentSubMove, frameCounter } from '../../stores/gameStores';
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
     import type { TurnData } from '../../stores/gameStores';
@@ -57,8 +57,8 @@
                 let move = {
                     x: Math.abs(Math.round($currentSubMove.x * 100)),
                     y: Math.abs(Math.round($currentSubMove.y * 100)),
-                    xdir: moveDirection.x >= 0,
-                    ydir: moveDirection.z >= 0,
+                    xdir: $currentSubMove.x >= 0,
+                    ydir: $currentSubMove.y >= 0,
                 };
                 $recordedMove.sub_moves.push(move);
                 currentSubMove.set({x:0, y:0});

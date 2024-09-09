@@ -58,7 +58,7 @@
                 characterPosition.subscribe(position => {
                     let isPlayer = areAddressesEqual($characterData.player_id, account.address);
                     if (isPlayer) {
-                        playerStartCoords.set({x: position.coords.x + 50, y: position.coords.y + 50});
+                        playerStartCoords.set(position.coords);
                         setPlayerCharacterCoords(characterId, position.coords);
                         playerCharacterId.set(characterId);
                     } else {

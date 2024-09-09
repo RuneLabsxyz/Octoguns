@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Splitscreen from './Cameras/SplitScreen.svelte';
-    import BirdView from './Cameras/BirdView.svelte';
-    import { birdView } from '../../stores/cameraStores';
+    import Splitscreen from './cameras/SplitScreen.svelte';
+    import BirdView from './cameras/BirdView.svelte';
+    import { birdView } from '../../../stores/cameraStores';
 
     let birdViewValue: boolean;
 
