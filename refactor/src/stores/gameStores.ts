@@ -50,7 +50,7 @@ export const keyStateStore = writable<{
   export const isMouseDownStore = writable<boolean>(false);
 
 
-interface Data {
+export interface Data {
   start: Coords;
   staged: Coords;
 }
@@ -60,7 +60,7 @@ interface Coords {
   y: number;
 }
 
-type CharacterCoordsStore = Record<number, Data>;
+export type CharacterCoordsStore = Record<number, Data>;
 
 export const playerCharacterCoords = writable<CharacterCoordsStore>({});
 export const enemyCharacterCoords = writable<CharacterCoordsStore>({});
@@ -73,26 +73,30 @@ function normalizeCoords(coords: Coords): Coords {
 }
 
 export function setPlayerCharacterCoords(key: number, coords: { x: number, y: number }): void {
-  const normalizedCoords = normalizeCoords(coords);
+  if (coords.x > 100) {
+    coords = normalizeCoords(coords);
+  }
   playerCharacterCoords.update(store => {
     return {
       ...store,
       [key]: {
-        start: normalizedCoords,
-        staged: normalizedCoords
+        start: coords,
+        staged: coords
       }
     };
   });
 }
 
 export function setEnemyCharacterCoords(key: number, coords: { x: number, y: number }): void {
-  const normalizedCoords = normalizeCoords(coords);
+  if (coords.x > 100) {
+    coords = normalizeCoords(coords);
+  }
   enemyCharacterCoords.update(store => {
     return {
       ...store,
       [key]: {
-        start: normalizedCoords,
-        staged: normalizedCoords
+        start: coords,
+        staged: coords
       }
     };
   });

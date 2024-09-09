@@ -5,7 +5,6 @@
     import { currentSubMove, recordedMove, isMoveRecorded, playerCharacterId, playerCharacterCoords, frameCounter } from "../../stores/gameStores";
     import { setPlayerCharacterCoords, setEnemyCharacterCoords } from "../../stores/gameStores";
     
-    
     export let moveHandler: any;
 
     function setRecordingMode(e: Event) {

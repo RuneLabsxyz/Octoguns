@@ -33,7 +33,6 @@
         renderer.setAnimationLoop(null);
     });
 
-    $: console.log($frameCounter);
     const recordMove = () => {
         if ($keyStateStore.forward) moveDirection.z -= 1;
         if ($keyStateStore.backward) moveDirection.z += 1;
@@ -82,12 +81,15 @@
         let move_index = $frameCounter / 3;
         let sub_move = move.sub_moves[move_index];
         
-        if ($frameCounter % 3 == 0) {
+        if ($frameCounter == 300) {
+            replayMode.set(false);    
+        }
+        if ($frameCounter % 3 == 0 && $frameCounter < 300) {
             let x_dif = sub_move.x;
             let y_dif = sub_move.y;
             if (!sub_move.xdir) x_dif *= -1;
             if (!sub_move.ydir) y_dif *= -1;
-            moveDirection = new Vector3(sub_move.x, 0, sub_move.y);
+            moveDirection = new Vector3(sub_move.x/100, 0, sub_move.y/100);
             $playerCharacterCoords[characterId].staged.x += moveDirection.x;
             $playerCharacterCoords[characterId].staged.y += moveDirection.z;
         }
