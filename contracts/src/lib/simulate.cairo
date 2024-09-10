@@ -97,7 +97,7 @@ mod simulate_tests {
     fn test_bullet_out_of_bounds() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet = BulletTrait::new(1, Vec2 { x: 9950, y: 9950 }, 0, address);
+        let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, address);
         let mut bullets = array![bullet];
         let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 })];
 
