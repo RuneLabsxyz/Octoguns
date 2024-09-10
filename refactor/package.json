@@ -44,5 +44,8 @@
   },
   "trustedDependencies": [
     "svelte-preprocess"
-  ]
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
