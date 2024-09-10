@@ -2,10 +2,11 @@
 
 ### Versions
 
-dojo: 1.0.0-alpha7
+dojo: 1.0.0-alpha9
+
+node 20
 
 cairo: 2.7.0
-
 
 ### User metrics
 

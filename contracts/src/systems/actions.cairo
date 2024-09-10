@@ -34,12 +34,12 @@ mod actions {
 
             match session_meta.turn_count % 2 {
                 0 => {
-                    assert!(player == session.player1, "not turn player");
+                    assert!(player == session.player1, "not turn player, 1s turn");
                     player_character_id = session_meta.p1_character;
                     opp_character_id = session_meta.p2_character;
                 },
                 1 => {
-                    assert!(player == session.player2, "not turn player");
+                    assert!(player == session.player2, "not turn player, 2s turn");
                     player_character_id = session_meta.p2_character;
                     opp_character_id = session_meta.p1_character;
                 },
@@ -85,12 +85,14 @@ mod actions {
                         }
                         if vec.ydir{
                             player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
+
                         }
                         else {
-                            vec.x = min( vec.y, player_position.coords.y );
+                            vec.y = min( vec.y, player_position.coords.y );
                             player_position.coords.y -= vec.y;
                         }
                         println!("new x: {} new y: {}", player_position.coords.x, player_position.coords.y);
+
 
                     },
                     Option::None => {
@@ -98,6 +100,8 @@ mod actions {
                     }
 
                 }
+                positions = array![player_position, opp_position];
+
 
                 positions = array![player_position, opp_position];
 
@@ -132,6 +136,7 @@ mod actions {
                     match filtered_character_ids.len() {
                         0 => {
                             //draw
+                            break;
                         },
                         1 => {
                             let winner = filtered_character_ids.pop_front().unwrap();
@@ -141,17 +146,14 @@ mod actions {
                             if session_meta.p2_character == winner {
                                 //p2 wins
                             }
+                            break;
                         },
                         _ => {
-                            
+                         sub_move_index+=1;
+                         continue;   
                         }
                     }
-                    break;
                 }
-
-                // in real game set all_positions and all_ids to filtered ones
-                // not necessary in 1v1
-                sub_move_index+=1;
                 //END MOVE LOOP
             };
 

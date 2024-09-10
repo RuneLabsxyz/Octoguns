@@ -1,9 +1,9 @@
-import manifest from "../../contracts/manifests/dev/deployment/manifest.json";
+import manifest from '../../contracts/manifests/dev/deployment/manifest.json'
 
-import { createDojoConfig } from "@dojoengine/core";
+import { createDojoConfig } from '@dojoengine/core'
 
 export const dojoConfig = createDojoConfig({
-    manifest,
-});
+  manifest,
+})
 
-export type Config = typeof dojoConfig;
+export type Config = typeof dojoConfig

@@ -1,35 +1,35 @@
 <script lang="ts">
-    import "../app.css";
-    import { onMount } from "svelte";
-    import { initializeStore } from '../stores/dojoStore';
-    import { writable } from 'svelte/store';
-    import { page } from '$app/stores';
+  import '../app.css'
+  import { onMount } from 'svelte'
+  import { initializeStore } from '$stores/dojoStore'
+  import { writable } from 'svelte/store'
+  import { page } from '$app/stores'
 
-    const isStoreInitialized = writable(false);
+  const isStoreInitialized = writable(false)
 
-    async function initStore() {
-        try {
-            await initializeStore(); 
-            isStoreInitialized.set(true);
-            console.log("store initialized")
-        } catch (error) {
-            console.error('Failed to initialize store:', error);
-            isStoreInitialized.set(false);
-        }
+  async function initStore() {
+    try {
+      await initializeStore()
+      isStoreInitialized.set(true)
+      console.log('store initialized')
+    } catch (error) {
+      console.error('Failed to initialize store:', error)
+      isStoreInitialized.set(false)
     }
+  }
 
-    onMount(() => {
-        initStore();
-    });
+  onMount(() => {
+    initStore()
+  })
 
-    $: {
-        $page.url; 
-        initStore();
-    }
+  $: {
+    $page.url
+    initStore()
+  }
 </script>
 
 {#if $isStoreInitialized}
-    <slot />
+  <slot />
 {:else}
-    <p>Loading...</p>
+  <p>Loading...</p>
 {/if}
