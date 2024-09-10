@@ -2,9 +2,10 @@
   import { invalidate } from '$app/navigation'
   import { Canvas, T, useThrelte, useTask } from '@threlte/core'
   import { PerspectiveCamera } from 'three'
+  import SplitScreen from './SplitScreen/PointerLock.svelte'
 
   let cameras: PerspectiveCamera[] = []
-  let numCameras: number = 8
+  let numCameras: number = 1
 
   const { renderer, scene } = useThrelte()
 
@@ -49,6 +50,7 @@
   })
 </script>
 
+<SplitScreen {cameras} />
 {#each Array(numCameras) as _, index}
   <T.PerspectiveCamera
     position={[10 * (index % 2 === 0 ? 1 : -1), 10, 10]}

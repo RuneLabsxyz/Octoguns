@@ -2,8 +2,6 @@
   import Splitscreen from './Cameras/SplitScreen.svelte'
   import BirdView from './Cameras/BirdView.svelte'
   import { birdView } from '$stores/cameraStores'
-  import FirstPerson from './Cameras/FirstPerson.svelte'
-  import { PerspectiveCamera } from 'three'
 
   let birdViewValue: boolean
 
@@ -14,7 +12,5 @@
   <BirdView />
 {/if}
 {#if !birdViewValue}
-  <PerspectiveCamera />
-  <FirstPerson />
-  <PerspectiveCamera />
+  <Splitscreen />
 {/if}
