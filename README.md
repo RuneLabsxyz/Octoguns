@@ -8,7 +8,6 @@ node 20
 
 cairo: 2.7.0
 
-
 ### User metrics
 
 Map is 10000 x 10000
