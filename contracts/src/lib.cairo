@@ -8,13 +8,13 @@ mod models {
     mod bullet;
     mod sessions;
     mod map;
-    mod character;
+    mod characters;
     mod global;
     mod player;
 }
 
 mod lib {
-    mod defaultSpawns;
+    mod default_spawns;
     mod helpers;
     mod simulate;
     mod shoot;
@@ -22,7 +22,7 @@ mod lib {
 
 mod tests {
     mod helpers;
-  //  mod test_world;
+    mod test_world;
 }
 
 mod consts;

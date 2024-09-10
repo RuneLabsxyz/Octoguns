@@ -1,15 +1,14 @@
-use octoguns::types::{Action};
+use octoguns::types::{Shot};
 use octoguns::models::bullet::{Bullet, BulletTrait};
-use octoguns::models::character::{CharacterPosition};
+use octoguns::models::characters::{CharacterPosition};
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 use starknet::ContractAddress;
 
-fn shoot(world: IWorldDispatcher, bullet: Action, character: CharacterPosition, player: ContractAddress) -> Bullet {
-    let angle = bullet.angle; //u32
+fn shoot(world: IWorldDispatcher, shot: Shot, character: CharacterPosition, player: ContractAddress) -> Bullet {
+    let angle = shot.angle; //u32
     let coords = character.coords; //Vec2
-    let speed = 25;
     let id = world.uuid();
-    let new_bullet = BulletTrait::new(id, coords, speed, angle, player);
+    let new_bullet = BulletTrait::new(id, coords, angle, player);
 
     set!(world, (new_bullet));
 

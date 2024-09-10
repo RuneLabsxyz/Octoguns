@@ -4,8 +4,9 @@
 
 dojo: 1.0.0-alpha9
 
-cairo: 2.7.0
+node 20
 
+cairo: 2.7.0
 
 ### User metrics
 
