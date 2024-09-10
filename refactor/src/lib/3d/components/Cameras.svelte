@@ -2,19 +2,38 @@
   import Splitscreen from './Cameras/SplitScreen.svelte'
   import BirdView from './Cameras/BirdView.svelte'
   import { birdView } from '$stores/cameraStores'
-  import FirstPerson from './Cameras/FirstPerson.svelte'
-  import { PerspectiveCamera } from 'three'
+  import { onMount, onDestroy } from 'svelte'
+  import { useThrelte } from '@threlte/core'
+  import { renderCameras, resetCamera } from './Cameras/SplitScreen/CameraUtils'
 
-  let birdViewValue: boolean
+  const { renderer, scene } = useThrelte()
 
-  $: birdViewValue = $birdView
+  let cameras: any = []
+  let numCameras = 4
+  let birdViewCamera: any
+
+  onMount(() => {
+    const animationLoop = () => {
+      if ($birdView) {
+        if (birdViewCamera) {
+          resetCamera(birdViewCamera, renderer)
+          renderer.render(scene, birdViewCamera)
+        }
+      } else {
+        renderCameras(cameras, numCameras, renderer, scene)
+      }
+    }
+
+    renderer.setAnimationLoop(animationLoop)
+
+    return () => {
+      renderer.setAnimationLoop(null)
+    }
+  })
 </script>
 
-{#if birdViewValue}
-  <BirdView />
-{/if}
-{#if !birdViewValue}
-  <PerspectiveCamera />
-  <FirstPerson />
-  <PerspectiveCamera />
+{#if $birdView}
+  <BirdView bind:camera={birdViewCamera} />
+{:else}
+  <Splitscreen bind:cameras {numCameras} />
 {/if}
