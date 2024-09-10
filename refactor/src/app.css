@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
-    font-family: 'Block';
-    src: url('/blox-brk.regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Block';
+  src: url('/blox-brk.regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }

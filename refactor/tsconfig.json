@@ -1,35 +1,27 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
-	"compilerOptions": {
-	  "allowJs": true,
-	  "checkJs": true,
-	  "esModuleInterop": true,
-	  "forceConsistentCasingInFileNames": true,
-	  "resolveJsonModule": true,
-	  "skipLibCheck": true,
-	  "sourceMap": true,
-	  "strict": true,
-	  "moduleResolution": "bundler",
-	  "types": ["svelte", "@sveltejs/kit"],
-	  "paths": {
-		"$lib": ["./src/lib"],
-		"$lib/*": ["./src/lib/*"],
-		"$src": ["./src"],
-		"$src/*": ["./src/*"],
-		"$stores": ["./src/stores"],
-		"$stores/*": ["./src/stores/*"],
-		"$dojo": ["./src/dojo"],
-		"$dojo/*": ["./src/dojo/*"]
-	  }
-	},
-	"include": [
-	  "src/**/*.ts",
-	  "src/**/*.js",
-	  "src/**/*.svelte"
-	],
-	"exclude": [
-	  "node_modules",
-	  "public/build"
-	]
-  }
-  
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "bundler",
+    "types": ["svelte", "@sveltejs/kit"],
+    "paths": {
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"],
+      "$src": ["./src"],
+      "$src/*": ["./src/*"],
+      "$stores": ["./src/stores"],
+      "$stores/*": ["./src/stores/*"],
+      "$dojo": ["./src/dojo"],
+      "$dojo/*": ["./src/dojo/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+  "exclude": ["node_modules", "public/build"]
+}
