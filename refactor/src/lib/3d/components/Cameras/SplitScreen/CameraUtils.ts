@@ -40,3 +40,19 @@ export function renderCameras(
     renderer.setScissorTest(false)
   }
 }
+
+export function resetCamera(
+  camera: PerspectiveCamera,
+  renderer: WebGLRenderer
+) {
+  const { width, height } = renderer.domElement
+
+  // Reset renderer settings
+  renderer.setViewport(0, 0, width, height)
+  renderer.setScissor(0, 0, width, height)
+  renderer.setScissorTest(false)
+
+  // Update camera aspect ratio
+  camera.aspect = width / height
+  camera.updateProjectionMatrix()
+}

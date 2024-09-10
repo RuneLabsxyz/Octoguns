@@ -44,8 +44,7 @@
 <div class="pointer-events-auto" style="justify-content: space-between;">
   <button
     on:click={() => {
-      console.log($birdView)
-      birdView.set(!$birdView)
+      birdView.update((value) => !value)
     }}>Switch view</button
   >
   {#if $isMoveRecorded}
