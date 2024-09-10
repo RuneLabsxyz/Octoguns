@@ -66,11 +66,35 @@ mod tests {
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
         let session_id = setup_game(start, spawn, player1, player2);
-        let session_meta = get!(world, session_id, (Session));
-        assert_eq!(session_meta.player1, player1, "p1 is not set");
-        assert_eq!(session_meta.player2, player2, "p2 is not set");
+        let session = get!(world, session_id, (Session));
+        assert_eq!(session.player1, player1, "p1 is not set");
+        assert_eq!(session.player2, player2, "p2 is not set");
 
     }
 
+    #[test]
+    fn test_move() {
+        let (world, start, actions, spawn) = setup();
+        let player1: ContractAddress = contract_address_const::<0x01>();
+        let player2: ContractAddress = contract_address_const::<0x02>();
+        let session_id = setup_game(start, spawn, player1, player2);
+        let session = get!(world, session_id, (Session));
+        let session_meta = get!(world, session_id, (SessionMeta));
+        let position = get!(world, session.player1, (CharacterPosition));
+        set_contract_address(player1);
+        let shots = ArrayTrait::new();
+        let mut sub_moves = ArrayTrait::new();
+        let mut i: u32 = 0;
+        while i < 100 {
+            sub_moves.append(IVec2 {x: 100, y: 0, xdir: true, ydir: true});
+            i+=1;
+        };
+        actions.move(session_id, TurnMove {sub_moves, shots});
+        let new_position = get!(world, position.id, (CharacterPosition));
+        let new_coords = Vec2 {x: position.coords.x + 10000, y: position.coords.y};
+        assert_eq!(new_position.coords.x, new_coords.x, "character did not move");
+
+
+    }
 
 }

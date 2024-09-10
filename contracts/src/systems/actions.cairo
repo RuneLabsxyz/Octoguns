@@ -77,19 +77,20 @@ mod actions {
                         }
                         //apply move
                         if vec.xdir{
-                            player_position.coords.x = max(10_000, player_position.coords.x + vec.x); 
+                            player_position.coords.x = min(100_000, player_position.coords.x + vec.x); 
                         }
                         else {
                             vec.x = min( vec.x, player_position.coords.x );
                             player_position.coords.x -= vec.x;
                         }
                         if vec.xdir{
-                            player_position.coords.y = max(10_000, player_position.coords.y + vec.y); 
+                            player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
                         }
                         else {
                             vec.x = min( vec.y, player_position.coords.y );
                             player_position.coords.y -= vec.y;
                         }
+                        println!("new x: {} new y: {}", player_position.coords.x, player_position.coords.y);
 
                     },
                     Option::None => {
@@ -97,6 +98,8 @@ mod actions {
                     }
 
                 }
+
+                positions = array![player_position, opp_position];
 
                 if sub_move_index == next_shot {
                     let shot = moves.shots.pop_front();
