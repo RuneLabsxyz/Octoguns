@@ -72,5 +72,30 @@ mod tests {
 
     }
 
+    #[test]
+    fn test_move() {
+        let (world, start, actions, spawn) = setup();
+        let player1: ContractAddress = contract_address_const::<0x01>();
+        let player2: ContractAddress = contract_address_const::<0x02>();
+        let session_id = setup_game(start, spawn, player1, player2);
+        let session = get!(world, session_id, (Session));
+        let session_meta = get!(world, session_id, (SessionMeta));
+        assert_eq!(session.player1, player1, "p1 is not set");
+        assert_eq!(session.player2, player2, "p2 is not set");
+        let mut i: u32 =0;
+        let mut sub_moves = ArrayTrait::new();
+        let position = get!(world, session_meta.p1_character, (CharacterPosition));
+        while i< 100 {
+            sub_moves.append( IVec2 { x: 50, y: 0, xdir: true, ydir: false });
+            i+=1;
+        };
+        let character_id = session_meta.p1_character;
+        set_contract_address(player1);
+        let moves = TurnMove { sub_moves, shots: ArrayTrait::new() };
+        actions.move(session_id, moves);
+        let new_position = get!(world, session_meta.p1_character, (CharacterPosition));
+        assert_eq!(new_position.coords.x, position.coords.x + 500, "character did not move");
+    }
+
 
 }
