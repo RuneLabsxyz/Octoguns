@@ -33,7 +33,7 @@ impl BulletImpl of BulletTrait {
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>) -> (Option<Bullet>, Option<u32>) {
         let speed = self.speed;
         let direction: i64 = self.angle.try_into().unwrap();
-        let mut res: (Option<Bullet>, Option<u32>) = (Option::None(()), Option::None(())); 
+        let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
 
         let mut i: u8 = 0;
         while i < 10 {
@@ -42,7 +42,7 @@ impl BulletImpl of BulletTrait {
             let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
             let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
 
-            if new_x <= 0 || new_x >= 10_000 || new_y <= 0 || new_y >= 10_000 {
+            if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
                 // out of bounds    
                 res = (Option::None(()), Option::None(()));
                 break;
@@ -67,13 +67,24 @@ impl BulletImpl of BulletTrait {
         let ( bullet, hit_result) = res;
 
         match hit_result {
-            Option::None => {
-                return (bullet, Option::None(()));
-            },
             Option::Some(character_id) => {
+                //hit a character
                 return (Option::None(()), Option::Some(character_id));
+            },
+            Option::None => {
+                match bullet {
+                    Option::Some(bullet) => {
+                        //still in bounds
+                        return (Option::Some(self), Option::None(()));
+                    },
+                    Option::None => {
+                        //out of bounds
+                        return (Option::None(()), Option::None(()));
+                    }
+                }
             }
         }
+        
 
     }
 
