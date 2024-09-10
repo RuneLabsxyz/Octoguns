@@ -3,18 +3,18 @@
     import Scene from '$lib/3d/Scene.svelte';
     import Ui from '$lib/ui/Ui.svelte';
     import { componentValueStore } from "../../../dojo/componentValueStore";
-    import { dojoStore, accountStore } from "../../../stores/dojoStore";
+    import { dojoStore, accountStore } from "$stores/dojoStore";
     import { gameState, sessionId, characterIds, recordedMove, isMoveRecorded,
             setPlayerCharacterCoords, 
             setEnemyCharacterCoords,
             playerCharacterId,
             enemyCharacterId,
             playerStartCoords,
-         } from '../../../stores/gameStores';
+         } from '$stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
     import type { Account } from 'starknet';
     import { move } from '../../../dojo/createSystemCalls';
-    import { type TurnData } from '../../../stores/gameStores';
+    import { type TurnData } from '$stores/gameStores';
     import { type ComponentStore } from '../../../dojo/componentValueStore';
 
     export let data;

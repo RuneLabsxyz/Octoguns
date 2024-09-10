@@ -1,9 +1,9 @@
 <script lang="ts">
     import StartGame from "./StartGame.svelte";
-    import { birdView } from "../../stores/cameraStores";
-    import { recordingMode, replayMode } from "../../stores/gameStores";
-    import { currentSubMove, recordedMove, isMoveRecorded, playerCharacterId, playerCharacterCoords, frameCounter, playerStartCoords } from "../../stores/gameStores";
-    import { setPlayerCharacterCoords, setEnemyCharacterCoords } from "../../stores/gameStores";
+    import { birdView } from "$stores/cameraStores";
+    import { recordingMode, replayMode } from "$stores/gameStores";
+    import { currentSubMove, recordedMove, isMoveRecorded, playerCharacterId, playerCharacterCoords, frameCounter, playerStartCoords } from "$stores/gameStores";
+    import { setPlayerCharacterCoords, setEnemyCharacterCoords } from "$stores/gameStores";
     
     export let moveHandler: any;
 

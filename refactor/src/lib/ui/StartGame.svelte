@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { gameState, sessionId } from "../../stores/gameStores";
-    import { dojoStore } from "../../stores/dojoStore";
+    import { gameState, sessionId } from "$stores/gameStores";
+    import { dojoStore } from "$stores/dojoStore";
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore);
 

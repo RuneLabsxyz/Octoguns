@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { isSetup } from '../stores/dojoStore';
+    import { isSetup } from '$stores/dojoStore';
 
 </script>
 

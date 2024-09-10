@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { playerCharacterCoords, enemyCharacterCoords } from "../../../stores/gameStores";
+    import { playerCharacterCoords, enemyCharacterCoords } from "$stores/gameStores";
     import { T } from "@threlte/core";
-    import { type CharacterCoordsStore } from "../../../stores/gameStores";
+    import { type CharacterCoordsStore } from "$stores/gameStores";
 
     let player_coords: CharacterCoordsStore;
     let enemy_coords: CharacterCoordsStore;

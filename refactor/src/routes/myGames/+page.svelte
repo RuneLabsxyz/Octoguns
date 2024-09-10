@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { accountStore, dojoStore } from "../../stores/dojoStore";
+    import { accountStore, dojoStore } from "$stores/dojoStore";
     import { componentValueStore } from "../../dojo/componentValueStore";
     import { goto } from "$app/navigation";
 

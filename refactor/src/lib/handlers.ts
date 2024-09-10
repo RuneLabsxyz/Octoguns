@@ -1,4 +1,4 @@
-import { keyStateStore, isMouseDownStore } from "../stores/gameStores";
+import { keyStateStore, isMouseDownStore } from "$stores/gameStores";
 import { get } from "svelte/store";
 
 export function handleKeyDown(event: KeyboardEvent) {

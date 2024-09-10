@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { dojoStore } from "../../stores/dojoStore";
+    import { dojoStore } from "$stores/dojoStore";
 
 
     $: ({ clientComponents, torii, burnerManager, client } = $dojoStore);

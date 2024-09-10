@@ -7,9 +7,9 @@
     import Characters from './components/Characters.svelte';
     import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, currentSubMove, frameCounter } from '../../stores/gameStores';
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
-    import type { TurnData } from '../../stores/gameStores';
+    import type { TurnData } from '$stores/gameStores';
     import { truncateToDecimals } from '$lib/helper.';
-    import { isMoveRecorded, playerCharacterCoords, characterIds } from '../../stores/gameStores';
+    import { isMoveRecorded, playerCharacterCoords, characterIds } from '$stores/gameStores';
 
     let {renderer, scene, camera} = useThrelte();
 

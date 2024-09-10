@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { derived } from "svelte/store";
-    import { accountStore, dojoStore } from "../../stores/dojoStore";
+    import { accountStore, dojoStore } from "$stores/dojoStore";
     import { componentValueStore } from "../../dojo/componentValueStore";
     import GameList from "$lib/games/GameList.svelte";
     import { goto } from "$app/navigation";
