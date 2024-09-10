@@ -1,5 +1,5 @@
 import { dojoConfig } from "../dojoConfig";
-import { setup } from "../dojo/setup";
+import { setup } from "$dojo/setup";
 import { writable } from 'svelte/store';
 import { Account } from "starknet";
 

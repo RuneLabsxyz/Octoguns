@@ -2,7 +2,7 @@
     import { Canvas } from '@threlte/core'
     import Scene from '$lib/3d/Scene.svelte';
     import Ui from '$lib/ui/Ui.svelte';
-    import { componentValueStore } from "../../../dojo/componentValueStore";
+    import { componentValueStore } from "$dojo/componentValueStore";
     import { dojoStore, accountStore } from "$stores/dojoStore";
     import { gameState, sessionId, characterIds, recordedMove, isMoveRecorded,
             setPlayerCharacterCoords, 
@@ -13,9 +13,9 @@
          } from '$stores/gameStores';
     import { areAddressesEqual } from '$lib/helper.';
     import type { Account } from 'starknet';
-    import { move } from '../../../dojo/createSystemCalls';
+    import { move } from '$dojo/createSystemCalls';
     import { type TurnData } from '$stores/gameStores';
-    import { type ComponentStore } from '../../../dojo/componentValueStore';
+    import { type ComponentStore } from '$dojo/componentValueStore';
 
     export let data;
     let gameId = data.gameId;

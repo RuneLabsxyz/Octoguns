@@ -3,7 +3,7 @@
 // Import the necessary types from the recs SDK
 // generate again with `sozo build --typescript` 
 import { Account, byteArray } from "starknet";
-import { type TurnData } from "../stores/gameStores";
+import { type TurnData } from "$stores/gameStores";
 import { DojoProvider } from "@dojoengine/core";
 import * as models from "./models.gen";
 

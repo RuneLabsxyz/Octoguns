@@ -5,7 +5,7 @@
     import Map from './components/Map.svelte';
     import Cameras from './components/Cameras.svelte';
     import Characters from './components/Characters.svelte';
-    import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, currentSubMove, frameCounter } from '../../stores/gameStores';
+    import { recordingMode, replayMode, keyStateStore, isMouseDownStore, recordedMove, currentSubMove, frameCounter } from '$stores/gameStores';
     import {handleKeyDown, handleKeyUp, handleMouseDown, handleMouseUp} from "$lib/handlers"
     import type { TurnData } from '$stores/gameStores';
     import { truncateToDecimals } from '$lib/helper.';

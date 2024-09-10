@@ -11,7 +11,7 @@ import type {
   Entity,
   Schema,
 } from "@dojoengine/recs";
-import { dojoStore } from "../stores/dojoStore";
+import { dojoStore } from "$stores/dojoStore";
 
 export type ComponentStore = ReturnType<typeof componentValueStore>;
 

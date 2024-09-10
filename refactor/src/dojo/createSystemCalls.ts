@@ -1,7 +1,5 @@
 import { Account } from "starknet"
-import { dojoStore } from "../stores/dojoStore"
-import { get } from "svelte/store"
-import { type TurnData } from "../stores/gameStores"
+import { type TurnData } from "$stores/gameStores"
 import type { IWorld } from "./contracts.gen"
 
 export type Vec = {
