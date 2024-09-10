@@ -1,20 +1,20 @@
 <script lang="ts">
-    import Splitscreen from './Cameras/SplitScreen.svelte';
-    import BirdView from './Cameras/BirdView.svelte';
-    import { birdView } from '$stores/cameraStores';
-    import FirstPerson  from './Cameras/FirstPerson.svelte';
-    import { PerspectiveCamera } from 'three';
+  import Splitscreen from './Cameras/SplitScreen.svelte'
+  import BirdView from './Cameras/BirdView.svelte'
+  import { birdView } from '$stores/cameraStores'
+  import FirstPerson from './Cameras/FirstPerson.svelte'
+  import { PerspectiveCamera } from 'three'
 
-    let birdViewValue: boolean;
+  let birdViewValue: boolean
 
-    $: birdViewValue = $birdView
+  $: birdViewValue = $birdView
 </script>
 
 {#if birdViewValue}
-    <BirdView />    
+  <BirdView />
 {/if}
 {#if !birdViewValue}
-    <PerspectiveCamera />
-        <FirstPerson />
-    <PerspectiveCamera />
+  <PerspectiveCamera />
+  <FirstPerson />
+  <PerspectiveCamera />
 {/if}
