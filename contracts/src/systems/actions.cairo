@@ -83,7 +83,7 @@ mod actions {
                             vec.x = min( vec.x, player_position.coords.x );
                             player_position.coords.x -= vec.x;
                         }
-                        if vec.xdir{
+                        if vec.ydir{
                             player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
                         }
                         else {
