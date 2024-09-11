@@ -9,7 +9,7 @@
   const { renderer, scene } = useThrelte()
 
   let cameras: any = []
-  let numCameras = 4
+  let numCameras = 1
   let birdViewCamera: any
 
   onMount(() => {
