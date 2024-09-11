@@ -30,9 +30,8 @@
   export const lock = () => domElement.requestPointerLock()
   export const unlock = () => document.exitPointerLock()
 
-  // Handle pointer lock through click event
   domElement.addEventListener('click', () => {
-    if (!isLocked) {
+    if (!isLocked && !$birdView) {
       lock()
     }
   })
