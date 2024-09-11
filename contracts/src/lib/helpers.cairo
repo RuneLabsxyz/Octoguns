@@ -41,7 +41,6 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
     };
 
     if dead_characters.len() == 0 {
-        println!("no dead characters");
         return (all_character_positions.clone(), all_ids);
     }
 
@@ -62,7 +61,6 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
                     j += 1;
                 };
                 if !is_dead {
-                    println!("character {} is not dead", character.id);
                     filtered_positions.append(character);
                     filtered_ids.append(character.id);
                 }

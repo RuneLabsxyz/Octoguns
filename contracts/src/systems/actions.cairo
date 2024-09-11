@@ -70,14 +70,65 @@ mod actions {
 
             while sub_move_index < 100 {
 
+                if sub_move_index == next_shot {
+
+                    let shot = moves.shots.pop_front();
+                    match shot {
+                        Option::Some(s) => {
+                            bullets.append(BulletTrait::new(
+                                                world.uuid(), 
+                                                Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
+                                                s.angle, 
+                                                player
+                            ));
+                            if moves.shots.len() > 0 {
+                                next_shot = *moves.shots.at(0).step;
+                            }
+                        },
+                        Option::None => {
+                            //shouldn't reach
+                        }
+
+                    }
+                }
+
+
+                //advance bullets + check collisions
+                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
+                bullets = new_bullets;
+                let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
+                positions = new_positions;
+
                 //get next sub_move
+                if filtered_character_ids.len() < 2 {
+                    match filtered_character_ids.len() {
+                        0 => {
+                            //draw
+                            break;
+                        },
+                        1 => {
+                            let winner = filtered_character_ids.pop_front().unwrap();
+                            if session_meta.p1_character == winner {
+                                //p1 wins
+                                session.state = 3;
+                                session_meta.p2_character = 0;
+                            }
+                            if session_meta.p2_character == winner {
+                                //p2 wins
+                                session.state = 3;
+                                session_meta.p1_character = 0;
+                            }
+                            break;
+                        },
+                        _ => {
+                        }
+                    }
+                }
 
                 
 
                 match moves.sub_moves.pop_front() {
                     Option::Some(mut vec) => {
-                        println!("move: {}", sub_move_index);
-                        println!("x: {} y: {}", vec.x, vec.y);
                         //check move valid 
                         if !check_is_valid_move(vec){
                             vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
@@ -102,65 +153,14 @@ mod actions {
 
                     },
                     Option::None => {
-                        continue;
                     }
 
                 }
                 positions = array![player_position, opp_position];
 
-                if sub_move_index == next_shot {
-                    let shot = moves.shots.pop_front();
-                    match shot {
-                        Option::Some(s) => {
-                            bullets.append(BulletTrait::new(
-                                                world.uuid(), 
-                                                Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
-                                                s.angle, 
-                                                player
-                            ));
-                            if moves.shots.len() > 0 {
-                                next_shot = *moves.shots.at(0).step;
-                            }
-                        },
-                        Option::None => {
-                            //shouldn't reach
-                        }
-
-                    }
-                }
+                
                 
 
-                //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
-                bullets = new_bullets;
-                let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
-                positions = new_positions;
-                println!("filtered_character_ids length: {}", filtered_character_ids.len());
-                if filtered_character_ids.len() < 2 {
-                    match filtered_character_ids.len() {
-                        0 => {
-                            //draw
-                            break;
-                        },
-                        1 => {
-                            let winner = filtered_character_ids.pop_front().unwrap();
-                            if session_meta.p1_character == winner {
-                                //p1 wins
-                                session.state = 3;
-                                session_meta.p2_character = 0;
-                            }
-                            if session_meta.p2_character == winner {
-                                //p2 wins
-                                session.state = 3;
-                                session_meta.p1_character = 0;
-                            }
-                            break;
-                        },
-                        _ => {
-                         continue;   
-                        }
-                    }
-                }
                 sub_move_index+=1;
 
                 //END MOVE LOOP
@@ -171,6 +171,7 @@ mod actions {
                 let next_bullet = bullets.pop_front();
                 match next_bullet {
                     Option::Some(bullet) => {
+                        println!("setting new bullet positions: x: {} y: {}", bullet.coords.x, bullet.coords.y);
                         set!(world, (bullet));
                     },
                     Option::None => {

@@ -38,10 +38,15 @@ impl BulletImpl of BulletTrait {
 
         let mut i: u8 = 0;
         while i < 10 {
-            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 10); 
-            let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 10);
+
+            
+
+            let x_shift = (fast_cos(direction) * speed.into()) / TEN_E_8_I; 
+            let y_shift = (fast_sin(direction) * speed.into()) / TEN_E_8_I;
             let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
             let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
+            println!("x_shift: {}, y_shift: {}", x_shift, y_shift);
+            
 
             if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
                 // out of bounds    
@@ -50,13 +55,12 @@ impl BulletImpl of BulletTrait {
             }
 
             self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
-            println!("new_x: {}, new_y: {}", new_x, new_y);
+            println!("bulelt new_x: {}, new_y: {}", new_x, new_y);
 
             let hit_result = self.compute_hits(characters);
             match hit_result {
                 Option::None => {
                     i+=1;
-                    continue;
                 },
                 // hit a character
                 Option::Some(character_id) => {
@@ -64,6 +68,7 @@ impl BulletImpl of BulletTrait {
                     break;
                 }
             }
+            i+=1;
         };
 
         let ( bullet, hit_result) = res;
@@ -96,17 +101,15 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            //PLUS 100 OFFSET
+            //PLUS 1000 OFFSET
             let lower_bound_x = character.coords.x + 1000 - 500;
             let upper_bound_x = character.coords.x + 1000 + 500;
             let lower_bound_y = character.coords.y + 1000 - 500;
             let upper_bound_y = character.coords.y + 1000 + 500;
 
-            println!("lower_bound_x: {}, upper_bound_x: {}, lower_bound_y: {}, upper_bound_y: {}", lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y);
 
             if (self.coords.x + 1000 >= lower_bound_x && self.coords.x + 1000 <= upper_bound_x &&
             self.coords.y + 1000 >= lower_bound_y && self.coords.y + 1000 <= upper_bound_y) {
-                println!("hit character {}", character.id);
                 character_id = character.id;
                 break;        
             }
@@ -147,7 +150,7 @@ mod simulate_tests {
             Option::Some(bullet) => {
                 println!("bullet.coords.x: {}, bullet.coords.y: {}", bullet.coords.x, bullet.coords.y);
                 assert!(bullet.coords.x == 300, "x should not have changed");
-                assert!(bullet.coords.y == 2500, "y should have changed by 100");
+                assert!(bullet.coords.y == 25000, "y should have changed by 100");
             }
         }
     }
@@ -165,7 +168,7 @@ mod simulate_tests {
              },
              Option::Some(bullet) => {
 
-                assert!(bullet.coords.x == 3500, "x should have changed by 100");
+                assert!(bullet.coords.x == 26000, "x should have changed by 100");
                  assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }
