@@ -8,7 +8,7 @@
 
   $: account = $accountStore
 
-  let playerEntity = torii.poseidonHash([account?.address])
+  $: playerEntity = torii.poseidonHash([account?.address])
 
   $: player = componentValueStore(clientComponents.Player, playerEntity)
 
