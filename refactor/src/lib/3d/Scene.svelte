@@ -18,10 +18,11 @@
   } from './components/Cameras/SplitScreen/CameraUtils'
   import { birdView } from '$stores/cameraStores'
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
+  import { PerspectiveCamera } from 'three'
 
-  let { renderer, scene, camera } = useThrelte()
+  let { renderer, scene } = useThrelte()
 
-  let cameras: any = []
+  let cameras: PerspectiveCamera[] = []
   let numCameras = 1
   let birdViewCamera: any
 
