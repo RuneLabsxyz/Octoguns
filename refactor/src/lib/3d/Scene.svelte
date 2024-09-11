@@ -46,7 +46,7 @@
       }
 
       if ($recordingMode) {
-        recordMove($camera, characterId)
+        recordMove(cameras[0], characterId)
       }
       if ($replayMode) {
         replayMove($recordedMove, characterId)

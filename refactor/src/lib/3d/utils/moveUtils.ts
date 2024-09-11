@@ -26,7 +26,11 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
 
   if (moveDirection.length() > 0 || get(isMouseDownStore)) {
     moveDirection.normalize().multiplyScalar(move_speed)
-    moveDirection.applyQuaternion(camera.quaternion)
+    try {
+      moveDirection.applyQuaternion(camera.quaternion)
+    } catch {
+      //No camera quaternion
+    }
     moveDirection.x = truncateToDecimals(moveDirection.x, 2)
     moveDirection.z = truncateToDecimals(moveDirection.z, 2)
     moveDirection.y = 0
