@@ -51,6 +51,8 @@
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
 
+    let animationFrameId: number
+
     const animationLoop = () => {
       if ($birdView) {
         if (birdViewCamera) {
@@ -69,13 +71,17 @@
         replayMove($recordedMove)
       }
 
-      requestAnimationFrame(animationLoop)
+      animationFrameId = requestAnimationFrame(animationLoop)
     }
 
     animationLoop()
 
     return () => {
-      cancelAnimationFrame(animationLoop)
+      cancelAnimationFrame(animationFrameId)
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mouseup', handleMouseUp)
     }
   })
 
