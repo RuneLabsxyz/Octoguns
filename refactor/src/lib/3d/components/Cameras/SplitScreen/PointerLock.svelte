@@ -2,6 +2,7 @@
   import { createEventDispatcher, onDestroy } from 'svelte'
   import { Euler, PerspectiveCamera } from 'three'
   import { useThrelte } from '@threlte/core'
+  import { birdView } from '$stores/cameraStores'
 
   export let cameras: PerspectiveCamera[] = [] // pass all cameras here
   export let minPolarAngle = 0 // radians
@@ -29,9 +30,8 @@
   export const lock = () => domElement.requestPointerLock()
   export const unlock = () => document.exitPointerLock()
 
-  // Handle pointer lock through click event
   domElement.addEventListener('click', () => {
-    if (!isLocked) {
+    if (!isLocked && !$birdView) {
       lock()
     }
   })
@@ -89,5 +89,9 @@
 
   function onPointerlockError() {
     console.error('PointerLockControls: Unable to use Pointer Lock API')
+  }
+
+  $: if ($birdView && isLocked) {
+    unlock()
   }
 </script>

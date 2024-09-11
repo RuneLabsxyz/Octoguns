@@ -27,8 +27,19 @@
     playerCharacterCoords,
     characterIds,
   } from '$stores/gameStores'
+  import BirdView from './components/Cameras/BirdView.svelte'
+  import SplitScreen from './components/Cameras/SplitScreen.svelte'
+  import {
+    renderCameras,
+    resetCamera,
+  } from './components/Cameras/SplitScreen/CameraUtils'
+  import { birdView } from '$stores/cameraStores'
 
   let { renderer, scene, camera } = useThrelte()
+
+  let cameras: any = []
+  let numCameras = 1
+  let birdViewCamera: any
 
   let move_speed = 1 / 3
   let moveDirection = new Vector3()
@@ -39,6 +50,39 @@
     window.addEventListener('keyup', handleKeyUp)
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
+
+    let animationFrameId: number
+
+    const animationLoop = () => {
+      if ($birdView) {
+        if (birdViewCamera) {
+          resetCamera(birdViewCamera, renderer)
+          renderer.render(scene, birdViewCamera)
+        }
+      } else {
+        renderCameras(cameras, numCameras, renderer, scene)
+      }
+
+      // Add the logic from useTask here
+      if ($recordingMode) {
+        recordMove()
+      }
+      if ($replayMode) {
+        replayMove($recordedMove)
+      }
+
+      animationFrameId = requestAnimationFrame(animationLoop)
+    }
+
+    animationLoop()
+
+    return () => {
+      cancelAnimationFrame(animationFrameId)
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
   })
 
   onDestroy(() => {
@@ -110,19 +154,14 @@
 
     $frameCounter += 1
   }
-
-  useTask((delta) => {
-    if ($recordingMode) {
-      recordMove()
-    }
-    if ($replayMode) {
-      replayMove($recordedMove)
-    }
-  })
 </script>
 
 <T.Group>
-  <Cameras />
+  {#if $birdView}
+    <BirdView bind:camera={birdViewCamera} />
+  {:else}
+    <SplitScreen bind:cameras {numCameras} />
+  {/if}
   <Map />
   <Characters />
 </T.Group>
