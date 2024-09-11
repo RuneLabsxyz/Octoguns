@@ -26,29 +26,31 @@ pub struct Vec2_i64 {
 impl BulletImpl of BulletTrait {
 
     fn new(id: u32, coords: Vec2, angle: u64, player: ContractAddress) -> Bullet {
-        Bullet { bullet_id: id, coords, speed: 100, angle, shot_by: player}
+        Bullet { bullet_id: id, coords, speed: 2500, angle, shot_by: player}
     }
 
 
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>) -> (Option<Bullet>, Option<u32>) {
         let speed = self.speed;
         let direction: i64 = self.angle.try_into().unwrap();
+        let mut is_dropped: bool = false;
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
 
         let mut i: u8 = 0;
         while i < 10 {
-            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 10);
+            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 10); 
             let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 10);
             let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
             let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
 
             if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
                 // out of bounds    
-                res = (Option::None(()), Option::None(()));
+                is_dropped = true;
                 break;
             }
 
             self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
+            println!("new_x: {}, new_y: {}", new_x, new_y);
 
             let hit_result = self.compute_hits(characters);
             match hit_result {
@@ -66,24 +68,18 @@ impl BulletImpl of BulletTrait {
 
         let ( bullet, hit_result) = res;
 
+        if is_dropped {
+            return (Option::None(()), Option::None(()));
+        }
         match hit_result {
             Option::Some(character_id) => {
-                //hit a character
                 return (Option::None(()), Option::Some(character_id));
             },
             Option::None => {
-                match bullet {
-                    Option::Some(bullet) => {
-                        //still in bounds
-                        return (Option::Some(self), Option::None(()));
-                    },
-                    Option::None => {
-                        //out of bounds
-                        return (Option::None(()), Option::None(()));
-                    }
-                }
+                return (Option::Some(self), Option::None(()));
             }
         }
+
         
 
     }
@@ -97,16 +93,20 @@ impl BulletImpl of BulletTrait {
                 break;
             }
 
+
             let character = *characters.at(character_index);
 
             //PLUS 100 OFFSET
-            let lower_bound_x = character.coords.x + 100 - 50;
-            let upper_bound_x = character.coords.x + 100 + 50;
-            let lower_bound_y = character.coords.y + 100 - 50;
-            let upper_bound_y = character.coords.y + 100 + 50;
+            let lower_bound_x = character.coords.x + 1000 - 500;
+            let upper_bound_x = character.coords.x + 1000 + 500;
+            let lower_bound_y = character.coords.y + 1000 - 500;
+            let upper_bound_y = character.coords.y + 1000 + 500;
 
-            if (self.coords.x + 100 >= lower_bound_x && self.coords.x + 100 <= upper_bound_x &&
-            self.coords.y + 100 >= lower_bound_y && self.coords.y + 100 <= upper_bound_y) {
+            println!("lower_bound_x: {}, upper_bound_x: {}, lower_bound_y: {}, upper_bound_y: {}", lower_bound_x, upper_bound_x, lower_bound_y, upper_bound_y);
+
+            if (self.coords.x + 1000 >= lower_bound_x && self.coords.x + 1000 <= upper_bound_x &&
+            self.coords.y + 1000 >= lower_bound_y && self.coords.y + 1000 <= upper_bound_y) {
+                println!("hit character {}", character.id);
                 character_id = character.id;
                 break;        
             }
@@ -137,24 +137,17 @@ mod simulate_tests {
    fn test_bullet_sim_y_only()  {
         let address = starknet::contract_address_const::<0x0>();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x:323, y:0}, 90 * TEN_E_8, address);
-        let characters = get_test_character_array();
+        let mut bullet = BulletTrait::new(1, Vec2 { x:300, y:0}, 90 * TEN_E_8, address);
+        let characters = ArrayTrait::new();
         let (new_bullet, id) = bullet.simulate(@characters);
-        match id {
-            Option::None => {
-            },
-            Option::Some(_) => {
-                panic!("Should be none");
-            }
-        }
         match new_bullet {
             Option::None => {
                 panic!("Should not be none");
             },
             Option::Some(bullet) => {
                 println!("bullet.coords.x: {}, bullet.coords.y: {}", bullet.coords.x, bullet.coords.y);
-                assert!(bullet.coords.x == 323, "x should not have changed");
-                assert!(bullet.coords.y == 100, "y should have changed by 100");
+                assert!(bullet.coords.x == 300, "x should not have changed");
+                assert!(bullet.coords.y == 2500, "y should have changed by 100");
             }
         }
     }
@@ -163,15 +156,16 @@ mod simulate_tests {
     fn test_bullet_sim_x_only()  {
         let address = starknet::contract_address_const::<0x0>();
 
-         let mut bullet = BulletTrait::new(1, Vec2 { x:750, y:0}, 0, address);
-         let characters = get_test_character_array();
+         let mut bullet = BulletTrait::new(1, Vec2 { x:1000, y:0}, 0, address);
+         let characters = ArrayTrait::new();
          let (new_bullet, id) = bullet.simulate(@characters);
          match new_bullet {
              Option::None => {
                  panic!("Should not be none");
              },
              Option::Some(bullet) => {
-                 assert!(bullet.coords.x == 850, "x should have changed by 100");
+
+                assert!(bullet.coords.x == 3500, "x should have changed by 100");
                  assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }

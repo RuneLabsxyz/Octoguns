@@ -26,7 +26,10 @@ mod actions {
             assert!(moves.shots.len() <= 3, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
-            assert!(session.state == 2, "Game not started");
+            assert!(session.state != 1, "Game doesn't exist");
+            assert!(session.state != 3, "Game over");
+            assert!(session.state == 2, "Game not active");
+
             let mut session_meta = get!(world, session_id, (SessionMeta));
 
             let mut player_character_id = 0;
@@ -68,9 +71,13 @@ mod actions {
             while sub_move_index < 100 {
 
                 //get next sub_move
-                let mut sub_move = moves.sub_moves.pop_front();
-                match sub_move {
+
+                
+
+                match moves.sub_moves.pop_front() {
                     Option::Some(mut vec) => {
+                        println!("move: {}", sub_move_index);
+                        println!("x: {} y: {}", vec.x, vec.y);
                         //check move valid 
                         if !check_is_valid_move(vec){
                             vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
@@ -91,18 +98,14 @@ mod actions {
                             vec.y = min( vec.y, player_position.coords.y );
                             player_position.coords.y -= vec.y;
                         }
-                        println!("new x: {} new y: {}", player_position.coords.x, player_position.coords.y);
 
 
                     },
                     Option::None => {
-                        break;
+                        continue;
                     }
 
                 }
-                positions = array![player_position, opp_position];
-
-
                 positions = array![player_position, opp_position];
 
                 if sub_move_index == next_shot {
@@ -125,13 +128,14 @@ mod actions {
 
                     }
                 }
+                
 
                 //advance bullets + check collisions
                 let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
                 bullets = new_bullets;
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
                 positions = new_positions;
-
+                println!("filtered_character_ids length: {}", filtered_character_ids.len());
                 if filtered_character_ids.len() < 2 {
                     match filtered_character_ids.len() {
                         0 => {
@@ -142,18 +146,23 @@ mod actions {
                             let winner = filtered_character_ids.pop_front().unwrap();
                             if session_meta.p1_character == winner {
                                 //p1 wins
+                                session.state = 3;
+                                session_meta.p2_character = 0;
                             }
                             if session_meta.p2_character == winner {
                                 //p2 wins
+                                session.state = 3;
+                                session_meta.p1_character = 0;
                             }
                             break;
                         },
                         _ => {
-                         sub_move_index+=1;
                          continue;   
                         }
                     }
                 }
+                sub_move_index+=1;
+
                 //END MOVE LOOP
             };
 
@@ -183,6 +192,9 @@ mod actions {
                     }
                 }
             };
+
+            session_meta.turn_count += 1;
+            set!(world, (session, session_meta));
 
 
         }

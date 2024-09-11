@@ -94,7 +94,63 @@ mod tests {
         let new_coords = Vec2 {x: position.coords.x + 10000, y: position.coords.y};
         assert_eq!(new_position.coords.x, new_coords.x, "character did not move");
 
-
     }
 
+    #[test]
+    fn test_collision_in_move() {
+        let (world, start, actions, spawn) = setup();
+        let player1: ContractAddress = contract_address_const::<0x01>();
+        let player2: ContractAddress = contract_address_const::<0x02>();
+
+        let session_id = setup_game(start, spawn, player1, player2);
+
+        let session = get!(world, session_id, (Session));
+        let session_meta = get!(world, session_id, (SessionMeta));
+
+        set_contract_address(player1);
+        let mut shots = ArrayTrait::new();
+        let mut sub_moves = ArrayTrait::new();
+        let mut i: u32 = 0;
+        while i < 100 {
+            sub_moves.append(IVec2 {x: 0, y: 0, xdir: true, ydir: true});
+            i+=1;
+        };
+
+        shots.append(Shot {angle: 0, step: 0});
+        actions.move(session_id, TurnMove {sub_moves, shots});
+        // bullet travels 25000 units per turn, so it should take 3 turns to hit 
+        let session_meta = get!(world, session_id, (SessionMeta));
+        let mut bullet_id = 0;
+        if session_meta.bullets.len() > 0 {
+            bullet_id = *session_meta.bullets.at(0);
+        }
+        else {
+            println!("no bullet");
+        }
+        let bullet = get!(world, bullet_id, (Bullet));
+        println!("turn: {}", session_meta.turn_count);
+        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
+
+        set_contract_address(player2);
+        actions.move(session_id, TurnMove {sub_moves: ArrayTrait::new(), shots: ArrayTrait::new()});
+        let bullet = get!(world, bullet_id, (Bullet));
+        println!("turn: {}", session_meta.turn_count);
+        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
+
+        set_contract_address(player1);
+        actions.move(session_id, TurnMove {sub_moves: ArrayTrait::new(), shots: ArrayTrait::new()});
+        let bullet = get!(world, bullet_id, (Bullet));
+        println!("turn: {}", session_meta.turn_count);
+        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
+
+        set_contract_address(player2);
+        actions.move(session_id, TurnMove {sub_moves: ArrayTrait::new(), shots: ArrayTrait::new()});
+        let bullet = get!(world, bullet_id, (Bullet));
+        println!("turn: {}", session_meta.turn_count);
+        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
+
+        let session = get!(world, session_id, (Session));
+        assert!(session.state == 3, "Game should have ended");
+
+    }
 }

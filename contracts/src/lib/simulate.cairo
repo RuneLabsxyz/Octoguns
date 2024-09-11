@@ -10,28 +10,29 @@ pub type SimulationResult = (Array<Bullet>, Array<u32>);
 pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
-    let mut character_index: u32 = 0;
+    let mut bullet_index: u32 = 0;
 
     loop {
-        if character_index >= bullets.len() {
-            break;
-        }
-        let mut bullet = *bullets.at(character_index);
-        let (updated_bullet, res) = bullet.simulate(@character_positions);
-        match updated_bullet {
-            Option::Some(bullet) => {
-                println!("bullet ({}, {}) angle {}", bullet.coords.x, bullet.coords.y, bullet.angle);
-                updated_bullets.append(bullet)
+        match bullets.pop_front() {
+            Option::Some(mut bullet) => {
+                let (updated_bullet, hit_character) = bullet.simulate(@character_positions);
+                match updated_bullet {
+                    Option::Some(bullet) => {
+                        updated_bullets.append(bullet)
+                    },
+                    Option::None => {
+                        match hit_character {
+                            Option::Some(character_id) => {
+                                dead_characters_ids.append(character_id);
+                            },
+                            Option::None => {},
+                        }
+                    },
+                }
             },
-            Option::None => {},
+            Option::None => {break;},
         }
-        match res {
-            Option::Some(character_id) => {
-                dead_characters_ids.append(character_id);
-            },
-            Option::None => {},
-        }
-        character_index += 1;
+        
     };
 
     (updated_bullets, dead_characters_ids)
@@ -71,8 +72,8 @@ mod simulate_tests {
         let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, address);
         let mut bullets = array![bullet];
         let mut characters = array![
-            CharacterPositionTrait::new(1, Vec2 { x: 0, y: 75 }),
-            CharacterPositionTrait::new(2, Vec2 { x: 458, y: 234 })
+            CharacterPositionTrait::new(1, Vec2 { x: 0, y: 75000 }),
+            CharacterPositionTrait::new(2, Vec2 { x: 45800, y: 23400 })
         ];
 
         let (updated_bullets, dead_characters_ids) = simulate_bullets(ref bullets, ref characters);
