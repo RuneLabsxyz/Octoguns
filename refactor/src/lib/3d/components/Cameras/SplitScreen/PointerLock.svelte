@@ -2,7 +2,7 @@
   import { createEventDispatcher, onDestroy } from 'svelte'
   import { Euler, PerspectiveCamera } from 'three'
   import { useThrelte } from '@threlte/core'
-  import { birdView } from '$stores/cameraStores'
+  import { birdView, inPointerLock } from '$stores/cameraStores'
 
   export let cameras: PerspectiveCamera[] = [] // pass all cameras here
   export let minPolarAngle = 0 // radians
@@ -27,8 +27,15 @@
     dispatch('change')
   }
 
-  export const lock = () => domElement.requestPointerLock()
-  export const unlock = () => document.exitPointerLock()
+  export const lock = () => {
+    domElement.requestPointerLock()
+    inPointerLock.set(true)
+  }
+
+  export const unlock = () => {
+    document.exitPointerLock()
+    inPointerLock.set(false)
+  }
 
   domElement.addEventListener('click', () => {
     if (!isLocked && !$birdView) {
@@ -81,9 +88,11 @@
     if (document.pointerLockElement === domElement) {
       dispatch('lock')
       isLocked = true
+      inPointerLock.set(true)
     } else {
       dispatch('unlock')
       isLocked = false
+      inPointerLock.set(false)
     }
   }
 

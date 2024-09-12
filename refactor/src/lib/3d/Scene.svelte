@@ -19,59 +19,78 @@
   import { birdView } from '$stores/cameraStores'
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { PerspectiveCamera } from 'three'
+  import Bullets from './components/Bullet/Bullets.svelte'
+  import { shoot, replayShot } from './components/Bullet/shoot'
+  import { isMouseDownStore } from '$stores/gameStores'
+  import { inPointerLock } from '$stores/cameraStores'
+  import { writable } from 'svelte/store'
 
   let { renderer, scene } = useThrelte()
-
   let cameras: PerspectiveCamera[] = []
   let numCameras = 1
   let birdViewCamera: any
 
   export let characterId: number
 
-  onMount(() => {
+  let hasShotInCurrentRecording = writable(false)
+
+  let animationFrameId: number
+
+  const addEventListeners = () => {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     window.addEventListener('mousedown', handleMouseDown)
     window.addEventListener('mouseup', handleMouseUp)
+  }
 
-    let animationFrameId: number
-
-    const animationLoop = () => {
-      if ($birdView) {
-        if (birdViewCamera) {
-          resetCamera(birdViewCamera, renderer)
-          renderer.render(scene, birdViewCamera)
-        }
-      } else {
-        renderCameras(cameras, numCameras, renderer, scene)
-      }
-
-      if ($recordingMode) {
-        recordMove(cameras[0], characterId)
-      }
-      if ($replayMode) {
-        replayMove($recordedMove, characterId)
-      }
-
-      animationFrameId = requestAnimationFrame(animationLoop)
-    }
-
-    animationLoop()
-
-    return () => {
-      cancelAnimationFrame(animationFrameId)
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
-      window.removeEventListener('mousedown', handleMouseDown)
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  })
-
-  onDestroy(() => {
+  const removeEventListeners = () => {
     window.removeEventListener('keydown', handleKeyDown)
     window.removeEventListener('keyup', handleKeyUp)
     window.removeEventListener('mousedown', handleMouseDown)
     window.removeEventListener('mouseup', handleMouseUp)
+  }
+
+  const animationLoop = () => {
+    if ($birdView) {
+      if (birdViewCamera) {
+        resetCamera(birdViewCamera, renderer)
+        renderer.render(scene, birdViewCamera)
+      }
+    } else {
+      renderCameras(cameras, numCameras, renderer, scene)
+    }
+
+    if ($recordingMode) {
+      recordMove(cameras[0], characterId)
+      if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
+        shoot(cameras[0]) // currently only works with one camera
+        hasShotInCurrentRecording.set(true)
+      }
+    }
+    if ($replayMode) {
+      replayMove($recordedMove, characterId)
+      replayShot($recordedMove)
+    }
+
+    animationFrameId = requestAnimationFrame(animationLoop)
+  }
+
+  onMount(() => {
+    addEventListeners()
+    animationLoop()
+
+    return () => {
+      removeEventListeners()
+      cancelAnimationFrame(animationFrameId)
+    }
+  })
+
+  $: if ($recordingMode) {
+    hasShotInCurrentRecording.set(false)
+  }
+
+  onDestroy(() => {
+    removeEventListeners()
     renderer.setAnimationLoop(null)
   })
 </script>
@@ -84,4 +103,5 @@
   {/if}
   <Map />
   <Characters />
+  <Bullets />
 </T.Group>
