@@ -62,7 +62,7 @@ impl BulletImpl of BulletTrait {
             }
         }
 
-        let ( bullet, hit_result) = res;
+        let ( _ , hit_result) = res;
 
         if is_dropped {
             return (Option::None(()), Option::None(()));
