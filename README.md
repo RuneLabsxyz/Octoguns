@@ -57,7 +57,3 @@ OctoGuns is a fully on-chain 1v1 strategy FPS where players control 8 characters
 
 - Customizable, no-code maps
 - User-generated content support
-
-## License
-
-[Add license information here]
