@@ -83,6 +83,7 @@ impl BulletImpl of BulletTrait {
     fn compute_hits(ref self: Bullet, characters: @Array<CharacterPosition>) -> Option<u32> {
         let mut character_index: u32 = 0;
         let mut character_id = 0;
+        const OFFSET: u32 = 1000;
 
         loop {
             if character_index >= characters.len() {
@@ -92,15 +93,15 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            //PLUS 1000 OFFSET
-            let lower_bound_x = character.coords.x + 1000 - 500;
-            let upper_bound_x = character.coords.x + 1000 + 500;
-            let lower_bound_y = character.coords.y + 1000 - 500;
-            let upper_bound_y = character.coords.y + 1000 + 500;
+            //plus 1000 offset to to avoid underflow
+            let lower_bound_x = character.coords.x + OFFSET - 500;
+            let upper_bound_x = character.coords.x + OFFSET + 500;
+            let lower_bound_y = character.coords.y + OFFSET - 500;
+            let upper_bound_y = character.coords.y + OFFSET + 500;
 
-
-            if (self.coords.x + 1000 > lower_bound_x && self.coords.x + 1000 < upper_bound_x &&
-            self.coords.y + 1000 > lower_bound_y && self.coords.y + 1000 < upper_bound_y) {
+            //plus 1000 offset to to match bounds offset            
+            if (self.coords.x + OFFSET > lower_bound_x && self.coords.x + OFFSET < upper_bound_x &&
+            self.coords.y + OFFSET > lower_bound_y && self.coords.y + OFFSET < upper_bound_y) {
                 character_id = character.id;
                 break;        
             }
