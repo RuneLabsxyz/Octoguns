@@ -107,6 +107,6 @@
 </div>
 <div class="absolute h-full w-full">
   <Canvas>
-    <Scene characterId={$sessionMetaData.p2_character} />
+    <Scene />
   </Canvas>
 </div>

@@ -21,7 +21,7 @@
   import { PerspectiveCamera } from 'three'
   import Bullets from './components/Bullet/Bullets.svelte'
   import { shoot, replayShot } from './components/Bullet/shoot'
-  import { isMouseDownStore } from '$stores/gameStores'
+  import { isMouseDownStore, playerCharacterId } from '$stores/gameStores'
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
@@ -30,7 +30,7 @@
   let numCameras = 1
   let birdViewCamera: any
 
-  export let characterId: number
+  let characterId: number = $playerCharacterId
 
   let hasShotInCurrentRecording = writable(false)
 
