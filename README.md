@@ -36,7 +36,7 @@ OctoGuns is a fully on-chain 1v1 strategy FPS where players control 8 characters
 
 - Project Management & Development: [@0xMugen\_](https://twitter.com/0xMugen_)
 - Lead Developer: [@ZackAmes](https://twitter.com/ZackAmes)
-- Advisor & Dev Support: [@Knownasred](https://twitter.com/Knownasred)
+- Advisor & Dev Support: [@Knownasred](https://twitter.com/Knownas_red)
 - Artist: [@Gaetano](https://twitter.com/Gaetano)
 
 ## Links
