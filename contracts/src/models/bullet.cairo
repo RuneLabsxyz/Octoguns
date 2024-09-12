@@ -12,7 +12,7 @@ pub struct Bullet {
     pub coords: Vec2,
     pub speed: u32, // pixels per step
     pub angle: u64, // in degrees
-    pub shot_by: ContractAddress
+    pub shot_by: u32
 }
 
 #[derive(Copy, Drop, Serde)]
@@ -25,10 +25,10 @@ pub struct Vec2_i64 {
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, angle: u64, player: ContractAddress) -> Bullet {
+    fn new(id: u32, coords: Vec2, angle: u64, player: u32) -> Bullet {
         //speed is how much it travels per sub step
         //distance travelled per turn is speed * 100
-        Bullet { bullet_id: id, coords, speed: 2500, angle, shot_by: player}
+        Bullet { bullet_id: id, coords, speed: 250, angle, shot_by: player}
     }
 
 
@@ -38,39 +38,29 @@ impl BulletImpl of BulletTrait {
         let mut is_dropped: bool = false;
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
 
-        let mut i: u8 = 0;
-        while i < 5 {
 
-            
+        let x_shift = (fast_cos(direction) * speed.into()) / TEN_E_8_I; 
+        let y_shift = (fast_sin(direction) * speed.into()) / TEN_E_8_I;
+        let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
+        let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
+        
 
-            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 5); 
-            let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 5);
-            let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
-            let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
-            println!("x_shift: {}, y_shift: {}", x_shift, y_shift);
-            
+        if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
+            // out of bounds    
+            return (Option::None(()), Option::None(()));
+        }
 
-            if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
-                // out of bounds    
-                is_dropped = true;
-                break;
+        self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
+
+        let hit_result = self.compute_hits(characters);
+        match hit_result {
+            Option::None => {
+            },
+            // hit a character
+            Option::Some(character_id) => {
+                res = (Option::Some(self), Option::Some(character_id));
             }
-
-            self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
-            println!("bulelt new_x: {}, new_y: {}", new_x, new_y);
-
-            let hit_result = self.compute_hits(characters);
-            match hit_result {
-                Option::None => {
-                },
-                // hit a character
-                Option::Some(character_id) => {
-                    res = (Option::Some(self), Option::Some(character_id));
-                    break;
-                }
-            }
-            i+=1;
-        };
+        }
 
         let ( bullet, hit_result) = res;
 
@@ -118,7 +108,8 @@ impl BulletImpl of BulletTrait {
             character_index += 1;
         };
 
-        if character_id == 0 {
+        //ignore collision with the player that shot the bullet
+        if character_id == 0 || character_id == self.shot_by {
             return Option::None(());
         }
 
@@ -141,7 +132,7 @@ mod simulate_tests {
    fn test_bullet_sim_y_only()  {
         let address = starknet::contract_address_const::<0x0>();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x:300, y:0}, 90 * TEN_E_8, address);
+        let mut bullet = BulletTrait::new(1, Vec2 { x:300, y:0}, 90 * TEN_E_8, 1);
         let characters = ArrayTrait::new();
         let (new_bullet, id) = bullet.simulate(@characters);
         match new_bullet {
@@ -160,7 +151,7 @@ mod simulate_tests {
     fn test_bullet_sim_x_only()  {
         let address = starknet::contract_address_const::<0x0>();
 
-         let mut bullet = BulletTrait::new(1, Vec2 { x:0, y:0}, 0, address);
+         let mut bullet = BulletTrait::new(1, Vec2 { x:0, y:0}, 0, 1);
          let characters = ArrayTrait::new();
          let (new_bullet, id) = bullet.simulate(@characters);
          match new_bullet {
@@ -180,7 +171,7 @@ mod simulate_tests {
      fn test_collision() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 0, address);
+        let mut bullet = BulletTrait::new(1, Vec2 { x:3, y:0}, 0, 1);
         let characters = array![CharacterPositionTrait::new(69, Vec2 {x: 14, y: 0})];
         let (new_bullet, res) = bullet.simulate(@characters);
         match new_bullet {
@@ -204,7 +195,7 @@ mod simulate_tests {
      fn test_collision_fail() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 0, address);
+        let mut bullet = BulletTrait::new(1, Vec2 { x:700, y:1}, 0, 1);
         let characters = array![CharacterPositionTrait::new(69,Vec2 {x: 4, y: 0})];
         let (new_bullet, res) = bullet.simulate( @characters);
         match new_bullet {

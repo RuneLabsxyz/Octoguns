@@ -54,13 +54,13 @@ mod simulate_tests {
     fn test_4_bullets_sim()  {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet_1 = BulletTrait::new(1, Vec2 { x:300, y:0}, 180 * TEN_E_8, address);
-        let bullet_2 = BulletTrait::new(1, Vec2 { x:300, y:555}, 100 * TEN_E_8, address);
-        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4 * TEN_E_8, address);
-        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, 90 * TEN_E_8, address);
+        let bullet_1 = BulletTrait::new(1, Vec2 { x:300, y:0}, 180 * TEN_E_8, 1);
+        let bullet_2 = BulletTrait::new(1, Vec2 { x:300, y:555}, 100 * TEN_E_8, 2);
+        let bullet_3 = BulletTrait::new(1, Vec2 { x:6, y:1}, 4 * TEN_E_8, 3);
+        let bullet_4 = BulletTrait::new(1, Vec2 { x:3, y:0}, 90 * TEN_E_8, 4);
 
         let mut characters = get_test_character_array();
-    
+        
         let mut bullets = array![bullet_1, bullet_2, bullet_3, bullet_4];
         let res = simulate_bullets(ref bullets, ref characters);
     }
@@ -69,7 +69,7 @@ mod simulate_tests {
     fn test_no_collisions() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, address);
+        let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 63);
         let mut bullets = array![bullet];
         let mut characters = array![
             CharacterPositionTrait::new(1, Vec2 { x: 0, y: 75000 }),
@@ -98,7 +98,7 @@ mod simulate_tests {
     fn test_bullet_out_of_bounds() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, address);
+        let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, 1);
         let mut bullets = array![bullet];
         let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 })];
 

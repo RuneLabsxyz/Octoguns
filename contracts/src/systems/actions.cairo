@@ -79,7 +79,7 @@ mod actions {
                                                 world.uuid(), 
                                                 Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
                                                 s.angle, 
-                                                player
+                                                player_character_id
                             ));
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
