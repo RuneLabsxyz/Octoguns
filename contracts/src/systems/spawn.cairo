@@ -17,8 +17,8 @@ mod spawn {
     #[abi(embed_v0)]
     impl SpawnImpl of ISpawn<ContractState> {
         fn spawn(ref world: IWorldDispatcher, session_id: u32) {
-            let position_1 = Vec2 { x: 5000, y: 2000};
-            let position_2 = Vec2 { x: 5000, y: 8000};
+            let position_1 = Vec2 { x: 50000, y: 20000};
+            let position_2 = Vec2 { x: 50000, y: 80000};
 
             let mut session = get!(world, session_id, (Session));
             assert!(session.state == 1, "Not spawnable");
