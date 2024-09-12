@@ -93,13 +93,13 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            //PLUS 1000 OFFSET
+            //plus 1000 offset to to avoid underflow
             let lower_bound_x = character.coords.x + OFFSET - 500;
             let upper_bound_x = character.coords.x + OFFSET + 500;
             let lower_bound_y = character.coords.y + OFFSET - 500;
             let upper_bound_y = character.coords.y + OFFSET + 500;
 
-
+            //plus 1000 offset to to match bounds offset            
             if (self.coords.x + OFFSET > lower_bound_x && self.coords.x + OFFSET < upper_bound_x &&
             self.coords.y + OFFSET > lower_bound_y && self.coords.y + OFFSET < upper_bound_y) {
                 character_id = character.id;
