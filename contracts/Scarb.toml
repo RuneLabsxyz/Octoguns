@@ -17,3 +17,6 @@ origami_algebra = { git = "https://github.com/dojoengine/origami" }
 alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
 
 [[target.dojo]]
+
+[namespace]
+default = "octoguns"
