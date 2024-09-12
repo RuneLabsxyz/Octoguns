@@ -26,13 +26,14 @@
     isMoveRecorded,
     playerCharacterCoords,
     characterIds,
+    playerCharacterId,
   } from '$stores/gameStores'
 
   let { renderer, scene, camera } = useThrelte()
 
   let move_speed = 1 / 3
   let moveDirection = new Vector3()
-  export let characterId: number
+  let characterId: number = $playerCharacterId;
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown)
