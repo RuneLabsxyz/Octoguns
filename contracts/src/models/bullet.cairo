@@ -92,13 +92,13 @@ impl BulletImpl of BulletTrait {
 
             let character = *characters.at(character_index);
 
-            //PLUS 1000 OFFSET
+            //plus 1000 offset to avoid underflow
             let lower_bound_x = character.coords.x + 1000 - 500;
             let upper_bound_x = character.coords.x + 1000 + 500;
             let lower_bound_y = character.coords.y + 1000 - 500;
             let upper_bound_y = character.coords.y + 1000 + 500;
 
-
+            //plus 1000 to coords to match the bounds offset
             if (self.coords.x + 1000 > lower_bound_x && self.coords.x + 1000 < upper_bound_x &&
             self.coords.y + 1000 > lower_bound_y && self.coords.y + 1000 < upper_bound_y) {
                 character_id = character.id;
@@ -140,7 +140,6 @@ mod simulate_tests {
                 panic!("Should not be none");
             },
             Option::Some(bullet) => {
-                println!("bullet.coords.x: {}, bullet.coords.y: {}", bullet.coords.x, bullet.coords.y);
                 assert!(bullet.coords.x == 300, "x should not have changed");
                 assert!(bullet.coords.y == 250, "y should have changed by 100");
             }
