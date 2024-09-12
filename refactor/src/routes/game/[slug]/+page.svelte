@@ -65,7 +65,7 @@
   $: if ($characterIds) {
     console.log($characterIds)
     $characterIds.forEach((characterId) => {
-      $: if (characterId) {
+      if (characterId) {
         console.log(characterId)
         let characterEntity = torii.poseidonHash([
           BigInt(characterId).toString(),
@@ -107,6 +107,6 @@
 </div>
 <div class="absolute h-full w-full">
   <Canvas>
-    <Scene characterId={$sessionMetaData.p1_character} />
+    <Scene characterId={$sessionMetaData.p2_character} />
   </Canvas>
 </div>

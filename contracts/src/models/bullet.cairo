@@ -102,6 +102,7 @@ impl BulletImpl of BulletTrait {
             //plus 1000 offset to to match bounds offset            
             if (self.coords.x + OFFSET > lower_bound_x && self.coords.x + OFFSET < upper_bound_x &&
             self.coords.y + OFFSET > lower_bound_y && self.coords.y + OFFSET < upper_bound_y) {
+
                 character_id = character.id;
                 break;        
             }
@@ -141,7 +142,6 @@ mod simulate_tests {
                 panic!("Should not be none");
             },
             Option::Some(bullet) => {
-                println!("bullet.coords.x: {}, bullet.coords.y: {}", bullet.coords.x, bullet.coords.y);
                 assert!(bullet.coords.x == 300, "x should not have changed");
                 assert!(bullet.coords.y == 250, "y should have changed by 100");
             }
