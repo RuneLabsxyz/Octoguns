@@ -10,8 +10,7 @@ pub type SimulationResult = (Array<Bullet>, Array<u32>);
 pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
-    let mut bullet_index: u32 = 0;
-
+    
     loop {
         match bullets.pop_front() {
             Option::Some(mut bullet) => {
