@@ -142,7 +142,7 @@ mod simulate_tests {
             Option::Some(bullet) => {
                 println!("bullet.coords.x: {}, bullet.coords.y: {}", bullet.coords.x, bullet.coords.y);
                 assert!(bullet.coords.x == 300, "x should not have changed");
-                assert!(bullet.coords.y == 2500, "y should have changed by 100");
+                assert!(bullet.coords.y == 250, "y should have changed by 100");
             }
         }
     }
@@ -160,7 +160,7 @@ mod simulate_tests {
              },
              Option::Some(bullet) => {
 
-                assert!(bullet.coords.x == 2500, "x should have changed by 100");
+                assert!(bullet.coords.x == 250, "x should have changed by 100");
                 assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }

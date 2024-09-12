@@ -8,6 +8,7 @@ fn shoot(world: IWorldDispatcher, shot: Shot, character: CharacterPosition, shot
     let angle = shot.angle; //u32
     let coords = character.coords; //Vec2
     let id = world.uuid();
+    
     let new_bullet = BulletTrait::new(id, coords, angle, shot_by);
 
     set!(world, (new_bullet));

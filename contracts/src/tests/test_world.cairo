@@ -14,7 +14,7 @@ mod tests {
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
     use octoguns::models::global::{Global, global};
     use octoguns::types::{TurnMove, Vec2, IVec2, Shot};
-
+    use octoguns::consts::{TEN_E_8};
     use octoguns::systems::start::{start, IStartDispatcher, IStartDispatcherTrait}; 
     use octoguns::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
     use octoguns::systems::spawn::{spawn, ISpawnDispatcher, ISpawnDispatcherTrait};
@@ -142,7 +142,7 @@ mod tests {
             i+=1;
         };
 
-        shots.append(Shot {angle: 0, step: 0});
+        shots.append(Shot {angle: 90 * TEN_E_8, step: 0});
         actions.move(session_id, TurnMove {sub_moves, shots});
         // bullet travels 25000 units per turn, so it should take 3 turns to hit 
         let session_meta = get!(world, session_id, (SessionMeta));
