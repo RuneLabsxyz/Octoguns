@@ -15,7 +15,7 @@ import type { TurnData } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type * as THREE from 'three'
 
-const move_speed = .333
+const move_speed = .5
 const moveDirection = new Vector3()
 
 export function recordMove(camera: THREE.Camera, characterId: number) {

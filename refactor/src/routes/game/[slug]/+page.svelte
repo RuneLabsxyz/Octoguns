@@ -21,6 +21,7 @@
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
+  import { type SetupResult } from '$src/dojo/setup.js'
 
   export let data
   let gameId = data.gameId
@@ -31,7 +32,7 @@
 
   $: sessionId.set(parseInt(gameId))
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as SetupResult)
 
   $: if ($accountStore) account = $accountStore
 
