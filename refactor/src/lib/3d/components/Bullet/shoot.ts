@@ -17,14 +17,14 @@ export function shoot(camera: PerspectiveCamera) {
   direction = Math.round((direction + 360) % 360)
 
   recordedMove.update((rm) => {
-    rm.shots.push({ index: move_index, angle: direction })
+    rm.shots.push({ angle: direction, step: move_index })
     return rm
   })
 }
 export function replayShot(move: TurnData) {
   let move_index = Math.floor((get(frameCounter) + 1) / 3)
 
-  let shot = move.shots.find((shot) => shot.index === move_index)
+  let shot = move.shots.find((shot) => shot.step === move_index)
   if (shot) {
     console.log(
       `Bullet shot at move index ${move_index} with angle ${shot.angle}`
