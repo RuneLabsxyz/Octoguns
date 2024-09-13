@@ -53,8 +53,8 @@ mod actions {
                 }
             }
 
-            let mut player_position = get!(world, session_meta.p1_character, (CharacterPosition));
-            let mut opp_position = get!(world, session_meta.p2_character, (CharacterPosition));
+            let mut player_position = get!(world, player_character_id, (CharacterPosition));
+            let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
             let mut positions = array![player_position, opp_position];
 
 
