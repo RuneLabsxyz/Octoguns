@@ -72,7 +72,7 @@ export function clearBullets() {
 
 export function simulate() {
   const currentBullets = get(bullets)
-  const speed = 0.2
+  const speed = 0.05
 
   const updatedBullets = currentBullets.map((bullet) => {
     const angleInRadians = (((bullet.angle - 90) % 360) * Math.PI) / 180

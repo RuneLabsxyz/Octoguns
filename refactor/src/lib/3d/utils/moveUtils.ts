@@ -14,8 +14,9 @@ import { truncateToDecimals } from '$lib/helper.'
 import type { TurnData } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type * as THREE from 'three'
+import { clearBullets } from '../components/Bullet/shoot'
 
-const move_speed = .333
+const move_speed = 0.333
 const moveDirection = new Vector3()
 
 export function recordMove(camera: THREE.Camera, characterId: number) {
@@ -23,9 +24,8 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
   if (get(keyStateStore).backward) moveDirection.z += 1
   if (get(keyStateStore).left) moveDirection.x -= 1
   if (get(keyStateStore).right) moveDirection.x += 1
-  let shoot : boolean = false;
-  if (get(isMouseDownStore)) shoot = true;
-
+  let shoot: boolean = false
+  if (get(isMouseDownStore)) shoot = true
 
   if (moveDirection.length() > 0) {
     moveDirection.normalize().multiplyScalar(move_speed)
@@ -40,8 +40,8 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
     moveDirection.y = 0
 
     playerCharacterCoords.update((coords) => {
-      coords[characterId].x += moveDirection.x/10;
-      coords[characterId].y += moveDirection.z/10;
+      coords[characterId].x += moveDirection.x / 10
+      coords[characterId].y += moveDirection.z / 10
       return coords
     })
 
@@ -70,6 +70,7 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
   if (get(frameCounter) == 300) {
     recordingMode.set(false)
     isMoveRecorded.set(true)
+    clearBullets()
     console.log(get(isMoveRecorded))
   }
 
@@ -80,10 +81,11 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
 export function replayMove(move: TurnData, characterId: number) {
   let move_index = Math.floor(get(frameCounter) / 3)
   let sub_move = move.sub_moves[move_index]
-  console.log(move);
+  console.log(move)
 
   if (get(frameCounter) == 300) {
     replayMode.set(false)
+    clearBullets()
   }
   if (get(frameCounter) % 3 == 0 && get(frameCounter) < 300) {
     let x_dif = sub_move.x / 1000
@@ -91,8 +93,8 @@ export function replayMove(move: TurnData, characterId: number) {
     if (!sub_move.xdir) x_dif *= -1
     if (!sub_move.ydir) y_dif *= -1
     playerCharacterCoords.update((coords) => {
-      coords[characterId].x += x_dif 
-      coords[characterId].y += y_dif 
+      coords[characterId].x += x_dif
+      coords[characterId].y += y_dif
       return coords
     })
   }
