@@ -32,21 +32,10 @@ OctoGuns is a fully on-chain 1v1 strategy FPS where players control 8 characters
 - 3D Rendering: Threlte/Three.js
 - Smart Contracts: Dojo (Cairo)
 
-## Team
-
-- Project Management & Development: [@0xMugen\_](https://twitter.com/0xMugen_)
-- Lead Developer: [@ZackAmes](https://twitter.com/ZackAmes)
-- Advisor & Dev Support: [@Knownasred](https://twitter.com/Knownas_red)
-- Artist: [@Gaetano](https://twitter.com/Gaetano)
-
 ## Links
 
 - [Project Announcement](https://x.com/ZackAmes/status/1831078408723497314)
 - [Frontinus House Proposal](https://snapshot.box/#/sn:0x07bd3419669f9f0cc8f19e9e2457089cdd4804a4c41a5729ee9c7fd02ab8ab62/proposal/16)
-
-## Starknet Mainnet Address
-
-0x068D92D944F7628Eee5A4fe7c3E5df3e8c14Da672105a07944a9Cd8fe1ABfe61
 
 ## Roadmap
 
