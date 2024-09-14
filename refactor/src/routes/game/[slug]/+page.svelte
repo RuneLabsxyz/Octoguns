@@ -63,7 +63,7 @@
     }
   // Extract character data w/ characterIds
   $: if ($characterIds) {
-    console.log($characterIds)
+    console.log('cahracter ids', $characterIds)
     $characterIds.forEach((characterId) => {
       if (characterId) {
         console.log(characterId)
@@ -74,10 +74,12 @@
           clientComponents.CharacterModel,
           characterEntity
         )
+        console.log('characterData', $characterData)
         characterPosition = componentValueStore(
           clientComponents.CharacterPosition,
           characterEntity
         )
+        console.log('characterPosition', $characterPosition)
 
         characterPosition.subscribe((position) => {
           let isPlayer = areAddressesEqual(
@@ -99,6 +101,7 @@
 
   function handleMove() {
     move(client, account, $sessionId, calldata)
+    console.log('calldata', calldata)
   }
 </script>
 
@@ -107,6 +110,6 @@
 </div>
 <div class="absolute h-full w-full">
   <Canvas>
-    <Scene characterId={$sessionMetaData.p2_character} />
+    <Scene />
   </Canvas>
 </div>

@@ -25,8 +25,10 @@ export const playerStartCoords = writable<Coords>({ x: 0, y: 0 })
 
 export type TurnData = {
   sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
-  shots: { index: number; angle: number }[]
+  shots: { angle: number; step: number }[]
 }
+export type BulletType = { x: number; y: number; angle: number }
+export const bullets = writable<BulletType[]>([])
 
 export const keyStateStore = writable<{
   w: boolean
