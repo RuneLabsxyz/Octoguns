@@ -30,7 +30,7 @@ export function shoot(camera: PerspectiveCamera) {
   console.log(`Bullet shot at move index ${move_index} with angle ${direction}`)
 
   recordedMove.update((rm) => {
-    rm.shots.push({ angle: direction, step: move_index })
+    rm.shots.push({ angle: direction * 10 ** 8, step: move_index })
     return rm
   })
 

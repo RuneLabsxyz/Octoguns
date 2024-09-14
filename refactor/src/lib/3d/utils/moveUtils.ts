@@ -81,7 +81,6 @@ export function recordMove(camera: THREE.Camera, characterId: number) {
 export function replayMove(move: TurnData, characterId: number) {
   let move_index = Math.floor(get(frameCounter) / 3)
   let sub_move = move.sub_moves[move_index]
-  console.log(move)
 
   if (get(frameCounter) == 300) {
     replayMode.set(false)
