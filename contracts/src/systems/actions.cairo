@@ -26,8 +26,13 @@ mod actions {
             assert!(moves.shots.len() <= 3, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
-            assert!(session.state == 2, "Game not started");
+            assert!(session.state != 1, "Game doesn't exist");
+            assert!(session.state != 3, "Game over");
+            assert!(session.state == 2, "Game not active");
+
             let mut session_meta = get!(world, session_id, (SessionMeta));
+
+            let mut updated_bullet_ids = array![];
 
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
@@ -48,8 +53,8 @@ mod actions {
                 }
             }
 
-            let mut player_position = get!(world, session_meta.p1_character, (CharacterPosition));
-            let mut opp_position = get!(world, session_meta.p2_character, (CharacterPosition));
+            let mut player_position = get!(world, player_character_id, (CharacterPosition));
+            let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
             let mut positions = array![player_position, opp_position];
 
 
@@ -67,41 +72,8 @@ mod actions {
 
             while sub_move_index < 100 {
 
-                //get next sub_move
-                let mut sub_move = moves.sub_moves.pop_front();
-                match sub_move {
-                    Option::Some(mut vec) => {
-                        //check move valid 
-                        if !check_is_valid_move(vec){
-                            vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
-                        }
-                        //apply move
-                        if vec.xdir{
-                            player_position.coords.x = max(10_000, player_position.coords.x + vec.x); 
-                        }
-                        else {
-                            vec.x = min( vec.x, player_position.coords.x );
-                            player_position.coords.x -= vec.x;
-                        }
-                        if vec.ydir{
-                            player_position.coords.y = max(10_000, player_position.coords.y + vec.y); 
-                        }
-                        else {
-                            vec.y = min( vec.y, player_position.coords.y );
-                            player_position.coords.y -= vec.y;
-                        }
-
-
-                    },
-                    Option::None => {
-                        break;
-                    }
-
-                }
-                positions = array![player_position, opp_position];
-
-
                 if sub_move_index == next_shot {
+
                     let shot = moves.shots.pop_front();
                     match shot {
                         Option::Some(s) => {
@@ -109,7 +81,7 @@ mod actions {
                                                 world.uuid(), 
                                                 Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
                                                 s.angle, 
-                                                player
+                                                player_character_id
                             ));
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
@@ -122,12 +94,14 @@ mod actions {
                     }
                 }
 
+
                 //advance bullets + check collisions
                 let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
                 bullets = new_bullets;
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
                 positions = new_positions;
 
+                //get next sub_move
                 if filtered_character_ids.len() < 2 {
                     match filtered_character_ids.len() {
                         0 => {
@@ -138,18 +112,59 @@ mod actions {
                             let winner = filtered_character_ids.pop_front().unwrap();
                             if session_meta.p1_character == winner {
                                 //p1 wins
+                                session.state = 3;
+                                session_meta.p2_character = 0;
                             }
                             if session_meta.p2_character == winner {
                                 //p2 wins
+                                session.state = 3;
+                                session_meta.p1_character = 0;
                             }
                             break;
                         },
                         _ => {
-                         sub_move_index+=1;
-                         continue;   
                         }
                     }
                 }
+
+                
+
+                match moves.sub_moves.pop_front() {
+                    Option::Some(mut vec) => {
+                        //check move valid 
+                        if !check_is_valid_move(vec){
+                            vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
+                        }
+                        //apply move
+                        if vec.xdir{
+                            player_position.coords.x = min(100_000, player_position.coords.x + vec.x); 
+                        }
+                        else {
+                            vec.x = min( vec.x, player_position.coords.x );
+                            player_position.coords.x -= vec.x;
+                        }
+                        if vec.ydir{
+                            player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
+
+                        }
+                        else {
+                            vec.y = min( vec.y, player_position.coords.y );
+                            player_position.coords.y -= vec.y;
+                        }
+
+
+                    },
+                    Option::None => {
+                    }
+
+                }
+                positions = array![player_position, opp_position];
+
+                
+                
+
+                sub_move_index+=1;
+
                 //END MOVE LOOP
             };
 
@@ -158,6 +173,8 @@ mod actions {
                 let next_bullet = bullets.pop_front();
                 match next_bullet {
                     Option::Some(bullet) => {
+                        println!("setting new bullet positions: x: {} y: {}", bullet.coords.x, bullet.coords.y);
+                        updated_bullet_ids.append(bullet.bullet_id);
                         set!(world, (bullet));
                     },
                     Option::None => {
@@ -179,6 +196,10 @@ mod actions {
                     }
                 }
             };
+
+            session_meta.turn_count += 1;
+            session_meta.bullets = updated_bullet_ids;
+            set!(world, (session, session_meta));
 
 
         }

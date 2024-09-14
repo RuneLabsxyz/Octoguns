@@ -6,5 +6,5 @@ export function areAddressesEqual(address1: string, address2: string): boolean {
 
 export function truncateToDecimals(num: number, decimalPlaces: number) {
   const multiplier = Math.pow(10, decimalPlaces)
-  return Math.floor(num * multiplier) / multiplier
+  return Math.trunc(num * multiplier) / multiplier
 }
