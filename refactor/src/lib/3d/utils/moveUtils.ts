@@ -118,8 +118,8 @@ export function replayMove(move: TurnData, characterId: number) {
     if (!sub_move.xdir) x_dif *= -1;
     if (!sub_move.ydir) y_dif *= -1;
     playerCharacterCoords.update((coords) => {
-      coords[characterId].x += x_dif;
-      coords[characterId].y += y_dif;
+      coords[characterId].x += x_dif / SCALING_FACTOR;
+      coords[characterId].y += y_dif / SCALING_FACTOR;
       return coords;
     });
   }
