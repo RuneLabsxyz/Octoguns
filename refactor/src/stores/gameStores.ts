@@ -50,6 +50,8 @@ export const keyStateStore = writable<{
 
 export const isMouseDownStore = writable<boolean>(false)
 
+export const isTurnPlayer = writable<boolean>(false)
+
 interface Coords {
   x: number
   y: number

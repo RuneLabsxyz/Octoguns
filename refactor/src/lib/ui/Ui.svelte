@@ -10,6 +10,7 @@
     playerCharacterCoords,
     frameCounter,
     playerStartCoords,
+    isTurnPlayer
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
@@ -17,21 +18,19 @@
     
   } from '$stores/gameStores'
   import { inPointerLock } from '$stores/cameraStores'
-  import { rendererStore } from '$stores/cameraStores'
   import { get } from 'svelte/store'
 
 
   export let moveHandler: any
 
+  let isRecorded: boolean
+  
+  $: if (isMoveRecorded) isRecorded = $isMoveRecorded
+
   function setRecordingMode(e: Event) {
     recordingMode.set(!$recordingMode)
     birdView.set(false)
     replayMode.set(false)
-    let renderer = get(rendererStore);
-    if (renderer != null) {
-      console.log("requesting pointer lock")
-      renderer.domElement.requestPointerLock()
-    }
     inPointerLock.set(true)
 
   }
@@ -61,7 +60,7 @@
       birdView.update((value) => !value)
     }}>Switch view</button
   >
-  {#if $isMoveRecorded}
+  {#if isRecorded}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
@@ -86,7 +85,7 @@
         </button>
       {/if}
     </div>
-  {:else if !$recordingMode && !$replayMode}
+  {:else if !$recordingMode && !$replayMode && $isTurnPlayer}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
