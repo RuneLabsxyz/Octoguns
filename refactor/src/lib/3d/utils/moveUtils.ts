@@ -62,7 +62,6 @@ export function recordMove(camera: Camera, characterId: number) {
     currentSubMove.update((subMove) => {
       subMove.x += moveDirection.x;
       subMove.y += moveDirection.z;
-      console.log(subMove);
       return subMove;
     });
 

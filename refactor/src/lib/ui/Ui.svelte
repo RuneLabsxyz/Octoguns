@@ -14,13 +14,26 @@
   import {
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
+    
   } from '$stores/gameStores'
+  import { inPointerLock } from '$stores/cameraStores'
+  import { rendererStore } from '$stores/cameraStores'
+  import { get } from 'svelte/store'
+
 
   export let moveHandler: any
 
   function setRecordingMode(e: Event) {
     recordingMode.set(!$recordingMode)
+    birdView.set(false)
     replayMode.set(false)
+    let renderer = get(rendererStore);
+    if (renderer != null) {
+      console.log("requesting pointer lock")
+      renderer.domElement.requestPointerLock()
+    }
+    inPointerLock.set(true)
+
   }
 
   function setReplayMode(e: Event) {
@@ -29,6 +42,7 @@
     setPlayerCharacterCoords($playerCharacterId, $playerStartCoords)
     replayMode.set(!$recordingMode)
   }
+
 
   function reset(e: Event) {
     currentSubMove.set({ x: 0, y: 0 })

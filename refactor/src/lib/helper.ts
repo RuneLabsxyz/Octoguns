@@ -31,10 +31,32 @@ export function normalizeAndScaleVector(
     return { x: 0, y: 0 };
   }
 
-  const normalizedX = Math.floor((x / length) * SCALE_FACTOR);
-  const normalizedY = Math.floor((y / length) * SCALE_FACTOR);
+  // Calculate the scaled components without flooring
+  let scaledX = Math.floor((x / length) * SCALE_FACTOR);
+  let scaledY = Math.floor((y / length) * SCALE_FACTOR);
+  console.log(scaledX, scaledY);
 
-  return { x: normalizedX, y: normalizedY };
+  // Calculate the new length after scaling
+  const newLength = Math.sqrt(scaledX * scaledX + scaledY * scaledY);
+  if (newLength > 400) {
+    if (scaledX > 0) {
+      scaledX -=1;
+    } 
+    else {
+      scaledX += 1;
+    }
+    if (scaledY > 0) {
+      scaledY -=1;
+    } 
+    else {
+      scaledY += 1;
+    }
+  } 
+
+  return {
+    x: Math.floor(scaledX),
+    y: Math.floor(scaledY),
+  };
 }
 
 export function clamp(value: number, min: number, max: number): number {
