@@ -16,7 +16,7 @@
     enemyCharacterId,
     playerStartCoords,
   } from '$stores/gameStores'
-  import { areAddressesEqual } from '$lib/helper.'
+  import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
@@ -83,8 +83,9 @@
         console.log('characterPosition', $characterPosition)
 
         characterPosition.subscribe((position) => {
-          let isPlayer = areAddressesEqual(
-            $characterData.player_id,
+          if ($characterData) {
+            let isPlayer = areAddressesEqual(
+              $characterData.player_id,
             account.address
           )
           if (isPlayer) {
@@ -94,6 +95,7 @@
           } else {
             setEnemyCharacterCoords(characterId, position.coords)
             enemyCharacterId.set(characterId)
+          }
           }
         })
       }

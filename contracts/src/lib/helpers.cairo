@@ -6,6 +6,7 @@ use octoguns::models::sessions::{SessionMeta};
 use octoguns::types::IVec2;
 use starknet::{ContractAddress, get_caller_address};
 use dojo::world::IWorldDispatcher;
+use octoguns::consts::MOVE_SPEED;
 
 fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
     let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
@@ -75,8 +76,7 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
 
 
 fn check_is_valid_move(v:IVec2) -> bool {
-    let max_user_speed: u32 = 100;
-    if (v.x*v.x) + (v.y*v.y) <= max_user_speed* max_user_speed {
+    if (v.x*v.x) + (v.y*v.y) <= MOVE_SPEED*MOVE_SPEED {
         return true;
     }
     return false;
