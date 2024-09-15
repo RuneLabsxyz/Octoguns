@@ -21,7 +21,7 @@ export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 
 export const frameCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
-export const playerStartCoords = writable<Coords>({ x: 0, y: 0 })
+export const playerStartCoords = writable<CharacterCoordsStore>({})
 
 export type TurnData = {
   sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]

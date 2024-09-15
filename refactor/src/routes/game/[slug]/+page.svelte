@@ -89,7 +89,7 @@
             account.address
           )
           if (isPlayer) {
-            playerStartCoords.set(position.coords)
+            playerStartCoords.set({[position.id]: position.coords})
             setPlayerCharacterCoords(characterId, position.coords)
             playerCharacterId.set(characterId)
           } else {
@@ -103,7 +103,9 @@
   }
 
   function handleMove() {
-    move(client, account, $sessionId, calldata)
+    move(client, account, $sessionId, calldata);
+    isMoveRecorded.set(false);
+    recordedMove.set({sub_moves: [], shots: []});
     console.log('calldata', calldata)
   }
 </script>

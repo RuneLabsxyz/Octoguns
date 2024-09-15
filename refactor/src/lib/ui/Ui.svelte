@@ -39,14 +39,14 @@
   function setReplayMode(e: Event) {
     recordingMode.set(false)
     frameCounter.set(0)
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords)
+    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
     replayMode.set(!$recordingMode)
   }
 
 
   function reset(e: Event) {
     currentSubMove.set({ x: 0, y: 0 })
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords)
+    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)

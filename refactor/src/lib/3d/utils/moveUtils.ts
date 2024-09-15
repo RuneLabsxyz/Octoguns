@@ -9,6 +9,7 @@ import {
   recordingMode,
   isMoveRecorded,
   replayMode,
+  playerStartCoords,
 } from '$stores/gameStores';
 import type { TurnData } from '$stores/gameStores';
 import { get } from 'svelte/store';
@@ -109,7 +110,9 @@ export function replayMove(move: TurnData, characterId: number) {
   console.log(move);
 
   if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
+    frameCounter.set(0);
     replayMode.set(false);
+    playerCharacterCoords.set(get(playerStartCoords));
   }
   if (get(frameCounter) % FRAME_INTERVAL === 0 && get(frameCounter) < RECORDING_FRAME_LIMIT) {
     let x_dif = sub_move.x;
