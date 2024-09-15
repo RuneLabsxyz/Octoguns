@@ -3,6 +3,7 @@ use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::TEN_E_8_I;
 use starknet::ContractAddress;
+use octoguns::consts::{MOVE_SPEED, BULLET_SPEED};
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
@@ -28,7 +29,7 @@ impl BulletImpl of BulletTrait {
     fn new(id: u32, coords: Vec2, angle: u64, player: u32) -> Bullet {
         //speed is how much it travels per sub step
         //distance travelled per turn is speed * 100
-        Bullet { bullet_id: id, coords, speed: 250, angle, shot_by: player}
+        Bullet { bullet_id: id, coords, speed: BULLET_SPEED, angle, shot_by: player}
     }
 
 
@@ -143,7 +144,7 @@ mod simulate_tests {
             },
             Option::Some(bullet) => {
                 assert!(bullet.coords.x == 300, "x should not have changed");
-                assert!(bullet.coords.y == 250, "y should have changed by 100");
+                assert!(bullet.coords.y == BULLET_SPEED, "y should have changed by speed");
             }
         }
     }
@@ -161,7 +162,7 @@ mod simulate_tests {
              },
              Option::Some(bullet) => {
 
-                assert!(bullet.coords.x == 250, "x should have changed by 100");
+                assert!(bullet.coords.x == BULLET_SPEED, "x should have changed by speed");
                 assert!(bullet.coords.y == 0, "y should not have changed");
              }
          }

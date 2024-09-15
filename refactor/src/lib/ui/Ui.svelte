@@ -10,29 +10,42 @@
     playerCharacterCoords,
     frameCounter,
     playerStartCoords,
+    isTurnPlayer
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
+    
   } from '$stores/gameStores'
+  import { inPointerLock } from '$stores/cameraStores'
+  import { get } from 'svelte/store'
+
 
   export let moveHandler: any
 
+  let isRecorded: boolean
+  
+  $: if (isMoveRecorded) isRecorded = $isMoveRecorded
+
   function setRecordingMode(e: Event) {
     recordingMode.set(!$recordingMode)
+    birdView.set(false)
     replayMode.set(false)
+    inPointerLock.set(true)
+
   }
 
   function setReplayMode(e: Event) {
     recordingMode.set(false)
     frameCounter.set(0)
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords)
+    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
     replayMode.set(!$recordingMode)
   }
 
+
   function reset(e: Event) {
     currentSubMove.set({ x: 0, y: 0 })
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords)
+    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
@@ -47,7 +60,7 @@
       birdView.update((value) => !value)
     }}>Switch view</button
   >
-  {#if $isMoveRecorded}
+  {#if isRecorded}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
@@ -72,7 +85,7 @@
         </button>
       {/if}
     </div>
-  {:else if !$recordingMode && !$replayMode}
+  {:else if !$recordingMode && !$replayMode && $isTurnPlayer}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
