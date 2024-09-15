@@ -20,8 +20,12 @@
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { PerspectiveCamera } from 'three'
   import Bullets from './components/Bullet/Bullets.svelte'
-  import { shoot, replayShot } from './components/Bullet/shoot'
-  import { isMouseDownStore, playerCharacterId } from '$stores/gameStores'
+  import { shoot, replayShot, simulate } from './components/Bullet/shoot'
+  import {
+    isMouseDownStore,
+    playerCharacterId,
+    frameCounter,
+  } from '$stores/gameStores'
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
@@ -69,10 +73,14 @@
     }
     if ($replayMode) {
       replayMove($recordedMove, characterId)
-      replayShot($recordedMove)
+      replayShot($recordedMove, cameras[0])
     }
 
     animationFrameId = requestAnimationFrame(animationLoop)
+  }
+
+  $: if ($frameCounter) {
+    simulate()
   }
 
   onMount(() => {

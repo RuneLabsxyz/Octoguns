@@ -9,6 +9,7 @@ import {
   recordingMode,
   isMoveRecorded,
   replayMode,
+<<<<<<< HEAD
   playerStartCoords,
 } from '$stores/gameStores';
 import type { TurnData } from '$stores/gameStores';
@@ -35,6 +36,25 @@ export function recordMove(camera: Camera, characterId: number) {
   if (right) moveDirection.x += 1;
   let shoot: boolean = false;
   if (isMouseDown) shoot = true;
+=======
+} from '$stores/gameStores'
+import { truncateToDecimals } from '$lib/helper.'
+import type { TurnData } from '$stores/gameStores'
+import { get } from 'svelte/store'
+import type * as THREE from 'three'
+import { clearBullets } from '../components/Bullet/shoot'
+
+const move_speed = 0.333
+const moveDirection = new Vector3()
+
+export function recordMove(camera: THREE.Camera, characterId: number) {
+  if (get(keyStateStore).forward) moveDirection.z -= 1
+  if (get(keyStateStore).backward) moveDirection.z += 1
+  if (get(keyStateStore).left) moveDirection.x -= 1
+  if (get(keyStateStore).right) moveDirection.x += 1
+  let shoot: boolean = false
+  if (get(isMouseDownStore)) shoot = true
+>>>>>>> c53de539abe4dabdd099a8c0cc776c5ddd8dbee4
 
   if (moveDirection.length() > 0) {
     // Scale move direction and convert to integers using Math.round
@@ -55,10 +75,17 @@ export function recordMove(camera: Camera, characterId: number) {
 
     // Update player coordinates with clamped values to stay within grid bounds
     playerCharacterCoords.update((coords) => {
+<<<<<<< HEAD
       coords[characterId].x = clamp(coords[characterId].x + (moveDirection.x / SCALING_FACTOR), -50, 50);
       coords[characterId].y = clamp(coords[characterId].y + (moveDirection.z / SCALING_FACTOR), -50, 50);
       return coords;
     });
+=======
+      coords[characterId].x += moveDirection.x / 10
+      coords[characterId].y += moveDirection.z / 10
+      return coords
+    })
+>>>>>>> c53de539abe4dabdd099a8c0cc776c5ddd8dbee4
 
     currentSubMove.update((subMove) => {
       subMove.x += moveDirection.x;
@@ -88,6 +115,7 @@ export function recordMove(camera: Camera, characterId: number) {
     frameCounter.update((fc) => fc + 1);
   }
 
+<<<<<<< HEAD
 
   if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
     recordingMode.set(false);
@@ -95,12 +123,20 @@ export function recordMove(camera: Camera, characterId: number) {
     document.exitPointerLock();
 
     console.log(get(isMoveRecorded));
+=======
+  if (get(frameCounter) == 300) {
+    recordingMode.set(false)
+    isMoveRecorded.set(true)
+    clearBullets()
+    console.log(get(isMoveRecorded))
+>>>>>>> c53de539abe4dabdd099a8c0cc776c5ddd8dbee4
   }
 
   // Reset move direction is not necessary since moveDirection is now scoped within the function
 }
 
 export function replayMove(move: TurnData, characterId: number) {
+<<<<<<< HEAD
   let move_index = Math.floor(get(frameCounter) / FRAME_INTERVAL);
   if (move_index >= move.sub_moves.length) {
     console.warn('Move index exceeds recorded sub-moves.');
@@ -113,6 +149,14 @@ export function replayMove(move: TurnData, characterId: number) {
     frameCounter.set(0);
     replayMode.set(false);
     playerCharacterCoords.set(get(playerStartCoords));
+=======
+  let move_index = Math.floor(get(frameCounter) / 3)
+  let sub_move = move.sub_moves[move_index]
+
+  if (get(frameCounter) == 300) {
+    replayMode.set(false)
+    clearBullets()
+>>>>>>> c53de539abe4dabdd099a8c0cc776c5ddd8dbee4
   }
   if (get(frameCounter) % FRAME_INTERVAL === 0 && get(frameCounter) < RECORDING_FRAME_LIMIT) {
     let x_dif = sub_move.x;
@@ -120,10 +164,17 @@ export function replayMove(move: TurnData, characterId: number) {
     if (!sub_move.xdir) x_dif *= -1;
     if (!sub_move.ydir) y_dif *= -1;
     playerCharacterCoords.update((coords) => {
+<<<<<<< HEAD
       coords[characterId].x += x_dif / SCALING_FACTOR;
       coords[characterId].y += y_dif / SCALING_FACTOR;
       return coords;
     });
+=======
+      coords[characterId].x += x_dif
+      coords[characterId].y += y_dif
+      return coords
+    })
+>>>>>>> c53de539abe4dabdd099a8c0cc776c5ddd8dbee4
   }
 
   frameCounter.update((fc) => fc + 1);
