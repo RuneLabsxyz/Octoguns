@@ -67,7 +67,8 @@ export function recordMove(camera: Camera, characterId: number) {
     });
 
     if (get(frameCounter) % FRAME_INTERVAL === 0) {
-      const current = get(currentSubMove);      
+      const current = normalizeAndScaleVector(get(currentSubMove).x, get(currentSubMove).y, SUBMOVE_SCALE);      
+      
       console.log(Math.sqrt(current.x * current.x + current.y * current.y));
 
       let move = {
