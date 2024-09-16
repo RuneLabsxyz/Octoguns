@@ -19,7 +19,7 @@
   import { birdView } from '$stores/cameraStores'
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { PerspectiveCamera } from 'three'
-  import Bullets from './components/Bullet/Bullets.svelte'
+  import Bullets from './components/Bullets.svelte'
   import { shoot, replayShot, simulate } from './components/Bullet/shoot'
   import {
     isMouseDownStore,

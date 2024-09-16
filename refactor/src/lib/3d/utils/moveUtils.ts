@@ -13,7 +13,6 @@ import {
 } from '$stores/gameStores';
 import type { TurnData } from '$stores/gameStores';
 import { get } from 'svelte/store';
-import { T } from "@threlte/core"
 import { Camera } from 'three';
 import { SCALING_FACTOR, FRAME_INTERVAL, RECORDING_FRAME_LIMIT, SUBMOVE_SCALE } from '$lib/consts';
 import { normalizeAndScaleVector,clamp } from '$lib/helper';

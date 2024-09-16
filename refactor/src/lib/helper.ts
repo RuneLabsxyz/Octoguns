@@ -7,9 +7,9 @@ export function areAddressesEqual(address1: string, address2: string): boolean {
   return bigIntAddress1 === bigIntAddress2
 }
 
-export function truncateToDecimals(num: number, decimalPlaces: number) {
-  const multiplier = Math.pow(10, decimalPlaces)
-  return Math.floor(num * multiplier) / multiplier
+
+export function truncate(value: number, factor: number): number {
+  return Math.trunc(value * 10 ** factor) / 10 ** factor;
 }
 
 /**
@@ -32,30 +32,15 @@ export function normalizeAndScaleVector(
   }
 
   // Calculate the scaled components without flooring
-  let scaledX = Math.floor((x / length) * SCALE_FACTOR);
-  let scaledY = Math.floor((y / length) * SCALE_FACTOR);
+  let scaledX = Math.trunc((x / length) * SCALE_FACTOR);
+  let scaledY = Math.trunc((y / length) * SCALE_FACTOR);
   console.log(scaledX, scaledY);
 
   // Calculate the new length after scaling
-  const newLength = Math.sqrt(scaledX * scaledX + scaledY * scaledY);
-  if (newLength > 400) {
-    if (scaledX > 0) {
-      scaledX -=1;
-    } 
-    else {
-      scaledX += 1;
-    }
-    if (scaledY > 0) {
-      scaledY -=1;
-    } 
-    else {
-      scaledY += 1;
-    }
-  } 
 
   return {
-    x: Math.floor(scaledX),
-    y: Math.floor(scaledY),
+    x: scaledX,
+    y: scaledY,
   };
 }
 

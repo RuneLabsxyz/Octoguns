@@ -3,11 +3,13 @@ import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
+import type { Coords, BulletCoords} from '$stores/gameStores'
+import { isTurnPlayer } from '$stores/gameStores'
 
 function applyBulletToStore(newBullet: {
-  x: number
-  y: number
-  angle: number
+  coords: Coords,
+  angle: number,
+  shot_by: number
 }) {
   bullets.update((bullets) => {
     bullets.push(newBullet)
@@ -36,9 +38,12 @@ export function shoot(camera: PerspectiveCamera) {
 
   const cameraPosition = camera.position
   const newBullet = {
-    x: cameraPosition.x,
-    y: cameraPosition.z,
+    coords: {
+      x: cameraPosition.x,
+      y: cameraPosition.z,
+    },
     angle: direction,
+    shot_by: get(isTurnPlayer) ? 1 : 2
   }
 
   applyBulletToStore(newBullet)
@@ -57,9 +62,13 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 
     const cameraPosition = camera.position
     const newBullet = {
-      x: cameraPosition.x,
-      y: cameraPosition.z,
+      coords: {
+        x: cameraPosition.x,
+        y: cameraPosition.z,
+      },
       angle: shot.angle,
+      //TODO: Fix this
+      shot_by: 1
     }
 
     applyBulletToStore(newBullet)
@@ -76,13 +85,15 @@ export function simulate() {
 
   const updatedBullets = currentBullets.map((bullet) => {
     const angleInRadians = (((bullet.angle - 90) % 360) * Math.PI) / 180
-    const newX = bullet.x + speed * Math.cos(angleInRadians)
-    const newY = bullet.y - speed * Math.sin(angleInRadians)
+    const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
+    const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
 
     return {
       ...bullet,
-      x: newX,
-      y: newY,
+      coords: {
+        x: newX,
+        y: newY,
+      },
     }
   })
 

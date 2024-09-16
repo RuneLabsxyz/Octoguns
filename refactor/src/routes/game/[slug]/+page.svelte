@@ -12,6 +12,7 @@
     isMoveRecorded,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
+    setBulletCoords,
     playerCharacterId,
     enemyCharacterId,
     playerStartCoords,
@@ -19,6 +20,8 @@
     frameCounter,
     recordingMode,
     replayMode,
+    bulletRenderCoords,
+    bulletStartCoords,
   } from '$stores/gameStores'
   import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
@@ -79,7 +82,18 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    $sessionMetaData.bullets.forEach((bulletId) => {
+      let bulletEntity = torii.poseidonHash([BigInt(bulletId).toString()])
+      let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
+      bulletStore.subscribe((bullet) => {
+        let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
+        bulletStartCoords.set({[bullet.bullet_id]: {coords: bullet.coords, angle: bullet.angle, shot_by: shot_by}})
+        setBulletCoords(bullet.bullet_id, {coords: bullet.coords, angle: bullet.angle, shot_by: shot_by})
+      })
+    })
   }
+
+
   $: if ($isMoveRecorded)
     calldata = {
       sub_moves: $recordedMove.sub_moves,

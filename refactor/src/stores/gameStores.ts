@@ -1,4 +1,5 @@
 import { writable, get } from 'svelte/store'
+import { type Bullet } from '$src/dojo/models.gen'
 
 // Game meta data
 export const gameState = writable<number>()
@@ -21,14 +22,15 @@ export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 
 export const frameCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
-export const playerStartCoords = writable<CharacterCoordsStore>({})
+export const playerStartCoords = writable<CoordsStore>({})
 
 export type TurnData = {
   sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
   shots: { angle: number; step: number }[]
 }
-export type BulletType = { x: number; y: number; angle: number }
-export const bullets = writable<BulletType[]>([])
+
+export const bulletStartCoords = writable<BulletCoordsStore>({})
+export const bulletRenderCoords = writable<BulletCoordsStore>({})
 
 export const keyStateStore = writable<{
   w: boolean
@@ -54,15 +56,23 @@ export const isMouseDownStore = writable<boolean>(false)
 
 export const isTurnPlayer = writable<boolean>(false)
 
-interface Coords {
+export interface Coords {
   x: number
   y: number
 }
 
-export type CharacterCoordsStore = Record<number, Coords>
+export interface BulletCoords {
+  coords: Coords
+  angle: number
+  shot_by: number
+}
 
-export const playerCharacterCoords = writable<CharacterCoordsStore>({})
-export const enemyCharacterCoords = writable<CharacterCoordsStore>({})
+export const bullets = writable<BulletCoords[]>([])
+export type CoordsStore = Record<number, Coords>
+export type BulletCoordsStore = Record<number, BulletCoords>
+
+export const playerCharacterCoords = writable<CoordsStore>({})
+export const enemyCharacterCoords = writable<CoordsStore>({})
 
 function normalizeCoords(coords: Coords): Coords {
   return {
@@ -82,6 +92,21 @@ export function setPlayerCharacterCoords(
     return {
       ...store,
       [key]: coords,
+    }
+  })
+}
+
+export function setBulletCoords(
+  key: number,
+  data: { coords: { x: number; y: number }, angle: number, shot_by: number }
+): void {
+  if (data.coords.x > 100) {
+    data.coords = normalizeCoords(data.coords)
+  }
+  bulletRenderCoords.update((store) => {
+    return {
+      ...store,
+      [key]: data,
     }
   })
 }

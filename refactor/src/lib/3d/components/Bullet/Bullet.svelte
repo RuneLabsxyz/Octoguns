@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { BulletType } from '$stores/gameStores'
   import { T } from '@threlte/core'
+  import type { BulletCoords } from '$stores/gameStores'
 
   let color = 'red'
 
-  export let bullet: BulletType
-  const x = bullet.x
-  const y = bullet.y
+  export let bullet: BulletCoords
+  const x = bullet.coords.x
+  const y = bullet.coords.y
 </script>
 
 <T.Mesh position={[x, 1, y]} scale={0.1}>
