@@ -17,7 +17,7 @@ function applyTempBulletToStore(newBullet: BulletCoords) {
 export function shoot(camera: PerspectiveCamera) {
   let move_index = Math.floor(get(frameCounter) / 3)
 
-  let direction = THREE.MathUtils.radToDeg(camera.rotation.z);
+  let direction = THREE.MathUtils.radToDeg(camera.rotation.z) + 45 ;
   if (direction < 0) {
     direction = 360 + direction
   }
