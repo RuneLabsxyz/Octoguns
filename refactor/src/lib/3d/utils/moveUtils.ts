@@ -90,7 +90,6 @@ export function recordMove(camera: Camera, characterId: number) {
     recordingMode.set(false);
     isMoveRecorded.set(true);
     document.exitPointerLock();
-    clearBullets()
 
     console.log(get(isMoveRecorded));
   }

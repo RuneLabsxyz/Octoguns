@@ -29,6 +29,7 @@
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
+    import { clearBullets } from '$lib/3d/utils/shootUtils.js'
 
   export let data
   let gameId = data.gameId
@@ -151,7 +152,7 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-  
+    clearBullets();
   }
 </script>
 
