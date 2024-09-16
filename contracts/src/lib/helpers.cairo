@@ -1,4 +1,3 @@
-
 use octoguns::types::{TurnMove};
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait, CharacterModel};
 use octoguns::models::bullet::{Bullet};
@@ -6,13 +5,14 @@ use octoguns::models::sessions::{SessionMeta};
 use octoguns::types::IVec2;
 use starknet::{ContractAddress, get_caller_address};
 use dojo::world::IWorldDispatcher;
+use octoguns::consts::MOVE_SPEED;
 
 fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
     let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
     let session_meta = get!(world, session_id, (SessionMeta));
     let bullets = session_meta.bullets; //  type: array<u32>
-    
-    let mut i =0;
+
+    let mut i = 0;
     if bullets.len() == 0 {
         return all_live_bullets;
     }
@@ -22,14 +22,16 @@ fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
         let bullet = get!(world, bullet_id, (Bullet));
 
         all_live_bullets.append(bullet);
-        i+=1;
+        i += 1;
     };
 
     return all_live_bullets;
 }
 
 
-fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPosition>, dead_characters: Array<u32>) -> (Array<CharacterPosition>, Array<u32>) {
+fn filter_out_dead_characters(
+    ref all_character_positions: Array<CharacterPosition>, dead_characters: Array<u32>
+) -> (Array<CharacterPosition>, Array<u32>) {
     let mut filtered_positions: Array<CharacterPosition> = ArrayTrait::new();
     let mut filtered_ids: Array<u32> = ArrayTrait::new();
 
@@ -45,14 +47,12 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
     }
 
     loop {
-
         let character = all_character_positions.pop_front();
         match character {
-            
             Option::Some(character) => {
                 let mut is_dead = false;
                 let mut j = 0;
-                while j < dead_characters.len() { 
+                while j < dead_characters.len() {
                     if character.id == *dead_characters.at(j) {
                         println!("character {} is dead", character.id);
                         is_dead = true;
@@ -65,9 +65,7 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
                     filtered_ids.append(character.id);
                 }
             },
-            Option::None => {
-                break;
-            }
+            Option::None => { break; }
         }
     };
     return (filtered_positions, filtered_ids);
@@ -75,9 +73,12 @@ fn filter_out_dead_characters(ref all_character_positions: Array<CharacterPositi
 
 
 fn check_is_valid_move(v:IVec2) -> bool {
-    let max_user_speed: u32 = 100;
-    if (v.x*v.x) + (v.y*v.y) <= max_user_speed* max_user_speed {
+    if (v.x*v.x) + (v.y*v.y) <= MOVE_SPEED*MOVE_SPEED {
         return true;
     }
-    return false;
+    else {
+        println!("invalid move");
+        return false;
+    }
 }
+

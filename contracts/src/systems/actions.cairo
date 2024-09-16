@@ -32,6 +32,8 @@ mod actions {
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
 
+            let mut updated_bullet_ids = array![];
+
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
 
@@ -51,8 +53,8 @@ mod actions {
                 }
             }
 
-            let mut player_position = get!(world, session_meta.p1_character, (CharacterPosition));
-            let mut opp_position = get!(world, session_meta.p2_character, (CharacterPosition));
+            let mut player_position = get!(world, player_character_id, (CharacterPosition));
+            let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
             let mut positions = array![player_position, opp_position];
 
 
@@ -79,7 +81,7 @@ mod actions {
                                                 world.uuid(), 
                                                 Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
                                                 s.angle, 
-                                                player
+                                                player_character_id
                             ));
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
@@ -172,6 +174,7 @@ mod actions {
                 match next_bullet {
                     Option::Some(bullet) => {
                         println!("setting new bullet positions: x: {} y: {}", bullet.coords.x, bullet.coords.y);
+                        updated_bullet_ids.append(bullet.bullet_id);
                         set!(world, (bullet));
                     },
                     Option::None => {
@@ -195,6 +198,7 @@ mod actions {
             };
 
             session_meta.turn_count += 1;
+            session_meta.bullets = updated_bullet_ids;
             set!(world, (session, session_meta));
 
 

@@ -1,4 +1,8 @@
 import { writable, get } from 'svelte/store'
+import { type Bullet } from '$src/dojo/models.gen'
+import { WebGLRenderer } from 'three'
+
+export const rendererStore = writable<WebGLRenderer>()
 
 // Game meta data
 export const gameState = writable<number>()
@@ -21,12 +25,17 @@ export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 
 export const frameCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
-export const playerStartCoords = writable<Coords>({ x: 0, y: 0 })
+export const playerStartCoords = writable<CoordsStore>({})
 
 export type TurnData = {
   sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
-  shots: { index: number; angle: number }[]
+  shots: { angle: number; step: number }[]
 }
+
+//store for bullets that are shot in current move but not yet onchain, so they don't have an id
+export const tempBullets = writable<BulletCoords[]>([])
+export const bulletStartCoords = writable<BulletCoordsStore>({})
+export const bulletRenderCoords = writable<BulletCoordsStore>({})
 
 export const keyStateStore = writable<{
   w: boolean
@@ -50,15 +59,25 @@ export const keyStateStore = writable<{
 
 export const isMouseDownStore = writable<boolean>(false)
 
-interface Coords {
+export const isTurnPlayer = writable<boolean>(false)
+
+export interface Coords {
   x: number
   y: number
 }
 
-export type CharacterCoordsStore = Record<number, Coords>
+export interface BulletCoords {
+  coords: Coords
+  id: number
+  angle: number
+  shot_by: number
+}
 
-export const playerCharacterCoords = writable<CharacterCoordsStore>({})
-export const enemyCharacterCoords = writable<CharacterCoordsStore>({})
+export type CoordsStore = Record<number, Coords>
+export type BulletCoordsStore = Record<number, BulletCoords>
+
+export const playerCharacterCoords = writable<CoordsStore>({})
+export const enemyCharacterCoords = writable<CoordsStore>({})
 
 function normalizeCoords(coords: Coords): Coords {
   return {
@@ -78,6 +97,24 @@ export function setPlayerCharacterCoords(
     return {
       ...store,
       [key]: coords,
+    }
+  })
+}
+
+export function setBulletCoords(
+  key: number,
+  data: { coords: { x: number; y: number }, id: number, angle: number, shot_by: number }
+): void {
+  let coords = data.coords
+  console.log(coords)
+  if (data.coords.x > 100) {
+    data.coords = normalizeCoords(data.coords)
+  }
+  bulletRenderCoords.update((store) => {
+    console.log(data)
+    return {
+      ...store,
+      [key]: data,
     }
   })
 }

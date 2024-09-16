@@ -4,10 +4,10 @@
     enemyCharacterCoords,
   } from '$stores/gameStores'
   import { T } from '@threlte/core'
-  import { type CharacterCoordsStore } from '$stores/gameStores'
+  import { type CoordsStore } from '$stores/gameStores'
 
-  let player_coords: CharacterCoordsStore
-  let enemy_coords: CharacterCoordsStore
+  let player_coords: CoordsStore
+  let enemy_coords: CoordsStore
 
   $: player_coords = $playerCharacterCoords
   $: enemy_coords = $enemyCharacterCoords

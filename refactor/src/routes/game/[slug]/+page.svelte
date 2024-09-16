@@ -12,15 +12,23 @@
     isMoveRecorded,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
+    setBulletCoords,
     playerCharacterId,
     enemyCharacterId,
     playerStartCoords,
+    isTurnPlayer,
+    frameCounter,
+    recordingMode,
+    replayMode,
+    bulletRenderCoords,
+    bulletStartCoords,
   } from '$stores/gameStores'
-  import { areAddressesEqual } from '$lib/helper.'
+  import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
+  import { type SetupResult } from '$src/dojo/setup.js'
 
   export let data
   let gameId = data.gameId
@@ -28,10 +36,10 @@
   let calldata: TurnData
   let characterData: ComponentStore
   let characterPosition: ComponentStore
-
+  let isTurn: boolean
   $: sessionId.set(parseInt(gameId))
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
   $: if ($accountStore) account = $accountStore
 
@@ -51,11 +59,45 @@
   $: console.log('sessionMeta', $sessionMetaData)
   $: console.log('sessionMeta bullets', $sessionMetaData.bullets)
 
-  $: if ($sessionMetaData)
+  $: if ($sessionMetaData) {
+    sessionMetaData.subscribe((data) => {
+    isTurn = 
+    //is player 1 and it's 1s turn
+    (areAddressesEqual(
+      $sessionData.player1.toString(),
+      account.address
+    ) && data.turn_count % 2 === 0) 
+    || 
+    //is player 2 and it's 2s turn
+    (areAddressesEqual(
+      $sessionData.player2.toString(),
+      account.address
+    ) && data.turn_count % 2 === 1)
+    isTurnPlayer.set(isTurn)
+    })
+}
+
+  $: if ($sessionMetaData) {
     characterIds.set([
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    $sessionMetaData.bullets.forEach((bulletId) => {
+      console.log(bulletId)
+      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
+      let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
+      let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
+      bulletStore.subscribe((bullet) => {
+        console.log(bullet)
+        let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
+        let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
+        bulletStartCoords.set({[bullet.bullet_id]: data})
+        setBulletCoords(bullet.bullet_id, data)
+      })
+    })
+  }
+
+
   $: if ($isMoveRecorded)
     calldata = {
       sub_moves: $recordedMove.sub_moves,
@@ -63,9 +105,9 @@
     }
   // Extract character data w/ characterIds
   $: if ($characterIds) {
-    console.log($characterIds)
+    console.log('cahracter ids', $characterIds)
     $characterIds.forEach((characterId) => {
-      $: if (characterId) {
+      if (characterId) {
         console.log(characterId)
         let characterEntity = torii.poseidonHash([
           BigInt(characterId).toString(),
@@ -74,23 +116,27 @@
           clientComponents.CharacterModel,
           characterEntity
         )
+        console.log('characterData', $characterData)
         characterPosition = componentValueStore(
           clientComponents.CharacterPosition,
           characterEntity
         )
+        console.log('characterPosition', $characterPosition)
 
         characterPosition.subscribe((position) => {
-          let isPlayer = areAddressesEqual(
-            $characterData.player_id,
-            account.address
-          )
-          if (isPlayer) {
-            playerStartCoords.set(position.coords)
-            setPlayerCharacterCoords(characterId, position.coords)
-            playerCharacterId.set(characterId)
-          } else {
-            setEnemyCharacterCoords(characterId, position.coords)
-            enemyCharacterId.set(characterId)
+          if ($characterData) {
+            let isPlayer = areAddressesEqual(
+              $characterData.player_id,
+              account.address
+            )
+            if (isPlayer) {
+              playerStartCoords.set({[position.id]: position.coords})
+              setPlayerCharacterCoords(characterId, position.coords)
+              playerCharacterId.set(characterId)
+            } else {
+              setEnemyCharacterCoords(characterId, position.coords)
+              enemyCharacterId.set(characterId)
+            }
           }
         })
       }
@@ -98,7 +144,14 @@
   }
 
   function handleMove() {
-    move(client, account, $sessionId, calldata)
+    console.log('calldata', calldata)
+    move(client, account, $sessionId, calldata);
+    frameCounter.set(0)
+    recordedMove.set({ sub_moves: [], shots: [] })
+    isMoveRecorded.set(false)
+    recordingMode.set(false)
+    replayMode.set(false)
+  
   }
 </script>
 
@@ -107,6 +160,6 @@
 </div>
 <div class="absolute h-full w-full">
   <Canvas>
-    <Scene characterId={$sessionMetaData.p1_character} />
+    <Scene />
   </Canvas>
 </div>
