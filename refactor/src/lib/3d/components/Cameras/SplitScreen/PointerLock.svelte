@@ -3,7 +3,7 @@
   import { Euler, PerspectiveCamera } from 'three'
   import { useThrelte } from '@threlte/core'
   import { birdView, inPointerLock } from '$stores/cameraStores'
-  import { adjustAngle } from '$lib/helper'
+  import { getYawAngle } from '$lib/helper'
 
 
   import * as THREE from 'three'
@@ -82,7 +82,7 @@
         Math.min(_PI_2 - minPolarAngle, euler.x)
       )
       camera.quaternion.setFromEuler(euler)
-   //   console.log(adjustAngle(THREE.MathUtils.radToDeg(camera.rotation.z)))
+      console.log(getYawAngle(camera))
     })
 
     onChange()
