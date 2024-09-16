@@ -10,20 +10,14 @@
     0x202020, 0x101010,
   ]
 
-  function seededRandom(seed: number) {
-    const x = Math.sin(seed) * 10000
-    return x - Math.floor(x)
-  }
-
   function getColor(i: number, j: number): Color {
-    const seed = i * 1000 + j
-    const randomIndex = Math.floor(seededRandom(seed) * monochromeColors.length)
-    return new Color(monochromeColors[randomIndex])
+    const index = (j * 20 + i) % monochromeColors.length
+    return new Color(monochromeColors[index])
   }
 </script>
 
-{#each Array(20).fill(0) as _, i}
-  {#each Array(20).fill(0) as _, j}
+{#each Array(20).fill(0) as _, j}
+  {#each Array(20).fill(0) as _, i}
     <T.Mesh receiveShadow position={[i * 5 - 47.5, -0.5, j * 5 - 47.5]}>
       <FakeGlowMaterial glowColor="blue" />
       <T.BoxGeometry args={[5, 1, 5]} />
