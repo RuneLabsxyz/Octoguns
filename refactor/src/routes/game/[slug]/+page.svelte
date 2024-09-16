@@ -88,6 +88,7 @@
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
       bulletStore.subscribe((bullet) => {
+        console.log(bullet)
         let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
         let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
         bulletStartCoords.set({[bullet.bullet_id]: data})

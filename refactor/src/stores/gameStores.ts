@@ -105,6 +105,8 @@ export function setBulletCoords(
   key: number,
   data: { coords: { x: number; y: number }, id: number, angle: number, shot_by: number }
 ): void {
+  let coords = data.coords
+  console.log(coords)
   if (data.coords.x > 100) {
     data.coords = normalizeCoords(data.coords)
   }
