@@ -9,7 +9,7 @@
   const y = bullet.coords.y
 </script>
 
-<T.Mesh position={[x, 1, y]} scale={0.1}>
+<T.Mesh position={[x, 1, y]} scale={0.3}>
   <T.SphereGeometry />
   <T.MeshStandardMaterial {color} />
 </T.Mesh>

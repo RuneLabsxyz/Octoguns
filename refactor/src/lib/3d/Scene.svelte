@@ -115,4 +115,5 @@
   <Map />
   <Characters />
   <Bullets />
+  <T.AxesHelper scale={10} position={[0, 1, 0]} />
 </T.Group>

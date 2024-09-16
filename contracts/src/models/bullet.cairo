@@ -130,7 +130,7 @@ mod simulate_tests {
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};
-    use octoguns::consts::TEN_E_8;
+    use octoguns::consts::{BULLET_SPEED, TEN_E_8};
     #[test]
    fn test_bullet_sim_y_only()  {
         let address = starknet::contract_address_const::<0x0>();
