@@ -3,7 +3,7 @@
   import { Euler, PerspectiveCamera } from 'three'
   import { useThrelte } from '@threlte/core'
   import { birdView, inPointerLock } from '$stores/cameraStores'
-
+  import * as THREE from 'three'
   export let cameras: PerspectiveCamera[] = [] // pass all cameras here
   export let minPolarAngle = 0 // radians
   export let maxPolarAngle = Math.PI // radians

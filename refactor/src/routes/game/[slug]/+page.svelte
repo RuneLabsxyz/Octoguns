@@ -84,12 +84,14 @@
     ])
     $sessionMetaData.bullets.forEach((bulletId) => {
       console.log(bulletId)
-      let bulletEntity = torii.poseidonHash([BigInt(bulletId).toString()])
+      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
+      let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
       bulletStore.subscribe((bullet) => {
         let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
-        bulletStartCoords.set({[bullet.bullet_id]: {coords: bullet.coords, angle: bullet.angle, shot_by: shot_by}})
-        setBulletCoords(bullet.bullet_id, {coords: bullet.coords, angle: bullet.angle, shot_by: shot_by})
+        let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
+        bulletStartCoords.set({[bullet.bullet_id]: data})
+        setBulletCoords(bullet.bullet_id, data)
       })
     })
   }
@@ -141,6 +143,7 @@
   }
 
   function handleMove() {
+    console.log('calldata', calldata)
     move(client, account, $sessionId, calldata);
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })

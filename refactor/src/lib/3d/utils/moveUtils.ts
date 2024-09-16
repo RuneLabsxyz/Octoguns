@@ -17,7 +17,7 @@ import { get } from 'svelte/store';
 import { Camera } from 'three';
 import { SCALING_FACTOR, FRAME_INTERVAL, RECORDING_FRAME_LIMIT, SUBMOVE_SCALE } from '$lib/consts';
 import { normalizeAndScaleVector,clamp } from '$lib/helper';
-import { clearBullets } from '../components/Bullet/shoot'
+import { clearBullets } from './shootUtils'
 
 export function recordMove(camera: Camera, characterId: number) {
   const moveDirection = new Vector3();
@@ -69,8 +69,6 @@ export function recordMove(camera: Camera, characterId: number) {
     if (get(frameCounter) % FRAME_INTERVAL === 0) {
       const current = normalizeAndScaleVector(get(currentSubMove).x, get(currentSubMove).y, SUBMOVE_SCALE);      
       
-      console.log(Math.sqrt(current.x * current.x + current.y * current.y));
-
       let move = {
         x: Math.abs(current.x),
         y: Math.abs(current.y),

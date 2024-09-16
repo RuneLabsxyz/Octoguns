@@ -11,7 +11,10 @@
     frameCounter,
     playerStartCoords,
     isTurnPlayer,
-    rendererStore
+    rendererStore,
+    tempBullets,
+    bulletRenderCoords,
+    bulletStartCoords
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
@@ -53,6 +56,8 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
+    tempBullets.set([])
+    bulletRenderCoords.set(get(bulletStartCoords));
   }
 </script>
 

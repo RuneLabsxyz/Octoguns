@@ -32,6 +32,8 @@ export type TurnData = {
   shots: { angle: number; step: number }[]
 }
 
+//store for bullets that are shot in current move but not yet onchain, so they don't have an id
+export const tempBullets = writable<BulletCoords[]>([])
 export const bulletStartCoords = writable<BulletCoordsStore>({})
 export const bulletRenderCoords = writable<BulletCoordsStore>({})
 
@@ -66,11 +68,11 @@ export interface Coords {
 
 export interface BulletCoords {
   coords: Coords
+  id: number
   angle: number
   shot_by: number
 }
 
-export const bullets = writable<BulletCoords[]>([])
 export type CoordsStore = Record<number, Coords>
 export type BulletCoordsStore = Record<number, BulletCoords>
 
@@ -101,7 +103,7 @@ export function setPlayerCharacterCoords(
 
 export function setBulletCoords(
   key: number,
-  data: { coords: { x: number; y: number }, angle: number, shot_by: number }
+  data: { coords: { x: number; y: number }, id: number, angle: number, shot_by: number }
 ): void {
   if (data.coords.x > 100) {
     data.coords = normalizeCoords(data.coords)
