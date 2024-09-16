@@ -3,7 +3,7 @@
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
-  import { recordingMode, replayMode, recordedMove } from '$stores/gameStores'
+  import { recordingMode, replayMode, recordedMove, rendererStore } from '$stores/gameStores'
   import {
     handleKeyDown,
     handleKeyUp,
@@ -86,6 +86,7 @@
   onMount(() => {
     addEventListeners()
     animationLoop()
+    rendererStore.set(renderer)
 
     return () => {
       removeEventListeners()

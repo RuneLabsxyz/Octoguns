@@ -34,9 +34,6 @@ export function normalizeAndScaleVector(
   // Calculate the scaled components without flooring
   let scaledX = Math.trunc((x / length) * SCALE_FACTOR);
   let scaledY = Math.trunc((y / length) * SCALE_FACTOR);
-  console.log(scaledX, scaledY);
-
-  // Calculate the new length after scaling
 
   return {
     x: scaledX,

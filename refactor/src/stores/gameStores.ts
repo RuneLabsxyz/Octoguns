@@ -1,5 +1,8 @@
 import { writable, get } from 'svelte/store'
 import { type Bullet } from '$src/dojo/models.gen'
+import { WebGLRenderer } from 'three'
+
+export const rendererStore = writable<WebGLRenderer>()
 
 // Game meta data
 export const gameState = writable<number>()
@@ -104,6 +107,7 @@ export function setBulletCoords(
     data.coords = normalizeCoords(data.coords)
   }
   bulletRenderCoords.update((store) => {
+    console.log(data)
     return {
       ...store,
       [key]: data,

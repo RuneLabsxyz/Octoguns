@@ -9,15 +9,15 @@ import {
   recordingMode,
   isMoveRecorded,
   replayMode,
-  playerStartCoords,
+  playerStartCoords
 } from '$stores/gameStores';
+import { inPointerLock } from '$stores/cameraStores';
 import type { TurnData } from '$stores/gameStores';
 import { get } from 'svelte/store';
 import { Camera } from 'three';
 import { SCALING_FACTOR, FRAME_INTERVAL, RECORDING_FRAME_LIMIT, SUBMOVE_SCALE } from '$lib/consts';
 import { normalizeAndScaleVector,clamp } from '$lib/helper';
 import { clearBullets } from '../components/Bullet/shoot'
-
 
 export function recordMove(camera: Camera, characterId: number) {
   const moveDirection = new Vector3();
@@ -34,7 +34,7 @@ export function recordMove(camera: Camera, characterId: number) {
   if (left) moveDirection.x -= 1;
   if (right) moveDirection.x += 1;
   let shoot: boolean = false;
-  if (isMouseDown) shoot = true;
+  if (isMouseDown && get(inPointerLock)) shoot = true;
 
   if (moveDirection.length() > 0) {
     // Scale move direction and convert to integers using Math.round

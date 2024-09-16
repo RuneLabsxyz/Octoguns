@@ -39,7 +39,7 @@
   let isTurn: boolean
   $: sessionId.set(parseInt(gameId))
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as SetupResult)
+  $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
   $: if ($accountStore) account = $accountStore
 
@@ -83,6 +83,7 @@
       $sessionMetaData.p2_character,
     ])
     $sessionMetaData.bullets.forEach((bulletId) => {
+      console.log(bulletId)
       let bulletEntity = torii.poseidonHash([BigInt(bulletId).toString()])
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
       bulletStore.subscribe((bullet) => {
@@ -146,6 +147,7 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
+  
   }
 </script>
 

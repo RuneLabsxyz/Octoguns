@@ -10,7 +10,8 @@
     playerCharacterCoords,
     frameCounter,
     playerStartCoords,
-    isTurnPlayer
+    isTurnPlayer,
+    rendererStore
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
@@ -32,6 +33,7 @@
     birdView.set(false)
     replayMode.set(false)
     inPointerLock.set(true)
+    get(rendererStore).domElement.requestPointerLock()
 
   }
 
