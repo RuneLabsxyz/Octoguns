@@ -41,6 +41,10 @@ export function normalizeAndScaleVector(
   };
 }
 
+export function adjustAngle(angle: number): number {
+  return ((90 - angle) % 360 + 360) % 360;
+} 
+
 export function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }

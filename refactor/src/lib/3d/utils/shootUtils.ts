@@ -5,7 +5,7 @@ import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
 import type { Coords, BulletCoords} from '$stores/gameStores'
 import { isTurnPlayer } from '$stores/gameStores'
-import { truncate } from '$lib/helper'
+import { truncate, adjustAngle } from '$lib/helper'
 
 function applyTempBulletToStore(newBullet: BulletCoords) {
   tempBullets.update((bullets) => {
@@ -17,10 +17,7 @@ function applyTempBulletToStore(newBullet: BulletCoords) {
 export function shoot(camera: PerspectiveCamera) {
   let move_index = Math.floor(get(frameCounter) / 3)
 
-  let direction = THREE.MathUtils.radToDeg(camera.rotation.z) + 45 ;
-  if (direction < 0) {
-    direction = 360 + direction
-  }
+  let direction = adjustAngle(THREE.MathUtils.radToDeg(camera.rotation.z)) ;
 
   direction = Math.round(truncate(direction, 8) * 10**8);
 
@@ -85,8 +82,8 @@ export function simulate() {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
       const angleInRadians = (((bullet.angle - 90) % 360) * Math.PI) / 180
-      const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
-      const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
+      const newX = bullet.coords.x + speed * Math.cos(angleInRadians / 10**8)
+      const newY = bullet.coords.y - speed * Math.sin(angleInRadians / 10**8)
       newBullets.push( {
         ...bullet,
         coords: {

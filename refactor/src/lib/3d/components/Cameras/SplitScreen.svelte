@@ -17,10 +17,11 @@
 
 {#each Array(numCameras) as _, index}
   <T.PerspectiveCamera
-    position={[playerCoords.x, 1, playerCoords.y]}
+    position={[playerCoords.x, 5, playerCoords.y]}
+    fov={90}
     on:create={({ ref }) => {
       cameras[index] = ref
-      ref.lookAt(0, 1, 0)
+      ref.lookAt(0, 5, 0)
     }}
   />
 {/each}
