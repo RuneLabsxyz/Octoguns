@@ -1,16 +1,16 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import * as THREE from 'three'
-
-  const textureLoader = new THREE.TextureLoader()
-  const tileTexture = textureLoader.load('/sprites/ground.png')
-
-  tileTexture.wrapS = THREE.RepeatWrapping
-  tileTexture.wrapT = THREE.RepeatWrapping
-  tileTexture.repeat.set(20, 20)
+  import { FakeGlowMaterial } from '@threlte/extras'
+  import { Edges } from '@threlte/extras'
 </script>
 
-<T.Mesh receiveShadow position={[0, -0.5, 0]}>
-  <T.BoxGeometry args={[100, 1, 100]} />
-  <T.MeshStandardMaterial map={tileTexture} />
-</T.Mesh>
+{#each Array(20).fill(0) as _, i}
+  {#each Array(20).fill(0) as _, j}
+    <T.Mesh receiveShadow position={[i * 5 - 47.5, -0.5, j * 5 - 47.5]}>
+      <FakeGlowMaterial glowColor="blue" />
+      <T.BoxGeometry args={[5, 0.5, 5]} />
+
+      <Edges color="white" />
+    </T.Mesh>
+  {/each}
+{/each}
