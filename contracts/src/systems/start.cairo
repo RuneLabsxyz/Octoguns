@@ -1,6 +1,6 @@
 #[dojo::interface]
 trait IStart {
-    fn create(ref world: IWorldDispatcher) -> u32;
+    fn create(ref world: IWorldDispatcher, map_id: u32) -> u32;
     fn join(ref world: IWorldDispatcher, session_id: u32);
 }
 
@@ -15,7 +15,7 @@ mod start {
 
     #[abi(embed_v0)]
     impl StartImpl of IStart<ContractState> {
-        fn create(ref world: IWorldDispatcher) -> u32 {
+        fn create(ref world: IWorldDispatcher, map_id: u32) -> u32 {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             // Do shit
             let address = get_caller_address();
@@ -24,7 +24,7 @@ mod start {
             global.create_session(id);
             player.games.append(id);
 
-            let session = SessionTrait::new(id, address, 1);
+            let session = SessionTrait::new(id, address, map_id);
             let session_meta = SessionMetaTrait::new(id);
             set!(world, (session, session_meta, global, player));
             id
@@ -39,7 +39,6 @@ mod start {
             assert!(session.state == 0, "already started session");
            
             assert!(session.player1 != address, "can't join own session");
-            //TODO global.remove_session(session_id);
             global.remove_session(session_id);
             session.join(address);
             player.games.append(session.session_id);

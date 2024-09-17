@@ -9,7 +9,7 @@ mod tests {
     use starknet::{ContractAddress, contract_address_const};
     // import test utils
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, character_model, character_position};
-    use octoguns::models::map::{Map, MapObjects, map, map_objects};
+    use octoguns::models::map::{Map, MapTrait, map};
     use octoguns::models::sessions::{Session, session, SessionMeta, session_meta};
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
     use octoguns::models::global::{Global, global};
