@@ -25,4 +25,9 @@ struct IVec2 {
     ydir: bool
 }
 
+#[derive(Copy, Drop, Serde)]
+struct MapObjects {
+    objects: Array<u16>,
+}
+
 

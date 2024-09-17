@@ -31,7 +31,11 @@ export type TurnData = {
   shots: { angle: number; step: number }[]
 }
 
+export type MapObjects = {
+  objects: number[]
+}
 
+export const mapObjects = writable<MapObjects>()
 export const keyStateStore = writable<{
   w: boolean
   a: boolean

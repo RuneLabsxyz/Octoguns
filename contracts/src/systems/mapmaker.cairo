@@ -1,6 +1,8 @@
+use octoguns::types::MapObjects;
+
 #[dojo::interface]
 trait IMapmaker {
-    fn create(ref world: IWorldDispatcher, objects: Array<u16>);
+    fn create(ref world: IWorldDispatcher, objects: MapObjects);
     fn default_map(ref world: IWorldDispatcher);
 }
 
@@ -10,7 +12,7 @@ mod mapmaker {
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::models::global::{Global, GlobalTrait};
     use octoguns::consts::{GLOBAL_KEY};
-
+    use octoguns::types::MapObjects;
     #[abi(embed_v0)]
     impl MapmakerImpl of IMapmaker<ContractState> {
 
@@ -26,7 +28,7 @@ mod mapmaker {
             set!(world, (map, global));
         }
 
-        fn create(ref world: IWorldDispatcher, objects: Array<u16>) {
+        fn create(ref world: IWorldDispatcher, objects: MapObjects) {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             assert!(global.map_ids.len() != 0, "Must spawn default map first");
             let map_id = world.uuid();

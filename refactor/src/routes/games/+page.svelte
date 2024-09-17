@@ -52,7 +52,7 @@
   async function createGame() {
     const account = burnerManager.getActiveAccount()
     if (account) {
-      await client.start.create({ account })
+      await client.start.create({ account, map_id: 0 })
       loadingToGame = true
     } else {
       console.error('No active account found')

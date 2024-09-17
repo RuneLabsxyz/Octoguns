@@ -2,6 +2,7 @@
   import { Canvas } from '@threlte/core'
   import Scene from '$lib/3d/Scene.svelte'
   import Ui from '$lib/ui/Ui.svelte'
+  import { getComponentValue } from '@dojoengine/recs'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { dojoStore, accountStore } from '$stores/dojoStore'
   import {
@@ -16,6 +17,7 @@
     frameCounter,
     recordingMode,
     replayMode,
+    mapObjects
   } from '$stores/gameStores'
   import { 
     playerStartCoords, 
@@ -86,6 +88,10 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    let map = getComponentValue(clientComponents.Map, $sessionData.map_id)
+    if (map) {
+      mapObjects.set({objects: map.map_objects_id})
+    }
     $sessionMetaData.bullets.forEach((bulletId) => {
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
