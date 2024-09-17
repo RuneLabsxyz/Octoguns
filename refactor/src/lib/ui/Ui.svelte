@@ -7,20 +7,17 @@
     recordedMove,
     isMoveRecorded,
     playerCharacterId,
-    playerCharacterCoords,
     frameCounter,
-    playerStartCoords,
     isTurnPlayer,
     rendererStore,
-    tempBullets,
-    bulletRenderCoords,
-    bulletStartCoords
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
-    setEnemyCharacterCoords,
-    
-  } from '$stores/gameStores'
+    playerStartCoords,
+    bulletStart,
+    bulletRender
+  } from '$stores/coordsStores'
+  import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import { inPointerLock } from '$stores/cameraStores'
   import { get } from 'svelte/store'
 
@@ -56,8 +53,7 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-    tempBullets.set([])
-    bulletRenderCoords.set(get(bulletStartCoords));
+    resetBullets()
   }
 </script>
 

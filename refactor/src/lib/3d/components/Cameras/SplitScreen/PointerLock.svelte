@@ -82,7 +82,6 @@
         Math.min(_PI_2 - minPolarAngle, euler.x)
       )
       camera.quaternion.setFromEuler(euler)
-      console.log(getYawAngle(camera))
     })
 
     onChange()

@@ -1,14 +1,14 @@
-import { frameCounter, recordedMove, bulletRenderCoords, bulletStartCoords, tempBullets, type BulletCoordsStore } from '$stores/gameStores'
+import { frameCounter, recordedMove } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
-import type { Coords, BulletCoords} from '$stores/gameStores'
+import { type BulletCoords, bulletRender, bulletStart} from '$stores/coordsStores'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle } from '$lib/helper'
 
-function applyTempBulletToStore(newBullet: BulletCoords) {
-  tempBullets.update((bullets) => {
+function applyBulletToStore(newBullet: BulletCoords) {
+  bulletRender.update((bullets) => {
     bullets.push(newBullet)
     return bullets
   })
@@ -43,7 +43,7 @@ export function shoot(camera: PerspectiveCamera) {
     id: 0
   }
 
-  applyTempBulletToStore(newBullet)
+  applyBulletToStore(newBullet)
 }
 
 export function replayShot(move: TurnData, camera: PerspectiveCamera) {
@@ -71,24 +71,26 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
       shot_by: get(isTurnPlayer) ? 1 : 2
     }
 
-    applyTempBulletToStore(newBullet)
+    applyBulletToStore(newBullet)
   }
 }
 
-export function clearBullets() {
-  tempBullets.set([])
+export function resetBullets() {
+  bulletRender.set(get(bulletStart))
 }
 
 export function simulate() {
   const speed = 0.5
 
   //update temp / new bullets
-  tempBullets.update((bullets) => {
+  bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
+      console.log(bullet)
       const angleInRadians = (((bullet.angle - 90) % 360) * Math.PI) / 180
-      const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
-      const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
+      const newX = bullet.coords.x + (speed * Math.cos(angleInRadians))
+      const newY = bullet.coords.y - (speed * Math.sin(angleInRadians))
+      console.log(newX, newY)
       newBullets.push( {
         ...bullet,
         coords: {
@@ -99,24 +101,5 @@ export function simulate() {
     })
     return newBullets
   })
-
-  //update rendered / already existing bullets
-  bulletRenderCoords.update((bullets) => {
-    let newBullets: BulletCoordsStore = {}
-    Object.entries(bullets).forEach(([key, bullet]) => {
-      const angleInRadians = ((((bullet.angle / 10 ** 8) - 90) % 360) * Math.PI) / 180
-      const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
-      const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
-      newBullets[bullet.id] = {
-        ...bullet,
-        coords: {
-          x: newX,
-          y: newY,
-        },
-      }
-    })
-
-    return newBullets
-    })
 
 }

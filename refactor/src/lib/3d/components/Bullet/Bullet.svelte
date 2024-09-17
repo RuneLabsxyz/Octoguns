@@ -1,6 +1,6 @@
 <script lang="ts">
   import { T } from '@threlte/core'
-  import type { BulletCoords } from '$stores/gameStores'
+  import type { BulletCoords } from '$stores/coordsStores'
 
   let color = 'red'
 

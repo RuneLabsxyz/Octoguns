@@ -1,16 +1,9 @@
 <script lang="ts">
-  import { bulletRenderCoords, tempBullets, type BulletCoordsStore } from '$stores/gameStores'
+  import { bulletRender} from '$stores/coordsStores'
   import Bullet from './Bullet/Bullet.svelte'
 
-  let bullet_coords: BulletCoordsStore
-
-  $: bullet_coords = $bulletRenderCoords
 </script>
 
-{#each Object.entries(bullet_coords) as [key, bullet]}
-  <Bullet {bullet} />
-{/each}
-
-{#each $tempBullets as bullet}
+{#each $bulletRender as bullet (bullet)}
   <Bullet {bullet} />
 {/each}

@@ -10,26 +10,27 @@
     characterIds,
     recordedMove,
     isMoveRecorded,
-    setPlayerCharacterCoords,
-    setEnemyCharacterCoords,
-    setBulletCoords,
     playerCharacterId,
     enemyCharacterId,
-    playerStartCoords,
     isTurnPlayer,
     frameCounter,
     recordingMode,
     replayMode,
-    bulletRenderCoords,
-    bulletStartCoords,
   } from '$stores/gameStores'
+  import { 
+    playerStartCoords, 
+    bulletStart, 
+    bulletRender,
+    setPlayerCharacterCoords,
+    setEnemyCharacterCoords } from '$stores/coordsStores'
   import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
-    import { clearBullets } from '$lib/3d/utils/shootUtils.js'
+    import { resetBullets } from '$lib/3d/utils/shootUtils.js'
+    import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
 
   export let data
   let gameId = data.gameId
@@ -84,7 +85,6 @@
       $sessionMetaData.p2_character,
     ])
     $sessionMetaData.bullets.forEach((bulletId) => {
-      console.log(bulletId)
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
@@ -92,8 +92,8 @@
         console.log(bullet)
         let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
         let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
-        bulletStartCoords.set({[bullet.bullet_id]: data})
-        setBulletCoords(bullet.bullet_id, data)
+        bulletStart.set([...$bulletStart, data])
+
       })
     })
   }
@@ -152,7 +152,7 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-    clearBullets();
+    resetBullets();
   }
 </script>
 
