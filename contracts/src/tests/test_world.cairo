@@ -14,15 +14,17 @@ mod tests {
     use octoguns::models::bullet::{Bullet, bullet, BulletTrait};
     use octoguns::models::global::{Global, global};
     use octoguns::types::{TurnMove, Vec2, IVec2, Shot};
-    use octoguns::consts::{TEN_E_8};
+    use octoguns::consts::{TEN_E_8, GLOBAL_KEY};
     use octoguns::systems::start::{start, IStartDispatcher, IStartDispatcherTrait}; 
     use octoguns::systems::actions::{actions, IActionsDispatcher, IActionsDispatcherTrait};
     use octoguns::systems::spawn::{spawn, ISpawnDispatcher, ISpawnDispatcherTrait};
+    use octoguns::systems::mapmaker::{mapmaker, IMapmakerDispatcher, IMapmakerDispatcherTrait};
 
     fn setup() -> ( IWorldDispatcher, 
                     IStartDispatcher, 
                     IActionsDispatcher,
-                    ISpawnDispatcher) {
+                    ISpawnDispatcher,
+                    IMapmakerDispatcher) {
 
         let world = spawn_test_world!(["octoguns"]);
 
@@ -34,21 +36,28 @@ mod tests {
             .deploy_contract('m', spawn::TEST_CLASS_HASH.try_into().unwrap());
         let start_address = world
             .deploy_contract('b', start::TEST_CLASS_HASH.try_into().unwrap());
+        let mapmaker_address = world
+            .deploy_contract('m', mapmaker::TEST_CLASS_HASH.try_into().unwrap());
 
         let actions_system = IActionsDispatcher { contract_address: actions_address };
         let spawn_system = ISpawnDispatcher { contract_address: spawn_address };
         let start_system = IStartDispatcher { contract_address: start_address };
+        let mapmaker_system = IMapmakerDispatcher { contract_address: mapmaker_address };
 
         world.grant_writer(dojo::utils::bytearray_hash(@"octoguns"), actions_address);
         world.grant_writer(dojo::utils::bytearray_hash(@"octoguns"), spawn_address);
         world.grant_writer(dojo::utils::bytearray_hash(@"octoguns"), start_address);
+        world.grant_writer(dojo::utils::bytearray_hash(@"octoguns"), mapmaker_address);
 
-        (world, start_system, actions_system, spawn_system)
+        mapmaker_system.default_map();
+
+        (world, start_system, actions_system, spawn_system, mapmaker_system)
     }
 
     fn setup_game(start_system: IStartDispatcher, spawn_system: ISpawnDispatcher, p1: ContractAddress, p2: ContractAddress) -> u32 {
         set_contract_address(p1);
-        let session_id = start_system.create();
+        let map_id = get!(world, GLOBAL_KEY, (Global)).map_ids.at(0);
+        let session_id = start_system.create(0);
         set_contract_address(p2);
         start_system.join(session_id);
         spawn_system.spawn(session_id);

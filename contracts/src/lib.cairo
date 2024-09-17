@@ -2,6 +2,7 @@ mod systems {
     mod start; 
     mod spawn;
     mod actions;
+    mod mapmaker;
 }
 
 mod models {
