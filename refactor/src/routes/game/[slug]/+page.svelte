@@ -81,7 +81,6 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
-    
   }
 
   $: if ($sessionMetaData.bullets) {
@@ -103,7 +102,7 @@
           : 2
         let data = {
           coords: bullet.coords,
-          angle: bullet.angle - 90,
+          angle: bullet.angle / 10 ** 8,
           id: bullet.bullet_id,
           shot_by: shot_by,
         }
