@@ -5,7 +5,7 @@ import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
 import { type BulletCoords, bulletRender, bulletStart} from '$stores/coordsStores'
 import { isTurnPlayer } from '$stores/gameStores'
-import { truncate, getYawAngle } from '$lib/helper'
+import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
@@ -38,7 +38,7 @@ export function shoot(camera: PerspectiveCamera) {
       x: cameraPosition.x,
       y: cameraPosition.z,
     },
-    angle: direction / 10**8,
+    angle: inverseMapAngle(direction / 10**8),
     shot_by: get(isTurnPlayer) ? 1 : 2,
     id: 0
   }
@@ -80,14 +80,14 @@ export function resetBullets() {
 }
 
 export function simulate() {
-  const speed = 0.5
+  const speed = 0.2 / 3
 
   //update temp / new bullets
   bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
       console.log(bullet)
-      const angleInRadians = (((bullet.angle - 90) % 360) * Math.PI) / 180
+      const angleInRadians = THREE.MathUtils.degToRad(bullet.angle)
       const newX = bullet.coords.x + (speed * Math.cos(angleInRadians))
       const newY = bullet.coords.y - (speed * Math.sin(angleInRadians))
       console.log(newX, newY)

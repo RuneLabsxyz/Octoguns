@@ -22,7 +22,9 @@
     bulletStart, 
     bulletRender,
     setPlayerCharacterCoords,
-    setEnemyCharacterCoords } from '$stores/coordsStores'
+    setEnemyCharacterCoords,
+    setBulletCoords
+  } from '$stores/coordsStores'
   import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
@@ -89,11 +91,9 @@
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
       bulletStore.subscribe((bullet) => {
-        console.log(bullet)
         let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
         let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
-        bulletStart.set([...$bulletStart, data])
-
+        setBulletCoords(data)
       })
     })
   }
@@ -152,7 +152,8 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-    resetBullets();
+    bulletStart.set([]);
+    bulletRender.set([]);
   }
 </script>
 

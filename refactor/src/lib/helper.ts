@@ -73,3 +73,33 @@ export function getYawAngle(camera: PerspectiveCamera): number {
   
   return degrees
 }
+
+/**
+ * Converts degrees from the traditional unit circle back to the original angular coordinate system.
+ *
+ * In the original system:
+ * - Rotation is around the Y-axis.
+ * - Clockwise rotation maps to [0, 180] degrees.
+ * - Counterclockwise rotation maps to [0, -180] degrees.
+ *
+ * This function inverses the mapping:
+ * originalDegrees = (180 - unitCircleDegrees) % 360 - 180
+ *
+ * @param angle - The angle in degrees from the traditional unit circle.
+ * @returns The angle in degrees in the original coordinate system.
+ */
+export function inverseMapAngle(angle: number): number {
+  // Normalize the input angle to [0, 360)
+  const normalizedUnitCircleDegrees = ((angle % 360) + 360) % 360;
+
+  // Apply the corrected inverse mapping formula without the 90-degree offset
+  let originalDegrees = (180 - normalizedUnitCircleDegrees) % 360 - 180;
+
+  // Handle edge case where originalDegrees is -180, mapping it to 180 if desired
+  if (originalDegrees === -180) {
+    originalDegrees = 180;
+  }
+
+  return originalDegrees;
+}
+

@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store'
+import { inverseMapAngle } from '$lib/helper'
 
 export interface Coords {
     x: number
@@ -43,6 +44,17 @@ export const enemyCharacterCoords = writable<CoordsStore>({})
         ...store,
         [key]: coords,
       }
+    })
+  }
+
+  //used for updating the stores based on the onchain data, so coords are normalized and both start and render stores are updated
+  export function setBulletCoords(coords: BulletCoords): void {
+    let normalized_coords = {...coords, coords: normalizeCoords(coords.coords), angle: inverseMapAngle(coords.angle)}
+    bulletRender.update((store) => {
+      return [...store, normalized_coords]
+    })
+    bulletStart.update((store) => {
+      return [...store, normalized_coords]
     })
   }
   
