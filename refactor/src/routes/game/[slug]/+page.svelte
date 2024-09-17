@@ -92,7 +92,7 @@
       let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
       bulletStore.subscribe((bullet) => {
         let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
-        let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
+        let data = {coords: bullet.coords, angle: bullet.angle - 90, id: bullet.bullet_id,  shot_by: shot_by}
         setBulletCoords(data)
       })
     })
