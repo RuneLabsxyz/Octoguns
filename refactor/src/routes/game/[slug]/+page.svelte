@@ -81,6 +81,12 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    
+  }
+
+  $: if ($sessionMetaData.bullets) {
+    bulletStart.set([])
+    bulletRender.set([])
     $sessionMetaData.bullets.forEach((bulletId) => {
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
