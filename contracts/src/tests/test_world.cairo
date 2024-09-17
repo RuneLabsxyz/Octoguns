@@ -56,7 +56,6 @@ mod tests {
 
     fn setup_game(start_system: IStartDispatcher, spawn_system: ISpawnDispatcher, p1: ContractAddress, p2: ContractAddress) -> u32 {
         set_contract_address(p1);
-        let map_id = get!(world, GLOBAL_KEY, (Global)).map_ids.at(0);
         let session_id = start_system.create(0);
         set_contract_address(p2);
         start_system.join(session_id);
@@ -66,12 +65,12 @@ mod tests {
 
     #[test]
     fn test_setup() {
-        let (world, _, _, _) = setup();
+        let (world, _, _, _, _) = setup();
     }
 
     #[test]
     fn test_game_setup() {
-        let (world, start, _, spawn) = setup();
+        let (world, start, _, spawn, _) = setup();
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
         let session_id = setup_game(start, spawn, player1, player2);
@@ -83,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_move() {
-        let (world, start, actions, spawn) = setup();
+        let (world, start, actions, spawn, _) = setup();
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
         let session_id = setup_game(start, spawn, player1, player2);
@@ -107,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_hit_self() {
-        let (world, start, actions, spawn) = setup();
+        let (world, start, actions, spawn, _) = setup();
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
 
@@ -133,7 +132,7 @@ mod tests {
 
     #[test]
     fn test_collision_in_move() {
-        let (world, start, actions, spawn) = setup();
+        let (world, start, actions, spawn, _) = setup();
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
 

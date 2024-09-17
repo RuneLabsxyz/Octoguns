@@ -57,7 +57,7 @@ impl BulletImpl of BulletTrait {
         let (hit_character, hit_object) = self.compute_hits(characters, map);
         match hit_character {
             Option::None => {
-                is_dropped = true;
+                is_dropped = hit_object;
             },
             // hit a character
             Option::Some(character_id) => {

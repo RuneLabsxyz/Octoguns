@@ -1,18 +1,18 @@
 #[dojo::interface]
-trait IMapMaker {
+trait IMapmaker {
     fn create(ref world: IWorldDispatcher, objects: Array<u16>);
     fn default_map(ref world: IWorldDispatcher);
 }
 
 #[dojo::contract]
 mod mapmaker {
-    use super::IMapMaker;
+    use super::IMapmaker;
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::models::global::{Global, GlobalTrait};
     use octoguns::consts::{GLOBAL_KEY};
 
     #[abi(embed_v0)]
-    impl MapMakerImpl of IMapMaker<ContractState> {
+    impl MapmakerImpl of IMapmaker<ContractState> {
 
         fn default_map(ref world: IWorldDispatcher) {
             let mut global = get!(world, GLOBAL_KEY, (Global));
