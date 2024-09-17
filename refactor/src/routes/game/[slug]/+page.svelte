@@ -10,22 +10,29 @@
     characterIds,
     recordedMove,
     isMoveRecorded,
-    setPlayerCharacterCoords,
-    setEnemyCharacterCoords,
     playerCharacterId,
     enemyCharacterId,
-    playerStartCoords,
     isTurnPlayer,
     frameCounter,
     recordingMode,
     replayMode,
   } from '$stores/gameStores'
+  import { 
+    playerStartCoords, 
+    bulletStart, 
+    bulletRender,
+    setPlayerCharacterCoords,
+    setEnemyCharacterCoords,
+    setBulletCoords
+  } from '$stores/coordsStores'
   import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
+    import { resetBullets } from '$lib/3d/utils/shootUtils.js'
+    import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
 
   export let data
   let gameId = data.gameId
@@ -36,7 +43,7 @@
   let isTurn: boolean
   $: sessionId.set(parseInt(gameId))
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as SetupResult)
+  $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
   $: if ($accountStore) account = $accountStore
 
@@ -79,7 +86,19 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    $sessionMetaData.bullets.forEach((bulletId) => {
+      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
+      let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
+      let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
+      bulletStore.subscribe((bullet) => {
+        let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
+        let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
+        setBulletCoords(data)
+      })
+    })
   }
+
+
   $: if ($isMoveRecorded)
     calldata = {
       sub_moves: $recordedMove.sub_moves,
@@ -126,12 +145,15 @@
   }
 
   function handleMove() {
+    console.log('calldata', calldata)
     move(client, account, $sessionId, calldata);
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
+    bulletStart.set([]);
+    bulletRender.set([]);
   }
 </script>
 

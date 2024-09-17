@@ -76,6 +76,9 @@ fn check_is_valid_move(v:IVec2) -> bool {
     if (v.x*v.x) + (v.y*v.y) <= MOVE_SPEED*MOVE_SPEED {
         return true;
     }
-    return false;
+    else {
+        println!("invalid move");
+        return false;
+    }
 }
 

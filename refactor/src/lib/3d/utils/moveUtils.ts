@@ -5,20 +5,17 @@ import {
   recordedMove,
   currentSubMove,
   frameCounter,
-  playerCharacterCoords,
   recordingMode,
   isMoveRecorded,
   replayMode,
-  playerStartCoords,
 } from '$stores/gameStores';
+import { playerCharacterCoords } from '$stores/coordsStores';
+import { inPointerLock } from '$stores/cameraStores';
 import type { TurnData } from '$stores/gameStores';
 import { get } from 'svelte/store';
-import { T } from "@threlte/core"
 import { Camera } from 'three';
 import { SCALING_FACTOR, FRAME_INTERVAL, RECORDING_FRAME_LIMIT, SUBMOVE_SCALE } from '$lib/consts';
 import { normalizeAndScaleVector,clamp } from '$lib/helper';
-import { clearBullets } from '../components/Bullet/shoot'
-
 
 export function recordMove(camera: Camera, characterId: number) {
   const moveDirection = new Vector3();
@@ -35,7 +32,7 @@ export function recordMove(camera: Camera, characterId: number) {
   if (left) moveDirection.x -= 1;
   if (right) moveDirection.x += 1;
   let shoot: boolean = false;
-  if (isMouseDown) shoot = true;
+  if (isMouseDown && get(inPointerLock)) shoot = true;
 
   if (moveDirection.length() > 0) {
     // Scale move direction and convert to integers using Math.round
@@ -70,8 +67,6 @@ export function recordMove(camera: Camera, characterId: number) {
     if (get(frameCounter) % FRAME_INTERVAL === 0) {
       const current = normalizeAndScaleVector(get(currentSubMove).x, get(currentSubMove).y, SUBMOVE_SCALE);      
       
-      console.log(Math.sqrt(current.x * current.x + current.y * current.y));
-
       let move = {
         x: Math.abs(current.x),
         y: Math.abs(current.y),
@@ -93,7 +88,6 @@ export function recordMove(camera: Camera, characterId: number) {
     recordingMode.set(false);
     isMoveRecorded.set(true);
     document.exitPointerLock();
-    clearBullets()
 
     console.log(get(isMoveRecorded));
   }
@@ -113,8 +107,6 @@ export function replayMove(move: TurnData, characterId: number) {
   if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
     frameCounter.set(0);
     replayMode.set(false);
-    playerCharacterCoords.set(get(playerStartCoords));
-    clearBullets()
   }
   if (get(frameCounter) % FRAME_INTERVAL === 0 && get(frameCounter) < RECORDING_FRAME_LIMIT) {
     let x_dif = sub_move.x;

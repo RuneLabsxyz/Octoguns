@@ -7,16 +7,17 @@
     recordedMove,
     isMoveRecorded,
     playerCharacterId,
-    playerCharacterCoords,
     frameCounter,
-    playerStartCoords,
-    isTurnPlayer
+    isTurnPlayer,
+    rendererStore,
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
-    setEnemyCharacterCoords,
-    
-  } from '$stores/gameStores'
+    playerStartCoords,
+    bulletStart,
+    bulletRender
+  } from '$stores/coordsStores'
+  import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import { inPointerLock } from '$stores/cameraStores'
   import { get } from 'svelte/store'
 
@@ -32,6 +33,7 @@
     birdView.set(false)
     replayMode.set(false)
     inPointerLock.set(true)
+    get(rendererStore).domElement.requestPointerLock()
 
   }
 
@@ -51,6 +53,7 @@
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
+    resetBullets()
   }
 </script>
 

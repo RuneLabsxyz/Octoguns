@@ -3,7 +3,7 @@
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
-  import { recordingMode, replayMode, recordedMove } from '$stores/gameStores'
+  import { recordingMode, replayMode, recordedMove, rendererStore } from '$stores/gameStores'
   import {
     handleKeyDown,
     handleKeyUp,
@@ -19,8 +19,8 @@
   import { birdView } from '$stores/cameraStores'
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { PerspectiveCamera } from 'three'
-  import Bullets from './components/Bullet/Bullets.svelte'
-  import { shoot, replayShot, simulate } from './components/Bullet/shoot'
+  import Bullets from './components/Bullets.svelte'
+  import { shoot, replayShot, simulate } from './utils/shootUtils'
   import {
     isMouseDownStore,
     playerCharacterId,
@@ -28,6 +28,8 @@
   } from '$stores/gameStores'
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
+
+  import { GridHelper } from 'three/src/helpers/GridHelper.js'
 
   let { renderer, scene } = useThrelte()
   let cameras: PerspectiveCamera[] = []
@@ -86,6 +88,7 @@
   onMount(() => {
     addEventListeners()
     animationLoop()
+    rendererStore.set(renderer)
 
     return () => {
       removeEventListeners()
@@ -112,4 +115,5 @@
   <Map />
   <Characters />
   <Bullets />
+  <T.AxesHelper scale={10} position={[0, 1, 0]} />
 </T.Group>
