@@ -2,7 +2,8 @@
   import { T } from '@threlte/core'
   import { PerspectiveCamera } from 'three'
   import PointerLock from './SplitScreen/PointerLock.svelte'
-  import { playerCharacterCoords, playerCharacterId } from '$stores/gameStores'
+  import { playerCharacterId } from '$stores/gameStores'
+  import { playerCharacterCoords } from '$stores/coordsStores'
   import { birdView } from '$stores/cameraStores'
 
   $: playerCoords = $playerCharacterCoords[$playerCharacterId]
