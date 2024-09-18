@@ -7,6 +7,7 @@ import { type BulletCoords, bulletRender, bulletStart} from '$stores/coordsStore
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 
+
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
     bullets.push(newBullet)
@@ -91,6 +92,7 @@ export function simulate() {
       const newX = bullet.coords.x + (speed * Math.cos(angleInRadians))
       const newY = bullet.coords.y - (speed * Math.sin(angleInRadians))
       console.log(newX, newY)
+
       newBullets.push( {
         ...bullet,
         coords: {
