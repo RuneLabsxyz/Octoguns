@@ -1,5 +1,6 @@
 <script lang="ts">
   import StartGame from './StartGame.svelte'
+  import YouWin from './YouWin.svelte'
   import { birdView } from '$stores/cameraStores'
   import { recordingMode, replayMode } from '$stores/gameStores'
   import {
@@ -15,17 +16,16 @@
     setPlayerCharacterCoords,
     playerStartCoords,
     bulletStart,
-    bulletRender
+    bulletRender,
   } from '$stores/coordsStores'
   import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import { inPointerLock } from '$stores/cameraStores'
   import { get } from 'svelte/store'
 
-
   export let moveHandler: any
 
   let isRecorded: boolean
-  
+
   $: if (isMoveRecorded) isRecorded = $isMoveRecorded
 
   function setRecordingMode(e: Event) {
@@ -34,20 +34,24 @@
     replayMode.set(false)
     inPointerLock.set(true)
     get(rendererStore).domElement.requestPointerLock()
-
   }
 
   function setReplayMode(e: Event) {
     recordingMode.set(false)
     frameCounter.set(0)
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
+    setPlayerCharacterCoords(
+      $playerCharacterId,
+      $playerStartCoords[$playerCharacterId]
+    )
     replayMode.set(!$recordingMode)
   }
 
-
   function reset(e: Event) {
     currentSubMove.set({ x: 0, y: 0 })
-    setPlayerCharacterCoords($playerCharacterId, $playerStartCoords[$playerCharacterId])
+    setPlayerCharacterCoords(
+      $playerCharacterId,
+      $playerStartCoords[$playerCharacterId]
+    )
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
@@ -102,4 +106,5 @@
   {/if}
 
   <StartGame />
+  <YouWin />
 </div>
