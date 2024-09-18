@@ -16,6 +16,7 @@
     frameCounter,
     recordingMode,
     replayMode,
+    isEnded,
   } from '$stores/gameStores'
   import {
     playerStartCoords,
@@ -62,6 +63,10 @@
   $: console.log('session', $sessionData)
   $: console.log('sessionMeta', $sessionMetaData)
   $: console.log('sessionMeta bullets', $sessionMetaData.bullets)
+
+  $: if ($sessionData.state === 3) {
+    isEnded.set(true)
+  }
 
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
