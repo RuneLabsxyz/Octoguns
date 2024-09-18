@@ -7,6 +7,7 @@ export const rendererStore = writable<WebGLRenderer>()
 // Game meta data
 export const gameState = writable<number>()
 export const sessionId = writable<number>()
+export const isEnded = writable<boolean>(false)
 
 //characters
 export const characterIds = writable<number[]>([])
@@ -30,7 +31,6 @@ export type TurnData = {
   sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
   shots: { angle: number; step: number }[]
 }
-
 
 export const keyStateStore = writable<{
   w: boolean
