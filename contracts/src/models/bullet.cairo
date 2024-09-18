@@ -113,8 +113,11 @@ impl BulletImpl of BulletTrait {
         };
 
         let mut object_index: u8 = 0;
-        while object_index.into() < map.map_objects.len() {
+        while object_index.into() < map.map_objects.objects.len() {
             let (x_min, x_max, y_min, y_max) = map.get_object_bounds(object_index);
+
+            println!("checking collision with object at {} {}", self.coords.x, self.coords.y);
+            println!("object bounds: {} {} {} {}", x_min, x_max, y_min, y_max);
             if (self.coords.x + OFFSET > x_min && self.coords.x + OFFSET < x_max &&
             self.coords.y + OFFSET > y_min && self.coords.y + OFFSET < y_max) {
                 hit_object = true;
@@ -145,6 +148,7 @@ mod simulate_tests {
     use octoguns::tests::helpers::{get_test_character_array};
     use octoguns::consts::{BULLET_SPEED, TEN_E_8};
     use octoguns::models::map::{Map, MapTrait};
+    use octoguns::types::MapObjects;
 
     #[test]
    fn test_bullet_sim_y_only()  {
@@ -226,6 +230,54 @@ mod simulate_tests {
                     },
                     Option::Some(id) => {
                         assert!(id == 69, "not returning id of hit piece");
+                    }
+                }
+            },
+            Option::Some(bullet) => {
+                panic!("bullet should have collided");
+            }
+        }
+     }
+
+     #[test]
+     fn test_collision_with_object() {
+        let address = starknet::contract_address_const::<0x0>();
+        let map = MapTrait::new(1, MapObjects { objects: array![7]});
+
+        let characters = ArrayTrait::new();
+        let mut bullet = BulletTrait::new(1, Vec2 { x:30_000, y:0}, 0, 1);
+        let (new_bullet, res) = bullet.simulate(@characters, @map);
+        match new_bullet {
+            Option::None => {
+                match res {
+                    Option::None => {
+                    },
+                    Option::Some(id) => {
+                        panic!("should not return id");
+                    }
+                }
+            },
+            Option::Some(bullet) => {
+                panic!("bullet should have collided");
+            }
+        }
+     }
+
+     #[test]
+     fn test_collision_with_object_2() {
+        let address = starknet::contract_address_const::<0x0>();
+        let map = MapTrait::new(1, MapObjects { objects: array![7]});
+
+        let characters = ArrayTrait::new();
+        let mut bullet = BulletTrait::new(1, Vec2 { x:27_850, y:0}, 0, 1);
+        let (new_bullet, res) = bullet.simulate(@characters, @map);
+        match new_bullet {
+            Option::None => {
+                match res {
+                    Option::None => {
+                    },
+                    Option::Some(id) => {
+                        panic!("should not return id");
                     }
                 }
             },

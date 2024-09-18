@@ -23,7 +23,7 @@ mod mapmaker {
             let row = 12 * 25;
             // some objects in the middle of the map with some gaps
             let objects: Array<u16> = array![row + 1, row+2, row+3, row+5, row+6, row+7, row+9, row+10, row+ 11];
-            let map = MapTrait::new(map_id, objects);
+            let map = MapTrait::new(map_id, MapObjects { objects });
             global.map_ids.append(map_id);
             set!(world, (map, global));
         }
