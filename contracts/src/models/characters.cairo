@@ -27,11 +27,12 @@ pub struct CharacterPosition {
     pub coords: Vec2,
     pub max_steps: u32,
     pub current_step: u32,
+    pub status: u8, // 1 is alive, 0 is dead
 }
 
 #[generate_trait]
 impl CharacterPositionImpl of CharacterPositionTrait {
     fn new(id: u32, coords: Vec2) -> CharacterPosition {
-        CharacterPosition {id, coords, max_steps: 100, current_step: 0}
+        CharacterPosition {id, coords, max_steps: 100, current_step: 0, status: 1}
     }
 }

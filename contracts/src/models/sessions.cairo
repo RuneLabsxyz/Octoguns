@@ -35,8 +35,8 @@ pub struct SessionMeta {
     #[key]
     pub session_id: u32,
     pub turn_count: u32, // mod 2 = 1 is player 2 and mod 2 = 0 is player 1
-    pub p1_character: u32,
-    pub p2_character: u32 ,
+    pub p1_characters: Array<u32>,
+    pub p2_characters: Array<u32>,
     pub bullets: Array<u32>,
 
 }
@@ -48,8 +48,8 @@ impl SessionMetaImpl of SessionMetaTrait {
             session_id, 
             turn_count: 0, 
             bullets: ArrayTrait::new(), 
-            p1_character: 0,
-            p2_character: 0
+            p1_characters: ArrayTrait::new(),
+            p2_characters: ArrayTrait::new(),
         }
     }
     fn next_turn(ref self: SessionMeta) {

@@ -3,7 +3,7 @@ use octoguns::models::bullet::{Bullet, BulletTrait};
 
 #[dojo::interface]
 trait IActions {
-    fn move(ref world: IWorldDispatcher, session_id: u32, moves: TurnMove);
+    fn move(ref world: IWorldDispatcher, session_id: u32, moves: Array<TurnMove>);
 }
 
 #[dojo::contract]
@@ -23,9 +23,12 @@ mod actions {
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: TurnMove) {
-            assert!(moves.sub_moves.len() <= 100, "Invalid number of moves");
-            assert!(moves.shots.len() <= 3, "Invalid number of shots");
+        fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: Array<TurnMove>) {
+            assert!(moves.len() <= 3 && moves.len() > 0, "Invalid number of turn moves");
+            for move in moves {
+                assert!(move.sub_moves.len() <= 100, "Invalid number of submoves");
+                assert!(move.shots.len() <= 1, "Invalid number of shots");
+            }
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
             assert!(session.state != 1, "Game doesn't exist");
@@ -56,21 +59,32 @@ mod actions {
                     panic!("???");
                 }
             }
+            let mut player_positions = array![];
+            let mut opp_positions = array![];
+            let mut all_positions = array![];
 
-            let mut player_position = get!(world, player_character_id, (CharacterPosition));
-            let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
-            let mut positions = array![player_position, opp_position];
-
-
-            // +100 +100 to avoid underflow
+            for player_character_id in session_meta.p1_characters {
+                let position = get!(world, player_character_id, (CharacterPosition));
+                if position.status == 1 {
+                    player_positions.append(position);
+                    all_positions.append(position);
+                }
+            }
+            for opp_character_id in session_meta.p2_characters {
+                let position = get!(world, opp_character_id, (CharacterPosition));
+                if position.status == 1 {
+                    opp_positions.append(position);
+                    all_positions.append(position);
+                }
+            }
 
             let mut bullets = get_all_bullets(world, session_id);
             
             //start out of bounds so never reached in loop
-            let mut next_shot = 101;
-            if moves.shots.len() > 0 {
-                next_shot = (*moves.shots.at(0)).step;
-            }
+            let mut next_shot = (101, 101, 101);
+            let mut next_shot_t1 = moves.at(0).shots.at(0).step;
+            let mut next_shot_t2 = moves.at(1).shots.at(0).step;
+            let mut next_shot_t3 = moves.at(2).shots.at(0).step;
 
             let mut sub_move_index = 0;
 

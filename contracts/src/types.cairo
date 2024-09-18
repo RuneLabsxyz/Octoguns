@@ -13,6 +13,7 @@ struct Shot {
 
 #[derive(Clone, Drop, Serde)]
 struct TurnMove {
+    characters: Array<u32>,
     sub_moves: Array<IVec2>,
     shots: Array<Shot>,
 }
