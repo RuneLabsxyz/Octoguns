@@ -40,30 +40,39 @@ impl BulletImpl of BulletTrait {
         let mut is_dropped: bool = false;
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
 
+        let mut i: u32 = 0;
+        while i < 4 {
+            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 4); 
+            let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 4);
+            let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
+            let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
+            
 
-        let x_shift = (fast_cos(direction) * speed.into()) / TEN_E_8_I; 
-        let y_shift = (fast_sin(direction) * speed.into()) / TEN_E_8_I;
-        let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
-        let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
-        
-
-        if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
-            // out of bounds    
-            return (Option::None(()), Option::None(()));
-        }
-
-        self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
-
-        let (hit_character, hit_object) = self.compute_hits(characters, map);
-        match hit_character {
-            Option::None => {
-                is_dropped = hit_object;
-            },
-            // hit a character
-            Option::Some(character_id) => {
-                res = (Option::Some(self), Option::Some(character_id));
+            if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
+                // out of bounds    
+                res = (Option::None(()), Option::None(()));
+                is_dropped = true;
+                break;
             }
-        }
+
+            self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
+
+            let (hit_character, hit_object) = self.compute_hits(characters, map);
+            match hit_character {
+                Option::None => {
+                    is_dropped = hit_object;
+                    if hit_object {
+                        break;
+                    }
+                },
+                // hit a character
+                Option::Some(character_id) => {
+                    res = (Option::Some(self), Option::Some(character_id));
+                    break;
+                }
+            }
+            i += 1;
+        };
 
         let ( _ , hit_result) = res;
 
@@ -111,17 +120,15 @@ impl BulletImpl of BulletTrait {
 
             character_index += 1;
         };
-
-        let mut object_index: u8 = 0;
+        let x_index = self.coords.x / 4000;
+        let y_index = self.coords.y / 4000;
+        let index = (x_index + y_index * 25).try_into().unwrap();
+        let mut object_index: u32 = 0;
         while object_index.into() < map.map_objects.len() {
-            let (x_min, x_max, y_min, y_max) = map.get_object_bounds(object_index);
-
-            println!("checking collision with object at {} {}", self.coords.x, self.coords.y);
-            println!("object bounds: {} {} {} {}", x_min, x_max, y_min, y_max);
-            if (self.coords.x + OFFSET > x_min && self.coords.x + OFFSET < x_max &&
-            self.coords.y + OFFSET > y_min && self.coords.y + OFFSET < y_max) {
+            let object = *map.map_objects.at(object_index);
+            if object == index {
                 hit_object = true;
-                break;        
+                break;
             }
             object_index += 1;
         };

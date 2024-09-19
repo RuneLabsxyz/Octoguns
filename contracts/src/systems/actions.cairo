@@ -201,14 +201,9 @@ mod actions {
                     }
                 }
             };
-            let turn_data = TurnData {
-                session_id: session_id,
-                turn_number: session_meta.turn_count,
-                moves,
-            };
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
-            set!(world, (session, session_meta, turn_data));
+            set!(world, (session, session_meta));
 
 
         }
