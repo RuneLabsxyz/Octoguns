@@ -18,14 +18,15 @@
     recordingMode,
     replayMode,
     mapObjects
+    isEnded,
   } from '$stores/gameStores'
-  import { 
-    playerStartCoords, 
-    bulletStart, 
+  import {
+    playerStartCoords,
+    bulletStart,
     bulletRender,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
-    setBulletCoords
+    setBulletCoords,
   } from '$stores/coordsStores'
   import { get } from 'svelte/store'
   import { areAddressesEqual } from '$lib/helper'
@@ -34,8 +35,8 @@
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
-    import { resetBullets } from '$lib/3d/utils/shootUtils.js'
-    import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
+  import { resetBullets } from '$lib/3d/utils/shootUtils.js'
+  import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
 
   export let data
   let gameId = data.gameId
@@ -69,23 +70,22 @@
   $: console.log('sessionMeta', $sessionMetaData)
   $: console.log('sessionMeta bullets', $sessionMetaData.bullets)
 
+  $: if ($sessionData.state === 3) {
+    isEnded.set(true)
+  }
+
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
-    isTurn = 
-    //is player 1 and it's 1s turn
-    (areAddressesEqual(
-      $sessionData.player1.toString(),
-      account.address
-    ) && data.turn_count % 2 === 0) 
-    || 
-    //is player 2 and it's 2s turn
-    (areAddressesEqual(
-      $sessionData.player2.toString(),
-      account.address
-    ) && data.turn_count % 2 === 1)
-    isTurnPlayer.set(isTurn)
+      isTurn =
+        //is player 1 and it's 1s turn
+        (areAddressesEqual($sessionData.player1.toString(), account.address) &&
+          data.turn_count % 2 === 0) ||
+        //is player 2 and it's 2s turn
+        (areAddressesEqual($sessionData.player2.toString(), account.address) &&
+          data.turn_count % 2 === 1)
+      isTurnPlayer.set(isTurn)
     })
-}
+  }
 
   $: if ($sessionMetaData) {
     characterIds.set([
@@ -96,18 +96,35 @@
       console.log('map', $map)
       mapObjects.set({objects: get(map).map_objects})
     }
+  }
+
+  $: if ($sessionMetaData.bullets) {
+    bulletStart.set([])
+    bulletRender.set([])
     $sessionMetaData.bullets.forEach((bulletId) => {
-      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
+      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
-      let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
+      let bulletStore = componentValueStore(
+        clientComponents.Bullet,
+        bulletEntity
+      )
       bulletStore.subscribe((bullet) => {
-        let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
-        let data = {coords: bullet.coords, angle: bullet.angle/10**8, id: bullet.bullet_id,  shot_by: shot_by}
+        let shot_by = areAddressesEqual(
+          bullet.shot_by.toString(),
+          account.address
+        )
+          ? 1
+          : 2
+        let data = {
+          coords: bullet.coords,
+          angle: bullet.angle / 10 ** 8,
+          id: bullet.bullet_id,
+          shot_by: shot_by,
+        }
         setBulletCoords(data)
       })
     })
   }
-
 
   $: if ($isMoveRecorded)
     calldata = {
@@ -141,7 +158,7 @@
               account.address
             )
             if (isPlayer) {
-              playerStartCoords.set({[position.id]: position.coords})
+              playerStartCoords.set({ [position.id]: position.coords })
               setPlayerCharacterCoords(characterId, position.coords)
               playerCharacterId.set(characterId)
             } else {
@@ -156,14 +173,14 @@
 
   function handleMove() {
     console.log('calldata', calldata)
-    move(client, account, $sessionId, calldata);
+    move(client, account, $sessionId, calldata)
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-    bulletStart.set([]);
-    bulletRender.set([]);
+    bulletStart.set([])
+    bulletRender.set([])
   }
 </script>
 

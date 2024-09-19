@@ -7,6 +7,7 @@ export const rendererStore = writable<WebGLRenderer>()
 // Game meta data
 export const gameState = writable<number>()
 export const sessionId = writable<number>()
+export const isEnded = writable<boolean>(false)
 
 //characters
 export const characterIds = writable<number[]>([])
