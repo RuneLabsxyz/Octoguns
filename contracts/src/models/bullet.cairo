@@ -40,10 +40,12 @@ impl BulletImpl of BulletTrait {
         let mut is_dropped: bool = false;
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
 
+
+        let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 2); 
+        let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 2);
+
         let mut i: u32 = 0;
-        while i < 4 {
-            let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 4); 
-            let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 4);
+        while i < 2 {
             let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
             let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
             
