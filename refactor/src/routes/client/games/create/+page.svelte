@@ -58,7 +58,13 @@
       console.error('No active account found')
     }
   }
+
+  function goBack() {
+    goto('/client/games')
+  }
 </script>
+
+<div class="text-center font-Block text-7xl mb-4">SeLeCt a MaP</div>
 
 <div class="map-grid">
   {#each maps as map}
@@ -68,7 +74,13 @@
   {/each}
 </div>
 
-<div class="flex justify-end p-4 fixed bottom-0 right-0">
+<div class="flex justify-between p-4 fixed bottom-0 left-0 right-0">
+  <button
+    class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
+    on:click={goBack}
+  >
+    Back
+  </button>
   <button
     class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
     on:click={createGame}
@@ -98,8 +110,8 @@
     display: flex;
   }
 
-  .justify-end {
-    justify-content: flex-end;
+  .justify-between {
+    justify-content: space-between;
   }
 
   .p-4 {
@@ -112,6 +124,10 @@
 
   .bottom-0 {
     bottom: 0;
+  }
+
+  .left-0 {
+    left: 0;
   }
 
   .right-0 {
