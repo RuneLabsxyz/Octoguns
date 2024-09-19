@@ -4,13 +4,21 @@
   import { goto } from '$app/navigation'
 
   let availableSessions: any = null
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  $: if ($dojoStore) {
+    ;({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  }
 
-  $: account = $accountStore
+  $: if ($accountStore) {
+    account = $accountStore
+  }
 
-  $: playerEntity = torii.poseidonHash([account?.address])
+  $: if (torii && account?.address) {
+    playerEntity = torii.poseidonHash([account.address])
+  }
 
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
+  $: if (clientComponents && playerEntity) {
+    player = componentValueStore(clientComponents.Player, playerEntity)
+  }
 
   $: if ($player) {
     let playerGames = new Set(
