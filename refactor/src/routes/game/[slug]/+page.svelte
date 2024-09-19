@@ -2,6 +2,7 @@
   import { Canvas } from '@threlte/core'
   import Scene from '$lib/3d/Scene.svelte'
   import Ui from '$lib/ui/Ui.svelte'
+  import { getComponentValue } from '@dojoengine/recs'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { dojoStore, accountStore } from '$stores/dojoStore'
   import {
@@ -16,6 +17,7 @@
     frameCounter,
     recordingMode,
     replayMode,
+    mapObjects
     isEnded,
   } from '$stores/gameStores'
   import {
@@ -26,6 +28,7 @@
     setEnemyCharacterCoords,
     setBulletCoords,
   } from '$stores/coordsStores'
+  import { get } from 'svelte/store'
   import { areAddressesEqual } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
@@ -41,6 +44,7 @@
   let calldata: TurnData
   let characterData: ComponentStore
   let characterPosition: ComponentStore
+  let map: ComponentStore
   let isTurn: boolean
   $: sessionId.set(parseInt(gameId))
 
@@ -55,6 +59,8 @@
     clientComponents.SessionMeta,
     sessionEntity
   )
+
+  $: if ($sessionData) map = componentValueStore(clientComponents.Map, torii.poseidonHash([BigInt($sessionData.map_id).toString()]))
 
   $: gameState.set($sessionData.state)
   $: console.log($isMoveRecorded)
@@ -86,6 +92,10 @@
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
+    if (map) {
+      console.log('map', $map)
+      mapObjects.set({objects: get(map).map_objects})
+    }
   }
 
   $: if ($sessionMetaData.bullets) {

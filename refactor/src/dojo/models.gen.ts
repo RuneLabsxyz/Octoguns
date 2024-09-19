@@ -112,14 +112,14 @@ export const GlobalDefinition = {
 
 // Type definition for `octoguns::models::map::Map` struct
 export interface Map {
-  map_id: Number
-  map_objects_id: Number[]
+  map_id: Number;
+  map_objects: Number[];
+  
 }
 export const MapDefinition = {
   map_id: RecsType.Number,
-  map_objects_id: RecsType.NumberArray,
-}
-
+  map_objects: RecsType.NumberArray,
+};
 // Type definition for `octoguns::models::map::MapObjects` struct
 export interface MapObjects {
   map_object_id: Number
@@ -265,7 +265,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           map_id: RecsType.Number,
-          map_objects_id: RecsType.NumberArray,
+          map_objects: RecsType.NumberArray,
         },
         {
           metadata: {
@@ -273,26 +273,6 @@ export function defineContractComponents(world: World) {
             name: 'Map',
             types: ['u32', 'array'],
             customTypes: [],
-          },
-        }
-      )
-    })(),
-
-    // Model definition for `octoguns::models::map::MapObjects` model
-    MapObjects: (() => {
-      return defineComponent(
-        world,
-        {
-          map_object_id: RecsType.Number,
-          dimensions: Vec2Definition,
-          coords: Vec2Definition,
-        },
-        {
-          metadata: {
-            namespace: 'octoguns',
-            name: 'MapObjects',
-            types: ['u32'],
-            customTypes: ['Vec2', 'Vec2'],
           },
         }
       )

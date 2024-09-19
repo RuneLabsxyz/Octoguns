@@ -13,11 +13,14 @@ mod actions {
     use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
+    use octoguns::models::map::{Map, MapTrait};
+    use octoguns::models::turndata::{TurnData};
     use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
     use octoguns::lib::simulate::{simulate_bullets};
     use octoguns::lib::shoot::{shoot};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
+
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
@@ -29,6 +32,8 @@ mod actions {
             assert!(session.state != 1, "Game doesn't exist");
             assert!(session.state != 3, "Game over");
             assert!(session.state == 2, "Game not active");
+
+            let map = get!(world, session_id, (Map));
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
 
@@ -96,7 +101,7 @@ mod actions {
 
 
                 //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions);
+                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map);
                 bullets = new_bullets;
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
                 positions = new_positions;
@@ -196,7 +201,6 @@ mod actions {
                     }
                 }
             };
-
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
             set!(world, (session, session_meta));

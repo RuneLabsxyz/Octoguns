@@ -2,6 +2,7 @@ mod systems {
     mod start; 
     mod spawn;
     mod actions;
+    mod mapmaker;
 }
 
 mod models {
@@ -11,6 +12,7 @@ mod models {
     mod characters;
     mod global;
     mod player;
+    mod turndata;
 }
 
 mod lib {

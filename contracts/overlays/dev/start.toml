@@ -3,7 +3,6 @@ writes = [
     "octoguns-CharacterPosition",
     "octoguns-CharacterModel",
     "octoguns-Map",
-    "octoguns-MapObjects",
     "octoguns-Session",
     "octoguns-SessionMeta",
     "octoguns-Bullet",
