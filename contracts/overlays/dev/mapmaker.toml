@@ -1,4 +1,4 @@
-tag = "octoguns-spawn"
+tag = "octoguns-mapmaker"
 writes = [
     "octoguns-CharacterPosition",
     "octoguns-CharacterModel",
@@ -6,6 +6,6 @@ writes = [
     "octoguns-Session",
     "octoguns-SessionMeta",
     "octoguns-Bullet",
-    "octoguns-Player"
+    "octoguns-Global",
 
 ]

@@ -3,7 +3,8 @@
 pub struct Global{
     #[key]
     id: u32,
-    pending_sessions: Array<u32>
+    pending_sessions: Array<u32>,
+    map_count: u32
 }
 
 #[generate_trait]
