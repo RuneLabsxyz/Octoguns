@@ -165,9 +165,6 @@ mod actions {
                 }
                 positions = array![player_position, opp_position];
 
-                
-                
-
                 sub_move_index+=1;
 
                 //END MOVE LOOP
