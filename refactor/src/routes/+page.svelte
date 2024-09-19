@@ -9,7 +9,9 @@
     <h2 class="font-Block">GUNS</h2>
   </div>
   {#if $isSetup}
-    <button class="p-5 pt-20" on:click={() => goto('/games')}> Play </button>
+    <button class="p-5 pt-20" on:click={() => goto('/client/games')}>
+      Play
+    </button>
   {:else}
     <button class="p-5 pt-20" disabled>
       Sorry we are having issues with torii

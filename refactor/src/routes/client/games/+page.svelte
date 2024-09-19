@@ -60,21 +60,25 @@
   }
 </script>
 
-<div class="flex justify-center items-center">
-  {#if availableSessions}
-    <GameList {availableSessions} />
-  {/if}
-</div>
+<div class="flex flex-col h-screen">
+  <div class="flex justify-center items-center">
+    <div class="w-3/4 h-full overflow-auto">
+      {#if availableSessions}
+        <GameList {availableSessions} />
+      {/if}
+    </div>
+  </div>
 
-<div class="flex justify-between">
-  <button
-    class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
-    on:click={() => {
-      window.location.href = '/'
-    }}>Back</button
-  >
-  <button
-    class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-    on:click={createGame}>Create Game</button
-  >
+  <div class="flex justify-between p-4 fixed bottom-0 left-0 right-0 bg-white">
+    <button
+      class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
+      on:click={() => {
+        window.location.href = '/'
+      }}>Back</button
+    >
+    <button
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+      on:click={createGame}>Create Game</button
+    >
+  </div>
 </div>
