@@ -14,6 +14,7 @@ mod actions {
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::models::map::{Map, MapTrait};
+    use octoguns::models::turndata::{TurnData};
     use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
     use octoguns::lib::simulate::{simulate_bullets};
     use octoguns::lib::shoot::{shoot};
@@ -200,10 +201,14 @@ mod actions {
                     }
                 }
             };
-
+            let turn_data = TurnData {
+                session_id: session_id,
+                turn_number: session_meta.turn_count,
+                moves,
+            };
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
-            set!(world, (session, session_meta));
+            set!(world, (session, session_meta, turn_data));
 
 
         }

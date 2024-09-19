@@ -113,7 +113,7 @@ impl BulletImpl of BulletTrait {
         };
 
         let mut object_index: u8 = 0;
-        while object_index.into() < map.map_objects.objects.len() {
+        while object_index.into() < map.map_objects.len() {
             let (x_min, x_max, y_min, y_max) = map.get_object_bounds(object_index);
 
             println!("checking collision with object at {} {}", self.coords.x, self.coords.y);
