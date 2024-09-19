@@ -17,7 +17,7 @@
     frameCounter,
     recordingMode,
     replayMode,
-    mapObjects
+    mapObjects,
     isEnded,
   } from '$stores/gameStores'
   import {
