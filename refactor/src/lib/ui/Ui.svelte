@@ -21,7 +21,7 @@
   import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import { inPointerLock } from '$stores/cameraStores'
   import { get } from 'svelte/store'
-
+  import StepBar from './StepBar.svelte'
   export let moveHandler: any
 
   let isRecorded: boolean
@@ -107,4 +107,5 @@
 
   <StartGame />
   <YouWin />
+  <StepBar />
 </div>

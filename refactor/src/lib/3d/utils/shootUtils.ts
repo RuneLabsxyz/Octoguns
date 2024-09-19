@@ -3,9 +3,14 @@ import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
-import { type BulletCoords, bulletRender, bulletStart} from '$stores/coordsStores'
+import {
+  type BulletCoords,
+  bulletRender,
+  bulletStart,
+} from '$stores/coordsStores'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
+import { BULLET_SPEED } from '$lib/consts'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
@@ -17,14 +22,16 @@ function applyBulletToStore(newBullet: BulletCoords) {
 export function shoot(camera: PerspectiveCamera) {
   let move_index = Math.floor(get(frameCounter) / 3)
 
-  let direction = getYawAngle(camera);
+  let direction = getYawAngle(camera)
   if (direction < 0) {
     direction = 360 + direction
   }
 
-  direction = Math.round(truncate(direction, 8) * 10**8);
+  direction = Math.round(truncate(direction, 8) * 10 ** 8)
 
-  console.log(`Bullet shot at move index ${move_index} with angle ${direction} degrees`)
+  console.log(
+    `Bullet shot at move index ${move_index} with angle ${direction} degrees`
+  )
 
   recordedMove.update((rm) => {
     rm.shots.push({ angle: direction, step: move_index })
@@ -38,9 +45,9 @@ export function shoot(camera: PerspectiveCamera) {
       x: cameraPosition.x,
       y: cameraPosition.z,
     },
-    angle: inverseMapAngle(direction / 10**8),
+    angle: inverseMapAngle(direction / 10 ** 8),
     shot_by: get(isTurnPlayer) ? 1 : 2,
-    id: 0
+    id: 0,
   }
 
   applyBulletToStore(newBullet)
@@ -53,9 +60,7 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
   if (shot) {
     let angle = shot.angle
 
-    console.log(
-      `Bullet shot at move index ${move_index} with angle ${angle}`
-    )
+    console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 
     frameCounter.update((fc) => fc + 1)
 
@@ -68,7 +73,7 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
       angle: shot.angle,
       id: 0,
       //TODO: Fix this
-      shot_by: get(isTurnPlayer) ? 1 : 2
+      shot_by: get(isTurnPlayer) ? 1 : 2,
     }
 
     applyBulletToStore(newBullet)
@@ -80,7 +85,7 @@ export function resetBullets() {
 }
 
 export function simulate() {
-  const speed = 0.2 / 3
+  const speed = BULLET_SPEED / 3
 
   //update temp / new bullets
   bulletRender.update((bullets) => {
@@ -88,10 +93,10 @@ export function simulate() {
     bullets.map((bullet) => {
       console.log(bullet)
       const angleInRadians = THREE.MathUtils.degToRad(bullet.angle)
-      const newX = bullet.coords.x + (speed * Math.cos(angleInRadians))
-      const newY = bullet.coords.y - (speed * Math.sin(angleInRadians))
+      const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
+      const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
       console.log(newX, newY)
-      newBullets.push( {
+      newBullets.push({
         ...bullet,
         coords: {
           x: newX,
@@ -101,5 +106,4 @@ export function simulate() {
     })
     return newBullets
   })
-
 }
