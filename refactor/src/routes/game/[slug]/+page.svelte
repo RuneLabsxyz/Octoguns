@@ -17,7 +17,7 @@
     frameCounter,
     recordingMode,
     replayMode,
-    mapObjects
+    mapObjects,
     isEnded,
   } from '$stores/gameStores'
   import {
@@ -60,7 +60,11 @@
     sessionEntity
   )
 
-  $: if ($sessionData) map = componentValueStore(clientComponents.Map, torii.poseidonHash([BigInt($sessionData.map_id).toString()]))
+  $: if ($sessionData)
+    map = componentValueStore(
+      clientComponents.Map,
+      torii.poseidonHash([BigInt($sessionData.map_id).toString()])
+    )
 
   $: gameState.set($sessionData.state)
   $: console.log($isMoveRecorded)
@@ -94,7 +98,7 @@
     ])
     if (map) {
       console.log('map', $map)
-      mapObjects.set({objects: get(map).map_objects})
+      mapObjects.set({ objects: get(map).map_objects })
     }
   }
 
