@@ -17,7 +17,6 @@ mod actions {
     use octoguns::models::turndata::{TurnData};
     use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
     use octoguns::lib::simulate::{simulate_bullets};
-    use octoguns::lib::shoot::{shoot};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
 
@@ -77,7 +76,8 @@ mod actions {
 
             while sub_move_index < 100 {
 
-                if sub_move_index == next_shot {
+                if sub_move_index == next_shot.into() {
+                    let step = 100 * session_meta.turn_count + sub_move_index;
 
                     let shot = moves.shots.pop_front();
                     match shot {
@@ -86,7 +86,8 @@ mod actions {
                                                 world.uuid(), 
                                                 Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
                                                 s.angle, 
-                                                player_character_id
+                                                player_character_id,
+                                                step.try_into().unwrap()
                             ));
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
@@ -101,7 +102,7 @@ mod actions {
 
 
                 //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map);
+                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, sub_move_index);
                 bullets = new_bullets;
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
                 positions = new_positions;
@@ -142,19 +143,19 @@ mod actions {
                         }
                         //apply move
                         if vec.xdir{
-                            player_position.coords.x = min(100_000, player_position.coords.x + vec.x); 
+                            player_position.coords.x = min(100_000, player_position.coords.x + vec.x.try_into().unwrap()); 
                         }
                         else {
-                            vec.x = min( vec.x, player_position.coords.x );
-                            player_position.coords.x -= vec.x;
+                            vec.x = min( vec.x, player_position.coords.x.into() );
+                            player_position.coords.x -= vec.x.try_into().unwrap();
                         }
                         if vec.ydir{
-                            player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
+                            player_position.coords.y = min(100_000, player_position.coords.y + vec.y.try_into().unwrap()); 
 
                         }
                         else {
-                            vec.y = min( vec.y, player_position.coords.y );
-                            player_position.coords.y -= vec.y;
+                            vec.y = min( vec.y.try_into().unwrap(), player_position.coords.y.into() );
+                            player_position.coords.y -= vec.y.try_into().unwrap();
                         }
 
 
@@ -170,21 +171,6 @@ mod actions {
                 //END MOVE LOOP
             };
 
-            //set new bullet positions bullets
-            loop {
-                let next_bullet = bullets.pop_front();
-                match next_bullet {
-                    Option::Some(bullet) => {
-                        println!("setting new bullet positions: x: {} y: {}", bullet.coords.x, bullet.coords.y);
-                        updated_bullet_ids.append(bullet.bullet_id);
-                        set!(world, (bullet));
-                    },
-                    Option::None => {
-                        break;
-                    }
-                }
-            };
-
             //set new positions
             loop { 
                 let next_position = positions.pop_front();
@@ -198,6 +184,7 @@ mod actions {
                     }
                 }
             };
+
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
             set!(world, (session, session_meta));

@@ -1,6 +1,5 @@
-use octoguns::types::{Vec2, IVec2};
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait}; 
-use alexandria_math::trigonometry::{fast_cos_inner, fast_sin_inner};
+use octoguns::lib::trig::{fast_cos_unsigned, fast_sin_unsigned};
 use octoguns::consts::TEN_E_8_I;
 use starknet::ContractAddress;
 use octoguns::consts::{MOVE_SPEED, BULLET_SPEED};
@@ -13,7 +12,7 @@ pub struct Bullet {
     #[key]
     pub bullet_id: u32,
     pub shot_step: u16,
-    pub shot_by: u8,
+    pub shot_by: u32,
     pub shot_at: Vec2,
     pub velocity: IVec2, // store the step velocity
 }
@@ -21,102 +20,75 @@ pub struct Bullet {
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, angle: u64, player: u8, shot_step: u16) -> Bullet {
+    fn new(id: u32, coords: Vec2, angle: u64, shot_by: u32, shot_step: u16) -> Bullet {
         //speed is how much it travels per sub step
         //distance travelled per turn is speed * 100
-        let (cos, x_dir) = fast_cos_inner(angle);
-        let (sin, y_dir) = fast_sin_inner(angle);
-        let velocity = IVec2 { x: cos * BULLET_SPEED, y: sin * BULLET_SPEED, x_dir, y_dir };
-        Bullet { bullet_id: id, coords, angle, shot_by: player, shot_step, velocity}
+        let (cos, xdir) = fast_cos_unsigned(angle);
+        let (sin, ydir) = fast_sin_unsigned(angle);
+        let velocity = IVec2 { x: cos * BULLET_SPEED, y: sin * BULLET_SPEED, xdir, ydir };
+        Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step, velocity}
     }
 
     fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
-        let mut new_coords = self.coords;
-        let mut x_shift = self.velocity.x * step;
-        let mut y_shift = self.velocity.y * step;
-        if self.velocity.x_dir {
-            new_coords.x = self.coords.x + x_shift;
+        let mut new_coords = self.shot_at;
+        let step_u64 = step.into();
+        let mut x_shift = self.velocity.x * step_u64;
+        let mut y_shift = self.velocity.y * step_u64;
+        if self.velocity.xdir {
+            new_coords.x += x_shift.try_into().unwrap();
             if new_coords.x > 100_000 {
                 return Option::None(());
             }
         }
         else {
-            if x_shift > self.coords.x {
+            if x_shift > self.shot_at.x.into() {
                 return Option::None(());
             }
-            new_coords.x = self.coords.x - x_shift;
+            new_coords.x -= x_shift.try_into().unwrap();
         }
-        if self.velocity.y_dir {
-            new_coords.y = self.coords.y + y_shift;
+        if self.velocity.ydir {
+            new_coords.y += y_shift.try_into().unwrap();
             if new_coords.y > 100_000 {
                 return Option::None(());
             }
         }
         else {
-            if y_shift > self.coords.y {
+            if y_shift > self.shot_at.y.into() {
                 return Option::None(());
             }
-            new_coords.y = self.coords.y - y_shift;
+            new_coords.y -= y_shift.try_into().unwrap();
         }
         Option::Some(new_coords)
-            
-        }
         
     }
 
-    fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map) -> (Option<Bullet>, Option<u32>) {
-        let speed = BULLET_SPEED;
-        let direction: i64 = self.angle.try_into().unwrap();
-        let mut is_dropped: bool = false;
+    fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map, step: u32) -> (Option<Bullet>, Option<u32>) {
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
+        let maybe_position = self.get_position(step);
+        let mut position: Vec2 = Vec2 { x: 0, y: 0 };
 
-
-        let x_shift = (fast_cos(direction) * speed.into()) / (TEN_E_8_I * 2); 
-        let y_shift = (fast_sin(direction) * speed.into()) / (TEN_E_8_I * 2);
-
-        let mut i: u32 = 0;
-        while i < 2 {
-            let new_x: i64 = self.coords.x.try_into().unwrap() + x_shift;
-            let new_y: i64 = self.coords.y.try_into().unwrap() + y_shift;
-            
-
-            if new_x < 0 || new_x > 100_000 || new_y < 0 || new_y > 100_000 {
-                // out of bounds    
-                res = (Option::None(()), Option::None(()));
-                is_dropped = true;
-                break;
+        match maybe_position {
+            Option::None => {
+                return (Option::None(()), Option::None(()));
+            },
+            Option::Some(p) => {
+                position = p;
             }
-
-            self.coords = Vec2 { x: new_x.try_into().unwrap(), y: new_y.try_into().unwrap() };
-
-            let (hit_character, hit_object) = self.compute_hits(characters, map);
-            match hit_character {
-                Option::None => {
-                    is_dropped = hit_object;
-                    if hit_object {
-                        break;
-                    }
-                },
-                // hit a character
-                Option::Some(character_id) => {
-                    res = (Option::Some(self), Option::Some(character_id));
-                    break;
-                }
-            }
-            i += 1;
-        };
-
-        let ( _ , hit_result) = res;
-
-        if is_dropped {
-            return (Option::None(()), Option::None(()));
         }
-        match hit_result {
+
+        let (hit_character, hit_object) = self.compute_hits(position, characters, map);
+
+        match hit_character {
             Option::Some(character_id) => {
                 return (Option::None(()), Option::Some(character_id));
             },
             Option::None => {
-                return (Option::Some(self), Option::None(()));
+                if hit_object {
+                    return (Option::None(()), Option::None(()));
+                }
+                else {
+                    return (Option::Some(self), Option::None(()));
+                }
             }
         }
 
@@ -124,11 +96,12 @@ impl BulletImpl of BulletTrait {
 
     }
 
-    fn compute_hits(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map) -> (Option<u32>, bool) {
+    fn compute_hits(ref self: Bullet, position: Vec2, characters: @Array<CharacterPosition>, map: @Map) -> (Option<u32>, bool) {
         let mut character_index: u32 = 0;
         let mut character_id = 0;
         let OFFSET: u32 = 1000;
         let mut hit_object: bool = false;
+
 
         loop {
             if character_index >= characters.len() {
@@ -144,16 +117,17 @@ impl BulletImpl of BulletTrait {
             let upper_bound_y = character.coords.y + OFFSET + 500;
 
             //plus 1000 offset to to match bounds offset            
-            if (self.coords.x + OFFSET > lower_bound_x && self.coords.x + OFFSET < upper_bound_x &&
-            self.coords.y + OFFSET > lower_bound_y && self.coords.y + OFFSET < upper_bound_y) {
-                character_id = character.id;
-                break;        
+            if (position.x > lower_bound_x && position.x < upper_bound_x &&
+                position.y > lower_bound_y && position.y < upper_bound_y) {
+                    character_id = character.id;
+                    break;        
             }
 
             character_index += 1;
         };
-        let x_index = self.coords.x / 4000;
-        let y_index = self.coords.y / 4000;
+
+        let x_index = position.x / 4000;
+        let y_index = position.y / 4000;
         let index = (x_index + y_index * 25).try_into().unwrap();
         let mut object_index: u32 = 0;
         while object_index.into() < map.map_objects.len() {

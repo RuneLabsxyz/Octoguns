@@ -8,14 +8,14 @@ use octoguns::models::map::{Map, MapTrait};
 // Tuple to hold both bullets and character positions
 pub type SimulationResult = (Array<Bullet>, Array<u32>);
 
-pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>, map: @Map) -> SimulationResult {
+pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>, map: @Map, step: u32) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
     
     loop {
         match bullets.pop_front() {
             Option::Some(mut bullet) => {
-                let (updated_bullet, hit_character) = bullet.simulate(@character_positions, map);
+                let (updated_bullet, hit_character) = bullet.simulate(@character_positions, map, step);
                 match updated_bullet {
                     Option::Some(bullet) => {
                         updated_bullets.append(bullet)
