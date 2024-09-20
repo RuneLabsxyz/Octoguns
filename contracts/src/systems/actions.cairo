@@ -61,9 +61,6 @@ mod actions {
             let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
             let mut positions = array![player_position, opp_position];
 
-
-            // +100 +100 to avoid underflow
-
             let mut bullets = get_all_bullets(world, session_id);
             
             //start out of bounds so never reached in loop
@@ -103,7 +100,8 @@ mod actions {
 
                 //advance bullets + check collisions
                 let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, sub_move_index);
-                bullets = new_bullets;
+                updated_bullet_ids = new_bullets;
+
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
                 positions = new_positions;
 
@@ -154,7 +152,7 @@ mod actions {
 
                         }
                         else {
-                            vec.y = min( vec.y.try_into().unwrap(), player_position.coords.y.into() );
+                            vec.y = min( vec.y, player_position.coords.y.into() );
                             player_position.coords.y -= vec.y.try_into().unwrap();
                         }
 
