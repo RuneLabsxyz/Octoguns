@@ -11,6 +11,7 @@
     frameCounter,
     isTurnPlayer,
     rendererStore,
+    gameState,
   } from '$stores/gameStores'
   import {
     setPlayerCharacterCoords,
@@ -92,7 +93,7 @@
         </button>
       {/if}
     </div>
-  {:else if !$recordingMode && !$replayMode && $isTurnPlayer}
+  {:else if !$recordingMode && !$replayMode && $isTurnPlayer && $gameState != 1}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
