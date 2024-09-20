@@ -31,11 +31,13 @@ impl BulletImpl of BulletTrait {
 
     fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
         let mut new_coords = self.shot_at;
-        let step_u64 = step.into();
-        let mut x_shift = self.velocity.x * step_u64;
-        let mut y_shift = self.velocity.y * step_u64;
-        println!("x_shift: {}", x_shift);
-        println!("y_shift: {}", y_shift);
+        let step_felt: felt252 = step.into();
+        let vx: felt252 = self.velocity.x.into();
+        let vy: felt252 = self.velocity.y.into();
+
+        let mut x_shift: u64 = (vx * step_felt).try_into().unwrap();
+        let mut y_shift: u64 = (vy * step_felt).try_into().unwrap();
+
         if self.velocity.xdir {
             new_coords.x += x_shift;
             if new_coords.x > 100_000 {
