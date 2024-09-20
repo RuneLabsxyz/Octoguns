@@ -1,41 +1,71 @@
 use octoguns::types::{Vec2, IVec2};
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait}; 
-use alexandria_math::trigonometry::{fast_cos, fast_sin};
+use alexandria_math::trigonometry::{fast_cos_inner, fast_sin_inner};
 use octoguns::consts::TEN_E_8_I;
 use starknet::ContractAddress;
 use octoguns::consts::{MOVE_SPEED, BULLET_SPEED};
 use octoguns::models::map::{Map, MapTrait};
+use octoguns::types::{IVec2, Vec2};
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
 pub struct Bullet {
     #[key]
     pub bullet_id: u32,
-    pub coords: Vec2,
-    pub speed: u32, // pixels per step
-    pub angle: u64, // in degrees
-    pub shot_by: u32
+    pub shot_step: u16,
+    pub shot_by: u8,
+    pub shot_at: Vec2,
+    pub velocity: IVec2, // store the step velocity
 }
-
-#[derive(Copy, Drop, Serde)]
-pub struct Vec2_i64 {
-    x: i64,
-    y: i64,
-}
-
 
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, angle: u64, player: u32) -> Bullet {
+    fn new(id: u32, coords: Vec2, angle: u64, player: u8, shot_step: u16) -> Bullet {
         //speed is how much it travels per sub step
         //distance travelled per turn is speed * 100
-        Bullet { bullet_id: id, coords, speed: BULLET_SPEED, angle, shot_by: player}
+        let (cos, x_dir) = fast_cos_inner(angle);
+        let (sin, y_dir) = fast_sin_inner(angle);
+        let velocity = IVec2 { x: cos * BULLET_SPEED, y: sin * BULLET_SPEED, x_dir, y_dir };
+        Bullet { bullet_id: id, coords, angle, shot_by: player, shot_step, velocity}
     }
 
+    fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
+        let mut new_coords = self.coords;
+        let mut x_shift = self.velocity.x * step;
+        let mut y_shift = self.velocity.y * step;
+        if self.velocity.x_dir {
+            new_coords.x = self.coords.x + x_shift;
+            if new_coords.x > 100_000 {
+                return Option::None(());
+            }
+        }
+        else {
+            if x_shift > self.coords.x {
+                return Option::None(());
+            }
+            new_coords.x = self.coords.x - x_shift;
+        }
+        if self.velocity.y_dir {
+            new_coords.y = self.coords.y + y_shift;
+            if new_coords.y > 100_000 {
+                return Option::None(());
+            }
+        }
+        else {
+            if y_shift > self.coords.y {
+                return Option::None(());
+            }
+            new_coords.y = self.coords.y - y_shift;
+        }
+        Option::Some(new_coords)
+            
+        }
+        
+    }
 
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map) -> (Option<Bullet>, Option<u32>) {
-        let speed = self.speed;
+        let speed = BULLET_SPEED;
         let direction: i64 = self.angle.try_into().unwrap();
         let mut is_dropped: bool = false;
         let mut res: (Option<Bullet>, Option<u32>) = (Option::Some(self), Option::None(())); 
