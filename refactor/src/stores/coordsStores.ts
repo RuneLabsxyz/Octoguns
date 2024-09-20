@@ -9,7 +9,7 @@ export interface Coords {
   export interface BulletCoords {
     coords: Coords
     id: number
-    angle: number
+    velocity: Coords
     shot_by: number
   }
   
@@ -49,12 +49,12 @@ export const enemyCharacterCoords = writable<CoordsStore>({})
 
   //used for updating the stores based on the onchain data, so coords are normalized and both start and render stores are updated
   export function setBulletCoords(coords: BulletCoords): void {
-    let normalized_coords = {...coords, coords: normalizeCoords(coords.coords), angle: inverseMapAngle(coords.angle)}
+    console.log(coords)
     bulletRender.update((store) => {
-      return [...store, normalized_coords]
+      return [...store, coords]
     })
     bulletStart.update((store) => {
-      return [...store, normalized_coords]
+      return [...store, coords]
     })
   }
   

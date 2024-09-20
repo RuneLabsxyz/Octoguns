@@ -29,7 +29,7 @@
     setBulletCoords,
   } from '$stores/coordsStores'
   import { get } from 'svelte/store'
-  import { areAddressesEqual } from '$lib/helper'
+  import { areAddressesEqual, getBulletPosition } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
@@ -102,6 +102,7 @@
     bulletStart.set([])
     bulletRender.set([])
     $sessionMetaData.bullets.forEach((bulletId) => {
+      let turn_count = $sessionMetaData.turn_count;
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(
@@ -109,6 +110,14 @@
         bulletEntity
       )
       bulletStore.subscribe((bullet) => {
+        console.log('bullet', bullet)
+        let v = bullet.velocity;
+        let coords = getBulletPosition(bullet, (1+ turn_count) * 100 - bullet.shot_step)
+        let x_dir = v.xdir ? 1 : -1
+        let y_dir = v.ydir ? 1 : -1
+        let velocity = {x: x_dir * v.x/100, y: y_dir * v.y/100}
+
+        //TODO, shot by is character id not address
         let shot_by = areAddressesEqual(
           bullet.shot_by.toString(),
           account.address
@@ -116,8 +125,8 @@
           ? 1
           : 2
         let data = {
-          coords: bullet.coords,
-          angle: bullet.angle / 10 ** 8,
+          coords: coords,
+          velocity: velocity,
           id: bullet.bullet_id,
           shot_by: shot_by,
         }

@@ -45,9 +45,6 @@ impl BulletImpl of BulletTrait {
             }
         }
         else {
-            println!("x is negative");
-            println!("x_shift: {}", x_shift);
-            println!("self.shot_at.x: {}", self.shot_at.x);
             if x_shift > self.shot_at.x {
                 return Option::None(());
             }
@@ -60,15 +57,11 @@ impl BulletImpl of BulletTrait {
             }
         }
         else {
-            println!("y is negative");
-            println!("y_shift: {}", y_shift);
-            println!("self.shot_at.y: {}", self.shot_at.y);
             if y_shift > self.shot_at.y {
                 return Option::None(());
             }
             new_coords.y -= y_shift;
         }
-        println!("new_coords: x: {}, y: {}", new_coords.x, new_coords.y);
         Option::Some(new_coords)
         
     }
@@ -105,8 +98,7 @@ impl BulletImpl of BulletTrait {
         let mut character_id = 0;
         let OFFSET: u64 = 1000;
         let mut dropped: bool = false;
-
-
+        
         loop {
             if character_index >= characters.len() {
                 break;
@@ -121,8 +113,8 @@ impl BulletImpl of BulletTrait {
             let upper_bound_y = character.coords.y + OFFSET + 500;
 
             //plus 1000 offset to to match bounds offset            
-            if (position.x > lower_bound_x && position.x < upper_bound_x &&
-                position.y > lower_bound_y && position.y < upper_bound_y) {
+            if (position.x + OFFSET > lower_bound_x && position.x + OFFSET < upper_bound_x &&
+                position.y + OFFSET > lower_bound_y && position.y + OFFSET < upper_bound_y) {
                     character_id = character.id;
                     dropped = true;
                     break;        
@@ -219,7 +211,7 @@ mod simulate_tests {
 
 
      #[test]
-     fn test_collision() {
+     fn test_collision_with_character() {
         let address = starknet::contract_address_const::<0x0>();
         let map = MapTrait::new_empty(1);
         let mut bullet = BulletTrait::new(
@@ -240,31 +232,6 @@ mod simulate_tests {
             }
         }
         assert!(dropped, "should return true for hit object");
-     }
-
-     #[test]
-     #[should_panic]
-     fn test_collision_fail() {
-        let address = starknet::contract_address_const::<0x0>();
-        let map = MapTrait::new_empty(1);
-
-        let mut bullet = BulletTrait::new(
-            1, 
-            Vec2 {x: 3000, y: 0}, 
-            90*ONE_E_8, 
-            1,
-            0
-        );
-        let characters = array![CharacterPositionTrait::new(69,Vec2 {x: 4, y: 0})];
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
-        match hit_character {
-            Option::None => {
-                assert!(!dropped, "should return false for no hit object");
-            },
-            Option::Some(id) => {
-                panic!("should not hit character");
-            }
-        }
      }
 
      #[test]

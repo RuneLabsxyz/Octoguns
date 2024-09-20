@@ -11,9 +11,11 @@ pub type SimulationResult = (Array<u32>, Array<u32>);
 pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>, map: @Map, step: u32) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
+
+    let mut cloned_bullets = bullets.clone();
     
     loop {
-        match bullets.pop_front() {
+        match cloned_bullets.pop_front() {
             Option::Some(mut bullet) => {
                 let (hit_character, dropped) = bullet.simulate(@character_positions, map, step);
                 match hit_character {
@@ -31,6 +33,7 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
         }
         
     };
+    println!("bullets: {}", bullets.len());
 
     (updated_bullets, dead_characters_ids)
 }

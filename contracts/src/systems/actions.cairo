@@ -63,7 +63,7 @@ mod actions {
 
             let mut bullets = get_all_bullets(world, session_id);
             
-            //start out of bounds so never reached in loop
+            //start out of bounds so never reached in loop if no shots
             let mut next_shot = 101;
             if moves.shots.len() > 0 {
                 next_shot = (*moves.shots.at(0)).step;
@@ -79,13 +79,16 @@ mod actions {
                     let shot = moves.shots.pop_front();
                     match shot {
                         Option::Some(s) => {
-                            bullets.append(BulletTrait::new(
+                            let bullet = BulletTrait::new(
                                                 world.uuid(), 
                                                 Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
                                                 s.angle, 
                                                 player_character_id,
                                                 step.try_into().unwrap()
-                            ));
+                            );
+                            bullets.append(bullet);
+                            println!("new bullet at index {}", sub_move_index);
+                            set!(world, (bullet));
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
                             }
@@ -96,7 +99,6 @@ mod actions {
 
                     }
                 }
-
 
                 //advance bullets + check collisions
                 let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, sub_move_index);
@@ -182,6 +184,8 @@ mod actions {
                     }
                 }
             };
+
+            println!("positions set");
 
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;

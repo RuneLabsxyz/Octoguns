@@ -2,7 +2,7 @@
 set -euo pipefail
 pushd $(dirname "$0")/..
 
-sozo migrate plan --wait
+sozo migrate plan
 
 sozo migrate apply --wait 
 
