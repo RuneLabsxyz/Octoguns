@@ -1,22 +1,17 @@
 <script lang="ts">
   import { dojoStore } from '$stores/dojoStore'
+  import { createEventDispatcher } from 'svelte'
 
   $: ({ clientComponents, torii, burnerManager, client } = $dojoStore)
 
   export let availableSessions
 
+  const dispatch = createEventDispatcher()
+
   $: pendingSessions = availableSessions
 
-  $: account = burnerManager.getActiveAccount()
-
-  async function joinSession(session: any) {
-    if (account) {
-      console.log('Joining session', session.value)
-      await client.start.join({ account: account, session_id: session.value })
-      window.location.href = `/game/${session.value}`
-    } else {
-      console.error('No active account found')
-    }
+  function onClick(session: any) {
+    dispatch('select', session)
   }
 </script>
 
@@ -29,7 +24,7 @@
         <p class="flex-grow text-left p-5">{session.value}</p>
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
-          on:click={() => joinSession(session)}
+          on:click={() => onClick(session)}
         >
           Join
         </button>

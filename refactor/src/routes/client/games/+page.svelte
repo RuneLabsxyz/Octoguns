@@ -6,6 +6,7 @@
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
+  import { goToSession, joinSession } from '$lib/game'
 
   let availableSessions: any = null
   let currentSessions: any = null
@@ -56,7 +57,10 @@
   {#if currentSessions && currentSessions.length > 0}
     <div class="pb-5 border-b-2 mb-5 border-gray-800">
       <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
-      <GameList availableSessions={currentSessions} />
+      <GameList
+        availableSessions={currentSessions}
+        on:select={(session) => goToSession(session.detail)}
+      />
     </div>
   {/if}
 
@@ -67,7 +71,10 @@
   >
     {#if availableSessions}
       <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
-      <GameList {availableSessions} />
+      <GameList
+        {availableSessions}
+        on:select={(session) => joinSession(session.detail)}
+      />
     {:else}
       <div class="self-center align-middle flex flex-col gap-2">
         <p>No games are currently available.</p>
