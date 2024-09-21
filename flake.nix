@@ -29,6 +29,7 @@
             nodejs
             dojo.torii
             bun
+            jq
           ];
 
           shellHook = ''
