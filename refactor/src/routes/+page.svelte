@@ -1,10 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import Background from '$lib/ui/Background.svelte'
   import Button from '$lib/ui/Button.svelte'
   import { isSetup } from '$stores/dojoStore'
 </script>
 
-<div class="wrapper">
+<Background />
+<div class="">
   <div class="flex flex-col justify-center items-center h-screen">
     <div
       class="flex justify-center items-center flex-col bg-white p-10 rounded-lg border-black border-4"

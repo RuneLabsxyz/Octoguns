@@ -37,6 +37,7 @@
   import { type SetupResult } from '$src/dojo/setup.js'
   import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
+  import Waiting from '$lib/ui/ingame/Waiting.svelte'
 
   export let data
   let gameId = data.gameId
@@ -187,6 +188,10 @@
     bulletRender.set([])
   }
 </script>
+
+{#if $gameState === 0}
+  <Waiting />
+{/if}
 
 <div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
   <Ui moveHandler={handleMove} />
