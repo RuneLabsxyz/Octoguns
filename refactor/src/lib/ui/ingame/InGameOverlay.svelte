@@ -51,7 +51,7 @@
     --size-x: 200px;
     z-index: -10;
     opacity: 0.5;
-    filter: invert(100%) contrast(50%) brightness(40%);
+    filter: contrast(70%) brightness(20%);
 
     background: url('/tiled-design.svg') repeat;
     background-size: var(--size-x);
