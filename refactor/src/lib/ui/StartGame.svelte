@@ -1,6 +1,9 @@
 <script lang="ts">
-  import { gameState, sessionId } from '$stores/gameStores'
+  import { gameState, sessionId, currentPlayerId } from '$stores/gameStores'
   import { dojoStore } from '$stores/dojoStore'
+  import { onMount } from 'svelte'
+  import { get } from 'svelte/store'
+  import SettingUp from './ingame/SettingUp.svelte'
 
   $: ({ clientComponents, torii, burnerManager, client } = $dojoStore)
 
@@ -11,19 +14,14 @@
       client.spawn.spawn({ account: account, session_id: $sessionId })
     }
   }
+
+  // On mount, if the game state is equals to 1 and you are the new player that just joined (player 2), spawn the characters.
+  $: if ($gameState === 1 && $currentPlayerId === 2) {
+    console.log('Spawning characters')
+    spawn()
+  }
 </script>
 
-{#if $gameState < 2}
-  <div class="flex justify-center items-center h-screen">
-    {#if $gameState == 0}
-      <h1 class="text-4xl font-bold">Waiting for another player</h1>
-    {:else if $gameState == 1}
-      <button
-        class="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-        on:click={spawn}
-      >
-        Spawn characters
-      </button>
-    {/if}
-  </div>
+{#if $gameState == 1}
+  <SettingUp />
 {/if}

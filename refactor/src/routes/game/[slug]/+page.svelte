@@ -19,6 +19,7 @@
     replayMode,
     mapObjects,
     isEnded,
+    currentPlayerId,
   } from '$stores/gameStores'
   import {
     playerStartCoords,
@@ -81,13 +82,32 @@
 
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
+      let isFirstPlayer = areAddressesEqual(
+        $sessionData.player1.toString(),
+        account.address
+      )
+      let isSecondPlayer = areAddressesEqual(
+        $sessionData.player2.toString(),
+        account.address
+      )
+
+      if (isFirstPlayer) {
+        currentPlayerId.set(1)
+      } else if (isSecondPlayer) {
+        currentPlayerId.set(2)
+      } else {
+        currentPlayerId.set(null)
+      }
+    })
+  }
+
+  $: if ($sessionMetaData) {
+    sessionMetaData.subscribe((data) => {
       isTurn =
         //is player 1 and it's 1s turn
-        (areAddressesEqual($sessionData.player1.toString(), account.address) &&
-          data.turn_count % 2 === 0) ||
+        ($currentPlayerId === 1 && data.turn_count % 2 === 0) ||
         //is player 2 and it's 2s turn
-        (areAddressesEqual($sessionData.player2.toString(), account.address) &&
-          data.turn_count % 2 === 1)
+        ($currentPlayerId === 2 && data.turn_count % 2 === 1)
       isTurnPlayer.set(isTurn)
     })
   }
