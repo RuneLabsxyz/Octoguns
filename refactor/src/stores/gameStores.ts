@@ -9,6 +9,7 @@ export const gameState = writable<number>()
 export const sessionId = writable<number>()
 export const isEnded = writable<boolean>(false)
 export const currentPlayerId = writable<number | null>(null)
+export const turnCount = writable<number>(0)
 
 //characters
 export const characterIds = writable<number[]>([])

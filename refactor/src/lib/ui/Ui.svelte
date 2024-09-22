@@ -22,6 +22,7 @@
   import { inPointerLock } from '$stores/cameraStores'
   import { get } from 'svelte/store'
   import StepBar from './StepBar.svelte'
+  import InGameOverlay from './ingame/InGameOverlay.svelte'
   export let moveHandler: any
 
   let isRecorded: boolean
@@ -62,11 +63,8 @@
 </script>
 
 <div class="pointer-events-auto" style="justify-content: space-between;">
-  <button
-    on:click={() => {
-      birdView.update((value) => !value)
-    }}>Switch view</button
-  >
+  <InGameOverlay />
+
   {#if isRecorded}
     <div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
@@ -107,5 +105,4 @@
 
   <StartGame />
   <YouWin />
-  <StepBar />
 </div>

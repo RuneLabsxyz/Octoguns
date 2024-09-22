@@ -12,11 +12,10 @@
     >
       {#if $currentPlayerId === 1}
         <h1 class="text-3xl font-bold">A player has joined !</h1>
-        <p>Preparing the arena...</p>
       {:else if $currentPlayerId === 2}
         <h1 class="text-3xl font-bold">Joining...</h1>
-        <p>Preparing the arena...</p>
       {/if}
+      <p>Preparing the arena...</p>
     </div>
   </div>
 </Overlay>

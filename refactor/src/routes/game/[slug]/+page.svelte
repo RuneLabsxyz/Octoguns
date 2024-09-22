@@ -20,6 +20,7 @@
     mapObjects,
     isEnded,
     currentPlayerId,
+    turnCount,
   } from '$stores/gameStores'
   import {
     playerStartCoords,
@@ -78,6 +79,10 @@
 
   $: if ($sessionData.state === 3) {
     isEnded.set(true)
+  }
+
+  $: if ($sessionMetaData) {
+    turnCount.set($sessionMetaData.turn_count)
   }
 
   $: if ($sessionMetaData) {
