@@ -1,9 +1,9 @@
 <script>
   import { cn } from '$lib/css/cn'
-  import Background from '../Background.svelte'
+  import Background from '$lib/ui/Background.svelte'
   import { slide } from 'svelte/transition'
 
-  export let important = false
+  export let color = ''
 </script>
 
 <div
@@ -19,11 +19,11 @@
 
     <Background
       class={cn('brightness-[20%] opacity-80 contrast-[70%]', {
-        'brightness-75': important,
+        'brightness-75': color != '',
       })}
       absolute={true}
       slow={true}
-      color={important ? '#65a30d' : ''}
+      {color}
     />
   </div>
 </div>

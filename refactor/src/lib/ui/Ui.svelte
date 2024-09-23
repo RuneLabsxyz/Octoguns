@@ -2,7 +2,7 @@
   import StartGame from './StartGame.svelte'
   import YouWin from './YouWin.svelte'
   import { birdView } from '$stores/cameraStores'
-  import { recordingMode, replayMode } from '$stores/gameStores'
+  import { isEnded, recordingMode, replayMode } from '$stores/gameStores'
   import {
     currentSubMove,
     recordedMove,
@@ -28,6 +28,7 @@
   import WaitingForTurn from './ingame/banner/WaitingForTurn.svelte'
   import Button from './Button.svelte'
   import { Eraser, Repeat, Send } from 'lucide-svelte'
+  import GameFinished from './ingame/GameFinished.svelte'
   export let moveHandler: any
 
   let isRecorded: boolean
@@ -39,7 +40,7 @@
       justRecorded = true
       setTimeout(() => {
         justRecorded = false
-      }, 1000)
+      }, 5000)
     }
     isRecorded = $isMoveRecorded
   }
@@ -78,38 +79,41 @@
 </script>
 
 <div class="pointer-events-auto" style="justify-content: space-between;">
-  <InGameOverlay />
+  {#if $isEnded}
+    <GameFinished />
+  {:else}
+    <InGameOverlay />
 
-  {#if isRecorded && !$replayMode}
-    <Banner>
-      <div class="flex flex-col items-center">
-        <h1 class="text-4xl font-black text-white">Time is up!</h1>
-        <div class="flex justify-around mt-4">
-          <Button
-            on:click={reset}
-            class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
-          >
-            <Eraser class="inline-block" />
-            <div>Reset</div>
-          </Button>
-          <Button
-            on:click={setReplayMode}
-            class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
-          >
-            <Repeat class="inline-block" />
-            <div>Replay</div>
-          </Button>
-          <Button
-            on:click={moveHandler}
-            class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
-          >
-            <Send class="inline-block" />
-            Submit Move
-          </Button>
+    {#if isRecorded && !$replayMode}
+      <Banner>
+        <div class="flex flex-col items-center">
+          <h1 class="text-4xl font-black text-white">Time is up!</h1>
+          <div class="flex justify-around mt-4">
+            <Button
+              on:click={reset}
+              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+            >
+              <Eraser class="inline-block" />
+              <div>Reset</div>
+            </Button>
+            <Button
+              on:click={setReplayMode}
+              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+            >
+              <Repeat class="inline-block" />
+              <div>Replay</div>
+            </Button>
+            <Button
+              on:click={moveHandler}
+              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+            >
+              <Send class="inline-block" />
+              Submit Move
+            </Button>
+          </div>
         </div>
-      </div>
-    </Banner>
-    <!--<div
+      </Banner>
+      <!--<div
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
     >
       <button
@@ -135,24 +139,24 @@
 
     </div>
           -->
-  {:else if !$recordingMode && !$replayMode && $isTurnPlayer && !justRecorded}
-    <Banner important={true}>
-      <div class="flex flex-col items-center">
-        <h1 class="text-4xl font-black text-white">Your turn!</h1>
-        <div class="flex justify-around mt-4">
-          <Button
-            on:click={setRecordingMode}
-            class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
-          >
-            Play
-          </Button>
+    {:else if !$recordingMode && !$replayMode && $isTurnPlayer && !justRecorded}
+      <Banner color="#65a30d">
+        <div class="flex flex-col items-center">
+          <h1 class="text-4xl font-black text-white">Your turn!</h1>
+          <div class="flex justify-around mt-4">
+            <Button
+              on:click={setRecordingMode}
+              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+            >
+              Play
+            </Button>
+          </div>
         </div>
-      </div>
-    </Banner>
-  {:else if !$isTurnPlayer || justRecorded}
-    <WaitingForTurn />
-  {/if}
+      </Banner>
+    {:else if !$isTurnPlayer || justRecorded}
+      <WaitingForTurn />
+    {/if}
 
-  <StartGame />
-  <YouWin />
+    <StartGame />
+  {/if}
 </div>
