@@ -42,7 +42,8 @@
   let numCameras = 1
   let birdViewCamera: any
 
-  let characterId: number = $playerCharacterId
+  let characterId: number = 0
+  $: characterId = $playerCharacterId
 
   let hasShotInCurrentRecording = writable(false)
 
