@@ -1,6 +1,6 @@
 <script lang="ts">
   import { currentPlayerId } from '$src/stores/gameStores'
-  import Background from '../Background.svelte'
+  import Background from '$lib/ui/Background.svelte'
   import Overlay from './Overlay.svelte'
 </script>
 

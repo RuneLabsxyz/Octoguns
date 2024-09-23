@@ -54,34 +54,37 @@
     <span class="flex-grow"></span>
     <Button href="/client/games/create">+ New Game</Button>
   </div>
-  {#if currentSessions && currentSessions.length > 0}
-    <div class="pb-5 border-b-2 mb-5 border-gray-800">
-      <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
-      <GameList
-        availableSessions={currentSessions}
-        on:select={(session) => goToSession(session.detail)}
-      />
-    </div>
-  {/if}
-
-  <div
-    class={cn('flex flex-col h-full ', {
-      'justify-center': !availableSessions,
-    })}
-  >
-    {#if availableSessions && availableSessions.length > 0}
-      <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
-      <GameList
-        {availableSessions}
-        on:select={(session) => joinSession(session.detail)}
-      />
-    {:else}
-      <div class="self-center align-middle flex flex-col gap-2">
-        <p>No games are currently available.</p>
-        <Button href="/client/games/create">+ New Game</Button>
+  <div class="overflow-y-auto overflow-x-clip h-full">
+    {#if currentSessions && currentSessions.length > 0}
+      <div class="pb-5 border-b-2 mb-5 border-gray-800">
+        <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
+        <GameList
+          availableSessions={currentSessions}
+          on:select={(session) => goToSession(session.detail)}
+        />
       </div>
     {/if}
+
+    <div
+      class={cn('flex flex-col', {
+        'justify-center': !availableSessions,
+      })}
+    >
+      {#if availableSessions && availableSessions.length > 0}
+        <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
+        <GameList
+          {availableSessions}
+          on:select={(session) => joinSession(session.detail)}
+        />
+      {:else}
+        <div class="self-center align-middle flex flex-col gap-2">
+          <p>No games are currently available.</p>
+          <Button href="/client/games/create">+ New Game</Button>
+        </div>
+      {/if}
+    </div>
   </div>
+
   <!--
   
     <div class="flex justify-between p-4 fixed bottom-0 left-0 right-0 bg-white">
