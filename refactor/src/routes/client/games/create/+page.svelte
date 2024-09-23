@@ -5,9 +5,12 @@
   import { goto } from '$app/navigation'
   import { type Entity, getComponentValue } from '@dojoengine/recs'
   import MiniMap from '$lib/MiniMap.svelte'
+  import Button from '$lib/ui/Button.svelte'
+  import { cn } from '$lib/css/cn'
 
   let loadingToGame = false
   let playerEntity: Entity
+  let localSelectedMap: number | null = null
   let mapCount: number = 0
 
   $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
@@ -34,6 +37,9 @@
   }
 
   $: console.log('maps', maps)
+  $: {
+    localSelectedMap = $selectedMap
+  }
 
   $: if ($player) {
     let lastPlayerGameValue =
@@ -47,6 +53,12 @@
     if (loadingToGame) {
       goto(`/game/${lastPlayerGameValue}`)
     }
+  }
+
+  function selectMap(map_id: number) {
+    selectedMap.set(map_id)
+    localSelectedMap = map_id
+    console.log('selected map', map_id)
   }
 
   async function createGame() {
@@ -64,46 +76,38 @@
   }
 </script>
 
-<div class="text-center font-Block text-7xl mb-4">SeLeCt a MaP</div>
+<div class={cn('flex flex-col h-full')}>
+  <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
+    <h1 class="text-3xl font-bold">Select a map</h1>
+    <span class="flex-grow"></span>
+    <Button on:click={createGame}>Create game</Button>
+  </div>
 
-<div class="map-grid">
-  {#each maps as map}
-    <div class="mini-map-container">
-      <MiniMap {map} />
-    </div>
-  {/each}
-</div>
-
-<div class="flex justify-between p-4 fixed bottom-0 left-0 right-0">
-  <button
-    class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
-    on:click={goBack}
+  <div
+    class="grid grid-fill justify-around auto-cols-min px-3 overflow-auto overflow-x-hidden"
   >
-    Back
-  </button>
-  <button
-    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-    on:click={createGame}
-  >
-    Create Game
-  </button>
+    {#each maps as map}
+      <Button
+        class="w-fit h-fit"
+        selected={localSelectedMap === map.map_id}
+        on:click={() => selectMap(map.map_id)}
+      >
+        <MiniMap {map} />
+      </Button>
+    {/each}
+  </div>
 </div>
 
 <style>
+  .grid-fill {
+    grid-template-columns: repeat(auto-fill, 330px);
+  }
+
   .map-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 16px;
     padding: 16px;
-  }
-
-  .mini-map-container {
-    width: 300px;
-    height: 300px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f0f0f0;
   }
 
   .flex {
@@ -132,9 +136,5 @@
 
   .right-0 {
     right: 0;
-  }
-
-  button {
-    cursor: pointer;
   }
 </style>
