@@ -8,6 +8,8 @@ export const rendererStore = writable<WebGLRenderer>()
 export const gameState = writable<number>()
 export const sessionId = writable<number>()
 export const isEnded = writable<boolean>(false)
+export const currentPlayerId = writable<number | null>(null)
+export const turnCount = writable<number>(0)
 
 //characters
 export const characterIds = writable<number[]>([])
@@ -16,6 +18,9 @@ export const enemyCharacterId = writable<number>(1)
 //true for recording, false for replaying
 export const recordingMode = writable<boolean>(false)
 export const replayMode = writable<boolean>(false)
+
+// Holds informations about if you are the second player or not
+export const isSecondPlayer = writable<boolean>(false)
 
 export const recordedMove = writable<TurnData>({
   sub_moves: [],

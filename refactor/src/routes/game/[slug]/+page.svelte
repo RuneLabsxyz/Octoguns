@@ -19,6 +19,8 @@
     replayMode,
     mapObjects,
     isEnded,
+    currentPlayerId,
+    turnCount,
   } from '$stores/gameStores'
   import {
     playerStartCoords,
@@ -37,6 +39,7 @@
   import { type SetupResult } from '$src/dojo/setup.js'
   import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
+  import Waiting from '$lib/ui/ingame/Waiting.svelte'
 
   export let data
   let gameId = data.gameId
@@ -79,14 +82,37 @@
   }
 
   $: if ($sessionMetaData) {
+    turnCount.set($sessionMetaData.turn_count)
+  }
+
+  $: if ($sessionMetaData) {
+    sessionMetaData.subscribe((data) => {
+      let isFirstPlayer = areAddressesEqual(
+        $sessionData.player1.toString(),
+        account.address
+      )
+      let isSecondPlayer = areAddressesEqual(
+        $sessionData.player2.toString(),
+        account.address
+      )
+
+      if (isFirstPlayer) {
+        currentPlayerId.set(1)
+      } else if (isSecondPlayer) {
+        currentPlayerId.set(2)
+      } else {
+        currentPlayerId.set(null)
+      }
+    })
+  }
+
+  $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
       isTurn =
         //is player 1 and it's 1s turn
-        (areAddressesEqual($sessionData.player1.toString(), account.address) &&
-          data.turn_count % 2 === 0) ||
+        ($currentPlayerId === 1 && data.turn_count % 2 === 0) ||
         //is player 2 and it's 2s turn
-        (areAddressesEqual($sessionData.player2.toString(), account.address) &&
-          data.turn_count % 2 === 1)
+        ($currentPlayerId === 2 && data.turn_count % 2 === 1)
       isTurnPlayer.set(isTurn)
     })
   }
@@ -187,6 +213,10 @@
     bulletRender.set([])
   }
 </script>
+
+{#if $gameState === 0}
+  <Waiting />
+{/if}
 
 <div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
   <Ui moveHandler={handleMove} />
