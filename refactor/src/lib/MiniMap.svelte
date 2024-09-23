@@ -1,5 +1,7 @@
 <script lang="ts">
   import { selectedMap } from '$stores/clientStores'
+  import { cn } from './css/cn'
+  import Button from './ui/Button.svelte'
 
   export let map: {
     map_id: number
@@ -22,11 +24,7 @@
   }
 </script>
 
-<button
-  class="minimap"
-  class:selected={$selectedMap === map.map_id}
-  on:click={selectMap}
->
+<div class="minimap">
   {#each coordsArray as coord}
     <div
       class="block"
@@ -35,7 +33,7 @@
       ) + 1}"
     ></div>
   {/each}
-</button>
+</div>
 
 <style>
   .minimap {
@@ -43,20 +41,15 @@
     grid-template-columns: repeat(25, 10px);
     grid-template-rows: repeat(25, 10px);
     gap: 1px;
-    background-color: #333;
     position: relative;
     cursor: pointer;
     border: none;
     padding: 0;
     background: none;
     box-sizing: border-box;
-    margin: 20px auto;
+    width: max-content;
+    height: max-content;
   }
-
-  .minimap.selected {
-    border: 2px solid red;
-  }
-
   .block {
     width: 10px;
     height: 10px;

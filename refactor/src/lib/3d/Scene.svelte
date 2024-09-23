@@ -3,7 +3,12 @@
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
-  import { recordingMode, replayMode, recordedMove, rendererStore } from '$stores/gameStores'
+  import {
+    recordingMode,
+    replayMode,
+    recordedMove,
+    rendererStore,
+  } from '$stores/gameStores'
   import {
     handleKeyDown,
     handleKeyUp,
@@ -30,13 +35,15 @@
   import { writable } from 'svelte/store'
 
   import { GridHelper } from 'three/src/helpers/GridHelper.js'
+  import { RECORDING_FRAME_LIMIT } from '$lib/consts'
 
   let { renderer, scene } = useThrelte()
   let cameras: PerspectiveCamera[] = []
   let numCameras = 1
   let birdViewCamera: any
 
-  let characterId: number = $playerCharacterId
+  let characterId: number = 0
+  $: characterId = $playerCharacterId
 
   let hasShotInCurrentRecording = writable(false)
 
@@ -74,6 +81,10 @@
       }
     }
     if ($replayMode) {
+      if ($frameCounter > RECORDING_FRAME_LIMIT) {
+        console.log('eyyy, tf')
+        replayMode.set(false)
+      }
       replayMove($recordedMove, characterId)
       replayShot($recordedMove, cameras[0])
     }
