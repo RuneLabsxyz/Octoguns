@@ -25,7 +25,6 @@
       ref.lookAt(0, 1, 0)
     }}
   >
-    <!-- Position the hand 0.5 units in front of the camera -->
     <Hand position={[0.1, -0.16, -0.6]} rotation={[0, Math.PI, 0]} />
   </T.PerspectiveCamera>
 {/each}
