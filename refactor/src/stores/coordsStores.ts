@@ -24,28 +24,43 @@ export interface Coords {
 export const playerStartCoords = writable<CoordsStore>({})
 export const playerCharacterCoords = writable<CoordsStore>({})
 export const enemyCharacterCoords = writable<CoordsStore>({})
-  
-  function normalizeCoords(coords: Coords): Coords {
+
+function normalizeCoords(coords: Coords): Coords {
+  return {
+    x: coords.x / 1000 - 50,
+    y: coords.y / 1000 - 50,
+  }
+}
+
+export function setPlayerCharacterCoords(
+  key: number,
+  coords: { x: number; y: number }
+): void {
+  if (coords.x > 100) {
+    coords = normalizeCoords(coords)
+  }
+  playerCharacterCoords.update((store) => {
     return {
-      x: coords.x / 1000 - 50,
-      y: coords.y / 1000 - 50,
+      ...store,
+      [key]: coords,
     }
+  })
+}
+
+//used for updating the stores based on the onchain data, so coords are normalized and both start and render stores are updated
+export function setBulletCoords(coords: BulletCoords): void {
+  let normalized_coords = {
+    ...coords,
+    coords: normalizeCoords(coords.coords),
+    angle: inverseMapAngle(coords.angle),
   }
-  
-  export function setPlayerCharacterCoords(
-    key: number,
-    coords: { x: number; y: number }
-  ): void {
-    if (coords.x > 100) {
-      coords = normalizeCoords(coords)
-    }
-    playerCharacterCoords.update((store) => {
-      return {
-        ...store,
-        [key]: coords,
-      }
-    })
-  }
+  bulletRender.update((store) => {
+    return [...store, normalized_coords]
+  })
+  bulletStart.update((store) => {
+    return [...store, normalized_coords]
+  })
+}
 
   //used for updating the stores based on the onchain data, so coords are normalized and both start and render stores are updated
   export function setBulletCoords(coords: BulletCoords): void {
@@ -56,20 +71,12 @@ export const enemyCharacterCoords = writable<CoordsStore>({})
     bulletStart.update((store) => {
       return [...store, coords]
     })
+
   }
-  
-  export function setEnemyCharacterCoords(
-    key: number,
-    coords: { x: number; y: number }
-  ): void {
-    if (coords.x > 100) {
-      coords = normalizeCoords(coords)
+  enemyCharacterCoords.update((store) => {
+    return {
+      ...store,
+      [key]: coords,
     }
-    enemyCharacterCoords.update((store) => {
-      return {
-        ...store,
-        [key]: coords,
-      }
-    })
-  }
-  
+  })
+}

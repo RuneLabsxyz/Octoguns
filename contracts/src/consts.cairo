@@ -3,3 +3,4 @@ pub const GLOBAL_KEY: u32 = 0;
 
 pub const BULLET_SPEED: u64 = 200;
 pub const MOVE_SPEED: u64 = 400;
+

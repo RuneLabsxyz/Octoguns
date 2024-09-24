@@ -24,7 +24,7 @@ mod actions {
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: TurnMove) {
-            assert!(moves.sub_moves.len() <= 100, "Invalid number of moves");
+            assert!(moves.sub_moves.len() <= 50, "Invalid number of moves");
             assert!(moves.shots.len() <= 3, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
@@ -52,9 +52,7 @@ mod actions {
                     player_character_id = session_meta.p2_character;
                     opp_character_id = session_meta.p1_character;
                 },
-                _ => {
-                    panic!("???");
-                }
+                _ => { panic!("???"); }
             }
 
             let mut player_position = get!(world, player_character_id, (CharacterPosition));
@@ -64,6 +62,7 @@ mod actions {
             let mut bullets = get_all_bullets(world, session_id);
             
             //start out of bounds so never reached in loop if no shots
+
             let mut next_shot = 101;
             if moves.shots.len() > 0 {
                 next_shot = (*moves.shots.at(0)).step;
@@ -89,14 +88,13 @@ mod actions {
                             bullets.append(bullet);
                             println!("new bullet at index {}", sub_move_index);
                             set!(world, (bullet));
+
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
                             }
                         },
-                        Option::None => {
-                            //shouldn't reach
+                        Option::None => { //shouldn't reach
                         }
-
                     }
                 }
 
@@ -105,6 +103,7 @@ mod actions {
                 updated_bullet_ids = new_bullets;
 
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
+
                 positions = new_positions;
 
                 //get next sub_move
@@ -128,20 +127,18 @@ mod actions {
                             }
                             break;
                         },
-                        _ => {
-                        }
+                        _ => {}
                     }
                 }
 
-                
-
                 match moves.sub_moves.pop_front() {
                     Option::Some(mut vec) => {
-                        //check move valid 
-                        if !check_is_valid_move(vec){
-                            vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
+                        //check move valid
+                        if !check_is_valid_move(vec) {
+                            vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
                         }
                         //apply move
+                        
                         if vec.xdir{
                             player_position.coords.x = min(100_000, player_position.coords.x + vec.x.try_into().unwrap()); 
                         }
@@ -157,31 +154,23 @@ mod actions {
                             vec.y = min( vec.y, player_position.coords.y.into() );
                             player_position.coords.y -= vec.y.try_into().unwrap();
                         }
-
-
                     },
-                    Option::None => {
-                    }
-
+                    Option::None => {}
                 }
                 positions = array![player_position, opp_position];
 
-                sub_move_index+=1;
-
+                sub_move_index += 1;
                 //END MOVE LOOP
             };
-
             //set new positions
-            loop { 
+            loop {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
-                        println!("setting new positions: x: {} y: {}" , pos.coords.x, pos.coords.y);
+                        println!("setting new positions: x: {} y: {}", pos.coords.x, pos.coords.y);
                         set!(world, (pos));
                     },
-                    Option::None => {
-                        break;
-                    }
+                    Option::None => { break; }
                 }
             };
 
@@ -190,8 +179,6 @@ mod actions {
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
             set!(world, (session, session_meta));
-
-
         }
     }
 }
