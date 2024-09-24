@@ -158,7 +158,7 @@ export function simulate() {
           },
         })
       }
-      if (isInsideWall) {
+      if (isInsideWall || isOutsideMap) {
         splat.update((splat) => {
           splat.push({ x: newX, y: newY })
           return splat
