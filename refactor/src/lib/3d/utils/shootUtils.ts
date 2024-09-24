@@ -39,8 +39,8 @@ export function shoot(camera: PerspectiveCamera) {
     return rm
   })
 
-  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10**8))
-  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10**8))
+  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8))
+  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10 ** 8))
 
   const cameraPosition = camera.position
   const newBullet = {
@@ -52,7 +52,7 @@ export function shoot(camera: PerspectiveCamera) {
       x: cameraPosition.x,
       y: cameraPosition.z,
     },
-    velocity: {x: vx, y: vy},
+    velocity: { x: vx, y: vy },
 
     shot_by: get(isTurnPlayer) ? 1 : 2,
     id: 0,
@@ -70,10 +70,8 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 
     console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 
-
-    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10**8))
-    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10**8))
-
+    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8))
+    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8))
 
     frameCounter.update((fc) => fc + 1)
 
@@ -87,7 +85,7 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
         x: cameraPosition.x,
         y: cameraPosition.z,
       },
-      velocity: {x: vx, y: vy},
+      velocity: { x: vx, y: vy },
       id: 0,
       //TODO: Fix this
       shot_by: get(isTurnPlayer) ? 1 : 2,
@@ -107,8 +105,8 @@ export function simulate() {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
       console.log(bullet)
-      const newX = bullet.coords.x + bullet.velocity.x/30
-      const newY = bullet.coords.y + bullet.velocity.y/30
+      const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
+      const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
 
       console.log(newX, newY)
       newBullets.push({
