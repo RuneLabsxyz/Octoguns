@@ -144,6 +144,7 @@
       )
       bulletStore.subscribe((bullet) => {
         console.log('bullet', bullet)
+        if (!bullet) return
         let v = bullet.velocity
         let coords = getBulletPosition(
           bullet,
