@@ -12,10 +12,9 @@
       class="flex justify-center items-center flex-col bg-white p-10 rounded-lg border-black border-4"
     >
       <div class="text-9xl">
-        <h1 class="font-Block">OCTO</h1>
-        <h2 class="font-Block">GUNS</h2>
+        <img src="/logos/LOGO 2.svg" alt="OCTOGUNS" width="300" height="300" />
       </div>
-      <div class="mt-8">
+      <div>
         {#if $isSetup}
           <Button on:click={() => goto('/client/games')}>Play</Button>
         {:else}
