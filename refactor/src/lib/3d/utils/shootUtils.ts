@@ -1,4 +1,4 @@
-import { frameCounter, recordedMove } from '$stores/gameStores'
+import { frameCounter, recordedMove, mapObjects } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
@@ -9,6 +9,7 @@ import {
   bulletStart,
   bulletInitialPosition,
 } from '$stores/coordsStores'
+import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 import { BULLET_SPEED } from '$lib/consts'
@@ -108,22 +109,61 @@ export function resetBullets() {
 }
 
 export function simulate() {
-  //update temp / new bullets
+  // Extract wall coordinates from mapObjects
+  const wallCoords = get(mapObjects).objects.map((index) => {
+    //@ts-ignore
+    let i = index.value
+    let x = (i % 25) * 4 + 2 - 50
+    let y = Math.floor(i / 25) * 4 + 2 - 50
+    return { x, y }
+  })
+
+  // Define the boundaries of the map
+  const mapBoundary = {
+    minX: -50,
+    maxX: 50,
+    minY: -50,
+    maxY: 50,
+  }
+
+  // Update temp / new bullets
   bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
-      console.log(bullet)
       const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
       const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
 
-      console.log(newX, newY)
-      newBullets.push({
-        ...bullet,
-        coords: {
-          x: newX,
-          y: newY,
-        },
-      })
+      // Check if the new bullet position is inside any wall
+      const isInsideWall = wallCoords.some(
+        (wall) =>
+          newX >= wall.x &&
+          newX <= wall.x + 4 &&
+          newY >= wall.y &&
+          newY <= wall.y + 4
+      )
+
+      // Check if the bullet is outside the map boundaries
+      const isOutsideMap =
+        newX < mapBoundary.minX ||
+        newX > mapBoundary.maxX ||
+        newY < mapBoundary.minY ||
+        newY > mapBoundary.maxY
+
+      if (!isInsideWall && !isOutsideMap) {
+        newBullets.push({
+          ...bullet,
+          coords: {
+            x: newX,
+            y: newY,
+          },
+        })
+      }
+      if (isInsideWall || isOutsideMap) {
+        splat.update((splat) => {
+          splat.push({ x: newX, y: newY })
+          return splat
+        })
+      }
     })
     return newBullets
   })
