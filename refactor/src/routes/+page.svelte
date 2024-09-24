@@ -12,7 +12,7 @@
       class="flex justify-center items-center flex-col bg-white p-10 rounded-lg border-black border-4"
     >
       <div class="text-9xl">
-        <img src="/logos/LOGO 2.svg" alt="OCTOGUNS" width="300" height="300" />
+        <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
       </div>
       <div>
         {#if $isSetup}
