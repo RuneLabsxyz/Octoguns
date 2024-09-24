@@ -3,7 +3,7 @@
   import { onMount } from 'svelte'
   import type { BulletCoords } from '$stores/coordsStores'
   import type { BufferGeometry, Points } from 'three'
-  import { Color } from 'three'
+  import { Color, Vector3 } from 'three'
 
   export let bullet: BulletCoords
   export let initialPosition: BulletCoords | undefined
@@ -15,13 +15,15 @@
 
   $: x = bullet.coords.x
   $: y = bullet.coords.y
-  $: baseColor = bullet.shot_by === 2 ? 'red' : 'blue'
 
   $: initialX = initialPosition?.coords.x ?? x
   $: initialY = initialPosition?.coords.y ?? y
 
   $: length = Math.sqrt((x - initialX) ** 2 + (y - initialY) ** 2)
   $: count = Math.floor(length / trailSpacing)
+
+  // Calculate direction vector
+  $: direction = new Vector3(x - initialX, 0, y - initialY).normalize()
 
   // Function to generate random red shades
   function getRandomRedShade() {
@@ -101,8 +103,23 @@
   </T.Points>
 
   <!-- Current bullet position -->
-  <T.Mesh position={[x, 1, y]} scale={0.3}>
-    <T.SphereGeometry />
-    <T.MeshStandardMaterial {baseColor} />
-  </T.Mesh>
+  <T.Group
+    position={[x, 1, y]}
+    rotation={[
+      Math.PI / 2,
+      0,
+      Math.atan2(direction.z, direction.x) - Math.PI / 2,
+    ]}
+  >
+    <!-- Bullet body (cylinder) -->
+    <T.Mesh position={[0, -0.15, 0]}>
+      <T.CylinderGeometry args={[0.1, 0.1, 0.3, 16]} />
+      <T.MeshStandardMaterial color="gray" />
+    </T.Mesh>
+    <!-- Bullet tip (cone) -->
+    <T.Mesh position={[0, 0.1, 0]}>
+      <T.ConeGeometry args={[0.1, 0.2, 16]} />
+      <T.MeshStandardMaterial color="darkgray" />
+    </T.Mesh>
+  </T.Group>
 </T.Group>
