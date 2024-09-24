@@ -39,13 +39,21 @@ export function shoot(camera: PerspectiveCamera) {
     return rm
   })
 
+  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10**8))
+  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10**8))
+
   const cameraPosition = camera.position
   const newBullet = {
     coords: {
       x: cameraPosition.x,
       y: cameraPosition.z,
     },
-    angle: inverseMapAngle(direction / 10 ** 8),
+    shot_at: {
+      x: cameraPosition.x,
+      y: cameraPosition.z,
+    },
+    velocity: {x: vx, y: vy},
+
     shot_by: get(isTurnPlayer) ? 1 : 2,
     id: 0,
   }
@@ -62,6 +70,11 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 
     console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 
+
+    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10**8))
+    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10**8))
+
+
     frameCounter.update((fc) => fc + 1)
 
     const cameraPosition = camera.position
@@ -70,7 +83,11 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
         x: cameraPosition.x,
         y: cameraPosition.z,
       },
-      angle: shot.angle,
+      shot_at: {
+        x: cameraPosition.x,
+        y: cameraPosition.z,
+      },
+      velocity: {x: vx, y: vy},
       id: 0,
       //TODO: Fix this
       shot_by: get(isTurnPlayer) ? 1 : 2,
@@ -85,16 +102,14 @@ export function resetBullets() {
 }
 
 export function simulate() {
-  const speed = BULLET_SPEED / 3
-
   //update temp / new bullets
   bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
       console.log(bullet)
-      const angleInRadians = THREE.MathUtils.degToRad(bullet.angle)
-      const newX = bullet.coords.x + speed * Math.cos(angleInRadians)
-      const newY = bullet.coords.y - speed * Math.sin(angleInRadians)
+      const newX = bullet.coords.x + bullet.velocity.x/30
+      const newY = bullet.coords.y + bullet.velocity.y/30
+
       console.log(newX, newY)
       newBullets.push({
         ...bullet,

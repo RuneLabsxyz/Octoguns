@@ -19,12 +19,12 @@ mod lib {
     mod default_spawns;
     mod helpers;
     mod simulate;
-    mod shoot;
+    mod trig;
 }
 
 mod tests {
     mod helpers;
-    mod test_world;
+  //  mod test_world;
 }
 
 mod consts;

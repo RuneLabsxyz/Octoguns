@@ -1,8 +1,8 @@
 
 #[derive(Copy, Drop, Serde, Introspect)]
 struct Vec2 {
-    x: u32,
-    y: u32,
+    x: u64,
+    y: u64,
 } 
 
 #[derive(Copy, Drop, Serde, Introspect)]
@@ -19,8 +19,8 @@ struct TurnMove {
 
 #[derive(Copy, Drop, Serde, Introspect)]
 struct IVec2 {
-    x: u32,
-    y: u32,
+    x: u64,
+    y: u64,
     xdir: bool,
     ydir: bool
 }

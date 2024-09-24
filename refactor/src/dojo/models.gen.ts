@@ -25,21 +25,47 @@ export const Vec2Definition = {
   y: RecsType.Number,
 }
 
+
+// Type definition for `octoguns::types::IVec2` struct
+export interface IVec2 {
+  x: Number;
+  y: Number;
+  xdir: Boolean;
+  ydir: Boolean;
+  
+}
+
+export const IVec2Definition = {
+  x: RecsType.Number,
+  y: RecsType.Number,
+  xdir: RecsType.Boolean,
+  ydir: RecsType.Boolean,
+  
+};
+
+export const Vec2Definition = {
+  x: RecsType.Number,
+  y: RecsType.Number,
+}
+
+
 // Type definition for `octoguns::models::bullet::Bullet` struct
 export interface Bullet {
-  bullet_id: Number
-  coords: Vec2
-  speed: Number
-  angle: Number
-  shot_by: Number
+  bullet_id: Number;
+  shot_step: Number;
+  shot_by: Number;
+  shot_at: Vec2;
+  velocity: IVec2;
+  
 }
 export const BulletDefinition = {
   bullet_id: RecsType.Number,
-  coords: Vec2Definition,
-  speed: RecsType.Number,
-  angle: RecsType.Number,
+  shot_step: RecsType.Number,
   shot_by: RecsType.Number,
-}
+  shot_at: Vec2Definition,
+  velocity: IVec2Definition,
+  
+};
 
 // Type definition for `core::byte_array::ByteArray` struct
 export interface ByteArray {
@@ -213,24 +239,25 @@ export function defineContractComponents(world: World) {
     // Model definition for `octoguns::models::bullet::Bullet` model
     Bullet: (() => {
       return defineComponent(
-        world,
-        {
-          bullet_id: RecsType.Number,
-          coords: Vec2Definition,
-          speed: RecsType.Number,
-          angle: RecsType.Number,
-          shot_by: RecsType.Number,
-        },
-        {
-          metadata: {
-            namespace: 'octoguns',
-            name: 'Bullet',
-            types: ['u32', 'u32', 'u64', 'u32'],
-            customTypes: ['Vec2'],
+          world,
+          {
+              bullet_id: RecsType.Number,
+              shot_step: RecsType.Number,
+              shot_by: RecsType.Number,
+              shot_at: Vec2Definition,
+              velocity: IVec2Definition,
+
           },
-        }
-      )
-    })(),
+          {
+              metadata: {
+                  namespace: "octoguns",
+                  name: "Bullet",
+                  types: ["u32", "u16", "u32"],
+                  customTypes: ["Vec2", "IVec2"],
+              },
+          }
+      );
+  })(),
 
     // Model definition for `octoguns::models::characters::CharacterModel` model
     CharacterModel: (() => {

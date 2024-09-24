@@ -1,6 +1,8 @@
-import { Vector3, Quaternion, Euler, PerspectiveCamera } from 'three'
-import * as THREE from 'three'
-import { SCALING_FACTOR, SUBMOVE_SCALE } from '$lib/consts'
+import { Vector3, Quaternion, Euler, PerspectiveCamera } from "three";
+import * as THREE from "three";
+import { SCALING_FACTOR, SUBMOVE_SCALE } from "$lib/consts";
+import { type Bullet } from "../dojo/models.gen";
+
 
 export function areAddressesEqual(address1: string, address2: string): boolean {
   const bigIntAddress1 = BigInt(address1)
@@ -101,3 +103,22 @@ export function inverseMapAngle(angle: number): number {
 
   return originalDegrees
 }
+
+export function getBulletPosition(bullet: Bullet, step: number) {
+  let vx = parseInt(bullet.velocity.x.toString()) / 1000
+  let vy = parseInt(bullet.velocity.y.toString()) / 1000
+  //@ts-ignore
+  let x = parseInt(bullet.shot_at.x.toString()) / 1000
+  //@ts-ignore
+  let y = parseInt(bullet.shot_at.y.toString()) / 1000
+
+  let x_dir = bullet.velocity.xdir ? 1 : -1
+  let y_dir = bullet.velocity.ydir ? 1 : -1
+
+  let new_x = x + (vx * step * x_dir)
+  let new_y = y + (vy * step * y_dir)
+
+  return {x: new_x - 50, y: new_y - 50}
+}
+
+
