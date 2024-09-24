@@ -24,14 +24,6 @@ Command: npx @threlte/gltf@2.0.3 container.glb --transform
         material.opacity = 0.8
       }
     }
-
-    // Force shadow receive on glass
-    gltf.scene.traverse((obj) => {
-      if (obj.castShadow !== undefined) {
-        obj.castShadow = true
-        obj.receiveShadow = true
-      }
-    })
   })
 </script>
 
