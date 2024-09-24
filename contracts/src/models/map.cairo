@@ -1,5 +1,6 @@
 use octoguns::types::Vec2;
 use starknet::ContractAddress;
+use octoguns::types::MapObjects;
 
 #[derive(Clone, Drop, Serde)]
 #[dojo::model]
@@ -11,8 +12,8 @@ pub struct Map {
 
 #[generate_trait]
 impl MapImpl of MapTrait {
-    fn new(map_id: u32, map_objects: Array<u16>) -> Map {
-        Map {map_id, map_objects}
+    fn new(map_id: u32, map_objects: MapObjects) -> Map {
+        Map {map_id, map_objects: map_objects.objects}
     }
 
     fn new_empty(map_id: u32) -> Map {

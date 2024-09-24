@@ -17,24 +17,31 @@
     frameCounter,
     recordingMode,
     replayMode,
-    mapObjects
+    mapObjects,
+    isEnded,
+    currentPlayerId,
+    turnCount,
   } from '$stores/gameStores'
-  import { 
-    playerStartCoords, 
-    bulletStart, 
+  import {
+    playerStartCoords,
+    bulletStart,
     bulletRender,
+    bulletInitialPosition,
+    setBulletInitialPosition,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
-    setBulletCoords
+    setBulletCoords,
   } from '$stores/coordsStores'
-  import { areAddressesEqual } from '$lib/helper'
+  import { get } from 'svelte/store'
+  import { areAddressesEqual, getBulletPosition } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
-    import { resetBullets } from '$lib/3d/utils/shootUtils.js'
-    import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
+  import { resetBullets } from '$lib/3d/utils/shootUtils.js'
+  import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
+  import Waiting from '$lib/ui/ingame/Waiting.svelte'
 
   export let data
   let gameId = data.gameId
@@ -42,6 +49,7 @@
   let calldata: TurnData
   let characterData: ComponentStore
   let characterPosition: ComponentStore
+  let map: ComponentStore
   let isTurn: boolean
   $: sessionId.set(parseInt(gameId))
 
@@ -57,6 +65,12 @@
     sessionEntity
   )
 
+  $: if ($sessionData)
+    map = componentValueStore(
+      clientComponents.Map,
+      torii.poseidonHash([BigInt($sessionData.map_id).toString()])
+    )
+
   $: gameState.set($sessionData.state)
   $: console.log($isMoveRecorded)
 
@@ -65,45 +79,107 @@
   $: console.log('sessionMeta', $sessionMetaData)
   $: console.log('sessionMeta bullets', $sessionMetaData.bullets)
 
+  $: if ($sessionData.state === 3) {
+    isEnded.set(true)
+  }
+
+  $: if ($sessionMetaData) {
+    turnCount.set($sessionMetaData.turn_count)
+  }
+
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
-    isTurn = 
-    //is player 1 and it's 1s turn
-    (areAddressesEqual(
-      $sessionData.player1.toString(),
-      account.address
-    ) && data.turn_count % 2 === 0) 
-    || 
-    //is player 2 and it's 2s turn
-    (areAddressesEqual(
-      $sessionData.player2.toString(),
-      account.address
-    ) && data.turn_count % 2 === 1)
-    isTurnPlayer.set(isTurn)
+      let isFirstPlayer = areAddressesEqual(
+        $sessionData.player1.toString(),
+        account.address
+      )
+      let isSecondPlayer = areAddressesEqual(
+        $sessionData.player2.toString(),
+        account.address
+      )
+
+      if (isFirstPlayer) {
+        currentPlayerId.set(1)
+      } else if (isSecondPlayer) {
+        currentPlayerId.set(2)
+      } else {
+        currentPlayerId.set(null)
+      }
     })
-}
+  }
+
+  $: if ($sessionMetaData) {
+    sessionMetaData.subscribe((data) => {
+      isTurn =
+        //is player 1 and it's 1s turn
+        ($currentPlayerId === 1 && data.turn_count % 2 === 0) ||
+        //is player 2 and it's 2s turn
+        ($currentPlayerId === 2 && data.turn_count % 2 === 1)
+      isTurnPlayer.set(isTurn)
+    })
+  }
 
   $: if ($sessionMetaData) {
     characterIds.set([
       $sessionMetaData.p1_character,
       $sessionMetaData.p2_character,
     ])
-    let map = getComponentValue(clientComponents.Map, $sessionData.map_id)
     if (map) {
-      mapObjects.set({objects: map.map_objects_id})
+      console.log('map', $map)
+      mapObjects.set({ objects: get(map).map_objects })
     }
+  }
+
+  $: if ($sessionMetaData.bullets) {
+    bulletStart.set([])
+    bulletRender.set([])
+    bulletInitialPosition.set([]) // Reset the initial position store
     $sessionMetaData.bullets.forEach((bulletId) => {
-      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number 
+      let turn_count = $sessionMetaData.turn_count
+      //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
-      let bulletStore = componentValueStore(clientComponents.Bullet, bulletEntity)
+      let bulletStore = componentValueStore(
+        clientComponents.Bullet,
+        bulletEntity
+      )
       bulletStore.subscribe((bullet) => {
-        let shot_by = areAddressesEqual(bullet.shot_by.toString(), account.address) ? 1 : 2
-        let data = {coords: bullet.coords, angle: bullet.angle, id: bullet.bullet_id,  shot_by: shot_by}
+        console.log('bullet', bullet)
+        let v = bullet.velocity
+        let coords = getBulletPosition(
+          bullet,
+          (1 + turn_count) * 100 - bullet.shot_step
+        )
+        let x_dir = v.xdir ? 1 : -1
+        let y_dir = v.ydir ? 1 : -1
+        let velocity = { x: (x_dir * v.x) / 100, y: (y_dir * v.y) / 100 }
+
+        //TODO, shot by is character id not address
+        let shot_by = areAddressesEqual(
+          bullet.shot_by.toString(),
+          account.address
+        )
+          ? 1
+          : 2
+        let data = {
+          coords: coords,
+          velocity: velocity,
+          id: bullet.bullet_id,
+          shot_by: shot_by,
+        }
         setBulletCoords(data)
+
+        // Store the initial position
+        let initialCoords = getBulletPosition(bullet, 0) // Get initial position
+        let initialPosition = {
+          coords: initialCoords,
+          velocity: velocity,
+          id: bullet.bullet_id,
+          shot_by: shot_by,
+        }
+        setBulletInitialPosition(initialPosition)
       })
     })
   }
-
 
   $: if ($isMoveRecorded)
     calldata = {
@@ -137,7 +213,7 @@
               account.address
             )
             if (isPlayer) {
-              playerStartCoords.set({[position.id]: position.coords})
+              playerStartCoords.set({ [position.id]: position.coords })
               setPlayerCharacterCoords(characterId, position.coords)
               playerCharacterId.set(characterId)
             } else {
@@ -152,16 +228,20 @@
 
   function handleMove() {
     console.log('calldata', calldata)
-    move(client, account, $sessionId, calldata);
+    move(client, account, $sessionId, calldata)
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)
-    bulletStart.set([]);
-    bulletRender.set([]);
+    bulletStart.set([])
+    bulletRender.set([])
   }
 </script>
+
+{#if $gameState === 0}
+  <Waiting />
+{/if}
 
 <div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
   <Ui moveHandler={handleMove} />

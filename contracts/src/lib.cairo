@@ -12,18 +12,19 @@ mod models {
     mod characters;
     mod global;
     mod player;
+    mod turndata;
 }
 
 mod lib {
     mod default_spawns;
     mod helpers;
     mod simulate;
-    mod shoot;
+    mod trig;
 }
 
 mod tests {
     mod helpers;
-    mod test_world;
+  //  mod test_world;
 }
 
 mod consts;

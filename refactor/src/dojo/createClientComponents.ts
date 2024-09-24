@@ -12,7 +12,6 @@ export function createClientComponents({
     ...contractComponents,
     Character: overridableComponent(contractComponents.CharacterModel),
     Map: overridableComponent(contractComponents.Map),
-    MapObjects: overridableComponent(contractComponents.MapObjects),
     Session: overridableComponent(contractComponents.Session),
     SessionMeta: overridableComponent(contractComponents.SessionMeta),
     CharacterPosition: overridableComponent(

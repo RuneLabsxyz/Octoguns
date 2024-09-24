@@ -1,14 +1,27 @@
-import { frameCounter, recordedMove } from '$stores/gameStores'
+import { frameCounter, recordedMove, mapObjects } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
-import { type BulletCoords, bulletRender, bulletStart} from '$stores/coordsStores'
+import {
+  type BulletCoords,
+  bulletRender,
+  bulletStart,
+  bulletInitialPosition,
+} from '$stores/coordsStores'
+import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
+import { BULLET_SPEED } from '$lib/consts'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
+    bullets.push(newBullet)
+    return bullets
+  })
+
+  // Also store the initial position
+  bulletInitialPosition.update((bullets) => {
     bullets.push(newBullet)
     return bullets
   })
@@ -17,14 +30,16 @@ function applyBulletToStore(newBullet: BulletCoords) {
 export function shoot(camera: PerspectiveCamera) {
   let move_index = Math.floor(get(frameCounter) / 3)
 
-  let direction = getYawAngle(camera);
+  let direction = getYawAngle(camera)
   if (direction < 0) {
     direction = 360 + direction
   }
 
-  direction = Math.round(truncate(direction, 8) * 10**8);
+  direction = Math.round(truncate(direction, 8) * 10 ** 8)
 
-  console.log(`Bullet shot at move index ${move_index} with angle ${direction} degrees`)
+  console.log(
+    `Bullet shot at move index ${move_index} with angle ${direction} degrees`
+  )
 
   recordedMove.update((rm) => {
     rm.shots.push({ angle: direction, step: move_index })
@@ -32,15 +47,23 @@ export function shoot(camera: PerspectiveCamera) {
     return rm
   })
 
+  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8))
+  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10 ** 8))
+
   const cameraPosition = camera.position
   const newBullet = {
     coords: {
       x: cameraPosition.x,
       y: cameraPosition.z,
     },
-    angle: inverseMapAngle(direction / 10**8),
+    shot_at: {
+      x: cameraPosition.x,
+      y: cameraPosition.z,
+    },
+    velocity: { x: vx, y: vy },
+
     shot_by: get(isTurnPlayer) ? 1 : 2,
-    id: 0
+    id: 0,
   }
 
   applyBulletToStore(newBullet)
@@ -53,9 +76,10 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
   if (shot) {
     let angle = shot.angle
 
-    console.log(
-      `Bullet shot at move index ${move_index} with angle ${angle}`
-    )
+    console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
+
+    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8))
+    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8))
 
     frameCounter.update((fc) => fc + 1)
 
@@ -65,10 +89,14 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
         x: cameraPosition.x,
         y: cameraPosition.z,
       },
-      angle: shot.angle,
+      shot_at: {
+        x: cameraPosition.x,
+        y: cameraPosition.z,
+      },
+      velocity: { x: vx, y: vy },
       id: 0,
       //TODO: Fix this
-      shot_by: get(isTurnPlayer) ? 1 : 2
+      shot_by: get(isTurnPlayer) ? 1 : 2,
     }
 
     applyBulletToStore(newBullet)
@@ -76,30 +104,67 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 }
 
 export function resetBullets() {
-  bulletRender.set(get(bulletStart))
+  bulletRender.set([])
+  bulletInitialPosition.set([])
 }
 
 export function simulate() {
-  const speed = 0.2 / 3
+  // Extract wall coordinates from mapObjects
+  const wallCoords = get(mapObjects).objects.map((index) => {
+    //@ts-ignore
+    let i = index.value
+    let x = (i % 25) * 4 + 2 - 50
+    let y = Math.floor(i / 25) * 4 + 2 - 50
+    return { x, y }
+  })
 
-  //update temp / new bullets
+  // Define the boundaries of the map
+  const mapBoundary = {
+    minX: -50,
+    maxX: 50,
+    minY: -50,
+    maxY: 50,
+  }
+
+  // Update temp / new bullets
   bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
     bullets.map((bullet) => {
-      console.log(bullet)
-      const angleInRadians = THREE.MathUtils.degToRad(bullet.angle)
-      const newX = bullet.coords.x + (speed * Math.cos(angleInRadians))
-      const newY = bullet.coords.y - (speed * Math.sin(angleInRadians))
-      console.log(newX, newY)
-      newBullets.push( {
-        ...bullet,
-        coords: {
-          x: newX,
-          y: newY,
-        },
-      })
+      const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
+      const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
+
+      // Check if the new bullet position is inside any wall
+      const isInsideWall = wallCoords.some(
+        (wall) =>
+          newX >= wall.x &&
+          newX <= wall.x + 4 &&
+          newY >= wall.y &&
+          newY <= wall.y + 4
+      )
+
+      // Check if the bullet is outside the map boundaries
+      const isOutsideMap =
+        newX < mapBoundary.minX ||
+        newX > mapBoundary.maxX ||
+        newY < mapBoundary.minY ||
+        newY > mapBoundary.maxY
+
+      if (!isInsideWall && !isOutsideMap) {
+        newBullets.push({
+          ...bullet,
+          coords: {
+            x: newX,
+            y: newY,
+          },
+        })
+      }
+      if (isInsideWall || isOutsideMap) {
+        splat.update((splat) => {
+          splat.push({ x: newX, y: newY })
+          return splat
+        })
+      }
     })
     return newBullets
   })
-
 }
