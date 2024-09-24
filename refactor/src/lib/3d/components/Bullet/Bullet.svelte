@@ -99,7 +99,7 @@
         }}
       />
     </T.BufferGeometry>
-    <T.PointsMaterial size={0.05} vertexColors />
+    <T.PointsMaterial size={0.1} vertexColors />
   </T.Points>
 
   <!-- Current bullet position -->
