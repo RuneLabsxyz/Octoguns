@@ -7,6 +7,7 @@ import {
   type BulletCoords,
   bulletRender,
   bulletStart,
+  bulletInitialPosition,
 } from '$stores/coordsStores'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
@@ -14,6 +15,12 @@ import { BULLET_SPEED } from '$lib/consts'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
+    bullets.push(newBullet)
+    return bullets
+  })
+
+  // Also store the initial position
+  bulletInitialPosition.update((bullets) => {
     bullets.push(newBullet)
     return bullets
   })
@@ -97,6 +104,7 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 
 export function resetBullets() {
   bulletRender.set(get(bulletStart))
+  bulletInitialPosition.set(get(bulletStart))
 }
 
 export function simulate() {
