@@ -26,6 +26,8 @@
     playerStartCoords,
     bulletStart,
     bulletRender,
+    bulletInitialPosition,
+    setBulletInitialPosition,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
     setBulletCoords,
@@ -131,8 +133,9 @@
   $: if ($sessionMetaData.bullets) {
     bulletStart.set([])
     bulletRender.set([])
+    bulletInitialPosition.set([]) // Reset the initial position store
     $sessionMetaData.bullets.forEach((bulletId) => {
-      let turn_count = $sessionMetaData.turn_count;
+      let turn_count = $sessionMetaData.turn_count
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(
@@ -141,11 +144,14 @@
       )
       bulletStore.subscribe((bullet) => {
         console.log('bullet', bullet)
-        let v = bullet.velocity;
-        let coords = getBulletPosition(bullet, (1+ turn_count) * 100 - bullet.shot_step)
+        let v = bullet.velocity
+        let coords = getBulletPosition(
+          bullet,
+          (1 + turn_count) * 100 - bullet.shot_step
+        )
         let x_dir = v.xdir ? 1 : -1
         let y_dir = v.ydir ? 1 : -1
-        let velocity = {x: x_dir * v.x/100, y: y_dir * v.y/100}
+        let velocity = { x: (x_dir * v.x) / 100, y: (y_dir * v.y) / 100 }
 
         //TODO, shot by is character id not address
         let shot_by = areAddressesEqual(
@@ -161,6 +167,16 @@
           shot_by: shot_by,
         }
         setBulletCoords(data)
+
+        // Store the initial position
+        let initialCoords = getBulletPosition(bullet, 0) // Get initial position
+        let initialPosition = {
+          coords: initialCoords,
+          velocity: velocity,
+          id: bullet.bullet_id,
+          shot_by: shot_by,
+        }
+        setBulletInitialPosition(initialPosition)
       })
     })
   }
