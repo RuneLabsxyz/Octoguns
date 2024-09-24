@@ -3,6 +3,13 @@
   import Background from '$lib/ui/Background.svelte'
   import Button from '$lib/ui/Button.svelte'
   import { isSetup } from '$stores/dojoStore'
+  import { playSoundEffectLoop } from '$lib/3d/utils/audioUtils'
+  import { onMount } from 'svelte'
+
+  onMount(() => {
+    playSoundEffectLoop('/audio/tracks/mermaid.wav', 0.04)
+    playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
+  })
 </script>
 
 <Background />
@@ -30,7 +37,6 @@
 <style>
   .wrapper {
     background: url('/tiled-design.svg') repeat;
-
     background-size: 450px;
   }
 </style>

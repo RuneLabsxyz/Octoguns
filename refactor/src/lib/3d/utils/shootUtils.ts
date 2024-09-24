@@ -9,6 +9,7 @@ import {
   bulletStart,
   bulletInitialPosition,
 } from '$stores/coordsStores'
+import { playSoundEffect } from './audioUtils'
 import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
@@ -25,6 +26,8 @@ function applyBulletToStore(newBullet: BulletCoords) {
     bullets.push(newBullet)
     return bullets
   })
+
+  playSoundEffect('/audio/sfx/shot.wav')
 }
 
 export function shoot(camera: PerspectiveCamera) {
