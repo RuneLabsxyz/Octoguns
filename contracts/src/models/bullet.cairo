@@ -31,7 +31,7 @@ impl BulletImpl of BulletTrait {
 
     fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
         let mut new_coords = self.shot_at;
-        let step_felt: felt252 = step.into();
+        let step_felt: felt252 = (step.into() - self.shot_step.into()).into();
         let vx: felt252 = self.velocity.x.into();
         let vy: felt252 = self.velocity.y.into();
 

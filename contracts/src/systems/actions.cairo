@@ -25,7 +25,7 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: TurnMove) {
             assert!(moves.sub_moves.len() <= 50, "Invalid number of moves");
-            assert!(moves.shots.len() <= 3, "Invalid number of shots");
+            assert!(moves.shots.len() <= 1, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
             assert!(session.state != 1, "Game doesn't exist");
@@ -73,6 +73,7 @@ mod actions {
             while sub_move_index < 100 {
 
                 if sub_move_index == next_shot.into() {
+
                     let step = 100 * session_meta.turn_count + sub_move_index;
 
                     let shot = moves.shots.pop_front();
@@ -99,7 +100,7 @@ mod actions {
                 }
 
                 //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, sub_move_index);
+                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, step);
                 updated_bullet_ids = new_bullets;
 
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
