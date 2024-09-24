@@ -103,8 +103,8 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 }
 
 export function resetBullets() {
-  bulletRender.set(get(bulletStart))
-  bulletInitialPosition.set(get(bulletStart))
+  bulletRender.set([])
+  bulletInitialPosition.set([])
 }
 
 export function simulate() {

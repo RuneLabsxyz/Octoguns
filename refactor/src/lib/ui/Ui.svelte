@@ -61,6 +61,7 @@
       $playerStartCoords[$playerCharacterId]
     )
     replayMode.set(!$recordingMode)
+    resetBullets()
   }
 
   function reset(e: Event) {
