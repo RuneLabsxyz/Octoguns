@@ -9,6 +9,7 @@ import {
   bulletStart,
   bulletInitialPosition,
 } from '$stores/coordsStores'
+import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 import { BULLET_SPEED } from '$lib/consts'
@@ -131,7 +132,6 @@ export function simulate() {
     bullets.map((bullet) => {
       const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
       const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
-      console.log(`Bullet moved to ${newX}, ${newY}`)
 
       // Check if the new bullet position is inside any wall
       const isInsideWall = wallCoords.some(
@@ -156,6 +156,12 @@ export function simulate() {
             x: newX,
             y: newY,
           },
+        })
+      }
+      if (isInsideWall) {
+        splat.update((splat) => {
+          splat.push({ x: newX, y: newY })
+          return splat
         })
       }
     })
