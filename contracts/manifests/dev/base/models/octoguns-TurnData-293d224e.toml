@@ -1,0 +1,22 @@
+kind = "DojoModel"
+class_hash = "0x7b89e31196f9ee6040f9e01fad2fd75699a5c981c80665f548b6eb006e2751a"
+original_class_hash = "0x7b89e31196f9ee6040f9e01fad2fd75699a5c981c80665f548b6eb006e2751a"
+abi = "manifests/dev/base/abis/models/octoguns-TurnData-293d224e.json"
+tag = "octoguns-TurnData"
+qualified_path = "octoguns::models::turndata::turn_data"
+manifest_name = "octoguns-TurnData-293d224e"
+
+[[members]]
+name = "session_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "turn_number"
+type = "u32"
+key = true
+
+[[members]]
+name = "moves"
+type = "Array<TurnMove>"
+key = false

@@ -1,0 +1,32 @@
+kind = "DojoModel"
+class_hash = "0x6d16e97e66c7fdc761f03c055417561e776c7fc531dffb82d43ee82b3a509c2"
+original_class_hash = "0x6d16e97e66c7fdc761f03c055417561e776c7fc531dffb82d43ee82b3a509c2"
+abi = "manifests/dev/base/abis/models/octoguns-SessionMeta-4f7fd982.json"
+tag = "octoguns-SessionMeta"
+qualified_path = "octoguns::models::sessions::session_meta"
+manifest_name = "octoguns-SessionMeta-4f7fd982"
+
+[[members]]
+name = "session_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "turn_count"
+type = "u32"
+key = false
+
+[[members]]
+name = "p1_characters"
+type = "Array<u32>"
+key = false
+
+[[members]]
+name = "p2_characters"
+type = "Array<u32>"
+key = false
+
+[[members]]
+name = "bullets"
+type = "Array<u32>"
+key = false
