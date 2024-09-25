@@ -73,7 +73,6 @@ mod actions {
             while sub_move_index < 100 {
                 let step = sub_move_index + 100 * session_meta.turn_count;
 
-
                 if sub_move_index == next_shot.into() {
 
 

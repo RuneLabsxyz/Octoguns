@@ -100,6 +100,10 @@ export const CharacterModelDefinition = {
   steps_amount: RecsType.Number,
 }
 
+export interface MapObjects {
+  objects: Number[]
+}
+
 // Type definition for `octoguns::models::characters::CharacterPosition` struct
 export interface CharacterPosition {
   id: Number
@@ -208,8 +212,8 @@ export const TurnDataDefinition = {
 
 // Type definition for `octoguns::types::TurnMove` struct
 export interface TurnMove {
-  sub_moves: String[]
-  shots: String[]
+  sub_moves: IVec2[]
+  shots: Shot[]
 }
 
 export function defineContractComponents(world: World) {
