@@ -9,8 +9,8 @@
 
   let isWinner: boolean | null = null
   $: if ($currentPlayerId != null) {
-    // As defined in the contract, the winner is the player with the character id different from 0
-    isWinner = $characterIds[$currentPlayerId] !== 0
+    // As defined in the contract, the winner is the player with the character id equals to 0?
+    isWinner = $characterIds[$currentPlayerId] === 0
   }
 </script>
 
