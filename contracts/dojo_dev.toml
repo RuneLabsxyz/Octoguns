@@ -18,5 +18,5 @@ default = "octoguns"
 [env]
 rpc_url = "https://api.cartridge.gg/x/octoguns-demo/katana"
 # Default account for katana with seed = 0
-account_address = "0x452817ebbf7edc8a62eb286ee789629cb7fdca4306d20ed11cbf87d533e060"
-private_key = "0x7ea2485a957278814791c625b2a1b7b74dfcbfea0e398a0b92a0bff64c50f75"
+account_address = "0x41554745262f1f578d6fdbec56e748d3e16962dfbf7ee2f85a946b62ab881c1"
+private_key = "0x72f1a180f17b2b570954d16c1cfba6743e0f72e208135a2bd04e465458af996"
