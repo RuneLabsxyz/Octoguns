@@ -30,8 +30,6 @@ export async function setup({ ...config }: DojoConfig) {
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
-  let entities = await toriiClient.getAllEntities(100, 0)
-  console.log(entities)
 
   const sync = await getSyncEntities(toriiClient, contractComponents as any, [])
 
@@ -44,8 +42,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      "0x7ddb9e98f8a9b58ffb3d2b90ab45b018f9aa2a3c98c5d92fee54ab616ac09bf",
-      "0x5356ed10bd95660fc42bab2880b4e29937acbc960ec4094157adb76c4a6a1b6"
+      "0x452817ebbf7edc8a62eb286ee789629cb7fdca4306d20ed11cbf87d533e060",
+      "0x7ea2485a957278814791c625b2a1b7b74dfcbfea0e398a0b92a0bff64c50f75"
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,

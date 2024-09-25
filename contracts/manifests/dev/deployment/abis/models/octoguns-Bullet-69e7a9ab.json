@@ -372,11 +372,47 @@
     "members": [
       {
         "name": "x",
-        "type": "core::integer::u32"
+        "type": "core::integer::u64"
       },
       {
         "name": "y",
-        "type": "core::integer::u32"
+        "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "octoguns::types::IVec2",
+    "members": [
+      {
+        "name": "x",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "y",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "xdir",
+        "type": "core::bool"
+      },
+      {
+        "name": "ydir",
+        "type": "core::bool"
       }
     ]
   },
@@ -389,20 +425,20 @@
         "type": "core::integer::u32"
       },
       {
-        "name": "coords",
-        "type": "octoguns::types::Vec2"
-      },
-      {
-        "name": "speed",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "angle",
-        "type": "core::integer::u64"
+        "name": "shot_step",
+        "type": "core::integer::u16"
       },
       {
         "name": "shot_by",
         "type": "core::integer::u32"
+      },
+      {
+        "name": "shot_at",
+        "type": "octoguns::types::Vec2"
+      },
+      {
+        "name": "velocity",
+        "type": "octoguns::types::IVec2"
       }
     ]
   },

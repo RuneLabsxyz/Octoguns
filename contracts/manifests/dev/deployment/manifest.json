@@ -1235,12 +1235,12 @@
       }
     ],
     "address": "0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f",
-    "transaction_hash": "0x35324fd6b075d793d186a51925e7b1aab10df41b004a503e98e8cb861f67885",
+    "transaction_hash": "0x5528064a64c809051aa0120c9887074638082bd536a1626ecffc9f2f70ddb3a",
     "block_number": 3,
     "seed": "octoguns",
     "metadata": {
       "profile_name": "dev",
-      "rpc_url": "http://localhost:5050/"
+      "rpc_url": "https://api.cartridge.gg/x/octoguns-demo/katana"
     },
     "manifest_name": "dojo-world"
   },
@@ -1256,8 +1256,8 @@
     {
       "kind": "DojoContract",
       "address": "0x2d5b84918519922e15f01e7dfa0b6c3f6ff9aec552ff127785f3ba6498a1149",
-      "class_hash": "0x2b101f25eb1fe6cd1ae51df4274f125424f3a260888c9a9b1b8f3602ca6f6ee",
-      "original_class_hash": "0x2b101f25eb1fe6cd1ae51df4274f125424f3a260888c9a9b1b8f3602ca6f6ee",
+      "class_hash": "0x292a1e6f091aa05ea37b8c194e807386d4a775999c738ca1ea9dfe8409a9a26",
+      "original_class_hash": "0x292a1e6f091aa05ea37b8c194e807386d4a775999c738ca1ea9dfe8409a9a26",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1412,11 +1412,11 @@
           "members": [
             {
               "name": "x",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "y",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "xdir",
@@ -1846,8 +1846,8 @@
     {
       "kind": "DojoContract",
       "address": "0x7c913e4511bc6f0aa5368c5895eeb91643960c3a57fd869828c1afddeac587b",
-      "class_hash": "0x24bf05a3e95632553f1e6af0052d0a1230c78144b89cbca1e435b89b72bdc2e",
-      "original_class_hash": "0x24bf05a3e95632553f1e6af0052d0a1230c78144b89cbca1e435b89b72bdc2e",
+      "class_hash": "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405",
+      "original_class_hash": "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2375,28 +2375,28 @@
           "key": true
         },
         {
-          "name": "coords",
-          "type": "Vec2",
-          "key": false
-        },
-        {
-          "name": "speed",
-          "type": "u32",
-          "key": false
-        },
-        {
-          "name": "angle",
-          "type": "u64",
+          "name": "shot_step",
+          "type": "u16",
           "key": false
         },
         {
           "name": "shot_by",
           "type": "u32",
           "key": false
+        },
+        {
+          "name": "shot_at",
+          "type": "Vec2",
+          "key": false
+        },
+        {
+          "name": "velocity",
+          "type": "IVec2",
+          "key": false
         }
       ],
-      "class_hash": "0xefd518203c5ae2d852e4f8ab5ba12fc289c2514bfc326a86f95315d63f4947",
-      "original_class_hash": "0xefd518203c5ae2d852e4f8ab5ba12fc289c2514bfc326a86f95315d63f4947",
+      "class_hash": "0x5e0d858c19586c631802aa462ab7cb204912efe0d8f468305054d0db1344cb7",
+      "original_class_hash": "0x5e0d858c19586c631802aa462ab7cb204912efe0d8f468305054d0db1344cb7",
       "abi": [
         {
           "type": "impl",
@@ -2771,11 +2771,47 @@
           "members": [
             {
               "name": "x",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "y",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "core::bool",
+          "variants": [
+            {
+              "name": "False",
+              "type": "()"
+            },
+            {
+              "name": "True",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "octoguns::types::IVec2",
+          "members": [
+            {
+              "name": "x",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "y",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "xdir",
+              "type": "core::bool"
+            },
+            {
+              "name": "ydir",
+              "type": "core::bool"
             }
           ]
         },
@@ -2788,20 +2824,20 @@
               "type": "core::integer::u32"
             },
             {
-              "name": "coords",
-              "type": "octoguns::types::Vec2"
-            },
-            {
-              "name": "speed",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "angle",
-              "type": "core::integer::u64"
+              "name": "shot_step",
+              "type": "core::integer::u16"
             },
             {
               "name": "shot_by",
               "type": "core::integer::u32"
+            },
+            {
+              "name": "shot_at",
+              "type": "octoguns::types::Vec2"
+            },
+            {
+              "name": "velocity",
+              "type": "octoguns::types::IVec2"
             }
           ]
         },
@@ -3303,8 +3339,8 @@
           "key": false
         }
       ],
-      "class_hash": "0x5c56063ed45085f40248fcdf9193e329a90f429095c2a9c65304745ed1f2a69",
-      "original_class_hash": "0x5c56063ed45085f40248fcdf9193e329a90f429095c2a9c65304745ed1f2a69",
+      "class_hash": "0x67e24ab3c6231d59ebfa89355dc6723dd98f47baf73c048e9f64791c9e26e59",
+      "original_class_hash": "0x67e24ab3c6231d59ebfa89355dc6723dd98f47baf73c048e9f64791c9e26e59",
       "abi": [
         {
           "type": "impl",
@@ -3679,11 +3715,11 @@
           "members": [
             {
               "name": "x",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "y",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             }
           ]
         },
@@ -5955,8 +5991,8 @@
           "key": false
         }
       ],
-      "class_hash": "0x64afd91a0243856b4656ee302de647cfa644f19775643ebd583e247ab03e0ec",
-      "original_class_hash": "0x64afd91a0243856b4656ee302de647cfa644f19775643ebd583e247ab03e0ec",
+      "class_hash": "0x4f062a938b3b4845fca427ae8b1ff891d1fb00e4b5c93a57aa210147e09312f",
+      "original_class_hash": "0x4f062a938b3b4845fca427ae8b1ff891d1fb00e4b5c93a57aa210147e09312f",
       "abi": [
         {
           "type": "impl",
@@ -6345,11 +6381,11 @@
           "members": [
             {
               "name": "x",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "y",
-              "type": "core::integer::u32"
+              "type": "core::integer::u64"
             },
             {
               "name": "xdir",
