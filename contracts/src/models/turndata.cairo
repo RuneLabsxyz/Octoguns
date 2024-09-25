@@ -7,5 +7,5 @@ struct TurnData{
     session_id: u32,
     #[key]
     turn_number: u32,
-    moves: TurnMove,
+    moves: Array<TurnMove>,
 }

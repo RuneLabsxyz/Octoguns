@@ -17,7 +17,7 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
     loop {
         match cloned_bullets.pop_front() {
             Option::Some(mut bullet) => {
-                let (hit_character, dropped) = bullet.simulate(@character_positions, map, step);
+                let (hit_character, dropped) = bullet.simulate(@character_positions, map, step.try_into().unwrap());
                 match hit_character {
                     Option::Some(character_id) => {
                         dead_characters_ids.append(character_id);

@@ -20,18 +20,18 @@ pub struct Bullet {
 #[generate_trait]
 impl BulletImpl of BulletTrait {
 
-    fn new(id: u32, coords: Vec2, angle: u64, shot_by: u32, shot_step: u16) -> Bullet {
+    fn new(id: u32, coords: Vec2, angle: u64, shot_by: u32, shot_step: u32) -> Bullet {
         //speed is how much it travels per sub step
         //distance travelled per turn is speed * 100
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
         let velocity = IVec2 { x: cos * BULLET_SPEED / ONE_E_8, y: sin * BULLET_SPEED / ONE_E_8, xdir, ydir };
-        Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step, velocity}
+        Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step: shot_step.try_into().unwrap(), velocity}
     }
 
-    fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
+    fn get_position(ref self: Bullet, step: u16) -> Option<Vec2> {
         let mut new_coords = self.shot_at;
-        let step_felt: felt252 = (step.into() - self.shot_step.into()).into();
+        let step_felt: felt252 = (step - self.shot_step).into();
         let vx: felt252 = self.velocity.x.into();
         let vy: felt252 = self.velocity.y.into();
 
@@ -66,7 +66,7 @@ impl BulletImpl of BulletTrait {
         
     }
 
-    fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map, step: u32) -> (Option<u32>, bool) {
+    fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map, step: u16) -> (Option<u32>, bool) {
         let mut res: (Option<u32>, bool) = (Option::None(()), false); 
         let maybe_position = self.get_position(step);
         let mut position: Vec2 = Vec2 { x: 0, y: 0 };
@@ -93,6 +93,7 @@ impl BulletImpl of BulletTrait {
 
     }
 
+    
     fn compute_hits(ref self: Bullet, position: Vec2, characters: @Array<CharacterPosition>, map: @Map) -> (Option<u32>, bool) {
         let mut character_index: u32 = 0;
         let mut character_id = 0;

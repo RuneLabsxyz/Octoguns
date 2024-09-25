@@ -29,7 +29,7 @@ impl SessionImpl of SessionTrait {
     
 }
 
-#[derive(Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 #[dojo::model]
 pub struct SessionMeta {
     #[key]

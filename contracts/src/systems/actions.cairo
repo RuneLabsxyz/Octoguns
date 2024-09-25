@@ -10,13 +10,12 @@ trait IActions {
 mod actions {
     use super::IActions;
     use octoguns::types::{Vec2, IVec2, Shot, TurnMove};
-    use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait};
+    use octoguns::models::sessions::{Session, SessionMeta, SessionMetaTrait, SessionMetaStore};
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::models::map::{Map, MapTrait};
-    use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
+    use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, apply_submoves};
     use octoguns::lib::simulate::{simulate_bullets};
-    use octoguns::lib::shoot::{shoot};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
 
@@ -24,176 +23,83 @@ mod actions {
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: Array<TurnMove>) {
-            assert!(moves.len() <= 3 && moves.len() > 0, "Invalid number of turn moves");
-            for move in moves {
-                assert!(move.sub_moves.len() <= 100, "Invalid number of submoves");
-                assert!(move.shots.len() <= 1, "Invalid number of shots");
-            }
+            assert!(moves.len() == 3, "Invalid number of turn moves");
+            
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
+
             assert!(session.state != 1, "Game doesn't exist");
             assert!(session.state != 3, "Game over");
             assert!(session.state == 2, "Game not active");
 
+            let mut m1 = moves.pop_front().unwrap();
+            let mut m2 = moves.pop_front().unwrap();
+            let mut m3 = moves.pop_front().unwrap();
+
             let map = get!(world, session_id, (Map));
 
-            let mut session_meta = get!(world, session_id, (SessionMeta));
+            let session_meta = SessionMetaStore::get(world, session_id);
+            let SessionMeta {session_id, turn_count, p1_characters, p2_characters, bullets} = session_meta;
 
             let mut updated_bullet_ids = array![];
 
-            let mut player_character_id = 0;
-            let mut opp_character_id = 0;
+            let mut player_characters = array![].span();
+            let mut opp_characters = array![].span();
 
-            match session_meta.turn_count % 2 {
+
+            match turn_count % 2 {
                 0 => {
                     assert!(player == session.player1, "not turn player, 1s turn");
-                    player_character_id = session_meta.p1_character;
-                    opp_character_id = session_meta.p2_character;
+                    player_characters = p1_characters.span();
+                    opp_characters = p2_characters.span();
                 },
                 1 => {
                     assert!(player == session.player2, "not turn player, 2s turn");
-                    player_character_id = session_meta.p2_character;
-                    opp_character_id = session_meta.p1_character;
+                    player_characters = p2_characters.span();
+                    opp_characters = p1_characters.span();
                 },
                 _ => {
                     panic!("???");
                 }
             }
-            let mut player_positions = array![];
-            let mut opp_positions = array![];
-            let mut all_positions = array![];
+            //each sub array are the positions of the characters that are affected by the same move
+            let mut all_positions: Array<CharacterPosition> = array![];
 
-            for player_character_id in session_meta.p1_characters {
-                let position = get!(world, player_character_id, (CharacterPosition));
-                if position.status == 1 {
-                    player_positions.append(position);
-                    all_positions.append(position);
-                }
-            }
-            for opp_character_id in session_meta.p2_characters {
-                let position = get!(world, opp_character_id, (CharacterPosition));
-                if position.status == 1 {
-                    opp_positions.append(position);
-                    all_positions.append(position);
-                }
-            }
+            let mut m1_positions = array![];
+            let mut m2_positions = array![];
+            let mut m3_positions = array![];
 
-            let mut bullets = get_all_bullets(world, session_id);
-            
-            //start out of bounds so never reached in loop
-            let mut next_shot = (101, 101, 101);
-            let mut next_shot_t1 = moves.at(0).shots.at(0).step;
-            let mut next_shot_t2 = moves.at(1).shots.at(0).step;
-            let mut next_shot_t3 = moves.at(2).shots.at(0).step;
+            let mut m1_next_index = 0;
+            let mut m2_next_index = 0;
+            let mut m3_next_index = 0;
+            let mut m1_next_id = *m1.characters.at(0);
+            let mut m2_next_id = *m2.characters.at(0);
+            let mut m3_next_id = *m3.characters.at(0);
 
-            let mut sub_move_index = 0;
-
-            while sub_move_index < 100 {
-
-                if sub_move_index == next_shot {
-
-                    let shot = moves.shots.pop_front();
-                    match shot {
-                        Option::Some(s) => {
-                            bullets.append(BulletTrait::new(
-                                                world.uuid(), 
-                                                Vec2 {x: player_position.coords.x, y: player_position.coords.y}, 
-                                                s.angle, 
-                                                player_character_id
-                            ));
-                            if moves.shots.len() > 0 {
-                                next_shot = *moves.shots.at(0).step;
-                            }
-                        },
-                        Option::None => {
-                            //shouldn't reach
-                        }
-
-                    }
-                }
-
-
-                //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map);
-                bullets = new_bullets;
-                let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
-                positions = new_positions;
-
-                //get next sub_move
-                if filtered_character_ids.len() < 2 {
-                    match filtered_character_ids.len() {
-                        0 => {
-                            //draw
-                            break;
-                        },
-                        1 => {
-                            let winner = filtered_character_ids.pop_front().unwrap();
-                            if session_meta.p1_character == winner {
-                                //p1 wins
-                                session.state = 3;
-                                session_meta.p2_character = 0;
-                            }
-                            if session_meta.p2_character == winner {
-                                //p2 wins
-                                session.state = 3;
-                                session_meta.p1_character = 0;
-                            }
-                            break;
-                        },
-                        _ => {
-                        }
-                    }
-                }
-
-                
-
-                match moves.sub_moves.pop_front() {
-                    Option::Some(mut vec) => {
-                        //check move valid 
-                        if !check_is_valid_move(vec){
-                            vec = IVec2 {x: 0, y: 0, xdir: true, ydir: true};
-                        }
-                        //apply move
-                        if vec.xdir{
-                            player_position.coords.x = min(100_000, player_position.coords.x + vec.x); 
-                        }
-                        else {
-                            vec.x = min( vec.x, player_position.coords.x );
-                            player_position.coords.x -= vec.x;
-                        }
-                        if vec.ydir{
-                            player_position.coords.y = min(100_000, player_position.coords.y + vec.y); 
-
-                        }
-                        else {
-                            vec.y = min( vec.y, player_position.coords.y );
-                            player_position.coords.y -= vec.y;
-                        }
-
-
-                    },
-                    Option::None => {
-                    }
-
-                }
-                positions = array![player_position, opp_position];
-
-                
-                
-
-                sub_move_index+=1;
-
-                //END MOVE LOOP
-            };
-
-            //set new bullet positions bullets
+            //get all player characters
             loop {
-                let next_bullet = bullets.pop_front();
-                match next_bullet {
-                    Option::Some(bullet) => {
-                        println!("setting new bullet positions: x: {} y: {}", bullet.coords.x, bullet.coords.y);
-                        updated_bullet_ids.append(bullet.bullet_id);
-                        set!(world, (bullet));
+                let maybe_player_character_id = player_characters.pop_front();
+                match maybe_player_character_id{
+                    Option::Some(id) => {
+                        let position = get!(world, *id, (CharacterPosition));
+                        assert!(position.status == 1, "character dead");
+                        if *id == m1_next_id {
+                            m1_positions.append(position);
+                            m1_next_index += 1; 
+                            m1_next_id = *m1.characters.at(m1_next_index);
+                        }
+                        if *id == m2_next_id {
+                            m2_positions.append(position);
+                            m2_next_index += 1;
+                            m2_next_id = *m2.characters.at(m2_next_index);
+                        }
+                        if *id == m3_next_id {
+                            m3_positions.append(position);
+                            m3_next_index += 1;
+                            m3_next_id = *m3.characters.at(m3_next_index);
+                        }
+                        
+                        all_positions.append(position);
                     },
                     Option::None => {
                         break;
@@ -201,9 +107,140 @@ mod actions {
                 }
             };
 
+            loop {
+                let opp_character_id = opp_characters.pop_front();
+                match opp_character_id {
+                    Option::Some(id) => {
+                        let position = get!(world, *id, (CharacterPosition));
+                        if position.status == 1 {
+                            all_positions.append(position);
+                        }
+                    },
+                    Option::None => {
+                        break;
+                    }
+                }
+            };
+
+            let mut bullets = get_all_bullets(world, session_id);
+            
+            //start out of bounds so never reached in loop
+            let mut next_shot_t1 = 101;
+            let mut next_shot_t2 = 101;
+            let mut next_shot_t3 = 101;
+            if m1.shots.len() > 0 {
+                next_shot_t1 = m1.shots.pop_front().unwrap().step;
+            }
+            if m2.shots.len() > 0 {
+                next_shot_t2 = m2.shots.pop_front().unwrap().step;
+            }
+            if m3.shots.len() > 0 {
+                next_shot_t3 = m3.shots.pop_front().unwrap().step;
+            }
+
+            let mut sub_move_index = 0;
+
+            while sub_move_index < 100 {
+                let step: u32 = turn_count * 100 + sub_move_index;
+
+                if sub_move_index == next_shot_t1.into() {
+                    //check for shots
+                    let mut shot = m1.shots.pop_front().unwrap();
+                    let mut m1_positions_clone = m1_positions.clone();
+                    loop {
+                        let character = m1_positions_clone.pop_front();
+                        match character {
+                            Option::Some(character) => {
+                                let bullet = BulletTrait::new(
+                                    world.uuid(), 
+                                    Vec2 {x: character.coords.x, y: character.coords.y}, 
+                                    shot.angle, 
+                                    character.id,
+                                    step
+                                );
+                                bullets.append(bullet);
+                                set!(world, (bullet));
+                            },
+                            Option::None => {
+                                break;
+                            }
+                        }
+                    };           
+                }
+
+                if sub_move_index == next_shot_t2.into() {
+                    let mut shot = m2.shots.pop_front().unwrap();
+                    let mut m2_positions_clone = m2_positions.clone();
+                    loop {
+                        let character = m2_positions_clone.pop_front();
+                        match character {
+                            Option::Some(character) => {
+                                let bullet = BulletTrait::new(
+                                    world.uuid(), 
+                                    Vec2 {x: character.coords.x, y: character.coords.y}, 
+                                    shot.angle, 
+                                    character.id,
+                                    step
+                                );
+                                bullets.append(bullet);
+                                set!(world, (bullet));
+                            },
+                            Option::None => {
+                                break;
+                            }
+                        }
+                    };
+                }
+
+                if sub_move_index == next_shot_t3.into() {
+                    let mut shot = m3.shots.pop_front().unwrap();
+                    let mut m3_positions_clone = m3_positions.clone();
+                    loop {
+                        let character = m3_positions_clone.pop_front();
+                        match character {
+                            Option::Some(character) => {
+                                let bullet = BulletTrait::new(
+                                    world.uuid(), 
+                                    Vec2 {x: character.coords.x, y: character.coords.y}, 
+                                    shot.angle, 
+                                    character.id,
+                                    step
+                                );
+                                bullets.append(bullet);
+                                set!(world, (bullet));
+                            },
+                            Option::None => {
+                                break;
+                            }
+                        }
+                    };
+                }
+
+                //apply moves
+                let mut positions = array![];
+
+                let mut new_m1_positions = apply_submoves(m1.sub_moves.pop_front().unwrap(), ref m1_positions, ref positions);
+                let mut new_m2_positions = apply_submoves(m2.sub_moves.pop_front().unwrap(), ref m2_positions, ref positions);
+                let mut new_m3_positions = apply_submoves(m3.sub_moves.pop_front().unwrap(), ref m3_positions, ref positions);
+
+                m1_positions = new_m1_positions;
+                m2_positions = new_m2_positions;
+                m3_positions = new_m3_positions;
+
+                let (updated_bullets, dead_characters_ids) = simulate_bullets(ref bullets, ref positions, @map, step);
+                updated_bullet_ids = updated_bullets;
+                //remove dead characters
+                let (updated_positions, updated_ids) = filter_out_dead_characters(ref positions, dead_characters_ids);
+                all_positions = updated_positions;
+                
+                sub_move_index+=1;
+
+                //END MOVE LOOP
+            };
+
             //set new positions
             loop { 
-                let next_position = positions.pop_front();
+                let next_position = all_positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
                         println!("setting new positions: x: {} y: {}" , pos.coords.x, pos.coords.y);
@@ -215,12 +252,18 @@ mod actions {
                 }
             };
 
-            session_meta.turn_count += 1;
-            session_meta.bullets = updated_bullet_ids;
-            set!(world, (session, session_meta));
+            let new_session_meta = SessionMeta{
+                session_id,
+                turn_count: turn_count + 1,
+                p1_characters: p1_characters,
+                p2_characters: p2_characters,
+                bullets: updated_bullet_ids
+            };
+            set!(world, (session, new_session_meta));
 
 
         }
     }
+
 }
 

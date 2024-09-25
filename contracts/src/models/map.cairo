@@ -22,6 +22,7 @@ impl MapImpl of MapTrait {
 
     // Returns the bounds of the object in the map.
     // (x_min, x_max, y_min, y_max)
+    
     fn get_object_bounds(self: @Map, index: u8) -> (u32, u32, u32, u32) {
         assert!(index.into() < self.map_objects.len(), "Index out of bounds");
         let object = *self.map_objects.at(index.into());
