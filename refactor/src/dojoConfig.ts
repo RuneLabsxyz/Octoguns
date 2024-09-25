@@ -1,10 +1,10 @@
-import manifest from '../../contracts/manifests/dev/deployment/manifest.json'
-
-import { createDojoConfig } from '@dojoengine/core'
+import manifest from '../../contracts/manifests/dev/deployment/manifest.json';
+import { createDojoConfig } from '@dojoengine/core';
+import { PUBLIC_TORII_URL } from '$env/static/public';
 
 export const dojoConfig = createDojoConfig({
   manifest,
-  toriiUrl: 'http://localhost:8080',
-})
+  toriiUrl: PUBLIC_TORII_URL ,
+});
 
-export type Config = typeof dojoConfig
+export type Config = typeof dojoConfig;
