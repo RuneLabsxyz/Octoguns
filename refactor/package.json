@@ -47,6 +47,9 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "trustedDependencies": [
+    "@sveltejs/kit",
+    "@swc/core",
+    "esbuild",
     "svelte-preprocess"
   ],
   "engines": {

@@ -14,7 +14,11 @@ source = "git+https://github.com/dojoengine/cubit?branch=update_to_2.7.0#075bf5a
 [[package]]
 name = "dojo"
 version = "1.0.0-alpha.4"
+<<<<<<< Updated upstream
 source = "git+https://github.com/dojoengine/dojo?tag=v1.0.0-alpha.12#b391948911356cbf8a91daa93314809c87411098"
+=======
+source = "git+https://github.com/dojoengine/dojo?tag=v1.0.0-alpha.11#fbff45b249e2b931f5007edf2d526beef7dc553f"
+>>>>>>> Stashed changes
 dependencies = [
  "dojo_plugin",
 ]
