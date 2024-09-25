@@ -16,6 +16,8 @@ export interface BulletCoords {
 //store for bullets that are shot in current move but not yet onchain, so they don't have an id
 export const bulletRender = writable<BulletCoords[]>([])
 export const bulletInitialPosition = writable<BulletCoords[]>([])
+export const bulletRenderOnchain = writable<BulletCoords[]>([])
+export const bulletInitialPositionOnchain = writable<BulletCoords[]>([])
 export const bulletStart = writable<BulletCoords[]>([])
 export type CoordsStore = Record<number, Coords>
 

@@ -27,6 +27,8 @@
     bulletStart,
     bulletRender,
     bulletInitialPosition,
+    bulletRenderOnchain,
+    bulletInitialPositionOnchain,
     setBulletInitialPosition,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
@@ -134,6 +136,8 @@
     bulletStart.set([])
     bulletRender.set([])
     bulletInitialPosition.set([]) // Reset the initial position store
+    bulletInitialPositionOnchain.set([]) // Reset the onchain initial position store
+    bulletRenderOnchain.set([]) // Reset the onchain render position store
     $sessionMetaData.bullets.forEach((bulletId) => {
       let turn_count = $sessionMetaData.turn_count
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
@@ -168,6 +172,7 @@
           shot_by: shot_by,
         }
         setBulletCoords(data)
+        bulletRenderOnchain.update(currentState => [...currentState, data]) // Store render position in onchain store
 
         // Store the initial position
         let initialCoords = getBulletPosition(bullet, 0) // Get initial position
@@ -178,6 +183,7 @@
           shot_by: shot_by,
         }
         setBulletInitialPosition(initialPosition)
+        bulletInitialPositionOnchain.update(currentState => [...currentState, initialPosition]) // Store initial position in onchain store
       })
     })
   }

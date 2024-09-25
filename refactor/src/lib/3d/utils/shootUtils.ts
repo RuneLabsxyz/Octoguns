@@ -8,6 +8,8 @@ import {
   bulletRender,
   bulletStart,
   bulletInitialPosition,
+  bulletRenderOnchain,
+  bulletInitialPositionOnchain
 } from '$stores/coordsStores'
 import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
@@ -104,8 +106,11 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
 }
 
 export function resetBullets() {
-  bulletRender.set([])
-  bulletInitialPosition.set([])
+  // Set bulletRender back to the original state from onchain store
+  bulletRender.set(get(bulletRenderOnchain))
+
+  // Set bulletInitialPosition back to the original state from onchain store
+  bulletInitialPosition.set(get(bulletInitialPositionOnchain))
 }
 
 export function simulate() {
