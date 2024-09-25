@@ -71,6 +71,7 @@ mod actions {
             let mut sub_move_index = 0;
 
             while sub_move_index < 100 {
+                let step = 100 * session_meta.turn_count + sub_move_index;
 
                 if sub_move_index == next_shot.into() {
 

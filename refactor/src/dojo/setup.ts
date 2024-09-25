@@ -19,7 +19,7 @@ export async function setup({ ...config }: DojoConfig) {
     toriiUrl: config.toriiUrl,
     relayUrl: '',
     worldAddress:
-      '0x77ad0d39b9fc234686eb338d6dfafdaecf5a54fe03f6995b23d59a0f5d49417' || '',
+      '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f' || '',
   })
 
   // create contract components
@@ -44,8 +44,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      config.masterAddress,
-      config.masterPrivateKey
+      "0x1a4603856aadc53c7904f3943a4160067d34e29c29b1d260d71ab5bd8be7646",
+      "0x79ef38612128397b15d2d07b2c5d94f85f205fbb109ce270c901556bd27bfd3"
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,

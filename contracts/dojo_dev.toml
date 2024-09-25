@@ -16,7 +16,7 @@ telegram = "https://t.me/dojoengine"
 default = "octoguns"
 
 [env]
-rpc_url = "http://localhost:5050/"
+rpc_url = "https://api.cartridge.gg/x/octoguns-demo/katana"
 # Default account for katana with seed = 0
-account_address = "0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca"
-private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a"
+account_address = "0x1a4603856aadc53c7904f3943a4160067d34e29c29b1d260d71ab5bd8be7646"
+private_key = "0x79ef38612128397b15d2d07b2c5d94f85f205fbb109ce270c901556bd27bfd3"
