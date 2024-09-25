@@ -115,10 +115,8 @@ export function getBulletPosition(bullet: Bullet, step: number) {
   let x_dir = bullet.velocity.xdir ? 1 : -1
   let y_dir = bullet.velocity.ydir ? 1 : -1
 
-  //@ts-ignore
-  let shot_step = bullet.shot_step.value
-  let new_x = x + (vx * (step - shot_step) * x_dir)
-  let new_y = y + (vy * (step - shot_step) * y_dir)
+  let new_x = x + (vx * step * x_dir)
+  let new_y = y + (vy * step * y_dir)
 
   return {x: new_x - 50, y: new_y - 50}
 }
