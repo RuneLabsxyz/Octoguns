@@ -4,6 +4,7 @@ import { createDojoConfig } from '@dojoengine/core'
 
 export const dojoConfig = createDojoConfig({
   manifest,
+  toriiUrl: 'http://localhost:8080',
 })
 
 export type Config = typeof dojoConfig
