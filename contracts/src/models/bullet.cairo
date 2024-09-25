@@ -31,7 +31,7 @@ impl BulletImpl of BulletTrait {
 
     fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
         let mut new_coords = self.shot_at;
-        let step_felt: felt252 = (step.into() - self.shot_step.into()).into();
+        let step_felt: felt252 = (step - self.shot_step.into()).into();
         let vx: felt252 = self.velocity.x.into();
         let vy: felt252 = self.velocity.y.into();
 
@@ -115,9 +115,11 @@ impl BulletImpl of BulletTrait {
             //plus 1000 offset to to match bounds offset            
             if (position.x + OFFSET > lower_bound_x && position.x + OFFSET < upper_bound_x &&
                 position.y + OFFSET > lower_bound_y && position.y + OFFSET < upper_bound_y) {
-                    character_id = character.id;
-                    dropped = true;
-                    break;        
+                    if character.id != self.shot_by {
+                        character_id = character.id;
+                        dropped = true;
+                        break;        
+                    }
             }
 
             character_index += 1;
@@ -126,10 +128,12 @@ impl BulletImpl of BulletTrait {
         let x_index = position.x / 4000;
         let y_index = position.y / 4000;
         let index = (x_index + y_index * 25).try_into().unwrap();
+        println!("index {}", index);
         let mut object_index: u32 = 0;
         while object_index.into() < map.map_objects.len() {
             let object = *map.map_objects.at(object_index);
             if object == index {
+                println!("hitobject {}", object);
                 dropped = true;
                 break;
             }

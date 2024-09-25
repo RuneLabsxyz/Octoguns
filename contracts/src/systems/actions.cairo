@@ -36,7 +36,7 @@ mod actions {
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
 
-            let mut updated_bullet_ids = array![];
+            let mut updated_bullet_ids = ArrayTrait::new();
 
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
@@ -71,10 +71,11 @@ mod actions {
             let mut sub_move_index = 0;
 
             while sub_move_index < 100 {
+                let step = sub_move_index + 100 * session_meta.turn_count;
+
 
                 if sub_move_index == next_shot.into() {
 
-                    let step = 100 * session_meta.turn_count + sub_move_index;
 
                     let shot = moves.shots.pop_front();
                     match shot {
@@ -100,8 +101,9 @@ mod actions {
                 }
 
                 //advance bullets + check collisions
-                let (new_bullets, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, step);
-                updated_bullet_ids = new_bullets;
+                let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(ref bullets, ref positions, @map, step);
+                bullets = new_bullets;
+                updated_bullet_ids = new_bullet_ids;
 
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(ref positions, dead_characters);
 
