@@ -33,15 +33,17 @@
 
   let isRecorded: boolean
   let justRecorded: boolean
+  let hasReset: boolean
 
   $: if (isMoveRecorded) {
-    if (isRecorded == true && $isMoveRecorded == false) {
+    if (isRecorded == true && $isMoveRecorded == false && !hasReset) {
       // This is just sad, but I don't see a way to make it better
       justRecorded = true
       setTimeout(() => {
         justRecorded = false
       }, 5000)
     }
+    hasReset = false
     isRecorded = $isMoveRecorded
   }
 
@@ -73,6 +75,7 @@
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
+    hasReset = true
     recordingMode.set(false)
     replayMode.set(false)
     resetBullets()

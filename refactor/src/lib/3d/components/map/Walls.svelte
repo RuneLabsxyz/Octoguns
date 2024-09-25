@@ -1,30 +1,24 @@
 <script lang="ts">
   import { T } from '@threlte/core'
   import * as THREE from 'three'
+  import Container from '../models/container.svelte'
+  import { onMount } from 'svelte'
 
-  const textureLoader = new THREE.TextureLoader()
-  const wallTexture = textureLoader.load('/sprites/wall.png')
+  let container: THREE.Group = new THREE.Group()
 
-  wallTexture.wrapS = THREE.RepeatWrapping
-  wallTexture.wrapT = THREE.RepeatWrapping
-  wallTexture.repeat.set(20, 5)
+  function onCreate({ ref }: any) {
+    ref.traverse((object: any) => {
+      console.log('Traversing object!', object)
+      if (object instanceof THREE.Mesh) {
+        console.log('material:', object.material)
+      }
+    })
+  }
 </script>
 
-<T.Group position={[0, -0.5, 0]}>
-  <T.Mesh position={[-50, 5, 0]} receiveShadow>
-    <T.BoxGeometry args={[1, 10, 100]} />
-    <T.MeshStandardMaterial map={wallTexture} />
-  </T.Mesh>
-  <T.Mesh position={[50, 5, 0]} receiveShadow>
-    <T.BoxGeometry args={[1, 10, 100]} />
-    <T.MeshStandardMaterial map={wallTexture} />
-  </T.Mesh>
-  <T.Mesh position={[0, 5, -50]} receiveShadow>
-    <T.BoxGeometry args={[100, 10, 1]} />
-    <T.MeshStandardMaterial map={wallTexture} />
-  </T.Mesh>
-  <T.Mesh position={[0, 5, 50]} receiveShadow>
-    <T.BoxGeometry args={[100, 10, 1]} />
-    <T.MeshStandardMaterial map={wallTexture} />
-  </T.Mesh>
-</T.Group>
+<Container
+  bind:ref={container}
+  on:create={onCreate}
+  position={[0, -0.2, 0]}
+  scale={0.367}
+/>

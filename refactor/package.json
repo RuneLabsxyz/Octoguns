@@ -42,6 +42,7 @@
     "starknet": "^6.11.0",
     "tailwind-merge": "^2.5.2",
     "three": "^0.168.0",
+    "three-inspect": "^0.7.2",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0"
   },

@@ -36,6 +36,7 @@
 
   import { GridHelper } from 'three/src/helpers/GridHelper.js'
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
+  import { Inspector } from 'three-inspect'
 
   let { renderer, scene } = useThrelte()
   let cameras: PerspectiveCamera[] = []
@@ -101,6 +102,8 @@
     animationLoop()
     rendererStore.set(renderer)
 
+    renderer.shadowMap.enabled = false
+
     return () => {
       removeEventListeners()
       cancelAnimationFrame(animationFrameId)
@@ -126,5 +129,5 @@
   <Map />
   <Characters />
   <Bullets />
-  <T.AxesHelper scale={10} position={[0, 1, 0]} />
+  <Inspector />
 </T.Group>
