@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store'
 import { type Bullet } from '$src/dojo/models.gen'
 import { WebGLRenderer } from 'three'
+import { type TurnMove } from '$src/dojo/models.gen'
 
 export const rendererStore = writable<WebGLRenderer>()
 
@@ -22,20 +23,30 @@ export const replayMode = writable<boolean>(false)
 // Holds informations about if you are the second player or not
 export const isSecondPlayer = writable<boolean>(false)
 
-export const recordedMove = writable<TurnData>({
-  sub_moves: [],
-  shots: [],
-})
+export const recordedMove = writable<TurnMove[]>([
+  {
+    characters: [],
+    sub_moves: [],
+    shots: [],
+  },
+  {
+    characters: [],
+    sub_moves: [],
+    shots: [],
+  },
+  {
+    characters: [],
+    sub_moves: [],
+    shots: [],
+  },
+])
 
 export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 
 export const frameCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
 
-export type TurnData = {
-  sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
-  shots: { angle: number; step: number }[]
-}
+export const recordingIndex = writable<number>(0)
 
 export type MapObjects = {
   objects: number[]

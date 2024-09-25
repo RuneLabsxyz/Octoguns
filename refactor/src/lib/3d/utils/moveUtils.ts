@@ -11,7 +11,6 @@ import {
 } from '$stores/gameStores'
 import { playerCharacterCoords } from '$stores/coordsStores'
 import { inPointerLock } from '$stores/cameraStores'
-import type { TurnData } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import { Camera } from 'three'
 import {
@@ -21,6 +20,8 @@ import {
   SUBMOVE_SCALE,
 } from '$lib/consts'
 import { normalizeAndScaleVector, clamp } from '$lib/helper'
+import type { TurnMove } from '$src/dojo/models.gen'
+import { recordingIndex } from '$stores/gameStores'
 
 export function recordMove(camera: Camera, characterId: number) {
   const moveDirection = new Vector3()
@@ -93,7 +94,10 @@ export function recordMove(camera: Camera, characterId: number) {
         ydir: current.y >= 0,
       }
       recordedMove.update((rm) => {
-        rm.sub_moves.push(move)
+        console.log(get(recordingIndex))
+        console.log(rm)
+        console.log(rm[get(recordingIndex)])
+        rm[get(recordingIndex)].sub_moves.push(move)
         return rm
       })
       currentSubMove.set({ x: 0, y: 0 })
@@ -114,26 +118,28 @@ export function recordMove(camera: Camera, characterId: number) {
   // Reset move direction is not necessary since moveDirection is now scoped within the function
 }
 
-export function replayMove(move: TurnData, characterId: number) {
+export function replayMove(move: TurnMove[], characterId: number) {
   if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
     frameCounter.set(0)
     replayMode.set(false)
   }
 
   let move_index = Math.floor(get(frameCounter) / FRAME_INTERVAL)
-  if (move_index >= move.sub_moves.length) {
+  if (move_index >= move[get(recordingIndex)].sub_moves.length) {
     console.warn('Move index exceeds recorded sub-moves.')
     return
   }
-  let sub_move = move.sub_moves[move_index]
+  let sub_move = move[get(recordingIndex)].sub_moves[move_index]
   console.log(move)
 
   if (
     get(frameCounter) % FRAME_INTERVAL === 0 &&
     get(frameCounter) < RECORDING_FRAME_LIMIT
   ) {
-    let x_dif = sub_move.x
-    let y_dif = sub_move.y
+    //@ts-ignore
+    let x_dif = sub_move.x.value
+    //@ts-ignore
+    let y_dif = sub_move.y.value
     if (!sub_move.xdir) x_dif *= -1
     if (!sub_move.ydir) y_dif *= -1
     playerCharacterCoords.update((coords) => {

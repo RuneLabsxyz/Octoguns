@@ -36,17 +36,17 @@
   import { areAddressesEqual, getBulletPosition } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
-  import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
   import { resetBullets } from '$lib/3d/utils/shootUtils.js'
   import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
   import Waiting from '$lib/ui/ingame/Waiting.svelte'
+  import { type TurnMove } from '$src/dojo/models.gen'
 
   export let data
   let gameId = data.gameId
   let account: Account
-  let calldata: TurnData
+  let calldata: TurnMove[]
   let characterData: ComponentStore
   let characterPosition: ComponentStore
   let map: ComponentStore
@@ -120,10 +120,9 @@
   }
 
   $: if ($sessionMetaData) {
-    characterIds.set([
-      $sessionMetaData.p1_character,
-      $sessionMetaData.p2_character,
-    ])
+    characterIds.set(
+      $sessionMetaData.p1_characters.concat($sessionMetaData.p2_characters),
+    )
     if (map) {
       console.log('map', $map)
       mapObjects.set({ objects: get(map).map_objects })
@@ -182,10 +181,8 @@
   }
 
   $: if ($isMoveRecorded)
-    calldata = {
-      sub_moves: $recordedMove.sub_moves,
-      shots: $recordedMove.shots,
-    }
+    calldata = $recordedMove
+  
   // Extract character data w/ characterIds
   $: if ($characterIds) {
     console.log('cahracter ids', $characterIds)
@@ -193,7 +190,8 @@
       if (characterId) {
         console.log(characterId)
         let characterEntity = torii.poseidonHash([
-          BigInt(characterId).toString(),
+          //@ts-ignore
+          BigInt(characterId.value).toString(),
         ])
         characterData = componentValueStore(
           clientComponents.CharacterModel,
@@ -230,7 +228,7 @@
     console.log('calldata', calldata)
     move(client, account, $sessionId, calldata)
     frameCounter.set(0)
-    recordedMove.set({ sub_moves: [], shots: [] })
+    recordedMove.set([{ characters: [], sub_moves: [], shots: [] }, { characters: [], sub_moves: [], shots: [] }, { characters: [], sub_moves: [], shots: [] }])
     isMoveRecorded.set(false)
     recordingMode.set(false)
     replayMode.set(false)

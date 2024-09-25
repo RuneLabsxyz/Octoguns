@@ -164,19 +164,21 @@ export const SessionDefinition = {
 
 // Type definition for `octoguns::models::sessions::SessionMeta` struct
 export interface SessionMeta {
-  session_id: Number
-  turn_count: Number
-  p1_character: Number
-  p2_character: Number
-  bullets: Number[]
+  session_id: Number;
+  turn_count: Number;
+  p1_characters: Number[];
+  p2_characters: Number[];
+  bullets: Number[];
+  
 }
 export const SessionMetaDefinition = {
   session_id: RecsType.Number,
   turn_count: RecsType.Number,
-  p1_character: RecsType.Number,
-  p2_character: RecsType.Number,
+  p1_characters: RecsType.NumberArray,
+  p2_characters: RecsType.NumberArray,
   bullets: RecsType.NumberArray,
-}
+  
+};
 
 // Type definition for `octoguns::types::Shot` struct
 export interface Shot {
@@ -195,22 +197,24 @@ export interface TurnData {
   moves: TurnMove
 }
 
-export const TurnMoveDefinition = {
-  sub_moves: RecsType.StringArray,
-  shots: RecsType.StringArray,
+export interface MapObjects {
+  objects: Number[]
 }
 
-export const TurnDataDefinition = {
-  session_id: RecsType.Number,
-  turn_number: RecsType.Number,
-  moves: TurnMoveDefinition,
-}
 
 // Type definition for `octoguns::types::TurnMove` struct
 export interface TurnMove {
-  sub_moves: String[]
-  shots: String[]
+  characters: Number[];
+  sub_moves: IVec2[];
+  shots: Shot[];
+  
 }
+export const TurnMoveDefinition = {
+  characters: RecsType.NumberArray,
+  sub_moves: RecsType.StringArray,
+  shots: RecsType.StringArray,
+  
+};
 
 export function defineContractComponents(world: World) {
   return {
@@ -339,65 +343,65 @@ export function defineContractComponents(world: World) {
     // Model definition for `octoguns::models::sessions::Session` model
     Session: (() => {
       return defineComponent(
-        world,
-        {
-          session_id: RecsType.Number,
-          player1: RecsType.BigInt,
-          player2: RecsType.BigInt,
-          map_id: RecsType.Number,
-          state: RecsType.Number,
-        },
-        {
-          metadata: {
-            namespace: 'octoguns',
-            name: 'Session',
-            types: ['u32', 'ContractAddress', 'ContractAddress', 'u32', 'u8'],
-            customTypes: [],
+          world,
+          {
+              session_id: RecsType.Number,
+              player1: RecsType.BigInt,
+              player2: RecsType.BigInt,
+              map_id: RecsType.Number,
+              state: RecsType.Number,
           },
-        }
-      )
-    })(),
+          {
+              metadata: {
+                  namespace: "octoguns",
+                  name: "Session",
+                  types: ["u32", "ContractAddress", "ContractAddress", "u32", "u8"],
+                  customTypes: [],
+              },
+          }
+      );
+  })(),
 
-    // Model definition for `octoguns::models::sessions::SessionMeta` model
-    SessionMeta: (() => {
+  // Model definition for `octoguns::models::sessions::SessionMeta` model
+  SessionMeta: (() => {
       return defineComponent(
-        world,
-        {
-          session_id: RecsType.Number,
-          turn_count: RecsType.Number,
-          p1_character: RecsType.Number,
-          p2_character: RecsType.Number,
-          bullets: RecsType.NumberArray,
-        },
-        {
-          metadata: {
-            namespace: 'octoguns',
-            name: 'SessionMeta',
-            types: ['u32', 'u32', 'u32', 'u32', 'array'],
-            customTypes: [],
+          world,
+          {
+              session_id: RecsType.Number,
+              turn_count: RecsType.Number,
+              p1_characters: RecsType.NumberArray,
+              p2_characters: RecsType.NumberArray,
+              bullets: RecsType.NumberArray,
           },
-        }
-      )
-    })(),
+          {
+              metadata: {
+                  namespace: "octoguns",
+                  name: "SessionMeta",
+                  types: ["u32", "u32", "array", "array", "array"],
+                  customTypes: [],
+              },
+          }
+      );
+  })(),
 
-    // Model definition for `octoguns::models::turndata::TurnData` model
-    TurnData: (() => {
+  // Model definition for `octoguns::models::turndata::TurnData` model
+  TurnData: (() => {
       return defineComponent(
-        world,
-        {
-          session_id: RecsType.Number,
-          turn_number: RecsType.Number,
-          moves: TurnMoveDefinition,
-        },
-        {
-          metadata: {
-            namespace: 'octoguns',
-            name: 'TurnData',
-            types: ['u32', 'u32'],
-            customTypes: ['TurnMove'],
+          world,
+          {
+              session_id: RecsType.Number,
+              turn_number: RecsType.Number,
+              moves: RecsType.StringArray,
           },
-        }
-      )
-    })(),
+          {
+              metadata: {
+                  namespace: "octoguns",
+                  name: "TurnData",
+                  types: ["u32", "u32", "array"],
+                  customTypes: [],
+              },
+          }
+      );
+  })(),
   }
 }

@@ -15,7 +15,8 @@ export async function setupWorld(provider: DojoProvider) {
 
         
         // Call the `move` system with the specified Account and calldata
-        const move = async (props: { account: Account, session_id: number, moves: models.TurnMove }) => {
+         // Call the `move` system with the specified Account and calldata
+         const move = async (props: { account: Account, session_id: number, moves: models.TurnMove[] }) => {
             try {
                 return await provider.execute(
                     props.account,
@@ -23,13 +24,12 @@ export async function setupWorld(provider: DojoProvider) {
                         contractName: contract_name,
                         entrypoint: "move",
                         calldata: [props.session_id,
-                props.moves.sub_moves,
-                    props.moves.shots],
+                ...props.moves],
                     },
                     "octoguns"
                 );
             } catch (error) {
-                console.error("Error executing move:", error);
+                console.error("Error executing spawn:", error);
                 throw error;
             }
         };

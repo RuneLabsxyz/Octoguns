@@ -1,6 +1,5 @@
 import { frameCounter, recordedMove, mapObjects } from '$stores/gameStores'
 import { get } from 'svelte/store'
-import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
 import * as THREE from 'three'
 import {
@@ -10,9 +9,10 @@ import {
   bulletInitialPosition,
 } from '$stores/coordsStores'
 import { splat } from '$stores/eyeCandy'
-import { isTurnPlayer } from '$stores/gameStores'
+import { isTurnPlayer, recordingIndex } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 import { BULLET_SPEED } from '$lib/consts'
+import { type TurnMove } from '$dojo/models.gen'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
@@ -42,8 +42,8 @@ export function shoot(camera: PerspectiveCamera) {
   )
 
   recordedMove.update((rm) => {
-    rm.shots.push({ angle: direction, step: move_index })
-    console.log(rm.shots)
+    rm[get(recordingIndex)].shots.push({ angle: direction, step: move_index })
+    console.log(rm[get(recordingIndex)].shots)
     return rm
   })
 
@@ -69,12 +69,13 @@ export function shoot(camera: PerspectiveCamera) {
   applyBulletToStore(newBullet)
 }
 
-export function replayShot(move: TurnData, camera: PerspectiveCamera) {
+export function replayShot(move: TurnMove[], camera: PerspectiveCamera) {
   let move_index = Math.floor((get(frameCounter) + 1) / 3)
 
-  let shot = move.shots.find((shot) => shot.step === move_index)
+  let shot = move[0].shots.find((shot) => shot.step === move_index)
+  //todo, shots for all moves and fire from all characters
   if (shot) {
-    let angle = shot.angle
+    let angle = parseInt(shot.angle.toString())
 
     console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 

@@ -1,5 +1,5 @@
 import { Account } from 'starknet'
-import { type TurnData } from '$stores/gameStores'
+import { type TurnMove } from './models.gen'
 import type { IWorld } from './contracts.gen'
 
 export type Vec = {
@@ -22,7 +22,7 @@ export const move = async (
   client: IWorld,
   account: Account,
   session_id: number,
-  moves: TurnData
+  moves: TurnMove[]
 ) => {
   client.actions.move({ account, session_id, moves })
 }
