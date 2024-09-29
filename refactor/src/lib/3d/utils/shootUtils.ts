@@ -141,14 +141,7 @@ export function simulate() {
       const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
       const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
 
-      // Check if the new bullet position is inside any wall
-      const isInsideWall = wallCoords.some(
-        (wall) =>
-          newX >= wall.x &&
-          newX <= wall.x + 4 &&
-          newY >= wall.y &&
-          newY <= wall.y + 4
-      )
+
 
       // Check if the bullet is outside the map boundaries
       const isOutsideMap =
@@ -157,7 +150,7 @@ export function simulate() {
         newY < mapBoundary.minY ||
         newY > mapBoundary.maxY
 
-      if (!isInsideWall && !isOutsideMap) {
+      if (!isOutsideMap) {
         newBullets.push({
           ...bullet,
           coords: {
@@ -166,7 +159,7 @@ export function simulate() {
           },
         })
       }
-      if (isInsideWall || isOutsideMap) {
+      if (isOutsideMap) {
         splat.update((splat) => {
           splat.push({ x: newX, y: newY })
           return splat

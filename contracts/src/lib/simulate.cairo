@@ -6,16 +6,15 @@ use octoguns::consts::ONE_E_8;
 use octoguns::models::map::{Map, MapTrait};
 
 // Tuple to hold bullet_ids and character_ids to drop
-pub type SimulationResult = (Array<u32>, Array<u32>);
+pub type SimulationResult = (Array<Bullet>, Array<u32>, Array<u32>);
 
 pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Array<CharacterPosition>, map: @Map, step: u32) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
+    let mut updated_bullet_ids = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
-
-    let mut cloned_bullets = bullets.clone();
     
     loop {
-        match cloned_bullets.pop_front() {
+        match bullets.pop_front() {
             Option::Some(mut bullet) => {
                 let (hit_character, dropped) = bullet.simulate(@character_positions, map, step);
                 match hit_character {
@@ -24,7 +23,11 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
                     },
                     Option::None => {
                         if !dropped {
-                            updated_bullets.append(bullet.bullet_id);
+                            updated_bullets.append(bullet);
+                            updated_bullet_ids.append(bullet.bullet_id);
+                        }
+                        else {
+                            println!("bullet {} dropped", bullet.bullet_id);
                         }
                     },
                 }
@@ -33,9 +36,9 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
         }
         
     };
-    println!("bullets: {}", bullets.len());
+    println!("bullets: {}", updated_bullets.len());
 
-    (updated_bullets, dead_characters_ids)
+    (updated_bullets, updated_bullet_ids, dead_characters_ids)
 }
 
 #[cfg(test)]

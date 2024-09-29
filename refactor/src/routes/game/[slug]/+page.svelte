@@ -175,7 +175,8 @@
         bulletRenderOnchain.update(currentState => [...currentState, data]) // Store render position in onchain store
 
         // Store the initial position
-        let initialCoords = getBulletPosition(bullet, 0) // Get initial position
+        let initialCoords = getBulletPosition(bullet, $sessionMetaData.turn_count * 100) // Get initial position
+        console.log('initialCoords', initialCoords)
         let initialPosition = {
           coords: initialCoords,
           velocity: velocity,
