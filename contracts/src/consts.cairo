@@ -3,4 +3,4 @@ pub const GLOBAL_KEY: u32 = 0;
 
 pub const BULLET_SPEED: u64 = 300;
 pub const MOVE_SPEED: u64 = 400;
-
+pub const STEP_COUNT: u32 = 100;
