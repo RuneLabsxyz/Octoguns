@@ -22,7 +22,7 @@ impl BulletImpl of BulletTrait {
 
     fn new(id: u32, coords: Vec2, angle: u64, shot_by: u32, shot_step: u16) -> Bullet {
         //speed is how much it travels per sub step
-        //distance travelled per turn is speed * 100
+        //distance travelled per turn is speed * STEP_COUNT
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
         let velocity = IVec2 { x: cos * BULLET_SPEED / ONE_E_8, y: sin * BULLET_SPEED / ONE_E_8, xdir, ydir };
