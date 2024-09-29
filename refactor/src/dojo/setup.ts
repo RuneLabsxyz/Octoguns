@@ -9,7 +9,7 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
-
+import { KATANA_PREFUNDED_ADDRESS, KATANA_PREFUNDED_PRIVATE_KEY } from '@dojoengine/core'
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export async function setup({ ...config }: DojoConfig) {
@@ -42,8 +42,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      "0x69db794b203662e088ff7e49bc6acf0e7520f6121441c083cd2790043103eaf",
-      "0x5598a99fc8c908478c7a3eae195abbd94146f367f85fc640c6916494dd5028e"
+      KATANA_PREFUNDED_ADDRESS,
+      KATANA_PREFUNDED_PRIVATE_KEY
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,
