@@ -126,14 +126,6 @@ export function simulate() {
     return { x, y }
   })
 
-  // Define the boundaries of the map
-  const mapBoundary = {
-    minX: -50,
-    maxX: 50,
-    minY: -50,
-    maxY: 50,
-  }
-
   // Update temp / new bullets
   bulletRender.update((bullets) => {
     let newBullets: BulletCoords[] = []
@@ -141,14 +133,8 @@ export function simulate() {
       const newX = bullet.coords.x + bullet.velocity.x * BULLET_SPEED
       const newY = bullet.coords.y + bullet.velocity.y * BULLET_SPEED
 
-
-
-      // Check if the bullet is outside the map boundaries
-      const isOutsideMap =
-        newX < mapBoundary.minX ||
-        newX > mapBoundary.maxX ||
-        newY < mapBoundary.minY ||
-        newY > mapBoundary.maxY
+      // Use the new function to check if the bullet is outside the map boundaries
+      const isOutsideMap = isOutsideMapBoundary(newX, newY)
 
       if (!isOutsideMap) {
         newBullets.push({
@@ -168,4 +154,21 @@ export function simulate() {
     })
     return newBullets
   })
+}
+
+// Add this new function
+export function isOutsideMapBoundary(x: number, y: number): boolean {
+  const mapBoundary = {
+    minX: -50,
+    maxX: 50,
+    minY: -50,
+    maxY: 50,
+  }
+
+  return (
+    x < mapBoundary.minX ||
+    x > mapBoundary.maxX ||
+    y < mapBoundary.minY ||
+    y > mapBoundary.maxY
+  )
 }

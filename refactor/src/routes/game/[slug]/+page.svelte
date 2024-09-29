@@ -2,7 +2,6 @@
   import { Canvas } from '@threlte/core'
   import Scene from '$lib/3d/Scene.svelte'
   import Ui from '$lib/ui/Ui.svelte'
-  import { getComponentValue } from '@dojoengine/recs'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { dojoStore, accountStore } from '$stores/dojoStore'
   import {
@@ -41,9 +40,8 @@
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
   import { type SetupResult } from '$src/dojo/setup.js'
-  import { resetBullets } from '$lib/3d/utils/shootUtils.js'
-  import BirdView from '$lib/3d/components/Cameras/BirdView.svelte'
   import Waiting from '$lib/ui/ingame/Waiting.svelte'
+  import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
 
   export let data
   let gameId = data.gameId
@@ -154,6 +152,12 @@
           bullet,
           (1 + turn_count) * 100 - bullet.shot_step
         )
+
+        //if bullet is outside map boundary, don't add it
+        if (isOutsideMapBoundary(coords.x, coords.y)) {
+          return
+        }
+        
         let x_dir = v.xdir ? 1 : -1
         let y_dir = v.ydir ? 1 : -1
         let velocity = { x: (x_dir * v.x) / 100, y: (y_dir * v.y) / 100 }
