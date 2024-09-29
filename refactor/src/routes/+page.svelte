@@ -7,7 +7,6 @@
   import { onMount } from 'svelte'
 
   onMount(() => {
-    playSoundEffectLoop('/audio/tracks/mermaid.wav', 0.04)
     playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
   })
 </script>
