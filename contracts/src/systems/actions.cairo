@@ -19,12 +19,13 @@ mod actions {
     use octoguns::lib::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
+    use octoguns::consts::{STEP_COUNT};
 
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
         fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: TurnMove) {
-            assert!(moves.sub_moves.len() <= 50, "Invalid number of moves");
+            assert!(moves.sub_moves.len() <= STEP_COUNT, "Invalid number of moves");
             assert!(moves.shots.len() <= 1, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
@@ -63,15 +64,15 @@ mod actions {
             
             //start out of bounds so never reached in loop if no shots
 
-            let mut next_shot = 101;
+            let mut next_shot = STEP_COUNT + 1;
             if moves.shots.len() > 0 {
                 next_shot = (*moves.shots.at(0)).step;
             }
 
             let mut sub_move_index = 0;
 
-            while sub_move_index < 100 {
-                let step = sub_move_index + 100 * session_meta.turn_count;
+            while sub_move_index < STEP_COUNT {
+                let step = sub_move_index + STEP_COUNT * session_meta.turn_count;
 
                 if sub_move_index == next_shot.into() {
 
