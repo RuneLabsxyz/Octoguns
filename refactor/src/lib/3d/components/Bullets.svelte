@@ -1,9 +1,14 @@
 <script lang="ts">
-  import { bulletRender} from '$stores/coordsStores'
+  import { bulletRender, bulletInitialPosition } from '$stores/coordsStores'
   import Bullet from './Bullet/Bullet.svelte'
 
+  $: bulletPairs = $bulletRender.map((bullet, index) => {
+    const initialBullet = $bulletInitialPosition.find((b) => b.id === bullet.id)
+    const uniqueKey = `${bullet.id}-${index}-${initialBullet?.coords.x}-${initialBullet?.coords.y}`
+    return { bullet, initialBullet, uniqueKey }
+  })
 </script>
 
-{#each $bulletRender as bullet (bullet)}
-  <Bullet {bullet} />
+{#each bulletPairs as { bullet, initialBullet, uniqueKey } (uniqueKey)}
+  <Bullet {bullet} initialPosition={initialBullet} />
 {/each}

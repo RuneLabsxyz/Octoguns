@@ -3,6 +3,12 @@
   import Background from '$lib/ui/Background.svelte'
   import Button from '$lib/ui/Button.svelte'
   import { isSetup } from '$stores/dojoStore'
+  import { playSoundEffectLoop } from '$lib/3d/utils/audioUtils'
+  import { onMount } from 'svelte'
+
+  onMount(() => {
+    playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
+  })
 </script>
 
 <Background />
@@ -12,10 +18,9 @@
       class="flex justify-center items-center flex-col bg-white p-10 rounded-lg border-black border-4"
     >
       <div class="text-9xl">
-        <h1 class="font-Block">OCTO</h1>
-        <h2 class="font-Block">GUNS</h2>
+        <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
       </div>
-      <div class="mt-8">
+      <div>
         {#if $isSetup}
           <Button on:click={() => goto('/client/games')}>Play</Button>
         {:else}
@@ -31,7 +36,6 @@
 <style>
   .wrapper {
     background: url('/tiled-design.svg') repeat;
-
     background-size: 450px;
   }
 </style>

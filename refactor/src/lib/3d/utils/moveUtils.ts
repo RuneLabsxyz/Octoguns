@@ -57,16 +57,19 @@ export function recordMove(camera: Camera, characterId: number) {
 
     // Update player coordinates with clamped values to stay within grid bounds
     playerCharacterCoords.update((coords) => {
-      coords[characterId].x = clamp(
-        coords[characterId].x + moveDirection.x / SCALING_FACTOR,
-        -50,
-        50
-      )
-      coords[characterId].y = clamp(
-        coords[characterId].y + moveDirection.z / SCALING_FACTOR,
-        -50,
-        50
-      )
+      const newX = coords[characterId].x + moveDirection.x / SCALING_FACTOR
+      const newY = coords[characterId].y + moveDirection.z / SCALING_FACTOR
+
+      // Check if new coordinates are out of bounds and set move direction to 0 if they are
+      if (newX < -50 || newX > 50) {
+        moveDirection.x = 0
+      }
+      if (newY < -50 || newY > 50) {
+        moveDirection.z = 0
+      }
+
+      coords[characterId].x = clamp(newX, -50, 50)
+      coords[characterId].y = clamp(newY, -50, 50)
       return coords
     })
 

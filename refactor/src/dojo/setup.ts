@@ -19,7 +19,7 @@ export async function setup({ ...config }: DojoConfig) {
     toriiUrl: config.toriiUrl,
     relayUrl: '',
     worldAddress:
-      '0x77ad0d39b9fc234686eb338d6dfafdaecf5a54fe03f6995b23d59a0f5d49417' || '',
+      '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f' || '',
   })
 
   // create contract components
@@ -30,8 +30,6 @@ export async function setup({ ...config }: DojoConfig) {
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
-  let entities = await toriiClient.getAllEntities(100, 0)
-  console.log(entities)
 
   const sync = await getSyncEntities(toriiClient, contractComponents as any, [])
 
@@ -44,8 +42,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      config.masterAddress,
-      config.masterPrivateKey
+      "0x69db794b203662e088ff7e49bc6acf0e7520f6121441c083cd2790043103eaf",
+      "0x5598a99fc8c908478c7a3eae195abbd94146f367f85fc640c6916494dd5028e"
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,

@@ -26,12 +26,16 @@
     playerStartCoords,
     bulletStart,
     bulletRender,
+    bulletInitialPosition,
+    bulletRenderOnchain,
+    bulletInitialPositionOnchain,
+    setBulletInitialPosition,
     setPlayerCharacterCoords,
     setEnemyCharacterCoords,
     setBulletCoords,
   } from '$stores/coordsStores'
   import { get } from 'svelte/store'
-  import { areAddressesEqual } from '$lib/helper'
+  import { areAddressesEqual, getBulletPosition } from '$lib/helper'
   import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
@@ -131,7 +135,11 @@
   $: if ($sessionMetaData.bullets) {
     bulletStart.set([])
     bulletRender.set([])
+    bulletInitialPosition.set([]) // Reset the initial position store
+    bulletInitialPositionOnchain.set([]) // Reset the onchain initial position store
+    bulletRenderOnchain.set([]) // Reset the onchain render position store
     $sessionMetaData.bullets.forEach((bulletId) => {
+      let turn_count = $sessionMetaData.turn_count
       //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
       let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
       let bulletStore = componentValueStore(
@@ -139,6 +147,18 @@
         bulletEntity
       )
       bulletStore.subscribe((bullet) => {
+        console.log('bullet', bullet)
+        if (!bullet) return
+        let v = bullet.velocity
+        let coords = getBulletPosition(
+          bullet,
+          (1 + turn_count) * 100 - bullet.shot_step
+        )
+        let x_dir = v.xdir ? 1 : -1
+        let y_dir = v.ydir ? 1 : -1
+        let velocity = { x: (x_dir * v.x) / 100, y: (y_dir * v.y) / 100 }
+
+        //TODO, shot by is character id not address
         let shot_by = areAddressesEqual(
           bullet.shot_by.toString(),
           account.address
@@ -146,12 +166,25 @@
           ? 1
           : 2
         let data = {
-          coords: bullet.coords,
-          angle: bullet.angle / 10 ** 8,
+          coords: coords,
+          velocity: velocity,
           id: bullet.bullet_id,
           shot_by: shot_by,
         }
         setBulletCoords(data)
+        bulletRenderOnchain.update(currentState => [...currentState, data]) // Store render position in onchain store
+
+        // Store the initial position
+        let initialCoords = getBulletPosition(bullet, $sessionMetaData.turn_count * 100) // Get initial position
+        console.log('initialCoords', initialCoords)
+        let initialPosition = {
+          coords: initialCoords,
+          velocity: velocity,
+          id: bullet.bullet_id,
+          shot_by: shot_by,
+        }
+        setBulletInitialPosition(initialPosition)
+        bulletInitialPositionOnchain.update(currentState => [...currentState, initialPosition]) // Store initial position in onchain store
       })
     })
   }

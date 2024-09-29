@@ -11,16 +11,16 @@ fn generate_character_positions(player_id: u8) -> Array<Vec2> {
 
     // Define the x-coordinate for each player
     let x = if is_player_one {
-        200_u32 // Player one spawns at x = 200
+        20000 // Player one spawns at x = 20000
     } else {
-        10000_u32 // Player two spawns at x = 10000
+        80000 // Player two spawns at x = 80000
     };
 
     let num_characters = 8;
     let mut count = 0;
     while count < num_characters {
         // Calculate y position, distributing characters from 200 to 10000
-        let y = 200_u32 + (count * 1400_u32); // (10000 - 200) / 7 ≈ 1400
+        let y = 20000 + (count * 14000); // (10000 - 200) / 7 ≈ 1400
         
         positions.append(Vec2 { x, y });
         count += 1;
