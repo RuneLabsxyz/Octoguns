@@ -87,13 +87,15 @@
     class="grid grid-fill justify-around auto-cols-min px-3 overflow-auto overflow-x-hidden"
   >
     {#each maps as map}
-      <Button
-        class="w-fit h-fit"
-        selected={localSelectedMap === map.map_id}
-        on:click={() => selectMap(map.map_id)}
-      >
-        <MiniMap {map} />
-      </Button>
+      {#if map}
+        <Button
+          className="w-fit h-fit"
+          selected={localSelectedMap === map.map_id}
+          on:click={() => selectMap(map.map_id)}
+        >
+          <MiniMap {map} />
+        </Button>
+      {/if}
     {/each}
   </div>
 </div>
