@@ -150,7 +150,7 @@
         let v = bullet.velocity
         let coords = getBulletPosition(
           bullet,
-          (1 + turn_count) * 100 - bullet.shot_step
+          (turn_count) * 100 - bullet.shot_step
         )
 
         //if bullet is outside map boundary, don't add it
@@ -160,7 +160,7 @@
         
         let x_dir = v.xdir ? 1 : -1
         let y_dir = v.ydir ? 1 : -1
-        let velocity = { x: (x_dir * v.x) / 100, y: (y_dir * v.y) / 100 }
+        let velocity = { x: (x_dir * v.x) / 300 , y: (y_dir * v.y) / 300 }
 
         //TODO, shot by is character id not address
         let shot_by = areAddressesEqual(
