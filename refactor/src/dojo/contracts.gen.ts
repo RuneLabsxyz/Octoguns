@@ -86,7 +86,7 @@ export async function setupWorld(provider: DojoProvider) {
 
     
         // Call the `create` system with the specified Account and calldata
-        const create = async (props: { account: Account, objects: models.MapObjects }) => {
+        const create = async (props: { account: Account, objects: models.Map }) => {
             try {
                 return await provider.execute(
                     props.account,
