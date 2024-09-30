@@ -65,6 +65,7 @@
   }
 
   const animationLoop = () => {
+
     if ($birdView) {
       if (birdViewCamera) {
         resetCamera(birdViewCamera, renderer)
