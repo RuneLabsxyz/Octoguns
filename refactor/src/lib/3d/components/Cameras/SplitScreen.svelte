@@ -5,9 +5,12 @@
   import { playerCharacterId } from '$stores/gameStores'
   import { playerCharacterCoords } from '$stores/coordsStores'
   import { birdView } from '$stores/cameraStores'
+  import { useThrelte } from '@threlte/core'
   import Hand from '../models/hand.svelte'
 
   $: playerCoords = $playerCharacterCoords[$playerCharacterId]
+
+  let {renderer} = useThrelte()
 
   export let cameras: PerspectiveCamera[] = []
   export let numCameras: number = 1

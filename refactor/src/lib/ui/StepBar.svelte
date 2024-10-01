@@ -1,8 +1,9 @@
 <script lang="ts">
   import { frameCounter } from '$src/stores/gameStores'
+  import { RECORDING_FRAME_LIMIT } from '$src/lib/consts'
 
   function getColor(frameCount: number) {
-    let remaining = 150 - frameCount
+    let remaining = RECORDING_FRAME_LIMIT - frameCount
     if (remaining < 25) {
       return '#ef4444'
     }
@@ -11,14 +12,14 @@
     }
     return '#4caf50'
   }
+
+  $: barWidth = Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100)
 </script>
 
 <div class="step-bar-container">
   <div
     class="step-bar"
-    style="width: {100 - $frameCounter / 1.5}%; background-color: {getColor(
-      $frameCounter
-    )}"
+    style="width: {barWidth}%; background-color: {getColor($frameCounter)}"
   ></div>
 </div>
 

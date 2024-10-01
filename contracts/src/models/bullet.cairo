@@ -2,7 +2,7 @@ use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 use octoguns::lib::trig::{fast_cos_unsigned, fast_sin_unsigned};
 use octoguns::consts::ONE_E_8;
 use starknet::ContractAddress;
-use octoguns::consts::{MOVE_SPEED, BULLET_SPEED};
+use octoguns::consts::{MOVE_SPEED, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
 use octoguns::types::{IVec2, Vec2};
 
@@ -25,7 +25,7 @@ impl BulletImpl of BulletTrait {
         //distance travelled per turn is speed * STEP_COUNT
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
-        let velocity = IVec2 { x: cos * BULLET_SPEED / ONE_E_8, y: sin * BULLET_SPEED / ONE_E_8, xdir, ydir };
+        let velocity = IVec2 { x: cos * (BULLET_SPEED/ BULLET_SUBSTEPS.into()) / ONE_E_8, y: sin * (BULLET_SPEED/ BULLET_SUBSTEPS.into()) / ONE_E_8, xdir, ydir };
         Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step, velocity}
     }
 
@@ -159,7 +159,7 @@ mod simulate_tests {
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};
-    use octoguns::consts::{BULLET_SPEED, ONE_E_8};
+    use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::types::MapObjects;
 
@@ -191,7 +191,7 @@ mod simulate_tests {
         );
         let position = bullet.get_position(1).unwrap();
         assert!(position.x == 0, "x should not have changed");
-        assert!(position.y.into() == BULLET_SPEED, "y should have changed by speed");
+        assert!(position.y == BULLET_SPEED / BULLET_SUBSTEPS.into(), "y should have changed by speed");
     }
 
     #[test]
@@ -208,7 +208,7 @@ mod simulate_tests {
         );
         let position = bullet.get_position(1).unwrap();
        
-        assert!(position.x.into() == BULLET_SPEED, "x should have changed by speed");
+        assert!(position.x == BULLET_SPEED / BULLET_SUBSTEPS.into(), "x should have changed by speed");
         assert!(position.y == 0, "y should not have changed");
 
      }
@@ -303,7 +303,7 @@ mod simulate_tests {
             1,
             0
         );
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3);
         match hit_character {
             Option::None => {
                 if !dropped {

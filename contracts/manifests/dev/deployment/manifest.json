@@ -1,8 +1,8 @@
 {
   "world": {
     "kind": "WorldContract",
-    "class_hash": "0x6f4515274ee23404789c3351a77107d0ec07508530119822046600ca6948d6e",
-    "original_class_hash": "0x6f4515274ee23404789c3351a77107d0ec07508530119822046600ca6948d6e",
+    "class_hash": "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0",
+    "original_class_hash": "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0",
     "abi": [
       {
         "type": "impl",
@@ -1234,8 +1234,8 @@
         ]
       }
     ],
-    "address": "0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f",
-    "transaction_hash": "0xba5ddaca56bfe4bc805612d6c543cea5fbd76e03c92f7a75ce94b4957bfeb",
+    "address": "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3",
+    "transaction_hash": "0x2c9a77cb6bb6e0cc6b86b67481b0e685c33a10f942457cf03333c9defe47223",
     "block_number": 3,
     "seed": "octoguns",
     "metadata": {
@@ -1255,7 +1255,7 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x2d5b84918519922e15f01e7dfa0b6c3f6ff9aec552ff127785f3ba6498a1149",
+      "address": "0x11de1871e7fa8ac97e62c36724c32ee584982f4a5892b4f62fd545d7ab2d506",
       "class_hash": "0x183e097be6800bb66e8376887ef4c05c58b357ce79ea9d94cc8b54fe2dee38",
       "original_class_hash": "0x183e097be6800bb66e8376887ef4c05c58b357ce79ea9d94cc8b54fe2dee38",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
@@ -1575,7 +1575,7 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x25d90cc6121ca35b90c2c6d369f1593fd681d6be8d77c62b2b81f9844281a0a",
+      "address": "0x11e7a657668ca83c556f7545ab5bde00c1a1275c6c9ed17bea33104fcda2f3b",
       "class_hash": "0x3ee32958b958017c667501bb85bb2411e2dd5c1e11bc2230fb947a75b8ec07e",
       "original_class_hash": "0x3ee32958b958017c667501bb85bb2411e2dd5c1e11bc2230fb947a75b8ec07e",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
@@ -1845,7 +1845,7 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x7c913e4511bc6f0aa5368c5895eeb91643960c3a57fd869828c1afddeac587b",
+      "address": "0x57a72dd6f0bf3b0ced0fd50e54696643b8e3b38e226a150a1471c658355921e",
       "class_hash": "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405",
       "original_class_hash": "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
@@ -2097,9 +2097,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x73558c8bda9e4d4466872edda6de8b8da5ac64ed8dd040c62267c2447457a8e",
-      "class_hash": "0x69c63b3d156198a87f8a1b4ff6152c27f62780014fa481b9f8b220aff6e4ce",
-      "original_class_hash": "0x69c63b3d156198a87f8a1b4ff6152c27f62780014fa481b9f8b220aff6e4ce",
+      "address": "0x44ce069fe53c5c7941eec521bc9e876907d5da6ca273a98b78f1cbbcfea5b62",
+      "class_hash": "0x60a3db0d48b7e75c51594139e2e7e0f36f39fe8a5e106a0de14869c75754e0a",
+      "original_class_hash": "0x60a3db0d48b7e75c51594139e2e7e0f36f39fe8a5e106a0de14869c75754e0a",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2256,6 +2256,26 @@
             },
             {
               "type": "function",
+              "name": "create_closed",
+              "inputs": [
+                {
+                  "name": "map_id",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "player_address_1",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "player_address_2",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
               "name": "join",
               "inputs": [
                 {
@@ -2360,6 +2380,7 @@
       "init_calldata": [],
       "tag": "octoguns-start",
       "systems": [
+        "create_closed",
         "join"
       ],
       "manifest_name": "octoguns-start-5506b80f"
