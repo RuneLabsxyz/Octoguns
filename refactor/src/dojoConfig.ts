@@ -3,9 +3,9 @@ import { createDojoConfig } from '@dojoengine/core';
 
 
 export const dojoConfig = createDojoConfig({
-  toriiUrl: 'https://api.cartridge.gg/x/octoguns-demo/torii',
-  rpcUrl: 'https://api.cartridge.gg/x/octoguns-demo/katana',
   manifest,
+  toriiUrl: 'https://api.cartridge.gg/x/octoguns-public-alpha1/torii',
+  rpcUrl: 'https://api.cartridge.gg/x/octoguns-public-alpha1/katana',
 });
 
 export type Config = typeof dojoConfig;

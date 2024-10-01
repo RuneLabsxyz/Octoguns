@@ -2,7 +2,7 @@ use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 use octoguns::lib::trig::{fast_cos_unsigned, fast_sin_unsigned};
 use octoguns::consts::ONE_E_8;
 use starknet::ContractAddress;
-use octoguns::consts::{MOVE_SPEED, BULLET_SPEED};
+use octoguns::consts::{MOVE_SPEED, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
 use octoguns::types::{IVec2, Vec2};
 
@@ -22,11 +22,11 @@ impl BulletImpl of BulletTrait {
 
     fn new(id: u32, coords: Vec2, angle: u64, shot_by: u32, shot_step: u16) -> Bullet {
         //speed is how much it travels per sub step
-        //distance travelled per turn is speed * 100
+        //distance travelled per turn is speed * STEP_COUNT
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
-        let velocity = IVec2 { x: cos * BULLET_SPEED / ONE_E_8, y: sin * BULLET_SPEED / ONE_E_8, xdir, ydir };
-        Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step, velocity}
+        let velocity = IVec2 { x: cos * (BULLET_SPEED/ BULLET_SUBSTEPS.into()) / ONE_E_8, y: sin * (BULLET_SPEED/ BULLET_SUBSTEPS.into()) / ONE_E_8, xdir, ydir };
+        Bullet { bullet_id: id, shot_at: coords, shot_by, shot_step: shot_step * BULLET_SUBSTEPS.try_into().unwrap(), velocity}
     }
 
     fn get_position(ref self: Bullet, step: u32) -> Option<Vec2> {
@@ -68,19 +68,29 @@ impl BulletImpl of BulletTrait {
 
     fn simulate(ref self: Bullet, characters: @Array<CharacterPosition>, map: @Map, step: u32) -> (Option<u32>, bool) {
         let mut res: (Option<u32>, bool) = (Option::None(()), false); 
-        let maybe_position = self.get_position(step);
-        let mut position: Vec2 = Vec2 { x: 0, y: 0 };
 
-        match maybe_position {
-            Option::None => {
-                return (Option::None(()), true);
-            },
-            Option::Some(p) => {
-                position = p;
+        let mut bullet_step = step * BULLET_SUBSTEPS;
+
+        while bullet_step < step * BULLET_SUBSTEPS + BULLET_SUBSTEPS {
+            let maybe_position = self.get_position(bullet_step);
+            let mut position: Vec2 = Vec2 { x: 0, y: 0 };
+
+            match maybe_position {
+                Option::None => {
+                    res = (Option::None(()), true);
+                    break;
+                },
+                Option::Some(p) => {
+                    position = p;
+                }
             }
-        }
 
-        let (hit_character, hit_object) = self.compute_hits(position, characters, map);
+            res = self.compute_hits(position, characters, map);
+
+            bullet_step += 1;
+        };
+
+        let (hit_character, hit_object) = res;
 
         match hit_character {
             Option::Some(character_id) => {
@@ -159,7 +169,7 @@ mod simulate_tests {
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};
-    use octoguns::consts::{BULLET_SPEED, ONE_E_8};
+    use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::types::MapObjects;
 
@@ -191,7 +201,7 @@ mod simulate_tests {
         );
         let position = bullet.get_position(1).unwrap();
         assert!(position.x == 0, "x should not have changed");
-        assert!(position.y.into() == BULLET_SPEED, "y should have changed by speed");
+        assert!(position.y == BULLET_SPEED / BULLET_SUBSTEPS.into(), "y should have changed by speed");
     }
 
     #[test]
@@ -208,7 +218,7 @@ mod simulate_tests {
         );
         let position = bullet.get_position(1).unwrap();
        
-        assert!(position.x.into() == BULLET_SPEED, "x should have changed by speed");
+        assert!(position.x == BULLET_SPEED / BULLET_SUBSTEPS.into(), "x should have changed by speed");
         assert!(position.y == 0, "y should not have changed");
 
      }
@@ -303,7 +313,7 @@ mod simulate_tests {
             1,
             0
         );
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3);
         match hit_character {
             Option::None => {
                 if !dropped {

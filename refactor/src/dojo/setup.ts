@@ -9,7 +9,6 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
-
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export async function setup({ ...config }: DojoConfig) {
@@ -19,7 +18,7 @@ export async function setup({ ...config }: DojoConfig) {
     toriiUrl: config.toriiUrl,
     relayUrl: '',
     worldAddress:
-      '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f' || '',
+      '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3' || '',
   })
 
   // create contract components
@@ -42,8 +41,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      "0x69db794b203662e088ff7e49bc6acf0e7520f6121441c083cd2790043103eaf",
-      "0x5598a99fc8c908478c7a3eae195abbd94146f367f85fc640c6916494dd5028e"
+      '0x9b4fea3bb27903a996426a7bd4cd33a23e1187942cf19c6f7611b4db333bee',
+      '0x2a79be0d524b62728aa13f63e180a18224cb6205d78473559ccb94957a23814'
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,

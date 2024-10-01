@@ -35,6 +35,7 @@ export function renderCameras(
         cameraWidth,
         cameraHeight
       )
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
       renderer.render(scene, camera)
     })
 
