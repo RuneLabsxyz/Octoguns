@@ -41,8 +41,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      '0x9b4fea3bb27903a996426a7bd4cd33a23e1187942cf19c6f7611b4db333bee',
-      '0x2a79be0d524b62728aa13f63e180a18224cb6205d78473559ccb94957a23814'
+      '0x516d934ae97ba2b708131d9ae1a9a877ee6ef486358e43641602e413f4a28c4',
+      '0x70394329654e1673bd368495c64a14d29bdf0887d61ae9d5fb82678aca4572d'
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,
