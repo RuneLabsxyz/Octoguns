@@ -42,10 +42,7 @@ mod start {
 
             let session = SessionTrait::new_closed(id, player_address_1, player_address_2, map_id);
             let session_meta = SessionMetaTrait::new(id);
-            set!(world, (session, session_meta, 
-                Player {player: player_address_1, games: player_1.games}, 
-                Player {player: player_address_2, games: player_2.games}
-            ));
+            set!(world, (session, session_meta, player_1, player_2 ));
         }
 
         fn join(ref world: IWorldDispatcher, session_id: u32) {
