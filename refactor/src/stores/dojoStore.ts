@@ -9,7 +9,9 @@ export const dojoStore = writable<SetupResult>()
 export const accountStore = writable<Account | null>()
 export const isSetup = writable(false)
 
-export async function initializeStore() {
+let setupPromise: Promise<void> | undefined;
+
+async function setupInternal() {
   try {
     console.log('Initializing store...')
     const result = await setup(dojoConfig)
@@ -26,4 +28,21 @@ export async function initializeStore() {
     console.error('Failed to initialize store:', error)
     isSetup.set(false)
   }
+}
+
+export async function initializeStore() {
+  if (setupPromise == undefined) {
+    setupPromise = setupInternal();
+  } else {
+    return setupPromise;
+  }
+}
+export function waitForInitialization(): Promise<void> {
+  return new Promise((ok, _) => {
+    isSetup.subscribe(val => {
+      if (val) {
+        ok()
+      }
+    })
+  })
 }

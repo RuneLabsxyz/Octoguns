@@ -1,35 +1,27 @@
 <script lang="ts">
   import '../app.css'
   import { onMount } from 'svelte'
-  import { initializeStore } from '$stores/dojoStore'
+  import { initializeStore, waitForInitialization } from '$stores/dojoStore'
   import { writable } from 'svelte/store'
   import { page } from '$app/stores'
 
-  const isStoreInitialized = writable(false)
+  let storePromise: Promise<[void, void]> = Promise.all([
+    initStore(),
+    waitForInitialization(),
+  ])
 
   async function initStore() {
     try {
       await initializeStore()
-      isStoreInitialized.set(true)
       console.log('store initialized')
     } catch (error) {
       console.error('Failed to initialize store:', error)
-      isStoreInitialized.set(false)
     }
-  }
-
-  onMount(() => {
-    initStore()
-  })
-
-  $: {
-    $page.url
-    initStore()
   }
 </script>
 
-{#if $isStoreInitialized}
-  <slot />
-{:else}
+{#await storePromise}
   <p>Loading...</p>
-{/if}
+{:then _}
+  <slot />
+{/await}
