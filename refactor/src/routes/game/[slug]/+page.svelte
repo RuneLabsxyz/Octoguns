@@ -240,6 +240,9 @@
 
   function handleMove() {
     console.log('calldata', calldata)
+    //TEMPORARY
+    //REMOVE
+    //@ts-ignore
     move(client, account, $sessionId, calldata)
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
