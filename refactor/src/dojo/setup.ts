@@ -46,7 +46,7 @@ export async function setup({ ...config }: DojoConfig) {
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,
-    feeTokenAddress: config.feeTokenAddress,
+    feeTokenAddress: '0x0',
   })
 
   try {
