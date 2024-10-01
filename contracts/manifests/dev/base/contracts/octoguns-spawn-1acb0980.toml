@@ -1,0 +1,11 @@
+kind = "DojoContract"
+class_hash = "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405"
+original_class_hash = "0x6ed479c0ae745884ef05f9888139cae783f5c8041bce73d99f8444ae633405"
+base_class_hash = "0x0"
+abi = "manifests/dev/base/abis/contracts/octoguns-spawn-1acb0980.json"
+reads = []
+writes = []
+init_calldata = []
+tag = "octoguns-spawn"
+systems = ["spawn"]
+manifest_name = "octoguns-spawn-1acb0980"
