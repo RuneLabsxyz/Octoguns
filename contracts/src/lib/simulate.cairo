@@ -12,34 +12,27 @@ pub fn simulate_bullets(ref bullets: Array<Bullet>, ref character_positions: Arr
     let mut updated_bullets = ArrayTrait::new();
     let mut updated_bullet_ids = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
-    let bullet_step = step * BULLET_SUBSTEPS;
-    let mut bullet_step_count = 0;
-
-    while bullet_step_count < BULLET_SUBSTEPS {
-        loop {
-            match bullets.pop_front() {
-                Option::Some(mut bullet) => {
-                    let (hit_character, dropped) = bullet.simulate(@character_positions, map, bullet_step);
-                    match hit_character {
-                        Option::Some(character_id) => {
-                            dead_characters_ids.append(character_id);
-                        },
-                        Option::None => {
-                            if !dropped {
-                                updated_bullets.append(bullet);
-                                updated_bullet_ids.append(bullet.bullet_id);
-                            }
-                            else {
-                                println!("bullet {} dropped", bullet.bullet_id);
-                            }
-                        },
-                    }
-                },
-                Option::None => {break;},
-            }
-        };
-        let mut bullets = updated_bullets;
-        bullet_step_count += 1;
+    loop {
+        match bullets.pop_front() {
+            Option::Some(mut bullet) => {
+                let (hit_character, dropped) = bullet.simulate(@character_positions, map, step);
+                match hit_character {
+                    Option::Some(character_id) => {
+                        dead_characters_ids.append(character_id);
+                    },
+                    Option::None => {
+                        if !dropped {
+                            updated_bullets.append(bullet);
+                            updated_bullet_ids.append(bullet.bullet_id);
+                        }
+                        else {
+                            println!("bullet {} dropped", bullet.bullet_id);
+                        }
+                    },
+                }
+            },
+            Option::None => {break;},
+        }
     };
         
     

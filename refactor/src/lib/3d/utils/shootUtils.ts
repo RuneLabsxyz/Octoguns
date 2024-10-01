@@ -15,7 +15,7 @@ import { playSoundEffect } from './audioUtils'
 import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
-import { BULLET_SPEED } from '$lib/consts'
+import { BULLET_SPEED, BULLET_SUBSTEPS } from '$lib/consts'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
@@ -132,6 +132,8 @@ export function simulate() {
     bullets.map((bullet) => {
       const newX = bullet.coords.x + (bullet.velocity.x / 10)
       const newY = bullet.coords.y + (bullet.velocity.y / 10)
+      console.log('newX', newX)
+      console.log('newY', newY)
 
       // Use the new function to check if the bullet is outside the map boundaries
       const isOutsideMap = isOutsideMapBoundary(newX, newY)
