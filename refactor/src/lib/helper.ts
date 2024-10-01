@@ -1,6 +1,6 @@
 import { Vector3, Quaternion, Euler, PerspectiveCamera } from "three";
 import * as THREE from "three";
-import { SCALING_FACTOR, SUBMOVE_SCALE } from "$lib/consts";
+import { SCALING_FACTOR, SUBMOVE_SCALE, BULLET_SUBSTEPS } from "$lib/consts";
 import { type Bullet } from "../dojo/models.gen";
 
 
@@ -105,12 +105,12 @@ export function inverseMapAngle(angle: number): number {
 }
 
 export function getBulletPosition(bullet: Bullet, step: number) {
-  let vx = parseInt(bullet.velocity.x.toString()) / 1000
-  let vy = parseInt(bullet.velocity.y.toString()) / 1000
+  let vx = parseInt(bullet.velocity.x.toString()) * BULLET_SUBSTEPS / SCALING_FACTOR
+  let vy = parseInt(bullet.velocity.y.toString()) * BULLET_SUBSTEPS / SCALING_FACTOR
   //@ts-ignore
-  let x = parseInt(bullet.shot_at.x.toString()) / 1000
+  let x = parseInt(bullet.shot_at.x.toString()) / SCALING_FACTOR
   //@ts-ignore
-  let y = parseInt(bullet.shot_at.y.toString()) / 1000
+  let y = parseInt(bullet.shot_at.y.toString()) / SCALING_FACTOR
 
   let x_dir = bullet.velocity.xdir ? 1 : -1
   let y_dir = bullet.velocity.ydir ? 1 : -1

@@ -1,5 +1,6 @@
 export const MOVE_SPEED = 0.4
 export const BULLET_SPEED = 0.2
+export const BULLET_SUBSTEPS = 3
 export const SCALING_FACTOR = 1000
 
 export const TURN_COUNT = 100

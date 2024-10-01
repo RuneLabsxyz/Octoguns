@@ -15,7 +15,7 @@ import { playSoundEffect } from './audioUtils'
 import { splat } from '$stores/eyeCandy'
 import { isTurnPlayer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
-import { BULLET_SPEED } from '$lib/consts'
+import { BULLET_SPEED, BULLET_SUBSTEPS } from '$lib/consts'
 
 function applyBulletToStore(newBullet: BulletCoords) {
   bulletRender.update((bullets) => {
