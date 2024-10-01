@@ -42,7 +42,7 @@
   import { type SetupResult } from '$src/dojo/setup.js'
   import Waiting from '$lib/ui/ingame/Waiting.svelte'
   import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
-
+  import { BULLET_SUBSTEPS } from '$lib/consts'
   export let data
   let gameId = data.gameId
   let account: Account
@@ -150,7 +150,7 @@
         let v = bullet.velocity
         let coords = getBulletPosition(
           bullet,
-          (turn_count) * 100 - bullet.shot_step
+          (turn_count) * BULLET_SUBSTEPS * 100 - bullet.shot_step
         )
 
         //if bullet is outside map boundary, don't add it

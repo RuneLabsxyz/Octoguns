@@ -132,6 +132,8 @@ export function simulate() {
     bullets.map((bullet) => {
       const newX = bullet.coords.x + (bullet.velocity.x / 10)
       const newY = bullet.coords.y + (bullet.velocity.y / 10)
+      console.log('newX', newX)
+      console.log('newY', newY)
 
       // Use the new function to check if the bullet is outside the map boundaries
       const isOutsideMap = isOutsideMapBoundary(newX, newY)

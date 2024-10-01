@@ -105,8 +105,8 @@ export function inverseMapAngle(angle: number): number {
 }
 
 export function getBulletPosition(bullet: Bullet, step: number) {
-  let vx = parseInt(bullet.velocity.x.toString()) * BULLET_SUBSTEPS / SCALING_FACTOR
-  let vy = parseInt(bullet.velocity.y.toString()) * BULLET_SUBSTEPS / SCALING_FACTOR
+  let vx = parseInt(bullet.velocity.x.toString()) / SCALING_FACTOR
+  let vy = parseInt(bullet.velocity.y.toString()) / SCALING_FACTOR
   //@ts-ignore
   let x = parseInt(bullet.shot_at.x.toString()) / SCALING_FACTOR
   //@ts-ignore
