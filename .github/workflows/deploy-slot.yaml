@@ -10,8 +10,9 @@ name: Deno
 
 on:
   push:
-    - main
-    - deployment
+    branches: 
+      - 'main'
+      - 'deployment'
 
 permissions:
   contents: read
