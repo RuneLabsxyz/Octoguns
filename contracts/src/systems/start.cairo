@@ -50,7 +50,7 @@ mod start {
                 session_primitives.bullet_sub_steps,
                 session_primitives.bullets_per_turn,
                 session_primitives.sub_moves_per_turn,
-                session_primitives.max_distance_per_turn
+                session_primitives.max_distance_per_sub_move
             );
             set!(world, (session, session_meta, global, player, session_primitives));
             id
@@ -77,7 +77,7 @@ mod start {
                 session_primitives.bullet_sub_steps,
                 session_primitives.bullets_per_turn,
                 session_primitives.sub_moves_per_turn,
-                session_primitives.max_distance_per_turn
+                session_primitives.max_distance_per_sub_move
             );
             set!(world, (session, session_meta, player_1, player_2, session_primitives));
         }

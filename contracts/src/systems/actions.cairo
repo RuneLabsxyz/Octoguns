@@ -39,6 +39,8 @@ mod actions {
             let mut session_meta = get!(world, session_id, (SessionMeta));
             let mut updated_bullet_ids = ArrayTrait::new();
 
+            let session_primitives = get!(world, session_id, (SessionPrimitives));
+
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
 
@@ -83,7 +85,9 @@ mod actions {
                                 Vec2 { x: player_position.coords.x, y: player_position.coords.y },
                                 s.angle,
                                 player_character_id,
-                                step.try_into().unwrap()
+                                step.try_into().unwrap(),
+                                bullet_speed: session_primitives.bullet_speed,
+                                bullet_sub_steps: session_primitives.bullet_sub_steps,
                             );
                             bullets.append(bullet);
                             println!("new bullet at index {}", sub_move_index);
@@ -100,7 +104,7 @@ mod actions {
 
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, @map, step
+                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;
