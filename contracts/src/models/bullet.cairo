@@ -25,7 +25,7 @@ impl BulletImpl of BulletTrait {
         angle: u64,
         shot_by: u32,
         shot_step: u16,
-        bullet_speed: u32,
+        bullet_speed: u64,
         bullet_sub_steps: u32
     ) -> Bullet {
         //speed is how much it travels per sub step
@@ -33,8 +33,8 @@ impl BulletImpl of BulletTrait {
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
         let velocity = IVec2 {
-            x: cos * (bullet_speed.into() / bullet_sub_steps.into()) / ONE_E_8,
-            y: sin * (bullet_speed.into() / bullet_sub_steps.into()) / ONE_E_8,
+            x: cos * (bullet_speed / bullet_sub_steps.into()) / ONE_E_8,
+            y: sin * (bullet_speed / bullet_sub_steps.into()) / ONE_E_8,
             xdir,
             ydir
         };
@@ -186,7 +186,7 @@ mod simulate_tests {
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
     use octoguns::tests::helpers::{get_test_character_array};
-    use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8};
+    use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8, STEP_COUNT};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::types::MapObjects;
 
@@ -194,7 +194,7 @@ mod simulate_tests {
     fn test_new_bullet() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
     }
 
 
@@ -203,7 +203,7 @@ mod simulate_tests {
         let address = starknet::contract_address_const::<0x0>();
         let map = MapTrait::new_empty(1);
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 90 * ONE_E_8, 1, 0);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 90 * ONE_E_8, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let position = bullet.get_position(1).unwrap();
         assert!(position.x == 0, "x should not have changed");
         assert!(
@@ -216,7 +216,7 @@ mod simulate_tests {
         let address = starknet::contract_address_const::<0x0>();
         let map = MapTrait::new_empty(1);
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let position = bullet.get_position(1).unwrap();
 
         assert!(
@@ -230,9 +230,9 @@ mod simulate_tests {
     fn test_collision_with_character() {
         let address = starknet::contract_address_const::<0x0>();
         let map = MapTrait::new_empty(1);
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0);
-        let characters = array![CharacterPositionTrait::new(69, Vec2 { x: 14, y: 0 })];
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
+        let characters = array![CharacterPositionTrait::new(69, Vec2 { x: 14, y: 0 }, STEP_COUNT)];
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
         match hit_character {
             Option::None => { panic!("should return id of hit piece"); },
             Option::Some(id) => { assert!(id == 69, "not returning id of hit piece"); }
@@ -246,8 +246,8 @@ mod simulate_tests {
         let map = MapTrait::new_empty(1);
         let characters = ArrayTrait::new();
 
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 180 * ONE_E_8, 1, 0);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 180 * ONE_E_8, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
         match hit_character {
             Option::Some(character_id) => { panic!("bullet should not hit character"); },
             Option::None => { if !dropped {
@@ -262,8 +262,8 @@ mod simulate_tests {
         let map = MapTrait::new(1, MapObjects { objects: array![7] });
 
         let characters = ArrayTrait::new();
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 30_000, y: 0 }, 0, 1, 0);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 30_000, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
         match hit_character {
             Option::None => { if !dropped {
                 panic!("should return true for hit object");
@@ -278,8 +278,8 @@ mod simulate_tests {
         let map = MapTrait::new(1, MapObjects { objects: array![7] });
 
         let characters = ArrayTrait::new();
-        let mut bullet = BulletTrait::new(1, Vec2 { x: 27_850, y: 0 }, 0, 1, 0);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3);
+        let mut bullet = BulletTrait::new(1, Vec2 { x: 27_850, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3, BULLET_SUBSTEPS);
         match hit_character {
             Option::None => { if !dropped {
                 panic!("should return true for hit object");

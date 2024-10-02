@@ -62,7 +62,7 @@ impl SessionMetaImpl of SessionMetaTrait {
 pub struct SessionPrimitives {
     #[key]
     pub session_id: u32,
-    pub bullet_speed: u32,
+    pub bullet_speed: u64,
     pub bullet_sub_steps: u32,
     pub bullets_per_turn: u32,
     pub sub_moves_per_turn: u32,
@@ -71,7 +71,7 @@ pub struct SessionPrimitives {
 
 #[generate_trait]
 impl SessionPrimitivesImpl of SessionPrimitivesTrait {
-    
+
     fn default(session_id: u32) -> SessionPrimitives {
         SessionPrimitives {
             session_id,
@@ -85,7 +85,7 @@ impl SessionPrimitivesImpl of SessionPrimitivesTrait {
 
     fn new(
         session_id: u32,
-        bullet_speed: u32,
+        bullet_speed: u64,
         bullet_sub_steps: u32,
         bullets_per_turn: u32,
         sub_moves_per_turn: u32,
