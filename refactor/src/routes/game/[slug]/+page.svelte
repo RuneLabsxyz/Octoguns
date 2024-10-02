@@ -150,17 +150,17 @@
         let v = bullet.velocity
         let coords = getBulletPosition(
           bullet,
-          (turn_count) * BULLET_SUBSTEPS * 100 - bullet.shot_step
+          turn_count * BULLET_SUBSTEPS * 100 - bullet.shot_step
         )
 
         //if bullet is outside map boundary, don't add it
         if (isOutsideMapBoundary(coords.x, coords.y)) {
           return
         }
-        
+
         let x_dir = v.xdir ? 1 : -1
         let y_dir = v.ydir ? 1 : -1
-        let velocity = { x: (x_dir * v.x) / 300 , y: (y_dir * v.y) / 300 }
+        let velocity = { x: (x_dir * v.x) / 300, y: (y_dir * v.y) / 300 }
 
         //TODO, shot by is character id not address
         let shot_by = areAddressesEqual(
@@ -176,7 +176,7 @@
           shot_by: shot_by,
         }
         setBulletCoords(data)
-        bulletRenderOnchain.update(currentState => [...currentState, data]) // Store render position in onchain store
+        bulletRenderOnchain.update((currentState) => [...currentState, data]) // Store render position in onchain store
 
         // Store the initial position
         let initialCoords = getBulletPosition(bullet, 0)
@@ -188,7 +188,10 @@
           shot_by: shot_by,
         }
         setBulletInitialPosition(initialPosition)
-        bulletInitialPositionOnchain.update(currentState => [...currentState, initialPosition]) // Store initial position in onchain store
+        bulletInitialPositionOnchain.update((currentState) => [
+          ...currentState,
+          initialPosition,
+        ]) // Store initial position in onchain store
       })
     })
   }
