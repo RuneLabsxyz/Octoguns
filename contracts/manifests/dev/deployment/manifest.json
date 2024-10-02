@@ -1235,12 +1235,12 @@
       }
     ],
     "address": "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3",
-    "transaction_hash": "0x2c9a77cb6bb6e0cc6b86b67481b0e685c33a10f942457cf03333c9defe47223",
+    "transaction_hash": "0x4246ad4572b5f979116bfb138094f6bf687806dddd9f6a9025d2822d2fa8d10",
     "block_number": 3,
     "seed": "octoguns",
     "metadata": {
       "profile_name": "dev",
-      "rpc_url": "http://localhost:5050/"
+      "rpc_url": "https://api.cartridge.gg/x/octoguns-demo/katana"
     },
     "manifest_name": "dojo-world"
   },

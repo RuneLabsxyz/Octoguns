@@ -15,11 +15,11 @@ export type SetupResult = Awaited<ReturnType<typeof setup>>
 export async function setup({ ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
-    rpcUrl: config.rpcUrl,
-    toriiUrl: config.toriiUrl,
+    rpcUrl: 'https://api.cartridge.gg/x/octoguns-demo/katana',
+    toriiUrl: 'https://api.cartridge.gg/x/octoguns-demo/torii',
     relayUrl: '',
     worldAddress:
-      '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f' || '',
+      '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3' || '',
   })
 
   // create contract components
@@ -42,8 +42,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      KATANA_PREFUNDED_ADDRESS,
-      KATANA_PREFUNDED_PRIVATE_KEY
+      '0x77eddddba9895ae102fa16e3d41a5e8a52100fe38178930718d7800d7c78305',
+      '0x67a7aca9722a0d31130bd9c0f9eda500ef5ef6e9f29b5dbbefa0a36e5c7b765'
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,
