@@ -128,90 +128,16 @@
   },
   {
     "type": "impl",
-    "name": "StartImpl",
-    "interface_name": "octoguns::systems::start::IStart"
-  },
-  {
-    "type": "struct",
-    "name": "octoguns::models::sessions::SessionPrimitives",
-    "members": [
-      {
-        "name": "session_id",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "bullet_speed",
-        "type": "core::integer::u64"
-      },
-      {
-        "name": "bullet_sub_steps",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "bullets_per_turn",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "sub_moves_per_turn",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "max_distance_per_sub_move",
-        "type": "core::integer::u32"
-      }
-    ]
+    "name": "SpawnImpl",
+    "interface_name": "octoguns::systems::spawn::ISpawn"
   },
   {
     "type": "interface",
-    "name": "octoguns::systems::start::IStart",
+    "name": "octoguns::systems::spawn::ISpawn",
     "items": [
       {
         "type": "function",
-        "name": "create",
-        "inputs": [
-          {
-            "name": "map_id",
-            "type": "core::integer::u32"
-          },
-          {
-            "name": "session_primitives",
-            "type": "octoguns::models::sessions::SessionPrimitives"
-          }
-        ],
-        "outputs": [
-          {
-            "type": "core::integer::u32"
-          }
-        ],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "create_closed",
-        "inputs": [
-          {
-            "name": "map_id",
-            "type": "core::integer::u32"
-          },
-          {
-            "name": "player_address_1",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
-            "name": "player_address_2",
-            "type": "core::starknet::contract_address::ContractAddress"
-          },
-          {
-            "name": "session_primitives",
-            "type": "octoguns::models::sessions::SessionPrimitives"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "join",
+        "name": "spawn",
         "inputs": [
           {
             "name": "session_id",
@@ -226,11 +152,11 @@
   {
     "type": "impl",
     "name": "IDojoInitImpl",
-    "interface_name": "octoguns::systems::start::start::IDojoInit"
+    "interface_name": "octoguns::systems::spawn::spawn::IDojoInit"
   },
   {
     "type": "interface",
-    "name": "octoguns::systems::start::start::IDojoInit",
+    "name": "octoguns::systems::spawn::spawn::IDojoInit",
     "items": [
       {
         "type": "function",
@@ -290,7 +216,7 @@
   },
   {
     "type": "event",
-    "name": "octoguns::systems::start::start::Event",
+    "name": "octoguns::systems::spawn::spawn::Event",
     "kind": "enum",
     "variants": [
       {

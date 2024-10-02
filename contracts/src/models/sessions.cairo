@@ -83,21 +83,17 @@ impl SessionPrimitivesImpl of SessionPrimitivesTrait {
         }
     }
 
-    fn new(
+    fn new_from(
         session_id: u32,
-        bullet_speed: u64,
-        bullet_sub_steps: u32,
-        bullets_per_turn: u32,
-        sub_moves_per_turn: u32,
-        max_distance_per_sub_move: u32
+        from: SessionPrimitives
     ) -> SessionPrimitives {
         SessionPrimitives {
             session_id,
-            bullet_speed,
-            bullet_sub_steps,
-            bullets_per_turn,
-            sub_moves_per_turn,
-            max_distance_per_sub_move
+            bullet_speed: from.bullet_speed,
+            bullet_sub_steps: from.bullet_sub_steps,
+            bullets_per_turn: from.bullets_per_turn,
+            sub_moves_per_turn: from.sub_moves_per_turn,
+            max_distance_per_sub_move: from.max_distance_per_sub_move
         }
     }
 }

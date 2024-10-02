@@ -4,7 +4,7 @@ use octoguns::models::sessions::{
 };
 #[dojo::interface]
 trait IStart {
-    fn create(ref world: IWorldDispatcher, map_id: u32) -> u32;
+    fn create(ref world: IWorldDispatcher, map_id: u32, session_primitives: SessionPrimitives) -> u32;
     fn create_closed(
         ref world: IWorldDispatcher,
         map_id: u32,
@@ -29,7 +29,7 @@ mod start {
 
     #[abi(embed_v0)]
     impl StartImpl of IStart<ContractState> {
-        fn create(ref world: IWorldDispatcher, map_id: u32) -> u32 {
+        fn create(ref world: IWorldDispatcher, map_id: u32, session_primitives: SessionPrimitives) -> u32 {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             // Do shit
             let address = get_caller_address();
@@ -40,8 +40,8 @@ mod start {
 
             let session = SessionTrait::new(id, address, map_id);
             let session_meta = SessionMetaTrait::new(id);
-            let session_primitives = SessionPrimitivesTrait::default(id);
-                
+            let session_primitives = SessionPrimitivesTrait::new_from(id, session_primitives);
+
             set!(world, (session, session_meta, global, player, session_primitives));
             id
         }
@@ -61,13 +61,9 @@ mod start {
 
             let session = SessionTrait::new_closed(id, player_address_1, player_address_2, map_id);
             let session_meta = SessionMetaTrait::new(id);
-            let session_primitives = SessionPrimitivesTrait::new(
+            let session_primitives = SessionPrimitivesTrait::new_from(
                 id,
-                session_primitives.bullet_speed,
-                session_primitives.bullet_sub_steps,
-                session_primitives.bullets_per_turn,
-                session_primitives.sub_moves_per_turn,
-                session_primitives.max_distance_per_sub_move
+                session_primitives
             );
             set!(world, (session, session_meta, player_1, player_2, session_primitives));
         }
