@@ -72,17 +72,6 @@ pub struct SessionPrimitives {
 #[generate_trait]
 impl SessionPrimitivesImpl of SessionPrimitivesTrait {
 
-    fn default(session_id: u32) -> SessionPrimitives {
-        SessionPrimitives {
-            session_id,
-            bullet_speed: BULLET_SPEED,
-            bullet_sub_steps: BULLET_SUBSTEPS,
-            bullets_per_turn: 1,
-            sub_moves_per_turn: STEP_COUNT,
-            max_distance_per_sub_move: MOVE_SPEED
-        }
-    }
-
     fn new_from(
         session_id: u32,
         from: SessionPrimitives

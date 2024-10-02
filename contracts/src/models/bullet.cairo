@@ -161,6 +161,7 @@ impl BulletImpl of BulletTrait {
         let mut object_index: u32 = 0;
         while object_index.into() < map.map_objects.len() {
             let object = *map.map_objects.at(object_index);
+            println!("object {}", object);
             if object == index {
                 println!("hitobject {}", object);
                 dropped = true;

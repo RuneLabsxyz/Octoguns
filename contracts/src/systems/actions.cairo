@@ -27,16 +27,17 @@ mod actions {
             let session_primitives = get!(world, session_id, (SessionPrimitives));
             let max_steps = session_primitives.sub_moves_per_turn;
 
-            assert!(moves.shots.len() <= 1, "Invalid number of shots");
+            assert!(moves.shots.len() <= session_primitives.bullets_per_turn, "Invalid number of shots");
             let player = get_caller_address();
             let mut session = get!(world, session_id, (Session));
             assert!(session.state != 1, "Game doesn't exist");
             assert!(session.state != 3, "Game over");
             assert!(session.state == 2, "Game not active");
 
-            let map = get!(world, session_id, (Map));
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
+            let map = get!(world, session.map_id, (Map));
+
             let mut updated_bullet_ids = ArrayTrait::new();
 
             let session_primitives = get!(world, session_id, (SessionPrimitives));

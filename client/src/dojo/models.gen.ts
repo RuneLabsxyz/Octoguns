@@ -207,6 +207,27 @@ export const SessionMetaDefinition = {
 };
 
 
+// Type definition for `octoguns::models::sessions::SessionPrimitives` struct
+export interface SessionPrimitives {
+    session_id: Number;
+    bullet_speed: Number;
+    bullet_sub_steps: Number;
+    bullets_per_turn: Number;
+    sub_moves_per_turn: Number;
+    max_distance_per_sub_move: Number;
+    
+}
+export const SessionPrimitivesDefinition = {
+    session_id: RecsType.Number,
+    bullet_speed: RecsType.Number,
+    bullet_sub_steps: RecsType.Number,
+    bullets_per_turn: RecsType.Number,
+    sub_moves_per_turn: RecsType.Number,
+    max_distance_per_sub_move: RecsType.Number,
+    
+};
+
+
 // Type definition for `octoguns::types::Shot` struct
 export interface Shot {
     angle: Number;
