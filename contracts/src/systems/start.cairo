@@ -4,9 +4,7 @@ use octoguns::models::sessions::{
 };
 #[dojo::interface]
 trait IStart {
-    fn create(
-        ref world: IWorldDispatcher, map_id: u32, session_primitives: SessionPrimitives
-    ) -> u32;
+    fn create(ref world: IWorldDispatcher, map_id: u32) -> u32;
     fn create_closed(
         ref world: IWorldDispatcher,
         map_id: u32,
@@ -31,9 +29,7 @@ mod start {
 
     #[abi(embed_v0)]
     impl StartImpl of IStart<ContractState> {
-        fn create(
-            ref world: IWorldDispatcher, map_id: u32, session_primitives: SessionPrimitives
-        ) -> u32 {
+        fn create(ref world: IWorldDispatcher, map_id: u32) -> u32 {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             // Do shit
             let address = get_caller_address();
@@ -44,14 +40,8 @@ mod start {
 
             let session = SessionTrait::new(id, address, map_id);
             let session_meta = SessionMetaTrait::new(id);
-            let session_primitives = SessionPrimitivesTrait::new(
-                id,
-                session_primitives.bullet_speed,
-                session_primitives.bullet_sub_steps,
-                session_primitives.bullets_per_turn,
-                session_primitives.sub_moves_per_turn,
-                session_primitives.max_distance_per_sub_move
-            );
+            let session_primitives = SessionPrimitivesTrait::default(id);
+                
             set!(world, (session, session_meta, global, player, session_primitives));
             id
         }
