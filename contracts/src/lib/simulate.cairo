@@ -29,18 +29,13 @@ pub fn simulate_bullets(
                         if !dropped {
                             updated_bullets.append(bullet);
                             updated_bullet_ids.append(bullet.bullet_id);
-                        } else {
-                            println!("bullet {} dropped", bullet.bullet_id);
-                        }
-                    },
+                        } 
+                    }
                 }
             },
             Option::None => { break; },
         }
     };
-
-    println!("bullets: {}", updated_bullets.len());
-
     (updated_bullets, updated_bullet_ids, dead_characters_ids)
 }
 

@@ -54,7 +54,6 @@ fn filter_out_dead_characters(
                 let mut j = 0;
                 while j < dead_characters.len() {
                     if character.id == *dead_characters.at(j) {
-                        println!("character {} is dead", character.id);
                         is_dead = true;
                         break;
                     }
@@ -77,7 +76,6 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
         + (v.y * v.y) <= max_distance_per_sub_move.into() * max_distance_per_sub_move.into() {
         return true;
     } else {
-        println!("invalid move");
         return false;
     }
 }

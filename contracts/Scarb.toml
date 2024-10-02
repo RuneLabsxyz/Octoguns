@@ -20,3 +20,5 @@ alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.g
 
 [namespace]
 default = "octoguns"
+
+[profile.mainnet]

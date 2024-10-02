@@ -91,7 +91,6 @@ mod actions {
                                 bullet_sub_steps: session_primitives.bullet_sub_steps,
                             );
                             bullets.append(bullet);
-                            println!("new bullet at index {}", sub_move_index);
                             set!(world, (bullet));
 
                             if moves.shots.len() > 0 {
@@ -186,14 +185,11 @@ mod actions {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
-                        println!("setting new positions: x: {} y: {}", pos.coords.x, pos.coords.y);
                         set!(world, (pos));
                     },
                     Option::None => { break; }
                 }
             };
-
-            println!("positions set");
 
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
