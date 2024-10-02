@@ -47,6 +47,7 @@ mod start {
             let session_primitives = SessionPrimitivesTrait::new(
                 id,
                 session_primitives.bullet_speed,
+                session_primitives.bullet_sub_steps,
                 session_primitives.bullets_per_turn,
                 session_primitives.sub_moves_per_turn,
                 session_primitives.max_distance_per_turn
@@ -73,6 +74,7 @@ mod start {
             let session_primitives = SessionPrimitivesTrait::new(
                 id,
                 session_primitives.bullet_speed,
+                session_primitives.bullet_sub_steps,
                 session_primitives.bullets_per_turn,
                 session_primitives.sub_moves_per_turn,
                 session_primitives.max_distance_per_turn

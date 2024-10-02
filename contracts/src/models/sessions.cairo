@@ -62,6 +62,7 @@ pub struct SessionPrimitives {
     #[key]
     pub session_id: u32,
     pub bullet_speed: u32,
+    pub bullet_sub_steps: u32,
     pub bullets_per_turn: u32,
     pub sub_moves_per_turn: u32,
     pub max_distance_per_turn: u32,
@@ -72,12 +73,18 @@ impl SessionPrimitivesImpl of SessionPrimitivesTrait {
     fn new(
         session_id: u32,
         bullet_speed: u32,
+        bullet_sub_steps: u32,
         bullets_per_turn: u32,
         sub_moves_per_turn: u32,
         max_distance_per_turn: u32
     ) -> SessionPrimitives {
         SessionPrimitives {
-            session_id, bullet_speed, bullets_per_turn, sub_moves_per_turn, max_distance_per_turn
+            session_id,
+            bullet_speed,
+            bullet_sub_steps,
+            bullets_per_turn,
+            sub_moves_per_turn,
+            max_distance_per_turn
         }
     }
 }
