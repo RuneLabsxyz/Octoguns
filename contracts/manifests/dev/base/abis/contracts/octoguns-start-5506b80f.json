@@ -132,6 +132,32 @@
     "interface_name": "octoguns::systems::start::IStart"
   },
   {
+    "type": "struct",
+    "name": "octoguns::models::sessions::SessionPrimitives",
+    "members": [
+      {
+        "name": "session_id",
+        "type": "core::integer::u32"
+      },
+      {
+        "name": "bullet_speed",
+        "type": "core::integer::u32"
+      },
+      {
+        "name": "bullets_per_turn",
+        "type": "core::integer::u32"
+      },
+      {
+        "name": "sub_moves_per_turn",
+        "type": "core::integer::u32"
+      },
+      {
+        "name": "max_distance_per_turn",
+        "type": "core::integer::u32"
+      }
+    ]
+  },
+  {
     "type": "interface",
     "name": "octoguns::systems::start::IStart",
     "items": [
@@ -142,6 +168,10 @@
           {
             "name": "map_id",
             "type": "core::integer::u32"
+          },
+          {
+            "name": "session_primitives",
+            "type": "octoguns::models::sessions::SessionPrimitives"
           }
         ],
         "outputs": [
@@ -166,6 +196,10 @@
           {
             "name": "player_address_2",
             "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "session_primitives",
+            "type": "octoguns::models::sessions::SessionPrimitives"
           }
         ],
         "outputs": [],
