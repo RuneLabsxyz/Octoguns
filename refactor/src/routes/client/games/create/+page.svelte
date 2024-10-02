@@ -7,6 +7,7 @@
   import MiniMap from '$lib/MiniMap.svelte'
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
+  import { SESSION_PRIMITIVES } from '$lib/consts'
 
   let loadingToGame = false
   let playerEntity: Entity
@@ -64,7 +65,11 @@
   async function createGame() {
     const account = burnerManager.getActiveAccount()
     if (account) {
-      await client.start.create({ account, map_id: $selectedMap })
+      await client.start.create({
+        account,
+        map_id: $selectedMap,
+        session_primitives: SESSION_PRIMITIVES,
+      })
       loadingToGame = true
     } else {
       console.error('No active account found')
