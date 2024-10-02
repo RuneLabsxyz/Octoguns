@@ -11,14 +11,13 @@ import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
-export async function setup({ ...config }: DojoConfig) {
+export async function setup(worldAddress: string | undefined, { ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress:
-      '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3' || '',
+    worldAddress: worldAddress ?? ''
   })
 
   // create contract components
@@ -41,8 +40,8 @@ export async function setup({ ...config }: DojoConfig) {
       {
         nodeUrl: config.rpcUrl,
       },
-      '0x516d934ae97ba2b708131d9ae1a9a877ee6ef486358e43641602e413f4a28c4',
-      '0x70394329654e1673bd368495c64a14d29bdf0887d61ae9d5fb82678aca4572d'
+      config.masterAddress,
+      config.masterPrivateKey
     ),
     accountClassHash: config.accountClassHash,
     rpcProvider: dojoProvider.provider,

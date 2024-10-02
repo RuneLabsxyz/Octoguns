@@ -1,0 +1,49 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run `deno lint` and `deno test`.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Deno
+
+on:
+  push:
+    branches
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - id: setup-dojo
+        uses: runelabsxyz/setup-dojo@main
+        with:
+          version: 'v1.0.0-alpha.12'
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install slot
+        run: |-
+          curl -L https://slot.cartridge.sh | bash
+          
+
+
+      - name: Build contract
+        run: sozo build
+
+      - name: Test contract
+        run: sozo test
+        if: false # Set this to true when we finally have working tests
+      
+      - name: Install dependencies
+        working-directory: ./refactor
+        run: bun install --frozen-lockfile
