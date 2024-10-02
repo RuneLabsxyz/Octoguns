@@ -65,6 +65,8 @@
   async function createGame() {
     const account = burnerManager.getActiveAccount()
     if (account) {
+      console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
+      console.log('selectedMap', $selectedMap)
       await client.start.create({
         account,
         map_id: $selectedMap,
