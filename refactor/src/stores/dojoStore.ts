@@ -1,4 +1,4 @@
-import { dojoConfig } from '../dojoConfig'
+import { dojoConfig, WORLD_ADDRESS } from '../dojoConfig'
 import { setup } from '$dojo/setup'
 import { writable } from 'svelte/store'
 import { Account } from 'starknet'
@@ -14,7 +14,7 @@ let setupPromise: Promise<void> | undefined;
 async function setupInternal() {
   try {
     console.log('Initializing store...')
-    const result = await setup(dojoConfig)
+    const result = await setup(WORLD_ADDRESS, dojoConfig)
     console.log('setup complete')
     dojoStore.set(result)
     accountStore.set(result.burnerManager.getActiveAccount())
