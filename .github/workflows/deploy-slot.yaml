@@ -6,7 +6,7 @@
 # This workflow will install Deno then run `deno lint` and `deno test`.
 # For more information see: https://github.com/denoland/setup-deno
 
-name: Deno
+name: Deploy to slot
 
 on:
   push:
@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  slot-deployment:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,6 +59,7 @@ jobs:
         working-directory: ./refactor
         env:
           ENV: slot
+          # Force the auto bundler to prepare for cloudflare (otherwise it does weird things)
           CF_PAGES: '1'
           # For now, isok, but getting an official file at some point would be nice:
           PUBLIC_TORII_URL: https://api.cartridge.gg/x/octoguns-demo/katana
