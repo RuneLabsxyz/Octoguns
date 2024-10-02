@@ -143,7 +143,7 @@ mod actions {
                 match moves.sub_moves.pop_front() {
                     Option::Some(mut vec) => {
                         //check move valid
-                        if !check_is_valid_move(vec) {
+                        if !check_is_valid_move(vec, session_primitives.max_distance_per_sub_move) {
                             vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
                         }
                         //apply move
