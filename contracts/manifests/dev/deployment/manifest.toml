@@ -24,8 +24,8 @@ manifest_name = "dojo-base"
 [[contracts]]
 kind = "DojoContract"
 address = "0x11de1871e7fa8ac97e62c36724c32ee584982f4a5892b4f62fd545d7ab2d506"
-class_hash = "0x5f41b8b6740575e35a7da94e08c6af4fbd365e8025ababee1dd0acac8045031"
-original_class_hash = "0x5f41b8b6740575e35a7da94e08c6af4fbd365e8025ababee1dd0acac8045031"
+class_hash = "0x27fa0d39964487211324e94f5fd3a876d30a699a1ad749247b5f500be1ea3cd"
+original_class_hash = "0x27fa0d39964487211324e94f5fd3a876d30a699a1ad749247b5f500be1ea3cd"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/octoguns-actions-3f08332a.json"
 reads = []

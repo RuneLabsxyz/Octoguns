@@ -28,7 +28,15 @@ original_class_hash = "0x27fa0d39964487211324e94f5fd3a876d30a699a1ad749247b5f500
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/mainnet/deployment/abis/contracts/octoguns-actions-3f08332a.json"
 reads = []
-writes = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-TurnData",
+]
 init_calldata = []
 tag = "octoguns-actions"
 systems = ["move"]
@@ -42,7 +50,15 @@ original_class_hash = "0x3ee32958b958017c667501bb85bb2411e2dd5c1e11bc2230fb947a7
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/mainnet/deployment/abis/contracts/octoguns-mapmaker-14c58c7d.json"
 reads = []
-writes = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-Global",
+]
 init_calldata = []
 tag = "octoguns-mapmaker"
 systems = [
@@ -59,7 +75,15 @@ original_class_hash = "0x29601d131c2a760259e8a670150e74fd5c7c88dd0613b894d1670fd
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/mainnet/deployment/abis/contracts/octoguns-spawn-1acb0980.json"
 reads = []
-writes = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-Player",
+]
 init_calldata = []
 tag = "octoguns-spawn"
 systems = ["spawn"]
@@ -73,7 +97,17 @@ original_class_hash = "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/mainnet/deployment/abis/contracts/octoguns-start-5506b80f.json"
 reads = []
-writes = []
+writes = [
+    "octoguns-CharacterPosition",
+    "octoguns-CharacterModel",
+    "octoguns-Map",
+    "octoguns-Session",
+    "octoguns-SessionMeta",
+    "octoguns-Bullet",
+    "octoguns-Global",
+    "octoguns-Player",
+    "octoguns-SessionPrimitives",
+]
 init_calldata = []
 tag = "octoguns-start"
 systems = [

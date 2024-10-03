@@ -1557,7 +1557,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-TurnData"
+      ],
       "init_calldata": [],
       "tag": "octoguns-actions",
       "systems": [
@@ -1818,7 +1826,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Global"
+      ],
       "init_calldata": [],
       "tag": "octoguns-mapmaker",
       "systems": [
@@ -2063,7 +2079,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Player"
+      ],
       "init_calldata": [],
       "tag": "octoguns-spawn",
       "systems": [
@@ -2381,7 +2405,17 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Global",
+        "octoguns-Player",
+        "octoguns-SessionPrimitives"
+      ],
       "init_calldata": [],
       "tag": "octoguns-start",
       "systems": [
