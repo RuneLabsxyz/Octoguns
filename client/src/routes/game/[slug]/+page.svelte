@@ -88,6 +88,9 @@
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
       if ($account) {
+        console.log('sessionData player1', $sessionData.player1.toString())
+        console.log('sessionData player2', $sessionData.player2.toString())
+        console.log('account', $account?.address)
         let isFirstPlayer = areAddressesEqual(
           $sessionData.player1.toString(),
           $account?.address
@@ -104,6 +107,7 @@
         } else {
           currentPlayerId.set(null)
         }
+        console.log('currentPlayerId', $currentPlayerId)
       }
     })
   }
