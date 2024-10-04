@@ -1,5 +1,9 @@
 import adapter from '@sveltejs/adapter-auto'
+import dotenv from 'dotenv'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+
+dotenv.config()
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   kit: {
@@ -9,6 +13,7 @@ const config = {
       $src: 'src',
       $stores: 'src/stores',
       $dojo: 'src/dojo',
+      $manifests: `../contracts/manifests/${process.env.ENV}`
     },
   },
   preprocess: vitePreprocess(),

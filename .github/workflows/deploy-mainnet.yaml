@@ -1,0 +1,58 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run `deno lint` and `deno test`.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Deploy to slot
+
+on:
+  push:
+    branches: 
+      - '1on1-mainnet'
+      - 'deployment-mainnet'
+
+permissions:
+  contents: read
+
+jobs:
+  slot-deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - id: setup-dojo
+        uses: runelabsxyz/setup-dojo@main
+        with:
+          version: 'v1.0.0-alpha.13'
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: ./client
+        run: bun install --frozen-lockfile
+      
+      - name: Build frontend for slot
+        run: bun run build
+        working-directory: ./client
+        env:
+          ENV: mainnet
+          # Force the auto bundler to prepare for cloudflare (otherwise it does weird things)
+          CF_PAGES: '1'
+          # For now, isok, but getting an official file at some point would be nice:
+          PUBLIC_TORII_URL: https://api.cartridge.gg/x/octoguns-mn-alpha-1/torii
+          PUBLIC_RPC_URL: https://api.cartridge.gg/x/starknet/mainnet
+          PUBLIC_WORLD_ADDRESS: '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3'
+
+      - name: Deploy to cloudflare pages
+        working-directory: ./client
+        run: bun wrangler pages deploy 
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+

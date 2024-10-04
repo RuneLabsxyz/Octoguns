@@ -9,17 +9,15 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
-import { KATANA_PREFUNDED_ADDRESS, KATANA_PREFUNDED_PRIVATE_KEY } from '@dojoengine/core'
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
-export async function setup({ ...config }: DojoConfig) {
+export async function setup(worldAddress: string | undefined, { ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress:
-      '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f' || '',
+    worldAddress: worldAddress ?? ''
   })
 
   // create contract components
