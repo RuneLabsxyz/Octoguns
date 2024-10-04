@@ -4,14 +4,14 @@
   import { onMount } from 'svelte'
   import { get } from 'svelte/store'
   import SettingUp from './ingame/SettingUp.svelte'
+  import { account } from '$stores/account'
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore)
+  $: ({ clientComponents, torii, client } = $dojoStore)
 
-  $: account = burnerManager.getActiveAccount()
 
   function spawn() {
-    if (account) {
-      client.spawn.spawn({ account: account, session_id: $sessionId })
+    if ($account) {
+      client.spawn.spawn({ account: $account, session_id: $sessionId })
     }
   }
 

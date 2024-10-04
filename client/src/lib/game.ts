@@ -1,13 +1,13 @@
 import { dojoStore } from '$stores/dojoStore'
 import { get } from 'svelte/store'
+import { account } from '$stores/account'
 
 export async function joinSession(session: any) {
-  let { burnerManager, client } = get(dojoStore)
-  let account = burnerManager.getActiveAccount()
+  let {  client } = get(dojoStore)
 
-  if (account) {
+  if (get(account)) {
     console.log('Joining session', session.value)
-    await client.start.join({ account: account, session_id: session.value })
+    await client.start.join({ account: get(account), session_id: session.value })
     window.location.href = `/game/${session.value}`
   } else {
     console.error('No active account found')

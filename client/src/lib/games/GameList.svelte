@@ -2,7 +2,7 @@
   import { dojoStore } from '$stores/dojoStore'
   import { createEventDispatcher } from 'svelte'
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore)
+  $: ({ clientComponents, torii, client } = $dojoStore)
 
   export let availableSessions
 
