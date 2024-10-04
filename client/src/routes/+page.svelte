@@ -5,17 +5,18 @@
   import { isSetup } from '$stores/dojoStore'
   import { playSoundEffectLoop } from '$lib/3d/utils/audioUtils'
   import { onMount } from 'svelte'
-  import Controller from '@cartridge/controller';
-  import { account, username } from '$stores/account';
+  import { account } from '$stores/account';
   import { connect } from '$lib/controller'
-  import { controller } from '$lib/controller'
   let loading = true
 
-
+  async function connectAndGoto() {
+    await connect();
+    goto('/client/games');
+  }
 
   onMount(async () => {
     playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
-		loading = false;
+    loading = false;
   })
 </script>
 
@@ -32,10 +33,8 @@
         {#if $isSetup}
           {#if loading}
           <p>Loading</p>
-          {:else if $account}
-            <Button on:click={() => goto('/client/games')}>Play</Button>
           {:else}
-            <Button on:click={connect}>Connect</Button>
+            <Button on:click={connectAndGoto}>Play</Button>
           {/if}
         {:else}
           <button class="p-5 pt-15" disabled>

@@ -46,7 +46,6 @@ export async function connect() {
             account.set(controller.account);
             username.set(await controller.username());
         }
-  goto('/client/games')
     } catch (e) {
         console.log(e);
     }
