@@ -15,7 +15,7 @@ export async function initializeStore() {
     const result = await setup(dojoConfig)
     console.log('setup complete')
     dojoStore.set(result)
-    accountStore.set(result.burnerManager.getActiveAccount())
+    // accountStore.set(result.burnerManager.getActiveAccount())
     console.log('set stores')
     isSetup.set(true)
 
