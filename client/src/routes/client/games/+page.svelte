@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { accountStore, dojoStore } from '$stores/dojoStore'
+  import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
   import { goto } from '$app/navigation'
@@ -7,6 +7,7 @@
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
   import { goToSession, joinSession } from '$lib/game'
+  import { account } from '$stores/account'
 
   let availableSessions: any = null
   let currentSessions: any = null
@@ -14,11 +15,10 @@
 
   $: ({ clientComponents, torii, client } = $dojoStore as any)
 
-  $: account = $accountStore
 
   $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($accountStore) playerEntity = torii.poseidonHash([account?.address])
+  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
   $: global = componentValueStore(clientComponents.Global, globalentity)
   $: player = componentValueStore(clientComponents.Player, playerEntity)

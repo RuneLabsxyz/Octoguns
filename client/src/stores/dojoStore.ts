@@ -6,7 +6,6 @@ import { Account } from 'starknet'
 type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export const dojoStore = writable<SetupResult>()
-export const accountStore = writable<Account | null>()
 export const isSetup = writable(false)
 
 export async function initializeStore() {
@@ -15,7 +14,6 @@ export async function initializeStore() {
     const result = await setup(dojoConfig)
     console.log('setup complete')
     dojoStore.set(result)
-    // accountStore.set(result.burnerManager.getActiveAccount())
     console.log('set stores')
     isSetup.set(true)
 
