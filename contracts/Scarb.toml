@@ -6,6 +6,8 @@ version = "0.1.0"
 [cairo]
 sierra-replace-ids = true
 
+[profile.slot]
+
 [scripts]
 migrate = "sozo build && sozo migrate apply"
 spawn = "./scripts/spawn.sh"
