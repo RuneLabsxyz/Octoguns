@@ -4,9 +4,9 @@ import { SCALING_FACTOR, SUBMOVE_SCALE, BULLET_SUBSTEPS } from "$lib/consts";
 import { type Bullet } from "../dojo/models.gen";
 
 
-export function areAddressesEqual(address1: string, address2: string): boolean {
+export function areAddressesEqual(address1: string, address2: string | bigint): boolean {
   const bigIntAddress1 = BigInt(address1)
-  const bigIntAddress2 = BigInt(address2)
+  const bigIntAddress2 = typeof address2 === 'bigint' ? address2 : BigInt(address2)
   return bigIntAddress1 === bigIntAddress2
 }
 

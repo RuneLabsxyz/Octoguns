@@ -9,6 +9,7 @@
   $: ({ clientComponents, torii, client } = $dojoStore)
 
 
+
   function spawn() {
     if ($account) {
       client.spawn.spawn({ account: $account, session_id: $sessionId })
