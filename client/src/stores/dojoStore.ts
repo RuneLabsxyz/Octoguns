@@ -17,7 +17,7 @@ async function setupInternal() {
     const result = await setup(WORLD_ADDRESS, dojoConfig)
     console.log('setup complete')
     dojoStore.set(result)
-    accountStore.set(result.burnerManager.getActiveAccount())
+    // accountStore.set(result.burnerManager.getActiveAccount())
     console.log('set stores')
     isSetup.set(true)
 

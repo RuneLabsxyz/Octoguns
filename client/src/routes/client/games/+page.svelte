@@ -12,7 +12,7 @@
   let currentSessions: any = null
   let playerEntity: Entity
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
   $: account = $accountStore
 

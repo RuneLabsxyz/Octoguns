@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { accountStore, dojoStore } from '$stores/dojoStore'
+  import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
   import { goto } from '$app/navigation'
@@ -8,18 +8,18 @@
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
+  import { account } from '$stores/account'
 
   let loadingToGame = false
   let playerEntity: Entity
   let localSelectedMap: number | null = null
   let mapCount: number = 0
 
-  $: ({ clientComponents, torii, burnerManager, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
-  $: account = $accountStore
   $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($accountStore) playerEntity = torii.poseidonHash([account?.address])
+  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
   $: player = componentValueStore(clientComponents.Player, playerEntity)
   $: global = componentValueStore(clientComponents.Global, globalentity)
@@ -63,12 +63,11 @@
   }
 
   async function createGame() {
-    const account = burnerManager.getActiveAccount()
-    if (account) {
+    if ($account) {
       console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
       console.log('selectedMap', $selectedMap)
       await client.start.create({
-        account,
+        account: $account,
         map_id: $selectedMap,
         session_primitives: SESSION_PRIMITIVES,
       })

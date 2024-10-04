@@ -1235,12 +1235,12 @@
       }
     ],
     "address": "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3",
-    "transaction_hash": "0x5559d9704c1208badb393a4e1a7b9be55f30fbc2655b615d494caf98475376f",
-    "block_number": 3,
+    "transaction_hash": "0xc23b88bac35d2a03b5ec845036bce0d9f4b4bd0900242a169ffe598e6fbcfa",
+    "block_number": null,
     "seed": "octoguns",
     "metadata": {
-      "profile_name": "dev",
-      "rpc_url": "https://api.cartridge.gg/x/octoguns-public-alpha1/katana"
+      "profile_name": "mainnet",
+      "rpc_url": "https://api.cartridge.gg/x/starknet/mainnet"
     },
     "manifest_name": "dojo-world"
   },
@@ -1248,7 +1248,7 @@
     "kind": "Class",
     "class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
     "original_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
-    "abi": "manifests/dev/deployment/abis/dojo-base.json",
+    "abi": "manifests/mainnet/deployment/abis/dojo-base.json",
     "tag": "dojo-base",
     "manifest_name": "dojo-base"
   },
