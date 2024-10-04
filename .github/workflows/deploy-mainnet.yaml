@@ -11,8 +11,8 @@ name: Deploy to slot
 on:
   push:
     branches: 
-      - 'main'
-      - 'deployment'
+      - '1on1-mainnet'
+      - 'deployment-mainnet'
 
 permissions:
   contents: read
@@ -34,22 +34,6 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Build contract
-        working-directory: ./contracts
-        run: sozo build -P slot
-
-      - name: Test contract
-        working-directory: ./contracts
-        run: sozo test -P slot
-        if: false # Set this to true when we finally have working tests
-      
-      - name: Deploy contract
-        working-directory: ./contracts
-        run: sozo migrate apply -P slot
-        env: 
-          DOJO_ACCOUNT_ADDRESS: ${{ secrets.DOJO_ACCOUNT_ADDRESS }}
-          DOJO_PRIVATE_KEY: ${{ secrets.DOJO_PRIVATE_KEY }}
-
       - name: Install dependencies
         working-directory: ./client
         run: bun install --frozen-lockfile
@@ -58,15 +42,13 @@ jobs:
         run: bun run build
         working-directory: ./client
         env:
-          ENV: slot
+          ENV: mainnet
           # Force the auto bundler to prepare for cloudflare (otherwise it does weird things)
           CF_PAGES: '1'
           # For now, isok, but getting an official file at some point would be nice:
-          PUBLIC_TORII_URL: https://api.cartridge.gg/x/octoguns-public-alpha1/torii
-          PUBLIC_RPC_URL: https://api.cartridge.gg/x/octoguns-public-alpha1/katana
-          PUBLIC_WORLD_ADDRESS: "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3"
-          PUBLIC_BURNER_ADDRESS: "0x516d934ae97ba2b708131d9ae1a9a877ee6ef486358e43641602e413f4a28c4"
-          PUBLIC_BURNER_KEY: "0x70394329654e1673bd368495c64a14d29bdf0887d61ae9d5fb82678aca4572d"
+          PUBLIC_TORII_URL: https://api.cartridge.gg/x/octoguns-mn-alpha-1/torii
+          PUBLIC_RPC_URL: https://api.cartridge.gg/x/starknet/mainnet
+          PUBLIC_WORLD_ADDRESS: 0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f
 
       - name: Deploy to cloudflare pages
         working-directory: ./client
