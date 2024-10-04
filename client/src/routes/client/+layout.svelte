@@ -56,12 +56,6 @@
 		}
 	}
 
-	function disconnect() {
-		controller.disconnect();
-		account.set(undefined);
-		username.set(undefined);
-	}
-
 
 	onMount(async () => {
 		if (await controller.probe()) {
@@ -78,9 +72,6 @@
   >
   {#if loading}
     <p>Loading</p>
-    {:else if $account}
-      <Button on:click={disconnect}>Disconnect</Button>
-    {:else}
       <Button on:click={connect}>Connect</Button>
     {/if}
     <Button href="/client/games">Play</Button>
