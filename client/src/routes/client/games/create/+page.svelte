@@ -8,7 +8,7 @@
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
-  import { account } from '$stores/account'
+  import { account, username, clearAccountStorage } from '$stores/account'
 
   let loadingToGame = false
   let playerEntity: Entity
@@ -79,6 +79,10 @@
 
   function goBack() {
     goto('/client/games')
+  }
+
+  function disconnect() {
+    clearAccountStorage();
   }
 </script>
 
