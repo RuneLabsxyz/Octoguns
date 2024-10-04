@@ -48,7 +48,7 @@ jobs:
           # For now, isok, but getting an official file at some point would be nice:
           PUBLIC_TORII_URL: https://api.cartridge.gg/x/octoguns-mn-alpha-1/torii
           PUBLIC_RPC_URL: https://api.cartridge.gg/x/starknet/mainnet
-          PUBLIC_WORLD_ADDRESS: '0x6d0cc89f47c2fb0a8ee113b47d4f04de5092f68f6ef8cb4d79d77446a4d931f'
+          PUBLIC_WORLD_ADDRESS: '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3'
 
       - name: Deploy to cloudflare pages
         working-directory: ./client
