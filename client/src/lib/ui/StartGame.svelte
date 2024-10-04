@@ -10,9 +10,10 @@
 
 
 
-  function spawn() {
+  async function spawn() {
     if ($account) {
-      client.spawn.spawn({ account: $account, session_id: $sessionId })
+      console.log('Spawn')
+      await client.spawn.spawn({ account: $account, session_id: $sessionId })
     }
   }
 

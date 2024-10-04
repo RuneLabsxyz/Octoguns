@@ -43,6 +43,10 @@
   import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
   import { BULLET_SUBSTEPS } from '$lib/consts'
   import { account } from '$stores/account'
+  import { connect } from '$lib/controller'
+  import { controller } from '$lib/controller'
+  import { onMount } from 'svelte'
+
   export let data
   let gameId = data.gameId
   let calldata: TurnData
@@ -260,6 +264,13 @@
     bulletStart.set([])
     bulletRender.set([])
   }
+
+  onMount(async () => {
+    if (await controller.probe()) {
+      // auto connect
+      await connect();
+    }
+  })  
 </script>
 
 {#if $gameState === 0}
