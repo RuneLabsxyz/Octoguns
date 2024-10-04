@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import { dojoStore, accountStore } from '$stores/dojoStore';
+  import { dojoStore } from '$stores/dojoStore';
+  import { account } from '$stores/account'
   import type { Account } from 'starknet';
 
 
@@ -10,11 +11,7 @@
   const grid = writable<number[]>([]);
 
   let { client } = $dojoStore;
-  let account: Account;
 
-  if ($accountStore) {
-    account = $accountStore;
-  }
 
   onMount(() => {
     // Initialize the grid with no active cells
@@ -39,7 +36,7 @@
   }
 
   function submit() {
-    client.mapmaker.create({account, objects: {objects: $grid}});
+    client.mapmaker.create({account: $account, objects: {objects: $grid}});
   }
 
   function isActive(index: number, activeIndices: number[]): boolean {

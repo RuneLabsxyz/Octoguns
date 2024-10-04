@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { accountStore, dojoStore } from '$stores/dojoStore'
+  import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
   import { goto } from '$app/navigation'
@@ -19,7 +19,7 @@
 
   $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($accountStore) playerEntity = torii.poseidonHash([$account?.address])
+  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
   $: player = componentValueStore(clientComponents.Player, playerEntity)
   $: global = componentValueStore(clientComponents.Global, globalentity)

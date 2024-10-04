@@ -3,7 +3,7 @@
   import Scene from '$lib/3d/Scene.svelte'
   import Ui from '$lib/ui/Ui.svelte'
   import { componentValueStore } from '$dojo/componentValueStore'
-  import { dojoStore, accountStore } from '$stores/dojoStore'
+  import { dojoStore } from '$stores/dojoStore'
   import {
     gameState,
     sessionId,
@@ -35,7 +35,6 @@
   } from '$stores/coordsStores'
   import { get } from 'svelte/store'
   import { areAddressesEqual, getBulletPosition } from '$lib/helper'
-  import type { Account } from 'starknet'
   import { move } from '$dojo/createSystemCalls'
   import { type TurnData } from '$stores/gameStores'
   import { type ComponentStore } from '$dojo/componentValueStore'
@@ -43,9 +42,9 @@
   import Waiting from '$lib/ui/ingame/Waiting.svelte'
   import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
   import { BULLET_SUBSTEPS } from '$lib/consts'
+  import { account } from '$stores/account'
   export let data
   let gameId = data.gameId
-  let account: Account
   let calldata: TurnData
   let characterData: ComponentStore
   let characterPosition: ComponentStore
@@ -55,7 +54,6 @@
 
   $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
-  $: if ($accountStore) account = $accountStore
 
   $: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
 
@@ -89,21 +87,23 @@
 
   $: if ($sessionMetaData) {
     sessionMetaData.subscribe((data) => {
-      let isFirstPlayer = areAddressesEqual(
-        $sessionData.player1.toString(),
-        account.address
-      )
-      let isSecondPlayer = areAddressesEqual(
-        $sessionData.player2.toString(),
-        account.address
-      )
+      if ($account) {
+        let isFirstPlayer = areAddressesEqual(
+          $sessionData.player1.toString(),
+          $account?.address
+        )
+        let isSecondPlayer = areAddressesEqual(
+          $sessionData.player2.toString(),
+          $account?.address
+        )
 
-      if (isFirstPlayer) {
-        currentPlayerId.set(1)
-      } else if (isSecondPlayer) {
-        currentPlayerId.set(2)
-      } else {
-        currentPlayerId.set(null)
+        if (isFirstPlayer) {
+          currentPlayerId.set(1)
+        } else if (isSecondPlayer) {
+          currentPlayerId.set(2)
+        } else {
+          currentPlayerId.set(null)
+        }
       }
     })
   }
@@ -163,9 +163,10 @@
         let velocity = { x: (x_dir * v.x) / 300, y: (y_dir * v.y) / 300 }
 
         //TODO, shot by is character id not address
+        if (!$account) return
         let shot_by = areAddressesEqual(
           bullet.shot_by.toString(),
-          account.address
+          $account?.address
         )
           ? 1
           : 2
@@ -222,10 +223,10 @@
         console.log('characterPosition', $characterPosition)
 
         characterPosition.subscribe((position) => {
-          if ($characterData) {
+          if ($characterData && $account) {
             let isPlayer = areAddressesEqual(
               $characterData.player_id,
-              account.address
+              $account?.address
             )
             if (isPlayer) {
               playerStartCoords.set({ [position.id]: position.coords })
@@ -246,7 +247,7 @@
     //TEMPORARY
     //REMOVE
     //@ts-ignore
-    move(client, account, $sessionId, calldata)
+    move(client, $account, $sessionId, calldata)
     frameCounter.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
