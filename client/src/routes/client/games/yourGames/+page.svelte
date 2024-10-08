@@ -62,11 +62,21 @@
     <Button href="/client/games/create">+ New Game</Button>
   </div>
   <div class="overflow-y-auto overflow-x-clip h-full">
-    {#if sessions.some(s => !s.isFinished)}
+    {#if sessions.some(s => !s.isFinished && s.isStarted)}
       <div class="pb-5 border-b-2 mb-5 border-gray-800">
         <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
         <GameList
-          availableSessions={sessions.filter(s => !s.isFinished)}
+          availableSessions={sessions.filter(s => !s.isFinished && s.isStarted)}
+          on:select={(session) => goToSession(session.detail)}
+        />
+      </div>
+    {/if}
+    
+    {#if sessions.some(s => !s.isFinished && !s.isStarted)}
+      <div class="pb-5 border-b-2 mb-5 border-gray-800">
+        <h1 class="text-xl ml-5 mb-3 font-bold">Your not started games</h1>
+        <GameList
+          availableSessions={sessions.filter(s => !s.isFinished && !s.isStarted)}
           on:select={(session) => goToSession(session.detail)}
         />
       </div>

@@ -21,7 +21,12 @@
       <div
         class="flex justify-between items-center border-4 rounded-lg border-black flex-col w-full card"
       >
-        <p class="flex-grow text-left p-5">{session.value}</p>
+        <p class="flex-grow text-left p-5">
+          {session.value}
+          {#if session.isStarted && session.isYourTurn}
+            <span class="ml-2 text-green-600 font-bold">Your Turn</span>
+          {/if}
+        </p>
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
           on:click={() => onClick(session)}
