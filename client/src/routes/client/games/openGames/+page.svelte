@@ -53,17 +53,6 @@
     <span class="flex-grow"></span>
     <Button href="/client/games/create">+ New Game</Button>
   </div>
-  <div class="overflow-y-auto overflow-x-clip h-full">
-    {#if currentSessions && currentSessions.length > 0}
-      <div class="pb-5 border-b-2 mb-5 border-gray-800">
-        <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
-        <GameList
-          availableSessions={currentSessions}
-          on:select={(session) => goToSession(session.detail)}
-        />
-      </div>
-    {/if}
-
     <div
       class={cn('flex flex-col', {
         'justify-center': !availableSessions,
@@ -101,4 +90,3 @@
     >
     </div>
   -->
-</div>

@@ -11,6 +11,8 @@
   let availableSessions: any = null
   let currentSessions: any = null
   let playerEntity: Entity
+  let finishedSessions: any = null
+  let activeSessions: any = null
 
   $: ({ clientComponents, torii, client } = $dojoStore as any)
 
@@ -34,6 +36,22 @@
       availableSessions = $global.pending_sessions.filter(
         (session: { value: unknown }) => !playerGames.has(session.value)
       )
+
+      
+      for (let i = 0; i < currentSessions.length; i++) {
+        let sessionEntity = torii.poseidonHash([BigInt(currentSessions[i].value).toString()]);
+        if (sessionEntity) {
+          let sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity);
+          sessionDataStore.subscribe((data) => {
+            if (data) {
+              console.log('sessionData', data);
+            } else {
+              console.log('No session data for entity:', sessionEntity);
+            }
+          });
+        }
+      }
+
 
       console.log('currentSessions', currentSessions, currentSessions.length)
       console.log(
@@ -83,22 +101,4 @@
       {/if}
     </div>
   </div>
-
-  <!--
-  
-    <div class="flex justify-between p-4 fixed bottom-0 left-0 right-0 bg-white">
-    <button
-      class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
-      on:click={() => {
-        window.location.href = '/'
-      }}>Back</button
-    >
-    <button
-      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-      on:click={() => {
-        goto('/client/games/create')
-      }}>Create Game</button
-    >
-    </div>
-  -->
 </div>

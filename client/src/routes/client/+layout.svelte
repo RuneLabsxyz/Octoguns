@@ -22,7 +22,8 @@
     <p>Loading</p>
       <Button on:click={connect}>Connect</Button>
     {/if}
-    <Button href="/client/games">Play</Button>
+    <Button href="/client/games/openGames">New Game</Button>
+    <Button href="/client/games/yourGames">Your Games</Button>
     <Button href="/client/mapmaker">Maps</Button>
     <div class="flex-grow"></div>
     <Button href="/">Back to home screen</Button>
