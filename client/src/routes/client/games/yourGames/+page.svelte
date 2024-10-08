@@ -5,62 +5,52 @@
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
-  import { goToSession, joinSession } from '$lib/game'
+  import { goToSession } from '$lib/game'
   import { account } from '$stores/account'
+  import { areAddressesEqual } from '$lib/helper'
 
-  let availableSessions: any = null
-  let currentSessions: any = null
+  type Session = {
+    value: any;
+    isYourTurn: boolean;
+    isStarted: boolean;
+    isFinished: boolean;
+  };
+
   let playerEntity: Entity
-  let finishedSessions: any = null
-  let activeSessions: any = null
+  let sessions: Session[] = []
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
-
-
-  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
-
+  $: ({ clientComponents, torii } = $dojoStore as any)
   $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
-
-  $: global = componentValueStore(clientComponents.Global, globalentity)
   $: player = componentValueStore(clientComponents.Player, playerEntity)
+  $: console.log('sessions', sessions)
 
-  $: if ($global) {
-    if ($player) {
-      console.log('player', $player)
-      currentSessions = $player.games.map((game: { value: any }) => game.value)
+  $: if ($player && $account?.address) {
+    const currentSessions = $player.games.map((game: { value: any }) => ({ value: game.value }))
+    sessions = []
 
-      let playerGames = new Set(currentSessions)
-
-      currentSessions = currentSessions.map((e: any) => ({ value: e }))
-
-      availableSessions = $global.pending_sessions.filter(
-        (session: { value: unknown }) => !playerGames.has(session.value)
-      )
-
-      
-      for (let i = 0; i < currentSessions.length; i++) {
-        let sessionEntity = torii.poseidonHash([BigInt(currentSessions[i].value).toString()]);
-        if (sessionEntity) {
-          let sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity);
-          sessionDataStore.subscribe((data) => {
-            if (data) {
-              console.log('sessionData', data);
-            } else {
-              console.log('No session data for entity:', sessionEntity);
+    for (const session of currentSessions) {
+      const sessionEntity = torii.poseidonHash([BigInt(session.value).toString()])
+      if (sessionEntity) {
+        const sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity)
+        const sessionMetaDataStore = componentValueStore(clientComponents.SessionMeta, sessionEntity)
+        
+        sessionDataStore.subscribe((data) => {
+          if (data) {
+            const newSession: Session = {
+              value: session.value,
+              isYourTurn: areAddressesEqual(data.player1, $account.address),
+              isStarted: false,
+              isFinished: data.state === 3
             }
-          });
-        }
+            sessionMetaDataStore.subscribe((metaData) => {
+              if (metaData && metaData.p1_character !== 0) {
+                newSession.isStarted = true
+              }
+            })
+            sessions = [...sessions, newSession]
+          }
+        })
       }
-
-
-      console.log('currentSessions', currentSessions, currentSessions.length)
-      console.log(
-        'availableSessions',
-        availableSessions,
-        availableSessions.length
-      )
-    } else {
-      availableSessions = $global.pending_sessions
     }
   }
 </script>
@@ -72,33 +62,24 @@
     <Button href="/client/games/create">+ New Game</Button>
   </div>
   <div class="overflow-y-auto overflow-x-clip h-full">
-    {#if currentSessions && currentSessions.length > 0}
+    {#if sessions.some(s => !s.isFinished)}
       <div class="pb-5 border-b-2 mb-5 border-gray-800">
         <h1 class="text-xl ml-5 mb-3 font-bold">Your active games</h1>
         <GameList
-          availableSessions={currentSessions}
+          availableSessions={sessions.filter(s => !s.isFinished)}
           on:select={(session) => goToSession(session.detail)}
         />
       </div>
     {/if}
-
-    <div
-      class={cn('flex flex-col', {
-        'justify-center': !availableSessions,
-      })}
-    >
-      {#if availableSessions && availableSessions.length > 0}
-        <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
+    
+    {#if sessions.some(s => s.isFinished)}
+      <div class="pb-5">
+        <h1 class="text-xl ml-5 mb-3 font-bold">Your finished games</h1>
         <GameList
-          {availableSessions}
-          on:select={(session) => joinSession(session.detail)}
+          availableSessions={sessions.filter(s => s.isFinished)}
+          on:select={(session) => goToSession(session.detail)}
         />
-      {:else}
-        <div class="self-center align-middle flex flex-col gap-2">
-          <p>No games are currently available.</p>
-          <Button href="/client/games/create">+ New Game</Button>
-        </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
 </div>
