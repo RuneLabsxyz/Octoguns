@@ -1,6 +1,6 @@
 kind = "DojoModel"
-class_hash = "0x4f062a938b3b4845fca427ae8b1ff891d1fb00e4b5c93a57aa210147e09312f"
-original_class_hash = "0x4f062a938b3b4845fca427ae8b1ff891d1fb00e4b5c93a57aa210147e09312f"
+class_hash = "0x28ec07b8933b445f9dcc40ec316b0636b59c869fd2dc62de8d58166e83fb057"
+original_class_hash = "0x28ec07b8933b445f9dcc40ec316b0636b59c869fd2dc62de8d58166e83fb057"
 abi = "manifests/dev/base/abis/models/octoguns-TurnData-293d224e.json"
 tag = "octoguns-TurnData"
 qualified_path = "octoguns::models::turndata::turn_data"

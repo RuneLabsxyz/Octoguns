@@ -1,3 +1,5 @@
 target
-manifests/
-bindings/
+bindings
+.env.*
+.env
+manifests/dev

@@ -159,23 +159,16 @@ mod tests {
             bullet_id = *session_meta.bullets.at(0);
         }
         else {
-            println!("no bullet");
         }
         let bullet = get!(world, bullet_id, (Bullet));
-        println!("turn: {}", session_meta.turn_count);
-        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
 
         set_contract_address(player2);
         actions.move(session_id, TurnMove {sub_moves: ArrayTrait::new(), shots: ArrayTrait::new()});
         let bullet = get!(world, bullet_id, (Bullet));
-        println!("turn: {}", session_meta.turn_count);
-        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
 
         set_contract_address(player1);
         actions.move(session_id, TurnMove {sub_moves: ArrayTrait::new(), shots: ArrayTrait::new()});
         let bullet = get!(world, bullet_id, (Bullet));
-        println!("turn: {}", session_meta.turn_count);
-        println!("bullet x: {}, bullet y: {}", bullet.coords.x, bullet.coords.y);
 
         let session = get!(world, session_id, (Session));
         assert!(session.state == 3, "Game should have ended");
