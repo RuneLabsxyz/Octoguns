@@ -38,13 +38,17 @@
           if (data) {
             const newSession: Session = {
               value: session.value,
-              isYourTurn: areAddressesEqual(data.player1, $account.address),
+              isYourTurn: false,
               isStarted: false,
               isFinished: data.state === 3
             }
             sessionMetaDataStore.subscribe((metaData) => {
-              if (metaData && metaData.p1_character !== 0) {
-                newSession.isStarted = true
+              if (metaData) {
+                newSession.isStarted = metaData.p1_character !== 0
+                const currentPlayerId = areAddressesEqual(data.player1, $account.address) ? 1 : 2
+                newSession.isYourTurn = 
+                  (currentPlayerId === 1 && metaData.turn_count % 2 === 0) ||
+                  (currentPlayerId === 2 && metaData.turn_count % 2 === 1)
               }
             })
             sessions = [...sessions, newSession]
