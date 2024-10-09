@@ -65,33 +65,36 @@
   }
 
   const animationLoop = () => {
-
-    if ($birdView) {
-      if (birdViewCamera) {
-        resetCamera(birdViewCamera, renderer)
-        renderer.render(scene, birdViewCamera)
+    try {
+      if ($birdView) {
+        if (birdViewCamera) {
+          resetCamera(birdViewCamera, renderer)
+          renderer.render(scene, birdViewCamera)
+        }
+      } else {
+        renderCameras(cameras, numCameras, renderer, scene)
       }
-    } else {
-      renderCameras(cameras, numCameras, renderer, scene)
-    }
 
-    if ($recordingMode) {
-      recordMove(cameras[0], characterId)
-      if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
-        shoot(cameras[0]) // currently only works with one camera
-        hasShotInCurrentRecording.set(true)
+      if ($recordingMode) {
+        recordMove(cameras[0], characterId)
+        if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
+          shoot(cameras[0]) // currently only works with one camera
+          hasShotInCurrentRecording.set(true)
+        }
       }
-    }
-    if ($replayMode) {
-      if ($frameCounter > RECORDING_FRAME_LIMIT) {
-        console.log('eyyy, tf')
-        replayMode.set(false)
+      if ($replayMode) {
+        if ($frameCounter > RECORDING_FRAME_LIMIT) {
+          console.log('eyyy, tf')
+          replayMode.set(false)
+        }
+        replayMove($recordedMove, characterId)
+        replayShot($recordedMove, cameras[0])
       }
-      replayMove($recordedMove, characterId)
-      replayShot($recordedMove, cameras[0])
-    }
 
-    animationFrameId = requestAnimationFrame(animationLoop)
+      animationFrameId = requestAnimationFrame(animationLoop)
+    } catch (error) {
+      console.error('Error in animation loop:', error)
+    }
   }
 
   $: if ($frameCounter) {
