@@ -3,8 +3,8 @@
   import { writable } from 'svelte/store';
   import { dojoStore } from '$stores/dojoStore';
   import { account } from '$stores/account'
-  import type { Account } from 'starknet';
-
+  import TxToast from '$lib/ui/TxToast.svelte';
+  import { goto } from '$app/navigation';
 
   const gridSize = 25;
   const totalCells = gridSize * gridSize;
@@ -12,9 +12,11 @@
 
   let { client } = $dojoStore;
 
+  let toastMessage = '';
+  let toastStatus = 'loading';
+  let showToast = false;
 
   onMount(() => {
-    // Initialize the grid with no active cells
     grid.set([]);
   });
 
@@ -35,8 +37,22 @@
     grid.set([]);
   }
 
-  function submit() {
-    client.mapmaker.create({account: $account, objects: {objects: $grid}});
+  async function submit() {
+    showToast = true;
+    toastMessage = 'Creating map...';
+    toastStatus = 'loading';
+    try {
+      await client.mapmaker.create({account: $account, objects: {objects: $grid}});
+      toastMessage = 'Map created successfully!';
+      toastStatus = 'success';
+      setTimeout(() => {
+        goto('/client/games/openGames');
+      }, 2000);
+    } catch (error) {
+      console.error('Error creating map:', error);
+      toastMessage = 'Failed to create map.';
+      toastStatus = 'error';
+    }
   }
 
   function isActive(index: number, activeIndices: number[]): boolean {
@@ -74,15 +90,21 @@
 </style>
 
 <div class="controls">
-  <button class = "ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" on:click={resetGrid}>Reset Grid</button>
-  <button class = "mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition" on:click={submit}>Submit</button>
+  <button class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" on:click={resetGrid}>Reset Grid</button>
+  <button class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition" on:click={submit}>Submit</button>
 </div>
 
 <div class="grid">
   {#each Array(totalCells) as _, index}
-    <div
+    <button
+      type="button"
       class="cell {isActive(index, $grid) ? 'active' : ''}"
       on:click={() => toggleCell(Math.floor(index / gridSize), index % gridSize)}
-    ></div>
+      on:keydown={(e) => e.key === 'Enter' && toggleCell(Math.floor(index / gridSize), index % gridSize)}
+    />
   {/each}
 </div>
+
+{#if showToast}
+  <TxToast message={toastMessage} status={toastStatus} />
+{/if}

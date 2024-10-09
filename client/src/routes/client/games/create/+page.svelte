@@ -6,6 +6,7 @@
   import { type Entity, getComponentValue } from '@dojoengine/recs'
   import MiniMap from '$lib/MiniMap.svelte'
   import Button from '$lib/ui/Button.svelte'
+  import TxToast from '$lib/ui/TxToast.svelte'
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
   import { account, username, clearAccountStorage } from '$stores/account'
@@ -62,18 +63,37 @@
     console.log('selected map', map_id)
   }
 
+  let toastMessage = '';
+  let toastStatus = 'loading';
+  let showToast = false;
+
   async function createGame() {
     if ($account) {
       console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
       console.log('selectedMap', $selectedMap)
-      await client.start.create({
-        account: $account,
-        map_id: $selectedMap,
-        session_primitives: SESSION_PRIMITIVES,
-      })
-      loadingToGame = true
+      showToast = true;
+      toastMessage = 'Creating game...';
+      toastStatus = 'loading';
+      try {
+        await client.start.create({
+          account: $account,
+          map_id: $selectedMap,
+          session_primitives: SESSION_PRIMITIVES,
+        })
+        toastMessage = 'Game created successfully!';
+        toastStatus = 'success';
+        loadingToGame = true;
+      } catch (error) {
+        console.error('Error creating game:', error);
+        toastMessage = 'Failed to create game.';
+        toastStatus = 'error';
+        loadingToGame = false;
+      }
     } else {
       console.error('No active account found')
+      toastMessage = 'No active account found.';
+      toastStatus = 'error';
+      showToast = true;
     }
   }
 
@@ -109,6 +129,10 @@
     {/each}
   </div>
 </div>
+
+{#if showToast}
+  <TxToast message={toastMessage} status={toastStatus} />
+{/if}
 
 <style>
   .grid-fill {

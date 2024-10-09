@@ -37,7 +37,7 @@
   {/if}
   <Button href="/client/games/openGames">New Game</Button>
   <Button href="/client/games/yourGames">Your Games</Button>
-  <Button href="/client/mapmaker">Maps</Button>
+  <Button href="/client/maps">Maps</Button>
   <div class="flex-grow"></div>
   <Button href="/">Back to home screen</Button>
   </div>
