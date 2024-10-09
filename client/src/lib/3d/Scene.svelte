@@ -67,12 +67,16 @@
   const animationLoop = () => {
     try {
       if ($birdView) {
-        if (birdViewCamera) {
+        if (birdViewCamera && birdViewCamera.isCamera) {
           resetCamera(birdViewCamera, renderer)
-          renderer.render(scene, birdViewCamera)
+          if (scene && scene.isScene) {
+            renderer.render(scene, birdViewCamera)
+          }
         }
       } else {
-        renderCameras(cameras, numCameras, renderer, scene)
+        if (cameras.length > 0 && cameras.every(cam => cam && cam.isCamera)) {
+          renderCameras(cameras, numCameras, renderer, scene)
+        }
       }
 
       if ($recordingMode) {
@@ -94,6 +98,9 @@
       animationFrameId = requestAnimationFrame(animationLoop)
     } catch (error) {
       console.error('Error in animation loop:', error)
+      if (error instanceof TypeError && error.message.includes('byteLength')) {
+        console.warn('Possible issue with buffer or geometry.')
+      }
     }
   }
 
