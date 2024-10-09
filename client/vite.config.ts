@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [sveltekit(), wasm(), topLevelAwait()],
   build: {
     sourcemap: false,
+    minify: false,
   },
   server: {
     host: 'localhost',
