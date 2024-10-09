@@ -34,7 +34,6 @@
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
-  import { GridHelper } from 'three/src/helpers/GridHelper.js'
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
   import { Inspector } from 'three-inspect'
 
