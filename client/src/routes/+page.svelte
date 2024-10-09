@@ -5,7 +5,6 @@
   import { isSetup } from '$stores/dojoStore'
   import { playSoundEffectLoop } from '$lib/3d/utils/audioUtils'
   import { onMount } from 'svelte'
-  import { account } from '$stores/account';
   import { connect } from '$lib/controller'
   let loading = true
 
@@ -45,10 +44,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .wrapper {
-    background: url('/tiled-design.svg') repeat;
-    background-size: 450px;
-  }
-</style>
