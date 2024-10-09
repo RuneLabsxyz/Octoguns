@@ -64,7 +64,7 @@
         <slot></slot>
       </div>
       <div class="flex justify-between">
-        <Button on:click={logout} variant="secondary">Logout</Button>
+        <Button on:click={logout}>Logout</Button>
         <Button on:click={closeModal}>Close</Button>
       </div>
     </div>
