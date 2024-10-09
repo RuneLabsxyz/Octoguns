@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { connect } from '$lib/controller'
   import { controller } from '$lib/controller'
+  import { username } from '$stores/account'
   let loading = true
 
 	onMount(async () => {
@@ -20,7 +21,12 @@
   >
   {#if loading}
     <p>Loading</p>
-      <Button on:click={connect}>Connect</Button>
+    {/if}
+    {#if username}
+      <Button>
+        <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
+        {$username}
+      </Button>
     {/if}
     <Button href="/client/games/openGames">New Game</Button>
     <Button href="/client/games/yourGames">Your Games</Button>
