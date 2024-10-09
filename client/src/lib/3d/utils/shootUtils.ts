@@ -33,6 +33,11 @@ function applyBulletToStore(newBullet: BulletCoords) {
 }
 
 export function shoot(camera: PerspectiveCamera) {
+  if (!camera || !camera.isCamera) {
+    console.error('Invalid camera object')
+    return
+  }
+
   let move_index = Math.floor(get(frameCounter) / 3)
 
   let direction = getYawAngle(camera)
@@ -47,6 +52,10 @@ export function shoot(camera: PerspectiveCamera) {
   )
 
   recordedMove.update((rm) => {
+    if (!rm || !Array.isArray(rm.shots)) {
+      console.error('Invalid recordedMove structure')
+      return rm
+    }
     rm.shots.push({ angle: direction, step: move_index })
     console.log(rm.shots)
     return rm
