@@ -57,7 +57,7 @@
 
 <div class={cn('flex flex-col h-full')}>
   <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-    <h1 class="text-3xl font-bold">Play</h1>
+    <h1 class="text-3xl font-bold">Your games</h1>
     <span class="flex-grow"></span>
     <Button href="/client/games/create">+ New Game</Button>
   </div>

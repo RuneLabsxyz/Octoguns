@@ -10,7 +10,7 @@
 
   async function connectAndGoto() {
     await connect();
-    goto('/client/games');
+    goto('/client/games/openGames');
   }
 
   onMount(async () => {
