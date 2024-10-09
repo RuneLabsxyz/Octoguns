@@ -1,13 +1,25 @@
 import { writable } from 'svelte/store';
 import type { AccountInterface } from 'starknet';
+import { controller } from '$lib/controller';  // Add this import
 
 function createPersistentStore<T>(key: string, initialValue: T) {
   const storedValue = localStorage.getItem(key);
-  const initial = storedValue ? JSON.parse(storedValue) : initialValue;
+  let initial = initialValue;
+  if (storedValue !== null && storedValue !== 'undefined') {
+    try {
+      initial = JSON.parse(storedValue);
+    } catch (e) {
+      console.error(`Error parsing stored value for ${key}:`, e);
+    }
+  }
   const store = writable<T>(initial);
 
   store.subscribe(value => {
-    localStorage.setItem(key, JSON.stringify(value));
+    if (value === undefined) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
   });
 
   return store;
@@ -16,9 +28,10 @@ function createPersistentStore<T>(key: string, initialValue: T) {
 export const account = createPersistentStore<AccountInterface | undefined>('octoguns_account', undefined);
 export const username = createPersistentStore<string | undefined>('octoguns_username', undefined);
 
-export function clearAccountStorage() {
+export async function clearAccountStorage() {
   localStorage.removeItem('octoguns_account');
   localStorage.removeItem('octoguns_username');
   account.set(undefined);
   username.set(undefined);
+  await controller.disconnect();
 }

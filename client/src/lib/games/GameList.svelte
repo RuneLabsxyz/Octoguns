@@ -1,27 +1,38 @@
 <script lang="ts">
-  import { dojoStore } from '$stores/dojoStore'
   import { createEventDispatcher } from 'svelte'
-
-  $: ({ clientComponents, torii, client } = $dojoStore)
 
   export let availableSessions
 
   const dispatch = createEventDispatcher()
 
   $: pendingSessions = availableSessions
+  let showAll = false
 
   function onClick(session: any) {
     dispatch('select', session)
   }
+
+  function toggleShowAll() {
+    showAll = !showAll
+  }
+
+  $: displayedSessions = showAll 
+    ? pendingSessions.slice().reverse()
+    : pendingSessions.slice(-9).reverse()
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-5 gap-3">
   {#if pendingSessions}
-    {#each availableSessions.slice().reverse() as session}
+    {#each displayedSessions as session}
       <div
         class="flex justify-between items-center border-4 rounded-lg border-black flex-col w-full card"
       >
-        <p class="flex-grow text-left p-5">{session.value}</p>
+        <p class="flex-grow text-left p-5">
+          {session.value}
+          {#if session.isStarted && session.isYourTurn}
+            <span class="ml-2 text-green-600 font-bold">Your Turn</span>
+          {/if}
+        </p>
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
           on:click={() => onClick(session)}
@@ -32,6 +43,17 @@
     {/each}
   {/if}
 </div>
+
+{#if pendingSessions && pendingSessions.length > 9}
+  <div class="flex justify-center mt-4">
+    <button
+      class="border-4 rounded-lg border-black py-2 px-4 hover:bg-gray-300"
+      on:click={toggleShowAll}
+    >
+      {showAll ? 'Show Less' : 'Show All Games'}
+    </button>
+  </div>
+{/if}
 
 <style>
   .card {

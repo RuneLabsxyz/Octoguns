@@ -1,17 +1,25 @@
 <script lang="ts">
   import Button from '$lib/ui/Button.svelte'
+  import ControllerModal from '$lib/ui/ControllerModal.svelte'
   import { onMount } from 'svelte';
   import { connect } from '$lib/controller'
   import { controller } from '$lib/controller'
+  import { username } from '$stores/account'
+  
   let loading = true
+  let showControllerModal = false
 
-	onMount(async () => {
-		if (await controller.probe()) {
-			// auto connect
-			await connect();
-		}
-		loading = false;
-	});
+  onMount(async () => {
+    if (await controller.probe()) {
+      // auto connect
+      await connect();
+    }
+    loading = false;
+  });
+
+  function toggleControllerModal() {
+    showControllerModal = !showControllerModal;
+  }
 </script>
 
 <div class="wrapper w-screen h-screen flex items-stretch md:flex-row flex-col">
@@ -20,12 +28,18 @@
   >
   {#if loading}
     <p>Loading</p>
-      <Button on:click={connect}>Connect</Button>
-    {/if}
-    <Button href="/client/games">Play</Button>
-    <Button href="/client/mapmaker">Maps</Button>
-    <div class="flex-grow"></div>
-    <Button href="/">Back to home screen</Button>
+  {/if}
+  {#if username}
+    <Button on:click={toggleControllerModal}>
+      <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
+      {$username}
+    </Button>
+  {/if}
+  <Button href="/client/games/openGames">New Game</Button>
+  <Button href="/client/games/yourGames">Your Games</Button>
+  <Button href="/client/mapmaker">Maps</Button>
+  <div class="flex-grow"></div>
+  <Button href="/">Back to home screen</Button>
   </div>
   <div class="m-7 md:ml-0 bg-white flex-grow border-4 border-black rounded-lg">
     <slot />
@@ -46,6 +60,12 @@
   </div>
   -->
 </div>
+
+<ControllerModal 
+  show={showControllerModal} 
+  on:close={toggleControllerModal}
+ />
+
 
 <style>
   .wrapper {
