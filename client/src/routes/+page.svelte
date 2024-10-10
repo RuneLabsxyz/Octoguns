@@ -20,7 +20,7 @@
   async function connectAndGoto(config: string) {
     env.set(config as "mainnet" | "slot");
     await initStore();
-    await connect();
+    await connect(config);
     goto(`${config}/client/games/openGames`);
   }
 

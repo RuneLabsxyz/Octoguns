@@ -3,7 +3,7 @@
   import ControllerModal from '$lib/ui/ControllerModal.svelte'
   import { onMount } from 'svelte';
   import { connect } from '$lib/controller'
-  import { controller } from '$lib/controller'
+  import { controllerMainnet, controllerSlot } from '$lib/controller'
   import { username } from '$stores/account'
   import { env } from '$stores/network';
   
@@ -11,10 +11,18 @@
   let showControllerModal = false
 
   onMount(async () => {
-    if (await controller.probe()) {
-      // auto connect
-      await connect();
+    if ( $env === "mainnet") {
+      if (await controllerMainnet.probe()) {
+        // auto connect
+        await connect("mainnet");
+     }    
+    } else {
+      if (await controllerSlot.probe()) {
+        // auto connect
+        await connect("slot");
+      }
     }
+
     loading = false;
   });
 

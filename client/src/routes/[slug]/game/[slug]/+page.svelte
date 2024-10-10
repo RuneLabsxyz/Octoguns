@@ -44,7 +44,8 @@
   import { BULLET_SUBSTEPS } from '$lib/consts'
   import { account } from '$stores/account'
   import { connect } from '$lib/controller'
-  import { controller } from '$lib/controller'
+  import { controllerMainnet, controllerSlot } from '$lib/controller'
+  import { env } from '$stores/network';
   import { onMount } from 'svelte'
 
   export let data
@@ -266,9 +267,16 @@
   }
 
   onMount(async () => {
-    if (await controller.probe()) {
-      // auto connect
-      await connect();
+    if ($env === "mainnet") {
+      if (await controllerMainnet.probe()) {
+        // auto connect
+        await connect("mainnet");
+      }
+    } else {
+      if (await controllerSlot.probe()) {
+        // auto connect
+        await connect("slot");
+      }
     }
   })  
 </script>
