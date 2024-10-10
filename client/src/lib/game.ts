@@ -1,9 +1,10 @@
 import { dojoStore } from '$stores/dojoStore'
 import { get } from 'svelte/store'
 import { account } from '$stores/account'
+import { env } from '$stores/network';
 
 export async function joinSession(session: any) {
-  let {  client } = get(dojoStore)
+  let {  client } = get(dojoStore) as any
 
   if (get(account)) {
     console.log('Joining session', session.value)
@@ -16,5 +17,5 @@ export async function joinSession(session: any) {
 
 export async function goToSession(session: any) {
   console.log('session', session)
-  window.location.href = `/game/${session.value}`
+  window.location.href = `/${get(env)}/game/${session.value}`
 }

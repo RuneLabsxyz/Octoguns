@@ -1235,12 +1235,12 @@
       }
     ],
     "address": "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3",
-    "transaction_hash": "0x2c9a77cb6bb6e0cc6b86b67481b0e685c33a10f942457cf03333c9defe47223",
+    "transaction_hash": "0x1452ef18cf403f3fbd3e3d7885c845da9eaf22449a19617da005d7335000c55",
     "block_number": 3,
     "seed": "octoguns",
     "metadata": {
-      "profile_name": "dev",
-      "rpc_url": "http://localhost:5050/"
+      "profile_name": "slot",
+      "rpc_url": "https://api.cartridge.gg/x/octoguns-alpha1/katana"
     },
     "manifest_name": "dojo-world"
   },
@@ -1248,7 +1248,7 @@
     "kind": "Class",
     "class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
     "original_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
-    "abi": "manifests/dev/deployment/abis/dojo-base.json",
+    "abi": "manifests/slot/deployment/abis/dojo-base.json",
     "tag": "dojo-base",
     "manifest_name": "dojo-base"
   },
@@ -1557,15 +1557,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "octoguns-CharacterPosition",
-        "octoguns-CharacterModel",
-        "octoguns-Map",
-        "octoguns-Session",
-        "octoguns-SessionMeta",
-        "octoguns-Bullet",
-        "octoguns-TurnData"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "octoguns-actions",
       "systems": [
@@ -1826,15 +1818,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "octoguns-CharacterPosition",
-        "octoguns-CharacterModel",
-        "octoguns-Map",
-        "octoguns-Session",
-        "octoguns-SessionMeta",
-        "octoguns-Bullet",
-        "octoguns-Global"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "octoguns-mapmaker",
       "systems": [
@@ -2079,15 +2063,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "octoguns-CharacterPosition",
-        "octoguns-CharacterModel",
-        "octoguns-Map",
-        "octoguns-Session",
-        "octoguns-SessionMeta",
-        "octoguns-Bullet",
-        "octoguns-Player"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "octoguns-spawn",
       "systems": [
@@ -2405,17 +2381,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "octoguns-CharacterPosition",
-        "octoguns-CharacterModel",
-        "octoguns-Map",
-        "octoguns-Session",
-        "octoguns-SessionMeta",
-        "octoguns-Bullet",
-        "octoguns-Global",
-        "octoguns-Player",
-        "octoguns-SessionPrimitives"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "octoguns-start",
       "systems": [

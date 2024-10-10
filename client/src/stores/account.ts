@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { AccountInterface } from 'starknet';
-import { controller } from '$lib/controller';  // Add this import
+import { controllerMainnet, controllerSlot } from '$lib/controller';  // Add this import
 
 function createPersistentStore<T>(key: string, initialValue: T) {
   const storedValue = localStorage.getItem(key);
@@ -33,5 +33,6 @@ export async function clearAccountStorage() {
   localStorage.removeItem('octoguns_username');
   account.set(undefined);
   username.set(undefined);
-  await controller.disconnect();
+  await controllerMainnet.disconnect();
+  await controllerSlot.disconnect();
 }
