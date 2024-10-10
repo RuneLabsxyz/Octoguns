@@ -7,39 +7,51 @@ export function renderCameras(
   renderer: WebGLRenderer,
   scene: Scene
 ) {
-  const { width, height } = renderer.domElement
+  try {
+    const { width, height } = renderer.domElement
 
-  if (cameras.length === numCameras) {
-    const rows = Math.ceil(Math.sqrt(numCameras))
-    const cols = Math.ceil(numCameras / rows)
-    const cameraWidth = width / cols
-    const cameraHeight = height / rows
+    if (cameras.length === numCameras) {
+      try {
+        const rows = Math.ceil(Math.sqrt(numCameras))
+        const cols = Math.ceil(numCameras / rows)
+        const cameraWidth = width / cols
+        const cameraHeight = height / rows
 
-    cameras.forEach((camera, index) => {
-      const row = Math.floor(index / cols)
-      const col = index % cols
+        cameras.forEach((camera, index) => {
+          try {
+            const row = Math.floor(index / cols)
+            const col = index % cols
 
-      camera.aspect = cameraWidth / cameraHeight
-      camera.updateProjectionMatrix()
+            camera.aspect = cameraWidth / cameraHeight
+            camera.updateProjectionMatrix()
 
-      renderer.setScissorTest(true)
-      renderer.setViewport(
-        col * cameraWidth,
-        row * cameraHeight,
-        cameraWidth,
-        cameraHeight
-      )
-      renderer.setScissor(
-        col * cameraWidth,
-        row * cameraHeight,
-        cameraWidth,
-        cameraHeight
-      )
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      renderer.render(scene, camera)
-    })
+            renderer.setScissorTest(true)
+            renderer.setViewport(
+              col * cameraWidth,
+              row * cameraHeight,
+              cameraWidth,
+              cameraHeight
+            )
+            renderer.setScissor(
+              col * cameraWidth,
+              row * cameraHeight,
+              cameraWidth,
+              cameraHeight
+            )
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+            renderer.render(scene, camera)
+          } catch (error) {
+            console.error(`Error rendering camera ${index}:`, error)
+          }
+        })
 
-    renderer.setScissorTest(false)
+        renderer.setScissorTest(false)
+      } catch (error) {
+        console.error('Error setting up camera layout:', error)
+      }
+    }
+  } catch (error) {
+    console.error('Error in renderCameras:', error)
   }
 }
 

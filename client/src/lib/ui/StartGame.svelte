@@ -6,7 +6,7 @@
   import SettingUp from './ingame/SettingUp.svelte'
   import { account } from '$stores/account'
 
-  $: ({ clientComponents, torii, client } = $dojoStore)
+  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
 
 

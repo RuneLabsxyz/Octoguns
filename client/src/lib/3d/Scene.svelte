@@ -34,7 +34,6 @@
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
-  import { GridHelper } from 'three/src/helpers/GridHelper.js'
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
   import { Inspector } from 'three-inspect'
 
@@ -65,33 +64,43 @@
   }
 
   const animationLoop = () => {
-
-    if ($birdView) {
-      if (birdViewCamera) {
-        resetCamera(birdViewCamera, renderer)
-        renderer.render(scene, birdViewCamera)
+    try {
+      if ($birdView) {
+        if (birdViewCamera && birdViewCamera.isCamera) {
+          resetCamera(birdViewCamera, renderer)
+          if (scene && scene.isScene) {
+            renderer.render(scene, birdViewCamera)
+          }
+        }
+      } else {
+        if (cameras.length > 0 && cameras.every(cam => cam && cam.isCamera)) {
+          renderCameras(cameras, numCameras, renderer, scene)
+        }
       }
-    } else {
-      renderCameras(cameras, numCameras, renderer, scene)
-    }
 
-    if ($recordingMode) {
-      recordMove(cameras[0], characterId)
-      if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
-        shoot(cameras[0]) // currently only works with one camera
-        hasShotInCurrentRecording.set(true)
+      if ($recordingMode) {
+        recordMove(cameras[0], characterId)
+        if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
+          shoot(cameras[0]) // currently only works with one camera
+          hasShotInCurrentRecording.set(true)
+        }
+      }
+      if ($replayMode) {
+        if ($frameCounter > RECORDING_FRAME_LIMIT) {
+          console.log('eyyy, tf')
+          replayMode.set(false)
+        }
+        replayMove($recordedMove, characterId)
+        replayShot($recordedMove, cameras[0])
+      }
+
+      animationFrameId = requestAnimationFrame(animationLoop)
+    } catch (error) {
+      console.error('Error in animation loop:', error)
+      if (error instanceof TypeError && error.message.includes('byteLength')) {
+        console.warn('Possible issue with buffer or geometry.')
       }
     }
-    if ($replayMode) {
-      if ($frameCounter > RECORDING_FRAME_LIMIT) {
-        console.log('eyyy, tf')
-        replayMode.set(false)
-      }
-      replayMove($recordedMove, characterId)
-      replayShot($recordedMove, cameras[0])
-    }
-
-    animationFrameId = requestAnimationFrame(animationLoop)
   }
 
   $: if ($frameCounter) {

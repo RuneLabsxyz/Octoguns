@@ -4,14 +4,14 @@ class_hash = "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0"
 original_class_hash = "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0"
 abi = "manifests/dev/deployment/abis/dojo-world.json"
 address = "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3"
-transaction_hash = "0x5559d9704c1208badb393a4e1a7b9be55f30fbc2655b615d494caf98475376f"
+transaction_hash = "0x2c9a77cb6bb6e0cc6b86b67481b0e685c33a10f942457cf03333c9defe47223"
 block_number = 3
 seed = "octoguns"
 manifest_name = "dojo-world"
 
 [world.metadata]
 profile_name = "dev"
-rpc_url = "https://api.cartridge.gg/x/octoguns-public-alpha1/katana"
+rpc_url = "http://localhost:5050/"
 
 [base]
 kind = "Class"
