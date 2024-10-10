@@ -21,7 +21,7 @@
     env.set(config as "mainnet" | "slot");
     await initStore();
     await connect();
-    goto('/client/games/openGames');
+    goto(`${config}/client/games/openGames`);
   }
 
   onMount(() => {
