@@ -5,12 +5,13 @@
   import { account } from '$stores/account'
   import TxToast from '$lib/ui/TxToast.svelte';
   import { goto } from '$app/navigation';
+  import { env } from '$stores/network';
 
   const gridSize = 25;
   const totalCells = gridSize * gridSize;
   const grid = writable<number[]>([]);
 
-  let { client } = $dojoStore;
+  let { client } = $dojoStore as any;
 
   let toastMessage = '';
   let toastStatus = 'loading';
@@ -46,7 +47,7 @@
       toastMessage = 'Map created successfully!';
       toastStatus = 'success';
       setTimeout(() => {
-        goto('/client/games/openGames');
+        goto(`/${$env}/client/games/openGames`);
       }, 2000);
     } catch (error) {
       console.error('Error creating map:', error);

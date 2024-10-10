@@ -10,6 +10,7 @@
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
   import { account, username, clearAccountStorage } from '$stores/account'
+  import { env } from '$stores/network';
 
   let loadingToGame = false
   let playerEntity: Entity
@@ -53,7 +54,7 @@
 
   function startSession(lastPlayerGameValue: number) {
     if (loadingToGame) {
-      goto(`/game/${lastPlayerGameValue}`)
+      goto(`/${$env}/game/${lastPlayerGameValue}`)
     }
   }
 

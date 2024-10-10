@@ -9,6 +9,7 @@
     import TxToast from '$lib/ui/TxToast.svelte'
     import { cn } from '$lib/css/cn'
     import { account  } from '$stores/account'
+    import { env } from '$stores/network';
   
     let playerEntity: Entity
     let mapCount: number = 0
@@ -36,7 +37,7 @@
 
   
     async function createMap() {
-      goto('/client/mapmaker')
+      goto(`/${$env}/client/mapmaker`)
     }
   
   </script>
