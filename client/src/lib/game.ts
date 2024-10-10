@@ -9,7 +9,7 @@ export async function joinSession(session: any) {
   if (get(account)) {
     console.log('Joining session', session.value)
     await client.start.join({ account: get(account), session_id: session.value })
-    window.location.href = `/game/${session.value}`
+    window.location.href = `/${get(env)}/game/${session.value}`
   } else {
     console.error('No active account found')
   }
