@@ -1,7 +1,10 @@
 import Controller from '@cartridge/controller';
 import { account, username } from '$stores/account';
 import { goto } from '$app/navigation';
-import { PUBLIC_RPC_URL } from '$env/static/public';
+import { CONFIG } from '$stores/network'; 
+import { get } from 'svelte/store';
+
+const configValue = get(CONFIG);
 
 export const mapmakerContract = '0x11e7a657668ca83c556f7545ab5bde00c1a1275c6c9ed17bea33104fcda2f3b'
 export const spawnContract = '0x57a72dd6f0bf3b0ced0fd50e54696643b8e3b38e226a150a1471c658355921e'
@@ -35,7 +38,7 @@ export const controller = new Controller({
       method: 'spawn'
     }
   ],
-  rpc: PUBLIC_RPC_URL
+  rpc: configValue.PUBLIC_RPC_URL
 })
 
 
