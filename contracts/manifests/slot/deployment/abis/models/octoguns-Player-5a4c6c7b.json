@@ -375,6 +375,10 @@
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
+        "name": "player_name",
+        "type": "core::byte_array::ByteArray"
+      },
+      {
         "name": "games",
         "type": "core::array::Array::<core::integer::u32>"
       }

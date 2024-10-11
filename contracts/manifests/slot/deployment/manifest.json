@@ -1557,7 +1557,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-TurnData"
+      ],
       "init_calldata": [],
       "tag": "octoguns-actions",
       "systems": [
@@ -1818,7 +1826,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Global"
+      ],
       "init_calldata": [],
       "tag": "octoguns-mapmaker",
       "systems": [
@@ -2063,7 +2079,15 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Player"
+      ],
       "init_calldata": [],
       "tag": "octoguns-spawn",
       "systems": [
@@ -2074,8 +2098,8 @@
     {
       "kind": "DojoContract",
       "address": "0x44ce069fe53c5c7941eec521bc9e876907d5da6ca273a98b78f1cbbcfea5b62",
-      "class_hash": "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe",
-      "original_class_hash": "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe",
+      "class_hash": "0x2acafd01e18400f4a7f6aef1d2756a35fd476d4bddecb489457dd0d9ffb4f05",
+      "original_class_hash": "0x2acafd01e18400f4a7f6aef1d2756a35fd476d4bddecb489457dd0d9ffb4f05",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2381,7 +2405,17 @@
         }
       ],
       "reads": [],
-      "writes": [],
+      "writes": [
+        "octoguns-CharacterPosition",
+        "octoguns-CharacterModel",
+        "octoguns-Map",
+        "octoguns-Session",
+        "octoguns-SessionMeta",
+        "octoguns-Bullet",
+        "octoguns-Global",
+        "octoguns-Player",
+        "octoguns-SessionPrimitives"
+      ],
       "init_calldata": [],
       "tag": "octoguns-start",
       "systems": [
@@ -4672,13 +4706,18 @@
           "key": true
         },
         {
+          "name": "player_name",
+          "type": "ByteArray",
+          "key": false
+        },
+        {
           "name": "games",
           "type": "Array<u32>",
           "key": false
         }
       ],
-      "class_hash": "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313",
-      "original_class_hash": "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313",
+      "class_hash": "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb",
+      "original_class_hash": "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb",
       "abi": [
         {
           "type": "impl",
@@ -5054,6 +5093,10 @@
             {
               "name": "player",
               "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "player_name",
+              "type": "core::byte_array::ByteArray"
             },
             {
               "name": "games",

@@ -93,8 +93,8 @@ manifest_name = "octoguns-spawn-1acb0980"
 [[contracts]]
 kind = "DojoContract"
 address = "0x44ce069fe53c5c7941eec521bc9e876907d5da6ca273a98b78f1cbbcfea5b62"
-class_hash = "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe"
-original_class_hash = "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe"
+class_hash = "0x2acafd01e18400f4a7f6aef1d2756a35fd476d4bddecb489457dd0d9ffb4f05"
+original_class_hash = "0x2acafd01e18400f4a7f6aef1d2756a35fd476d4bddecb489457dd0d9ffb4f05"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/octoguns-start-5506b80f.json"
 reads = []
@@ -254,8 +254,8 @@ key = false
 
 [[models]]
 kind = "DojoModel"
-class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
-original_class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
+class_hash = "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb"
+original_class_hash = "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb"
 abi = "manifests/dev/deployment/abis/models/octoguns-Player-5a4c6c7b.json"
 tag = "octoguns-Player"
 qualified_path = "octoguns::models::player::player"
@@ -265,6 +265,11 @@ manifest_name = "octoguns-Player-5a4c6c7b"
 name = "player"
 type = "ContractAddress"
 key = true
+
+[[models.members]]
+name = "player_name"
+type = "ByteArray"
+key = false
 
 [[models.members]]
 name = "games"

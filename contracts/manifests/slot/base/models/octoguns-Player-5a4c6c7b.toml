@@ -1,6 +1,6 @@
 kind = "DojoModel"
-class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
-original_class_hash = "0x40b4e50b38be60baa3ab53f71331d733346d71048f0835abebe0219ee00313"
+class_hash = "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb"
+original_class_hash = "0x46859e0aa4653b122074dc011896e0a3d7549e5194d9ee43a35cf6e9e87c3cb"
 abi = "manifests/slot/base/abis/models/octoguns-Player-5a4c6c7b.json"
 tag = "octoguns-Player"
 qualified_path = "octoguns::models::player::player"
@@ -10,6 +10,11 @@ manifest_name = "octoguns-Player-5a4c6c7b"
 name = "player"
 type = "ContractAddress"
 key = true
+
+[[members]]
+name = "player_name"
+type = "ByteArray"
+key = false
 
 [[members]]
 name = "games"

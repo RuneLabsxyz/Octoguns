@@ -24,7 +24,7 @@
     if (!$account) {
         await connect(config);
      }    
-    goto(`${config}/client/games/openGames`);
+    goto(`/${config}/account`);
   }
 
   onMount(() => {
