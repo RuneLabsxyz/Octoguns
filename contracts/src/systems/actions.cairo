@@ -64,7 +64,7 @@ mod actions {
             //start out of bounds so never reached in loop if no shots
 
             let mut next_shot = max_steps + 1;
-            if moves.shots.len() > 0 {
+            if !moves.shots.is_empty() {
                 next_shot = (*moves.shots.at(0)).step;
             }
             let total_steps = max_steps * session_meta.turn_count;
