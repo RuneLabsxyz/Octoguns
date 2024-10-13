@@ -32,9 +32,10 @@ impl BulletImpl of BulletTrait {
         //distance travelled per turn is speed * STEP_COUNT
         let (cos, xdir) = fast_cos_unsigned(angle);
         let (sin, ydir) = fast_sin_unsigned(angle);
+        let speed_per_sub_step = bullet_speed / bullet_sub_steps.into();
         let velocity = IVec2 {
-            x: cos * (bullet_speed / bullet_sub_steps.into()) / ONE_E_8,
-            y: sin * (bullet_speed / bullet_sub_steps.into()) / ONE_E_8,
+            x: (cos * speed_per_sub_step) / ONE_E_8,
+            y: (sin * speed_per_sub_step) / ONE_E_8,
             xdir,
             ydir
         };
