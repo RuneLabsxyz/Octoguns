@@ -134,27 +134,19 @@ impl BulletImpl of BulletTrait {
         let mut character_index: u32 = 0;
         let mut character_id = 0;
         let OFFSET: u64 = 1000;
+        let offset_x = position.x + OFFSET;
+        let offset_y = position.y + OFFSET;
+        let half_range: u64 = 500;
         let mut dropped: bool = false;
 
-        loop {
-            if character_index >= characters.len() {
-                break;
-            }
-
+        while character_index < characters.len() {
             let character = *characters.at(character_index);
-
-            //plus 1000 offset to to avoid underflow
-            let lower_bound_x = character.coords.x + OFFSET - 500;
-            let upper_bound_x = character.coords.x + OFFSET + 500;
-            let lower_bound_y = character.coords.y + OFFSET - 500;
-            let upper_bound_y = character.coords.y + OFFSET + 500;
+            let char_x = character.coords.x + OFFSET;
+            let char_y = character.coords.y + OFFSET;
 
             //plus 1000 offset to to match bounds offset
-            if (position.x
-                + OFFSET > lower_bound_x && position.x
-                + OFFSET < upper_bound_x && position.y
-                + OFFSET > lower_bound_y && position.y
-                + OFFSET < upper_bound_y) {
+            if (offset_x > char_x - half_range && offset_x < char_x + half_range &&
+                offset_y > char_y - half_range && offset_y < char_y + half_range) {
                 if character.id != self.shot_by {
                     character_id = character.id;
                     dropped = true;
@@ -165,18 +157,25 @@ impl BulletImpl of BulletTrait {
             character_index += 1;
         };
 
-        let x_index = position.x / 4000;
-        let y_index = position.y / 4000;
-        let index = (x_index + y_index * 25).try_into().unwrap();
-        let mut object_index: u32 = 0;
-        while object_index.into() < map.map_objects.len() {
-            let object = *map.map_objects.at(object_index);
-            if object == index {
-                dropped = true;
-                break;
-            }
-            object_index += 1;
-        };
+
+        //check if bullet hit a wall
+        if character_id == 0 {
+            let x_index = position.x / 4000;
+            let y_index = position.y / 4000;
+            let grid_width: u64 = 25;
+            
+            let index = (x_index + y_index * grid_width).try_into().unwrap();
+            
+            let mut object_index: u32 = 0;
+            while object_index.into() < map.map_objects.len() {
+                let object = *map.map_objects.at(object_index);
+                if object == index {
+                    dropped = true;
+                    break;
+                }
+                object_index += 1;
+            };
+        }
 
         //ignore collision with the player that shot the bullet
         //if hit wall then return no id but true for hit_object
