@@ -19,7 +19,7 @@ mod actions {
     use octoguns::lib::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
-
+    use octoguns::lib::grid::{convert_coords_to_grid_indices, set_grid_bit};
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
@@ -102,9 +102,27 @@ mod actions {
                     }
                 }
 
+                // Loop through positions and update the grid
+                let mut grid1: u256 = 0;
+                let mut grid2: u256 = 0;
+                let mut grid3: u256 = 0;
+                let mut i = 0;
+                loop {
+                    if i >= positions.len() {
+                        break;
+                    }
+                    let position = *positions.at(i);
+                    let (grid_x, grid_y) = convert_coords_to_grid_indices(position.coords.x, position.coords.y);
+                    let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, grid_x, grid_y);
+                    grid1 = new_grid1;
+                    grid2 = new_grid2;
+                    grid3 = new_grid3;
+                    i += 1;
+                };
+
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps
+                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps, ref grid1, ref grid2, ref grid3
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;

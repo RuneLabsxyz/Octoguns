@@ -19,6 +19,7 @@ mod lib {
     mod default_spawns;
     mod helpers;
     mod simulate;
+    mod grid;
     mod trig;
 }
 

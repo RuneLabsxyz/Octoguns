@@ -13,7 +13,10 @@ pub fn simulate_bullets(
     ref character_positions: Array<CharacterPosition>,
     map: @Map,
     step: u32,
-    bullet_sub_steps: u32
+    bullet_sub_steps: u32,
+    ref grid1: u256,
+    ref grid2: u256,
+    ref grid3: u256
 ) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut updated_bullet_ids = ArrayTrait::new();
@@ -22,7 +25,7 @@ pub fn simulate_bullets(
         match bullets.pop_front() {
             Option::Some(mut bullet) => {
                 let (hit_character, dropped) = bullet
-                    .simulate(@character_positions, map, step, bullet_sub_steps);
+                    .simulate(@character_positions, map, step, bullet_sub_steps, ref grid1, ref grid2, ref grid3);
                 match hit_character {
                     Option::Some(character_id) => { dead_characters_ids.append(character_id); },
                     Option::None => {

@@ -5,6 +5,7 @@ use starknet::ContractAddress;
 use octoguns::consts::{MOVE_SPEED, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
 use octoguns::types::{IVec2, Vec2};
+use octoguns::lib::grid::{check_collision};
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
@@ -87,7 +88,10 @@ impl BulletImpl of BulletTrait {
         characters: @Array<CharacterPosition>,
         map: @Map,
         step: u32,
-        bullet_sub_steps: u32
+        bullet_sub_steps: u32,
+        ref grid1: u256,
+        ref grid2: u256,
+        ref grid3: u256
     ) -> (Option<u32>, bool) {
         let mut res: (Option<u32>, bool) = (Option::None(()), false);
 
@@ -105,7 +109,12 @@ impl BulletImpl of BulletTrait {
                 Option::Some(p) => { position = p; }
             }
 
-            res = self.compute_hits(position, characters, map);
+            if check_collision(position.x, position.y, grid1, grid2, grid3) {
+                res = (Option::None(()), true);
+                break;
+            }
+
+            res = self.compute_hits(position, characters, map, ref grid1, ref grid2, ref grid3);
 
             bullet_step += 1;
         };
@@ -119,7 +128,8 @@ impl BulletImpl of BulletTrait {
     }
 
     fn compute_hits(
-        ref self: Bullet, position: Vec2, characters: @Array<CharacterPosition>, map: @Map
+        ref self: Bullet, position: Vec2, characters: @Array<CharacterPosition>, map: @Map,
+        ref grid1: u256, ref grid2: u256, ref grid3: u256
     ) -> (Option<u32>, bool) {
         let mut character_index: u32 = 0;
         let mut character_id = 0;
