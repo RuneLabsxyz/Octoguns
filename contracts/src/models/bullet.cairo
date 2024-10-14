@@ -108,6 +108,15 @@ impl BulletImpl of BulletTrait {
                 },
                 Option::Some(p) => { position = p; }
             }
+
+            // Always compute hit with objects
+            let (hit_object, object_hit) = self.compute_hit_objects(position, map, grid1, grid2, grid3);
+            if object_hit {
+                // If hit an object, bullet should be removed
+                res = (Option::None(()), true);
+                break;
+            }
+
             // checks for collisions
             if !check_collision(position.x, position.y, grid1, grid2, grid3) {
                 //No collisions, with the pre-check
@@ -115,7 +124,7 @@ impl BulletImpl of BulletTrait {
                 break;
             }
 
-            res = self.compute_hits(position, characters, map, ref grid1, ref grid2, ref grid3);
+            res = self.compute_hit_characters(position, characters, map, grid1, grid2, grid3);
 
             bullet_step += 1;
         };
@@ -128,9 +137,49 @@ impl BulletImpl of BulletTrait {
         }
     }
 
-    fn compute_hits(
-        ref self: Bullet, position: Vec2, characters: @Array<CharacterPosition>, map: @Map,
-        ref grid1: u256, ref grid2: u256, ref grid3: u256
+    /// Computes collision with objects (e.g., walls)
+    fn compute_hit_objects(
+        ref self: Bullet,
+        position: Vec2,
+        map: @Map,
+        grid1: u256,
+        grid2: u256,
+        grid3: u256
+    ) -> (bool, bool) {
+        let x_index = position.x / 4000;
+        let y_index = position.y / 4000;
+        let grid_width: u64 = 25;
+        
+        let index = (x_index + y_index * grid_width).try_into().unwrap();
+        
+        let mut object_hit = false;
+        let mut object_found = false;
+        let mut object_index: u32 = 0;
+        while object_index.into() < map.map_objects.len() {
+            let object = *map.map_objects.at(object_index);
+            if object == index {
+                object_found = true;
+                break;
+            }
+            object_index += 1;
+        };
+
+        if object_found {
+            object_hit = true;
+        }
+
+        (object_found, object_hit)
+    }
+
+    /// Computes collision with characters
+    fn compute_hit_characters(
+        ref self: Bullet, 
+        position: Vec2, 
+        characters: @Array<CharacterPosition>, 
+        map: @Map,
+        grid1: u256, 
+        grid2: u256, 
+        grid3: u256
     ) -> (Option<u32>, bool) {
         let mut character_index: u32 = 0;
         let mut character_id = 0;
@@ -138,19 +187,19 @@ impl BulletImpl of BulletTrait {
         let offset_x = position.x + OFFSET;
         let offset_y = position.y + OFFSET;
         let half_range: u64 = 500;
-        let mut dropped: bool = false;
+        let mut character_hit = false;
 
         while character_index < characters.len() {
             let character = *characters.at(character_index);
             let char_x = character.coords.x + OFFSET;
             let char_y = character.coords.y + OFFSET;
 
-            //plus 1000 offset to to match bounds offset
+            // Plus 1000 offset to match bounds offset
             if (offset_x > char_x - half_range && offset_x < char_x + half_range &&
                 offset_y > char_y - half_range && offset_y < char_y + half_range) {
                 if character.id != self.shot_by {
                     character_id = character.id;
-                    dropped = true;
+                    character_hit = true;
                     break;
                 }
             }
@@ -158,33 +207,11 @@ impl BulletImpl of BulletTrait {
             character_index += 1;
         };
 
-
-        //check if bullet hit a wall
-        if character_id == 0 {
-            let x_index = position.x / 4000;
-            let y_index = position.y / 4000;
-            let grid_width: u64 = 25;
-            
-            let index = (x_index + y_index * grid_width).try_into().unwrap();
-            
-            let mut object_index: u32 = 0;
-            while object_index.into() < map.map_objects.len() {
-                let object = *map.map_objects.at(object_index);
-                if object == index {
-                    dropped = true;
-                    break;
-                }
-                object_index += 1;
-            };
+        if character_hit {
+            (Option::Some(character_id), true)
+        } else {
+            (Option::None(()), false)
         }
-
-        //ignore collision with the player that shot the bullet
-        //if hit wall then return no id but true for hit_object
-        if character_id == 0 || character_id == self.shot_by {
-            return (Option::None(()), dropped);
-        }
-
-        (Option::Some(character_id), dropped)
     }
 }
 
