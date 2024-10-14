@@ -5,7 +5,7 @@ use starknet::ContractAddress;
 use octoguns::consts::{MOVE_SPEED, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
 use octoguns::types::{IVec2, Vec2};
-use octoguns::lib::grid::{check_collision};
+use octoguns::lib::grid::{check_collision, set_grid_bit};
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
@@ -108,9 +108,10 @@ impl BulletImpl of BulletTrait {
                 },
                 Option::Some(p) => { position = p; }
             }
-
+            // checks for collisions
             if !check_collision(position.x, position.y, grid1, grid2, grid3) {
-                res = (Option::None(()), true);
+                //No collisions, with the pre-check
+                res = (Option::None(()), false);
                 break;
             }
 
@@ -197,6 +198,7 @@ mod simulate_tests {
     use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8, STEP_COUNT};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::types::MapObjects;
+    use octoguns::lib::grid::{set_grid_bit};
 
     #[test]
     fn test_new_bullet() {
@@ -242,8 +244,15 @@ mod simulate_tests {
         let mut grid2 = 0;
         let mut grid3 = 0;
 
+        let character_coords = Vec2 { x: 14, y: 0 };
+
+        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, 14, 0);
+        grid1 = new_grid1;
+        grid2 = new_grid2;
+        grid3 = new_grid3;
+
         let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let characters = array![CharacterPositionTrait::new(69, Vec2 { x: 14, y: 0 }, STEP_COUNT)];
+        let characters = array![CharacterPositionTrait::new(69, character_coords, STEP_COUNT)];
         let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {
             Option::None => { panic!("should return id of hit piece"); },
