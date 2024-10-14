@@ -29,13 +29,13 @@ fn check_collision(bullet_x: u64, bullet_y: u64, grid_1: u256, grid_2: u256, gri
     let index: u16 = (y * 25 + x).into();
     if index < 128 {
         let mask = pow2_const(index);
-        return (grid_1 & mask) != 0;
+        return (grid_1 / mask) % 2 != 0;
     } else if index < 256 {
         let mask = pow2_const(index - 128_u16);
-        return (grid_2 & mask) != 0;
+        return (grid_2 / mask) % 2 != 0;
     } else {
         let mask = pow2_const(index - 256_u16);
-        return (grid_3 & mask) != 0;
+        return (grid_3 / mask) % 2 != 0;
     }
 }
 

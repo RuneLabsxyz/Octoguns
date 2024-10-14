@@ -45,14 +45,18 @@ mod actions {
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
 
-            if (session_meta.turn_count & 1) == 0 {
-                assert!(player == session.player1, "not turn player, 1s turn");
-                player_character_id = session_meta.p1_character;
-                opp_character_id = session_meta.p2_character;
-            } else {
-                assert!(player == session.player2, "not turn player, 2s turn");
+            match session_meta.turn_count % 2 {
+                0 => {
+                    assert!(player == session.player1, "not turn player, 1s turn");
+                    player_character_id = session_meta.p1_character;
+                    opp_character_id = session_meta.p2_character;
+                },
+                1 => {
+                    assert!(player == session.player2, "not turn player, 2s turn");
                     player_character_id = session_meta.p2_character;
-                opp_character_id = session_meta.p1_character;
+                    opp_character_id = session_meta.p1_character;
+                },
+                _ => { panic!("???"); }
             }
 
             let mut player_position = get!(world, player_character_id, (CharacterPosition));
