@@ -5,6 +5,7 @@ import { CONFIG } from '$stores/network';
 
 export function getDojoConfig() {
   const configValue = get(CONFIG);
+  console.log(configValue);
 
   const dojoConfig = createDojoConfig({
     toriiUrl: configValue.PUBLIC_TORII_URL,
