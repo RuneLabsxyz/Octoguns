@@ -51,6 +51,7 @@ mod simulate_tests {
     use octoguns::lib::default_spawns::{generate_character_positions};
     use octoguns::consts::{ONE_E_8, BULLET_SPEED, BULLET_SUBSTEPS, STEP_COUNT};
     use super::{simulate_bullets, SimulationResult};
+    use octoguns::lib::grid::{pow2_const};
 
     use octoguns::tests::helpers::{get_test_character_array};
 
@@ -61,7 +62,10 @@ mod simulate_tests {
         let mut grid2 = 0;
         let mut grid3 = 0;
 
-        let map = MapTrait::new_empty(1);
+        let map_grid1 = pow2_const(12 * 25);
+        let map_grid2 = pow2_const(12 * 25 + 1);
+        let map_grid3 = pow2_const(12 * 25 + 2);
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let bullet_1 = BulletTrait::new(1, Vec2 { x: 300, y: 0 }, 180 * ONE_E_8, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let bullet_2 = BulletTrait::new(1, Vec2 { x: 300, y: 555 }, 100 * ONE_E_8, 2, 0, BULLET_SPEED, BULLET_SUBSTEPS);
@@ -72,7 +76,7 @@ mod simulate_tests {
 
         let mut bullets = array![bullet_1, bullet_2, bullet_3, bullet_4];
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
@@ -82,7 +86,11 @@ mod simulate_tests {
         let mut grid1 = 0;
         let mut grid2 = 0;
         let mut grid3 = 0;
-        let map = MapTrait::new_empty(1);
+
+        let map_grid1 = pow2_const(12 * 25);
+        let map_grid2 = pow2_const(12 * 25 + 1);
+        let map_grid3 = pow2_const(12 * 25 + 2);
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 63, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let mut bullets = array![bullet];
@@ -92,7 +100,7 @@ mod simulate_tests {
         ];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.len() == 1, "Bullet should not be removed");
@@ -106,12 +114,16 @@ mod simulate_tests {
         let mut grid2 = 0;
         let mut grid3 = 0;
 
-        let map = MapTrait::new_empty(1);
+        let map_grid1 = pow2_const(12 * 25);
+        let map_grid2 = pow2_const(12 * 25 + 1);
+        let map_grid3 = pow2_const(12 * 25 + 2);
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
+
         let mut bullets = array![];
         let mut characters = array![];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
@@ -123,12 +135,17 @@ mod simulate_tests {
         let mut grid3 = 0;
 
         let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let map = MapTrait::new_empty(1);
+
+        let map_grid1 = pow2_const(12 * 25);
+        let map_grid2 = pow2_const(12 * 25 + 1);
+        let map_grid3 = pow2_const(12 * 25 + 2);
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
+
         let mut bullets = array![bullet];
         let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 }, STEP_COUNT)];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.is_empty(), "Bullet should be removed when out of bounds");
