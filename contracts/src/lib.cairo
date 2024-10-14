@@ -21,6 +21,7 @@ mod lib {
     mod simulate;
     mod grid;
     mod trig;
+    mod bitwise;
 }
 
 mod tests {
