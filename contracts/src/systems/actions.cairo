@@ -36,7 +36,7 @@ mod actions {
 
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
-            let map = get!(world, session.map_id, (Map));
+            let mut map = get!(world, session.map_id, (Map));
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
@@ -121,7 +121,7 @@ mod actions {
 
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps, ref grid1, ref grid2, ref grid3
+                    ref bullets, ref positions, ref map, step, session_primitives.bullet_sub_steps, ref grid1, ref grid2, ref grid3
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;

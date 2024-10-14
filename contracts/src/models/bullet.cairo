@@ -86,7 +86,7 @@ impl BulletImpl of BulletTrait {
     fn simulate(
         ref self: Bullet,
         characters: @Array<CharacterPosition>,
-        map: @Map,
+        ref map: Map,
         step: u32,
         bullet_sub_steps: u32,
         ref grid1: u256,
@@ -110,7 +110,7 @@ impl BulletImpl of BulletTrait {
             }
 
             // Always compute hit with objects
-            let (hit_object, object_hit) = self.compute_hit_objects(position, map, grid1, grid2, grid3);
+            let (hit_object, object_hit) = self.compute_hit_objects(position, ref map, grid1, grid2, grid3);
             if object_hit {
                 // If hit an object, bullet should be removed
                 res = (Option::None(()), true);
@@ -124,7 +124,7 @@ impl BulletImpl of BulletTrait {
                 break;
             }
 
-            res = self.compute_hit_characters(position, characters, map, grid1, grid2, grid3);
+            res = self.compute_hit_characters(position, characters, grid1, grid2, grid3);
 
             bullet_step += 1;
         };
@@ -141,34 +141,21 @@ impl BulletImpl of BulletTrait {
     fn compute_hit_objects(
         ref self: Bullet,
         position: Vec2,
-        map: @Map,
+        ref map: Map, 
         grid1: u256,
         grid2: u256,
         grid3: u256
     ) -> (bool, bool) {
-        let x_index = position.x / 4000;
-        let y_index = position.y / 4000;
-        let grid_width: u64 = 25;
-        
-        let index = (x_index + y_index * grid_width).try_into().unwrap();
-        
-        let mut object_hit = false;
-        let mut object_found = false;
-        let mut object_index: u32 = 0;
-        while object_index.into() < map.map_objects.len() {
-            let object = *map.map_objects.at(object_index);
-            if object == index {
-                object_found = true;
-                break;
-            }
-            object_index += 1;
-        };
 
-        if object_found {
-            object_hit = true;
+        let map_grid_1 = map.grid1;
+        let map_grid_2 = map.grid2;
+        let map_grid_3 = map.grid3;
+
+        if (map_grid_1 & grid1) == 0 || (map_grid_2 & grid2) == 0 || (map_grid_3 & grid3) == 0 {
+            return (false, false);
+        } else {
+            return (true, true);
         }
-
-        (object_found, object_hit)
     }
 
     /// Computes collision with characters
@@ -176,7 +163,6 @@ impl BulletImpl of BulletTrait {
         ref self: Bullet, 
         position: Vec2, 
         characters: @Array<CharacterPosition>, 
-        map: @Map,
         grid1: u256, 
         grid2: u256, 
         grid3: u256
@@ -224,8 +210,7 @@ mod simulate_tests {
     use octoguns::tests::helpers::{get_test_character_array};
     use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8, STEP_COUNT};
     use octoguns::models::map::{Map, MapTrait};
-    use octoguns::types::MapObjects;
-    use octoguns::lib::grid::{set_grid_bit};
+    use octoguns::lib::grid::{set_grid_bit, check_collision};
 
     #[test]
     fn test_new_bullet() {
@@ -332,7 +317,7 @@ mod simulate_tests {
     #[test]
     fn test_collision_with_object_2() {
         let address = starknet::contract_address_const::<0x0>();
-        let map = MapTrait::new(1, MapObjects { objects: array![7] });
+        let map = MapTrait::new(1, pow2_const(12 * 25), pow2_const(12 * 25 + 1), pow2_const(12 * 25 + 2));
 
         let characters = ArrayTrait::new();
 
