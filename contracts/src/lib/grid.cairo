@@ -39,6 +39,22 @@ fn check_collision(bullet_x: u64, bullet_y: u64, grid_1: u256, grid_2: u256, gri
     }
 }
 
+fn convert_bullet_to_grid(bullet_x: u64, bullet_y: u64) -> (u256, u256, u256) {
+    let (x, y) = convert_coords_to_grid_indices(bullet_x, bullet_y);
+    let index: u16 = (y * 25 + x).into(); // valid range is 0-624
+
+    if index < 128_u16 {
+        let grid_1 = pow2_const(index);
+        return (grid_1, 0, 0);
+    } else if index < 256_u16 {
+        let grid_2 = pow2_const(index - 128_u16);
+        return (0, grid_2, 0);
+    } else {
+        let grid_3 = pow2_const(index - 256_u16);
+        return (0, 0, grid_3);
+    }
+}
+
 
 
 

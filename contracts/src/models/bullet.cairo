@@ -5,7 +5,7 @@ use starknet::ContractAddress;
 use octoguns::consts::{MOVE_SPEED, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
 use octoguns::types::{IVec2, Vec2};
-use octoguns::lib::grid::{check_collision, set_grid_bit};
+use octoguns::lib::grid::{check_collision, set_grid_bit, convert_bullet_to_grid};
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
@@ -110,7 +110,7 @@ impl BulletImpl of BulletTrait {
             }
 
             // Always compute hit with objects
-            let (hit_object, object_hit) = self.compute_hit_objects(position, ref map, grid1, grid2, grid3);
+            let (hit_object, object_hit) = self.compute_hit_objects(position, ref map);
             if object_hit {
                 // If hit an object, bullet should be removed
                 res = (Option::None(()), true);
@@ -142,16 +142,15 @@ impl BulletImpl of BulletTrait {
         ref self: Bullet,
         position: Vec2,
         ref map: Map, 
-        grid1: u256,
-        grid2: u256,
-        grid3: u256
     ) -> (bool, bool) {
 
         let map_grid_1 = map.grid1;
         let map_grid_2 = map.grid2;
         let map_grid_3 = map.grid3;
 
-        if (map_grid_1 & grid1) == 0 || (map_grid_2 & grid2) == 0 || (map_grid_3 & grid3) == 0 {
+        let (grid1, grid2, grid3) = convert_bullet_to_grid(position.x, position.y);
+
+        if (map_grid_1 & grid1) == 0 && (map_grid_2 & grid2) == 0 && (map_grid_3 & grid3) == 0 {
             return (false, false);
         } else {
             return (true, true);
@@ -306,9 +305,9 @@ mod simulate_tests {
     fn test_collision_with_object() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let map_grid1 = pow2_const(12 * 25);
-        let map_grid2 = pow2_const(12 * 25 + 1);
-        let map_grid3 = pow2_const(12 * 25 + 2);
+        let map_grid1 = pow2_const(7) | pow2_const(8) | pow2_const(9);
+        let map_grid2 = 0;
+        let map_grid3 = 0;
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let characters = ArrayTrait::new();
