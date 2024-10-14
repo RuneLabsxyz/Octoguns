@@ -246,7 +246,7 @@ mod simulate_tests {
 
         let character_coords = Vec2 { x: 14, y: 0 };
 
-        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, 14, 0);
+        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(14, 0, grid1, grid2, grid3);
         grid1 = new_grid1;
         grid2 = new_grid2;
         grid3 = new_grid3;

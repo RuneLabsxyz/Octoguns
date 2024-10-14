@@ -108,8 +108,7 @@ mod actions {
                         break;
                     }
                     let position = *positions.at(i);
-                    let (grid_x, grid_y) = convert_coords_to_grid_indices(position.coords.x, position.coords.y);
-                    let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, grid_x, grid_y);
+                    let (new_grid1, new_grid2, new_grid3) = set_grid_bit(position.coords.x, position.coords.y, grid1, grid2, grid3);
                     grid1 = new_grid1;
                     grid2 = new_grid2;
                     grid3 = new_grid3;

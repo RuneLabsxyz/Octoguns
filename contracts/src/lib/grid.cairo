@@ -1,6 +1,7 @@
 use octoguns::lib::bitwise::{pow2_const};
 
-fn set_grid_bit(grid_1: u256, grid_2: u256, grid_3: u256, x: u8, y: u8) -> (u256, u256, u256) {
+fn set_grid_bit(character_x: u64, character_y: u64, grid_1: u256, grid_2: u256, grid_3: u256) -> (u256, u256, u256) {
+    let (x, y) = convert_coords_to_grid_indices(character_x, character_y);
     let index: u16 = (y * 25 + x).into(); // valid range is 0-624
 
     if index < 128_u16 {
@@ -52,5 +53,8 @@ mod grid_tests {
         let mut grid3 = 0;
 
         let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, 14, 0);
+        println!("new_grid1: {}", new_grid1);
+        println!("new_grid2: {}", new_grid2);
+        println!("new_grid3: {}", new_grid3);
     }
 }
