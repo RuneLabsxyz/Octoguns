@@ -284,9 +284,9 @@ mod simulate_tests {
     fn test_drop_bullet() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let map_grid1 = pow2_const(12 * 25);
-        let map_grid2 = pow2_const(12 * 25 + 1);
-        let map_grid3 = pow2_const(12 * 25 + 2);
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
         let characters = ArrayTrait::new();
 
@@ -333,9 +333,9 @@ mod simulate_tests {
     fn test_collision_with_object_2() {
         let address = starknet::contract_address_const::<0x0>();
 
-        let map_grid1 = pow2_const(12 * 25);
-        let map_grid2 = pow2_const(12 * 25 + 1);
-        let map_grid3 = pow2_const(12 * 25 + 2);
+        let map_grid1 = pow2_const(6) + pow2_const(7) + pow2_const(8);
+        let map_grid2 = 0;
+        let map_grid3 = 0;
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let characters = ArrayTrait::new();
