@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import manifest from '$manifests/deployment/manifest.json';
+import manifest from '../../contracts/manifests/dev/deployment/manifest.json';
 import { createDojoConfig } from '@dojoengine/core';
 import { CONFIG } from '$stores/network'; 
 
