@@ -47,14 +47,42 @@ mod grid_tests {
     use octoguns::lib::grid::{set_grid_bit, check_collision};
 
     #[test]
-    fn test_set_grid_bit() {
+    fn test_check_collision() {
         let mut grid1 = 0;
         let mut grid2 = 0;
         let mut grid3 = 0;
 
-        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(grid1, grid2, grid3, 14, 0);
-        println!("new_grid1: {}", new_grid1);
-        println!("new_grid2: {}", new_grid2);
-        println!("new_grid3: {}", new_grid3);
+        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(14, 0, grid1, grid2, grid3);
+        
+        let is_colliding = check_collision(14, 0, new_grid1, new_grid2, new_grid3);
+        assert!(is_colliding, "should be colliding");
+    }
+
+    #[test]
+    fn test_check_collision_no_collision() {
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
+        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(14 * 4000, 1 * 4000, grid1, grid2, grid3);
+        let is_colliding_1 = check_collision(15 * 4000, 1 * 4000, new_grid1, new_grid2, new_grid3);
+        let is_colliding_2 = check_collision(14 * 4000, 2 * 4000, new_grid1, new_grid2, new_grid3);
+        let is_colliding_3 = check_collision(13 * 4000, 0 * 4000, new_grid1, new_grid2, new_grid3);
+        assert!(!is_colliding_1, "should not be colliding 1");
+        assert!(!is_colliding_2, "should not be colliding 2");
+        assert!(!is_colliding_3, "should not be colliding 3");
+    }
+
+    #[test]
+    fn test_check_collision_edge() {
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
+        let (new_grid1, new_grid2, new_grid3) = set_grid_bit(14 * 4000, 1 * 4000, grid1, grid2, grid3);
+        let is_colliding_1 = check_collision(15 * 3950, 1 * 4000, new_grid1, new_grid2, new_grid3);
+        let is_colliding_2 = check_collision(14 * 4000, 2 * 3950, new_grid1, new_grid2, new_grid3);
+        assert!(is_colliding_1, "should be colliding 1");
+        assert!(is_colliding_2, "should be colliding 2");
     }
 }
