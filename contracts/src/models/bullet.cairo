@@ -109,7 +109,7 @@ impl BulletImpl of BulletTrait {
                 Option::Some(p) => { position = p; }
             }
 
-            if check_collision(position.x, position.y, grid1, grid2, grid3) {
+            if !check_collision(position.x, position.y, grid1, grid2, grid3) {
                 res = (Option::None(()), true);
                 break;
             }
@@ -238,9 +238,13 @@ mod simulate_tests {
     fn test_collision_with_character() {
         let address = starknet::contract_address_const::<0x0>();
         let map = MapTrait::new_empty(1);
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
         let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let characters = array![CharacterPositionTrait::new(69, Vec2 { x: 14, y: 0 }, STEP_COUNT)];
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {
             Option::None => { panic!("should return id of hit piece"); },
             Option::Some(id) => { assert!(id == 69, "not returning id of hit piece"); }
@@ -254,8 +258,12 @@ mod simulate_tests {
         let map = MapTrait::new_empty(1);
         let characters = ArrayTrait::new();
 
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
         let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 180 * ONE_E_8, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {
             Option::Some(character_id) => { panic!("bullet should not hit character"); },
             Option::None => { if !dropped {
@@ -270,8 +278,13 @@ mod simulate_tests {
         let map = MapTrait::new(1, MapObjects { objects: array![7] });
 
         let characters = ArrayTrait::new();
+
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
         let mut bullet = BulletTrait::new(1, Vec2 { x: 30_000, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {
             Option::None => { if !dropped {
                 panic!("should return true for hit object");
@@ -286,8 +299,13 @@ mod simulate_tests {
         let map = MapTrait::new(1, MapObjects { objects: array![7] });
 
         let characters = ArrayTrait::new();
+
+        let mut grid1 = 0;  
+        let mut grid2 = 0;
+        let mut grid3 = 0;
+
         let mut bullet = BulletTrait::new(1, Vec2 { x: 27_850, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3, BULLET_SUBSTEPS);
+        let (hit_character, dropped) = bullet.simulate(@characters, @map, 3, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {
             Option::None => { if !dropped {
                 panic!("should return true for hit object");
