@@ -135,7 +135,7 @@
     ])
     if (map) {
       console.log('map', $map)
-      mapObjects.set({ objects: get(map).map_objects })
+      mapObjects.set({ grid1: get(map).grid1, grid2: get(map).grid2, grid3: get(map).grid3 })
     }
   }
 
