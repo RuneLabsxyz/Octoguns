@@ -136,9 +136,9 @@ mod simulate_tests {
 
         let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
 
-        let map_grid1 = pow2_const(12 * 25);
-        let map_grid2 = pow2_const(12 * 25 + 1);
-        let map_grid3 = pow2_const(12 * 25 + 2);
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let mut bullets = array![bullet];

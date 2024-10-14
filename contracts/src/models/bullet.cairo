@@ -110,7 +110,7 @@ impl BulletImpl of BulletTrait {
             }
 
             // Always compute hit with objects
-            let (hit_object, object_hit) = self.compute_hit_objects(position, ref map);
+            let object_hit = self.compute_hit_objects(position, ref map);
             if object_hit {
                 // If hit an object, bullet should be removed
                 res = (Option::None(()), true);
@@ -142,18 +142,21 @@ impl BulletImpl of BulletTrait {
         ref self: Bullet,
         position: Vec2,
         ref map: Map, 
-    ) -> (bool, bool) {
+    ) -> bool {
 
         let map_grid_1 = map.grid1;
         let map_grid_2 = map.grid2;
         let map_grid_3 = map.grid3;
 
         let (grid1, grid2, grid3) = convert_bullet_to_grid(position.x, position.y);
-
+        
+        if position.x >= 100000 || position.y >= 100000 || position.x < 0 || position.y < 0 {
+            return true;
+        }
         if (map_grid_1 & grid1) == 0 && (map_grid_2 & grid2) == 0 && (map_grid_3 & grid3) == 0 {
-            return (false, false);
+            return false;
         } else {
-            return (true, true);
+            return true;
         }
     }
 
