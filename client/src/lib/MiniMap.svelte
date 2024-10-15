@@ -3,17 +3,28 @@
 
   export let map: {
     map_id: number;
-    map_objects: { value: number }[];
+    grid1: number;
+    grid2: number;
+    grid3: number;
   };
 
   let coordsArray: { x: number; y: number }[] = [];
 
-  $: if (map && map.map_objects) {
-    coordsArray = map.map_objects.map((obj) => {
-      const i = obj.value;
-      const x = (i % 25);
-      const y = Math.floor(i / 25); 
-      return { x, y };
+  $: if (map && map.grid1 && map.grid2 && map.grid3) {
+    console.log('map', map);
+    const grids = [map.grid1, map.grid2, map.grid3];
+    coordsArray = [];
+
+    grids.forEach((grid, gridIndex) => {
+      const binary = BigInt(grid).toString(2).padStart(128, '0'); // Contracts uses 128 bits per grid part
+      
+      for (let i = 0; i < binary.length; i++) {
+        if (binary[i] === '1') {
+          const x = i % 25; // Grid width is 25 
+          const y = Math.floor(i / 25) + gridIndex * 16; 
+          coordsArray.push({ x, y });
+        }
+      }
     });
   }
 
