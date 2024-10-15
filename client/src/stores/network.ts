@@ -3,16 +3,16 @@ import { writable, derived } from 'svelte/store';
 export const env = writable<'mainnet' | 'slot'>('slot');
 
 export const MAINNET = {
-    PUBLIC_TORII_URL: 'https://api.cartridge.gg/x/octoguns-mn-alpha-1/torii',
-    PUBLIC_RPC_URL: 'https://api.cartridge.gg/x/starknet/mainnet',
-    PUBLIC_WORLD_ADDRESS: '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3',
+    PUBLIC_TORII_URL: import.meta.env.VITE_MAINNET_PUBLIC_TORII_URL, 
+    PUBLIC_RPC_URL: import.meta.env.VITE_MAINNET_PUBLIC_RPC_URL,     
+    PUBLIC_WORLD_ADDRESS: import.meta.env.VITE_MAINNET_PUBLIC_WORLD_ADDRESS, 
     ENV: 'mainnet'
 };
 
 export const SLOT = {
-    PUBLIC_TORII_URL: 'https://api.cartridge.gg/x/octoguns-alpha1/torii',
-    PUBLIC_RPC_URL: 'https://api.cartridge.gg/x/octoguns-alpha1/katana',
-    PUBLIC_WORLD_ADDRESS: '0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3',
+    PUBLIC_TORII_URL: import.meta.env.VITE_SLOT_PUBLIC_TORII_URL,   
+    PUBLIC_RPC_URL: import.meta.env.VITE_SLOT_PUBLIC_RPC_URL,       
+    PUBLIC_WORLD_ADDRESS: import.meta.env.VITE_SLOT_PUBLIC_WORLD_ADDRESS, 
     ENV: 'slot'
 };
 
