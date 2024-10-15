@@ -16,7 +16,7 @@ telegram = "https://t.me/dojoengine"
 default = "octoguns"
 
 [env]
-rpc_url = "https://api.cartridge.gg/x/octoguns-alpha1/katana"
-account_address = "0x7ad9238a28adf66fb29fca88604acea8b98757d7fa06b6ced79717749cc8eb4"
-private_key = "0x185a9e3ff89c0e10fd8a058fa7e218f04d358533f7419d4890ffe9ce0f77ae"
-world_address = "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3"
+rpc_url = "https://api.cartridge.gg/x/octoguns-alpha2/katana"
+account_address = "0x7e0bf3a560c929ce1b1777635fc5fd831f0466e2f24417474888c722cea6d4a"
+private_key = "0x3244959d128aabe33cc9c986519e2b1ec5cc6411f0436c374837ec3897a7203"
+world_address = "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8"

@@ -1,6 +1,6 @@
 #[dojo::interface]
 trait IMapmaker {
-    fn create(ref world: IWorldDispatcher, grid1: u256, grid2: u256, grid3: u256);
+    fn create(ref world: IWorldDispatcher, grid1: felt252, grid2: felt252, grid3: felt252);
     fn default_map(ref world: IWorldDispatcher);
 }
 
@@ -23,11 +23,11 @@ mod mapmaker {
             set!(world, (map, global));
         }
 
-        fn create(ref world: IWorldDispatcher, grid1: u256, grid2: u256, grid3: u256) {
+        fn create(ref world: IWorldDispatcher, grid1: felt252, grid2: felt252, grid3: felt252) {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             assert!(global.map_count != 0, "Must spawn default map first");
             let map_id = global.map_count;
-            let map = MapTrait::new(map_id, grid1, grid2, grid3);
+            let map = MapTrait::new(map_id, grid1.try_into().unwrap(), grid2.try_into().unwrap(), grid3.try_into().unwrap());
             global.map_count += 1;
             set!(world, (map, global));
         }
