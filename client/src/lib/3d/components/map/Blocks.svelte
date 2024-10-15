@@ -8,7 +8,12 @@
   $: {
     coordsArray = []; // Reset the array to avoid accumulation
     if ($mapObjects) {
-      const { grid1, grid2, grid3 } = $mapObjects;
+      let { grid1, grid2, grid3 } = $mapObjects;
+
+      // Ensure grids are BigInt
+      grid1 = BigInt(grid1);
+      grid2 = BigInt(grid2);
+      grid3 = BigInt(grid3);
 
       // Helper function to extract active indices from a bigint grid
       function extractActiveIndices(grid: bigint, offset: number = 0): number[] {
