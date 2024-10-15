@@ -17,11 +17,11 @@
     }
   }
 
-  // On mount, if the game state is equals to 1 and you are the new player that just joined (player 2), spawn the characters.
-  $: if ($gameState === 1 && $currentPlayerId === 2) {
+  $: if ($gameState === 1 && $currentPlayerId === 2 && $account) {
     console.log('Spawning characters')
     spawn()
   }
+
 </script>
 
 {#if $gameState == 1}
