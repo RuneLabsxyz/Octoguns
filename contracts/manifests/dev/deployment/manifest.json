@@ -1,8 +1,8 @@
 {
   "world": {
     "kind": "WorldContract",
-    "class_hash": "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0",
-    "original_class_hash": "0x5c4271c8cd454ceb8049d2b0724c99d12c2ef8077fc6ad325b18978f614aab0",
+    "class_hash": "0x6f38d5d9507c5d9546290e1a27e309efe5a9af3770b6cc1627db4a1b90a7dce",
+    "original_class_hash": "0x6f38d5d9507c5d9546290e1a27e309efe5a9af3770b6cc1627db4a1b90a7dce",
     "abi": [
       {
         "type": "impl",
@@ -1234,8 +1234,8 @@
         ]
       }
     ],
-    "address": "0x7447477a7c852c946f0b8d13ebdfe0db9e78f3de60ab799320691502b4d32a3",
-    "transaction_hash": "0x2c9a77cb6bb6e0cc6b86b67481b0e685c33a10f942457cf03333c9defe47223",
+    "address": "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8",
+    "transaction_hash": "0x632350ae0a74185f3f00c216db65d8fe91551ace86a730e05c2a37897bf2b3d",
     "block_number": 3,
     "seed": "octoguns",
     "metadata": {
@@ -1255,9 +1255,9 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x11de1871e7fa8ac97e62c36724c32ee584982f4a5892b4f62fd545d7ab2d506",
-      "class_hash": "0x27fa0d39964487211324e94f5fd3a876d30a699a1ad749247b5f500be1ea3cd",
-      "original_class_hash": "0x27fa0d39964487211324e94f5fd3a876d30a699a1ad749247b5f500be1ea3cd",
+      "address": "0x5f4dde0e6c7a19c9695ba9c7d40b41e4c4b93e8da2d77561859f1bd19468670",
+      "class_hash": "0x14e9f226786a43082deea7ffc3fbb308e932cdeffa597d93620c09c1cf71c8",
+      "original_class_hash": "0x14e9f226786a43082deea7ffc3fbb308e932cdeffa597d93620c09c1cf71c8",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1289,7 +1289,7 @@
           "items": [
             {
               "type": "function",
-              "name": "contract_name",
+              "name": "name",
               "inputs": [],
               "outputs": [
                 {
@@ -1575,9 +1575,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x11e7a657668ca83c556f7545ab5bde00c1a1275c6c9ed17bea33104fcda2f3b",
-      "class_hash": "0x3ee32958b958017c667501bb85bb2411e2dd5c1e11bc2230fb947a75b8ec07e",
-      "original_class_hash": "0x3ee32958b958017c667501bb85bb2411e2dd5c1e11bc2230fb947a75b8ec07e",
+      "address": "0x227f9725f6aaefe0189e5457b0cbfb52d77e13687b0af6586ba932ad66d8d84",
+      "class_hash": "0x6c4f9d4573c630867f3b2ab3a89209d597ce8baacd58e30998ea99280c84e1e",
+      "original_class_hash": "0x6c4f9d4573c630867f3b2ab3a89209d597ce8baacd58e30998ea99280c84e1e",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1609,7 +1609,7 @@
           "items": [
             {
               "type": "function",
-              "name": "contract_name",
+              "name": "name",
               "inputs": [],
               "outputs": [
                 {
@@ -1714,11 +1714,15 @@
         },
         {
           "type": "struct",
-          "name": "octoguns::types::MapObjects",
+          "name": "core::integer::u256",
           "members": [
             {
-              "name": "objects",
-              "type": "core::array::Array::<core::integer::u16>"
+              "name": "low",
+              "type": "core::integer::u128"
+            },
+            {
+              "name": "high",
+              "type": "core::integer::u128"
             }
           ]
         },
@@ -1731,8 +1735,16 @@
               "name": "create",
               "inputs": [
                 {
-                  "name": "objects",
-                  "type": "octoguns::types::MapObjects"
+                  "name": "grid1",
+                  "type": "core::integer::u256"
+                },
+                {
+                  "name": "grid2",
+                  "type": "core::integer::u256"
+                },
+                {
+                  "name": "grid3",
+                  "type": "core::integer::u256"
                 }
               ],
               "outputs": [],
@@ -1845,9 +1857,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x57a72dd6f0bf3b0ced0fd50e54696643b8e3b38e226a150a1471c658355921e",
-      "class_hash": "0x29601d131c2a760259e8a670150e74fd5c7c88dd0613b894d1670fdf741486e",
-      "original_class_hash": "0x29601d131c2a760259e8a670150e74fd5c7c88dd0613b894d1670fdf741486e",
+      "address": "0x2202c337a1ce21f8c50675ca23fad33bd0d8d88d8c6b78615ffbe6abee67a28",
+      "class_hash": "0x31a4d9c145241708d41b4699e0e70da082ef5a29f7c17ab66056ddef6707b54",
+      "original_class_hash": "0x31a4d9c145241708d41b4699e0e70da082ef5a29f7c17ab66056ddef6707b54",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1879,7 +1891,7 @@
           "items": [
             {
               "type": "function",
-              "name": "contract_name",
+              "name": "name",
               "inputs": [],
               "outputs": [
                 {
@@ -2097,9 +2109,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x44ce069fe53c5c7941eec521bc9e876907d5da6ca273a98b78f1cbbcfea5b62",
-      "class_hash": "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe",
-      "original_class_hash": "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe",
+      "address": "0x62fcf9f93982a5f41a9c515149d454a44750a68089d6baf8196052dd1bbc161",
+      "class_hash": "0x18d7f3422a7d8b32eeb46b112b0931f13e86e5649a75548a9bfa2e4d1289243",
+      "original_class_hash": "0x18d7f3422a7d8b32eeb46b112b0931f13e86e5649a75548a9bfa2e4d1289243",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2131,7 +2143,7 @@
           "items": [
             {
               "type": "function",
-              "name": "contract_name",
+              "name": "name",
               "inputs": [],
               "outputs": [
                 {
@@ -4279,13 +4291,23 @@
           "key": true
         },
         {
-          "name": "map_objects",
-          "type": "Array<u16>",
+          "name": "grid1",
+          "type": "u256",
+          "key": false
+        },
+        {
+          "name": "grid2",
+          "type": "u256",
+          "key": false
+        },
+        {
+          "name": "grid3",
+          "type": "u256",
           "key": false
         }
       ],
-      "class_hash": "0x771761ae192b1dc49b25667346a4c42739ed0e87e48e92afd548f9592ab9d6f",
-      "original_class_hash": "0x771761ae192b1dc49b25667346a4c42739ed0e87e48e92afd548f9592ab9d6f",
+      "class_hash": "0x6f5dd520b74682ba2ec25cc02f73b38064c58d272e585a250c2edebdcb13f22",
+      "original_class_hash": "0x6f5dd520b74682ba2ec25cc02f73b38064c58d272e585a250c2edebdcb13f22",
       "abi": [
         {
           "type": "impl",
@@ -4656,6 +4678,20 @@
         },
         {
           "type": "struct",
+          "name": "core::integer::u256",
+          "members": [
+            {
+              "name": "low",
+              "type": "core::integer::u128"
+            },
+            {
+              "name": "high",
+              "type": "core::integer::u128"
+            }
+          ]
+        },
+        {
+          "type": "struct",
           "name": "octoguns::models::map::Map",
           "members": [
             {
@@ -4663,8 +4699,16 @@
               "type": "core::integer::u32"
             },
             {
-              "name": "map_objects",
-              "type": "core::array::Array::<core::integer::u16>"
+              "name": "grid1",
+              "type": "core::integer::u256"
+            },
+            {
+              "name": "grid2",
+              "type": "core::integer::u256"
+            },
+            {
+              "name": "grid3",
+              "type": "core::integer::u256"
             }
           ]
         },

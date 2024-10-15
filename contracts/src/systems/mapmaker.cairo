@@ -18,7 +18,7 @@ mod mapmaker {
             let mut global = get!(world, GLOBAL_KEY, (Global));
             assert!(global.map_count == 0, "Map already exists");
             let map_id = 0;
-            let map = MapTrait::new(map_id, pow2_const(12 * 25), pow2_const(12 * 25 + 1), pow2_const(12 * 25 + 2));
+            let map = MapTrait::new(map_id, pow2_const(7), pow2_const(7), pow2_const(7));
             global.map_count += 1;
             set!(world, (map, global));
         }

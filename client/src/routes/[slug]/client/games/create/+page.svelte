@@ -27,6 +27,10 @@
   $: global = componentValueStore(clientComponents.Global, globalentity)
   let maps: any[] = []
 
+  $: special_map = getComponentValue(clientComponents.Map, torii.poseidonHash([BigInt(0).toString()]))
+
+  $: console.log('special_map', special_map)
+
   $: if ($global) {
     mapCount = $global.map_count
     maps = []
@@ -35,9 +39,11 @@
         clientComponents.Map,
         torii.poseidonHash([BigInt(i).toString()])
       )
+      console.log('map', map)
       maps.push(map)
     }
   }
+  $: console.log('global', $global)
 
   $: console.log('maps', maps)
   $: {

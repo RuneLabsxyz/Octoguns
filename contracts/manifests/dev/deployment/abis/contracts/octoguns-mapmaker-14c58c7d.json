@@ -28,7 +28,7 @@
     "items": [
       {
         "type": "function",
-        "name": "contract_name",
+        "name": "name",
         "inputs": [],
         "outputs": [
           {
@@ -133,11 +133,15 @@
   },
   {
     "type": "struct",
-    "name": "octoguns::types::MapObjects",
+    "name": "core::integer::u256",
     "members": [
       {
-        "name": "objects",
-        "type": "core::array::Array::<core::integer::u16>"
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
       }
     ]
   },
@@ -150,8 +154,16 @@
         "name": "create",
         "inputs": [
           {
-            "name": "objects",
-            "type": "octoguns::types::MapObjects"
+            "name": "grid1",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "grid2",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "grid3",
+            "type": "core::integer::u256"
           }
         ],
         "outputs": [],
