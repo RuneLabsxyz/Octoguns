@@ -29,6 +29,7 @@
       >
         <p class="flex-grow text-left p-5">
           {session.value}
+          {session.enemy}
           {#if session.isStarted && session.isYourTurn}
             <span class="ml-2 text-green-600 font-bold">Your Turn</span>
           {/if}
