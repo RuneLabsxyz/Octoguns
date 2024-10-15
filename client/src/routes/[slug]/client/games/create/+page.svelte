@@ -38,8 +38,8 @@
       maps.push(map)
     }
   }
+  $: console.log('global', $global)
 
-  $: console.log('maps', maps)
   $: {
     localSelectedMap = $selectedMap
   }
