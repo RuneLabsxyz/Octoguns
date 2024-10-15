@@ -14,10 +14,16 @@
     isYourTurn: boolean;
     isStarted: boolean;
     isFinished: boolean;
+    enemy: string;
   };
 
   let playerEntity: Entity
   let sessions: Session[] = []
+
+  function compressAddress(address: string): string {
+    if (!address) return 'Not available';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  }
 
   $: ({ clientComponents, torii } = $dojoStore as any)
   $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
@@ -34,13 +40,15 @@
         const sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity)
         const sessionMetaDataStore = componentValueStore(clientComponents.SessionMeta, sessionEntity)
         
-        sessionDataStore.subscribe((data) => {
+        sessionDataStore.subscribe(async (data) => {
           if (data) {
+            let enemy = areAddressesEqual(data.player1, $account.address) ? `0x${BigInt(data.player2).toString(16)}` : `0x${BigInt(data.player1).toString(16)}`;
             const newSession: Session = {
               value: session.value,
               isYourTurn: false,
               isStarted: false,
-              isFinished: data.state === 3
+              isFinished: data.state === 3,
+              enemy: compressAddress(enemy)
             }
             sessionMetaDataStore.subscribe((metaData) => {
               if (metaData) {
