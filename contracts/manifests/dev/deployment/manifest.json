@@ -1256,8 +1256,8 @@
     {
       "kind": "DojoContract",
       "address": "0x5f4dde0e6c7a19c9695ba9c7d40b41e4c4b93e8da2d77561859f1bd19468670",
-      "class_hash": "0x14e9f226786a43082deea7ffc3fbb308e932cdeffa597d93620c09c1cf71c8",
-      "original_class_hash": "0x14e9f226786a43082deea7ffc3fbb308e932cdeffa597d93620c09c1cf71c8",
+      "class_hash": "0x18605b41332326f7bded1b1f3f668a7d81850b01bbd77bd369e3efe0408aa8e",
+      "original_class_hash": "0x18605b41332326f7bded1b1f3f668a7d81850b01bbd77bd369e3efe0408aa8e",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1576,8 +1576,8 @@
     {
       "kind": "DojoContract",
       "address": "0x227f9725f6aaefe0189e5457b0cbfb52d77e13687b0af6586ba932ad66d8d84",
-      "class_hash": "0x6c4f9d4573c630867f3b2ab3a89209d597ce8baacd58e30998ea99280c84e1e",
-      "original_class_hash": "0x6c4f9d4573c630867f3b2ab3a89209d597ce8baacd58e30998ea99280c84e1e",
+      "class_hash": "0x1352d5ee66110af2b5911271b20854296a5ecbd5e538cee1ff53d51f14f2ffe",
+      "original_class_hash": "0x1352d5ee66110af2b5911271b20854296a5ecbd5e538cee1ff53d51f14f2ffe",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1713,20 +1713,6 @@
           "interface_name": "octoguns::systems::mapmaker::IMapmaker"
         },
         {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
           "type": "interface",
           "name": "octoguns::systems::mapmaker::IMapmaker",
           "items": [
@@ -1736,15 +1722,15 @@
               "inputs": [
                 {
                   "name": "grid1",
-                  "type": "core::integer::u256"
+                  "type": "core::felt252"
                 },
                 {
                   "name": "grid2",
-                  "type": "core::integer::u256"
+                  "type": "core::felt252"
                 },
                 {
                   "name": "grid3",
-                  "type": "core::integer::u256"
+                  "type": "core::felt252"
                 }
               ],
               "outputs": [],

@@ -132,20 +132,6 @@
     "interface_name": "octoguns::systems::mapmaker::IMapmaker"
   },
   {
-    "type": "struct",
-    "name": "core::integer::u256",
-    "members": [
-      {
-        "name": "low",
-        "type": "core::integer::u128"
-      },
-      {
-        "name": "high",
-        "type": "core::integer::u128"
-      }
-    ]
-  },
-  {
     "type": "interface",
     "name": "octoguns::systems::mapmaker::IMapmaker",
     "items": [
@@ -155,15 +141,15 @@
         "inputs": [
           {
             "name": "grid1",
-            "type": "core::integer::u256"
+            "type": "core::felt252"
           },
           {
             "name": "grid2",
-            "type": "core::integer::u256"
+            "type": "core::felt252"
           },
           {
             "name": "grid3",
-            "type": "core::integer::u256"
+            "type": "core::felt252"
           }
         ],
         "outputs": [],
