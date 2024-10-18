@@ -28,7 +28,7 @@
     "items": [
       {
         "type": "function",
-        "name": "contract_name",
+        "name": "name",
         "inputs": [],
         "outputs": [
           {
@@ -132,16 +132,6 @@
     "interface_name": "octoguns::systems::mapmaker::IMapmaker"
   },
   {
-    "type": "struct",
-    "name": "octoguns::types::MapObjects",
-    "members": [
-      {
-        "name": "objects",
-        "type": "core::array::Array::<core::integer::u16>"
-      }
-    ]
-  },
-  {
     "type": "interface",
     "name": "octoguns::systems::mapmaker::IMapmaker",
     "items": [
@@ -150,8 +140,16 @@
         "name": "create",
         "inputs": [
           {
-            "name": "objects",
-            "type": "octoguns::types::MapObjects"
+            "name": "grid1",
+            "type": "core::felt252"
+          },
+          {
+            "name": "grid2",
+            "type": "core::felt252"
+          },
+          {
+            "name": "grid3",
+            "type": "core::felt252"
           }
         ],
         "outputs": [],

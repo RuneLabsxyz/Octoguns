@@ -6,7 +6,6 @@
   import GroundBox from './map/GroundBox.svelte'
   import SkyBox from './map/SkyBox.svelte'
   import Blocks from './map/Blocks.svelte'
-  import { mapObjects } from '$stores/gameStores'
   import Splat from './map/Splat.svelte'
 </script>
 

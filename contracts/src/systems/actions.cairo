@@ -19,7 +19,7 @@ mod actions {
     use octoguns::lib::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
-
+    use octoguns::lib::grid::{convert_coords_to_grid_indices, set_grid_bits_from_positions};
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
@@ -36,7 +36,7 @@ mod actions {
 
 
             let mut session_meta = get!(world, session_id, (SessionMeta));
-            let map = get!(world, session.map_id, (Map));
+            let mut map = get!(world, session.map_id, (Map));
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
@@ -68,14 +68,14 @@ mod actions {
             //start out of bounds so never reached in loop if no shots
 
             let mut next_shot = max_steps + 1;
-            if moves.shots.len() > 0 {
+            if !moves.shots.is_empty() {
                 next_shot = (*moves.shots.at(0)).step;
             }
-
+            let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
 
             while sub_move_index < max_steps {
-                let step = sub_move_index + max_steps * session_meta.turn_count;
+                let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
                     let shot = moves.shots.pop_front();
@@ -102,9 +102,13 @@ mod actions {
                     }
                 }
 
+                // Loop through positions and update the grid
+
+                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(ref positions);
+
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps
+                    ref bullets, ref positions, ref map, step, session_primitives.bullet_sub_steps, ref grid1, ref grid2, ref grid3
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;

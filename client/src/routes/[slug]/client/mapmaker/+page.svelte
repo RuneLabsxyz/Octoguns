@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { dojoStore } from '$stores/dojoStore';
-  import { account } from '$stores/account'
+  import { account } from '$stores/account';
   import TxToast from '$lib/ui/TxToast.svelte';
   import { goto } from '$app/navigation';
   import { env } from '$stores/network';
@@ -38,12 +38,43 @@
     grid.set([]);
   }
 
+  /**
+   * Converts active grid indices into three u256 bitmaps.
+   * @param activeIndices Array of active cell indices.
+   * @returns An object containing grid1, grid2, and grid3 as BigInts.
+   */
+  function computeGrids(activeIndices: number[]): { grid1: bigint; grid2: bigint; grid3: bigint } {
+    let grid1 = BigInt(0);
+    let grid2 = BigInt(0);
+    let grid3 = BigInt(0);
+
+    activeIndices.forEach(index => {
+      if (index < 128) {
+        grid1 |= (1n << BigInt(index));
+      } else if (index < 256) {
+        grid2 |= (1n << BigInt(index - 128));
+      } else if (index < 384) {
+        grid3 |= (1n << BigInt(index - 256));
+      }
+    });
+
+    return { grid1, grid2, grid3 };
+  }
+
   async function submit() {
     showToast = true;
     toastMessage = 'Creating map...';
     toastStatus = 'loading';
     try {
-      await client.mapmaker.create({account: $account, objects: {objects: $grid}});
+      const { grid1, grid2, grid3 } = computeGrids($grid);
+
+      await client.mapmaker.create({
+        account: $account,
+        grid1: grid1.toString(), 
+        grid2: grid2.toString(),
+        grid3: grid3.toString(),
+      });
+
       toastMessage = 'Map created successfully!';
       toastStatus = 'success';
       setTimeout(() => {
@@ -91,8 +122,18 @@
 </style>
 
 <div class="controls">
-  <button class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" on:click={resetGrid}>Reset Grid</button>
-  <button class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition" on:click={submit}>Submit</button>
+  <button
+    class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
+    on:click={resetGrid}
+  >
+    Reset Grid
+  </button>
+  <button
+    class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+    on:click={submit}
+  >
+    Submit
+  </button>
 </div>
 
 <div class="grid">
@@ -101,7 +142,9 @@
       type="button"
       class="cell {isActive(index, $grid) ? 'active' : ''}"
       on:click={() => toggleCell(Math.floor(index / gridSize), index % gridSize)}
-      on:keydown={(e) => e.key === 'Enter' && toggleCell(Math.floor(index / gridSize), index % gridSize)}
+      on:keydown={(e) =>
+        e.key === 'Enter' && toggleCell(Math.floor(index / gridSize), index % gridSize)
+      }
     />
   {/each}
 </div>
