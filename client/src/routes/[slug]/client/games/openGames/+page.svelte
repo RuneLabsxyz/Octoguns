@@ -15,7 +15,9 @@
     isStarted: boolean;
     isFinished: boolean;
     enemy: string;
+    username?: string;
   };
+
 
   let sessions: Session[] = [];
   let playerEntity: Entity;
@@ -29,22 +31,16 @@
   $: global = componentValueStore(clientComponents.Global, globalEntity);
   $: player = componentValueStore(clientComponents.Player, playerEntity);
 
-  function compressAddress(address: string): string {
-    if (!address) return 'Not available';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }
 
   $: if ($global) {
     let currentSessions = [];
     let availableSessions = [];
 
     if ($player) {
-      // Get the games the player is already in
       currentSessions = $player.games.map((game: { value: any }) => game.value);
 
       const playerGamesSet = new Set(currentSessions);
 
-      // Filter out the sessions the player is already in
       availableSessions = $global.pending_sessions.filter(
         (session: { value: any }) => !playerGamesSet.has(session.value)
       );
@@ -61,15 +57,16 @@
         const sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity);
         const sessionMetaDataStore = componentValueStore(clientComponents.SessionMeta, sessionEntity);
 
-        sessionDataStore.subscribe((data) => {
+        sessionDataStore.subscribe(async (data) => {
           if (data) {
             const enemyAddress = `0x${BigInt(data.player1).toString(16)}`;
             const newSession: Session = {
               value: session.value,
-              isYourTurn: false, 
-              isStarted: false, 
+              isYourTurn: false,
+              isStarted: false,
               isFinished: data.state === 3,
-              enemy: compressAddress(enemyAddress),
+              enemy: enemyAddress,
+              username: undefined,
             };
 
             sessionMetaDataStore.subscribe((metaData) => {
