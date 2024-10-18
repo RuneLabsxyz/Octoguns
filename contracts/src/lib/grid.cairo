@@ -79,8 +79,9 @@ fn convert_bullet_to_grid(bullet_x: u64, bullet_y: u64) -> (u256, u256, u256) {
 
 #[cfg(test)]
 mod grid_tests {
-    use octoguns::lib::grid::{set_grid_bit, check_collision};
-
+    use octoguns::lib::grid::{set_grid_bit, check_collision, set_grid_bits_from_positions};
+    use octoguns::types::Vec2;
+    use octoguns::models::characters::CharacterPositionTrait;
     #[test]
     fn test_check_collision() {
         let mut grid1 = 0;
@@ -119,5 +120,20 @@ mod grid_tests {
         let is_colliding_2 = check_collision(14 * 4000, 2 * 3950, new_grid1, new_grid2, new_grid3);
         assert!(is_colliding_1, "should be colliding 1");
         assert!(is_colliding_2, "should be colliding 2");
+    }
+
+    #[test]
+    fn test_initial_grid_bits() {
+        let mut positions = ArrayTrait::new();
+        let position_1 = Vec2 { x: 50000, y: 20000 };
+        let position_2 = Vec2 { x: 50000, y: 80000 };
+        let character_position_1 = CharacterPositionTrait::new(1, position_1, 10);
+        let character_position_2 = CharacterPositionTrait::new(2, position_2, 10);
+        positions.append(character_position_1);
+        positions.append(character_position_2);
+        let (grid1, grid2, grid3) = set_grid_bits_from_positions(ref positions);
+        println!("grid1: {}", grid1);
+        println!("grid2: {}", grid2);
+        println!("grid3: {}", grid3);
     }
 }
