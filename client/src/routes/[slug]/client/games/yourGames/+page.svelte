@@ -15,15 +15,11 @@
     isStarted: boolean;
     isFinished: boolean;
     enemy: string;
+    username?: string;
   };
 
   let playerEntity: Entity
   let sessions: Session[] = []
-
-  function compressAddress(address: string): string {
-    if (!address) return 'Not available';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }
 
   $: ({ clientComponents, torii } = $dojoStore as any)
   $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
@@ -48,7 +44,8 @@
               isYourTurn: false,
               isStarted: false,
               isFinished: data.state === 3,
-              enemy: compressAddress(enemy)
+              enemy: enemy,
+              username: undefined
             }
             sessionMetaDataStore.subscribe((metaData) => {
               if (metaData) {
