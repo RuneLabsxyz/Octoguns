@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte'
-  import { controllerMainnet, controllerSlot } from '$lib/controller';
+  import { controllerMainnet, controllerSlot } from '$lib/controller'
 
   export let availableSessions: any
 
@@ -11,24 +11,37 @@
   let enemyControllerList: Record<string, string> = {}
 
   async function fetchUsernames() {
-    const enemyAddressList = [...new Set(availableSessions.map((session: any) => session.enemy as string))] as string[]
-    enemyControllerList = await controllerMainnet.fetchControllers(enemyAddressList)
-    
-    pendingSessions = availableSessions.map((session: {enemy: string}) => {
+    const enemyAddressList = [
+      ...new Set(
+        availableSessions.map((session: any) => session.enemy as string)
+      ),
+    ] as string[]
+
+    enemyControllerList =
+      await controllerMainnet.fetchControllers(enemyAddressList)
+
+    pendingSessions = availableSessions.map((session: { enemy: string }) => {
       const correctedEnemyAddress = addLeadingZero(session.enemy)
       return {
         ...session,
         enemy: correctedEnemyAddress,
-        username: enemyControllerList[correctedEnemyAddress] || undefined
+        username: enemyControllerList[correctedEnemyAddress] || undefined,
       }
     })
   }
 
-  function addLeadingZero(address: string): string {
-    if (address.startsWith('0x') && address.length === 65) {
-      return `0x0${address.slice(2)}`
+  function getHexPart(address: string): string {
+    if (address.startsWith('0x')) {
+      // remove the 0x
+      return address.slice(2)
     }
     return address
+  }
+
+  function addLeadingZero(address: string): string {
+    const hexPart = getHexPart(address)
+
+    return '0x' + hexPart.padStart(64, '0')
   }
 
   function compressAddress(address: string): string {
@@ -50,7 +63,7 @@
     }
   }
 
-  $: displayedSessions = showAll 
+  $: displayedSessions = showAll
     ? pendingSessions.slice().reverse()
     : pendingSessions.slice(-9).reverse()
 </script>
