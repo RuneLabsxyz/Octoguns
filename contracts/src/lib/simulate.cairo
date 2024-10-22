@@ -11,9 +11,12 @@ pub type SimulationResult = (Array<Bullet>, Array<u32>, Array<u32>);
 pub fn simulate_bullets(
     ref bullets: Array<Bullet>,
     ref character_positions: Array<CharacterPosition>,
-    map: @Map,
+    ref map: Map,
     step: u32,
-    bullet_sub_steps: u32
+    bullet_sub_steps: u32,
+    ref grid1: u256,
+    ref grid2: u256,
+    ref grid3: u256
 ) -> SimulationResult {
     let mut updated_bullets = ArrayTrait::new();
     let mut updated_bullet_ids = ArrayTrait::new();
@@ -22,7 +25,7 @@ pub fn simulate_bullets(
         match bullets.pop_front() {
             Option::Some(mut bullet) => {
                 let (hit_character, dropped) = bullet
-                    .simulate(@character_positions, map, step, bullet_sub_steps);
+                    .simulate(@character_positions, ref map, step, bullet_sub_steps, ref grid1, ref grid2, ref grid3);
                 match hit_character {
                     Option::Some(character_id) => { dead_characters_ids.append(character_id); },
                     Option::None => {
@@ -48,14 +51,21 @@ mod simulate_tests {
     use octoguns::lib::default_spawns::{generate_character_positions};
     use octoguns::consts::{ONE_E_8, BULLET_SPEED, BULLET_SUBSTEPS, STEP_COUNT};
     use super::{simulate_bullets, SimulationResult};
+    use octoguns::lib::grid::{pow2_const};
 
     use octoguns::tests::helpers::{get_test_character_array};
 
     #[test]
     fn test_4_bullets_sim() {
         let address = starknet::contract_address_const::<0x0>();
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
 
-        let map = MapTrait::new_empty(1);
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let bullet_1 = BulletTrait::new(1, Vec2 { x: 300, y: 0 }, 180 * ONE_E_8, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let bullet_2 = BulletTrait::new(1, Vec2 { x: 300, y: 555 }, 100 * ONE_E_8, 2, 0, BULLET_SPEED, BULLET_SUBSTEPS);
@@ -66,15 +76,21 @@ mod simulate_tests {
 
         let mut bullets = array![bullet_1, bullet_2, bullet_3, bullet_4];
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
     #[test]
     fn test_no_collisions() {
         let address = starknet::contract_address_const::<0x0>();
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
 
-        let map = MapTrait::new_empty(1);
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 63, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let mut bullets = array![bullet];
@@ -84,7 +100,7 @@ mod simulate_tests {
         ];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.len() == 1, "Bullet should not be removed");
@@ -94,27 +110,42 @@ mod simulate_tests {
     #[test]
     fn test_multiple_collisions() {
         let address = starknet::contract_address_const::<0x0>();
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
 
-        let map = MapTrait::new_empty(1);
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
+
         let mut bullets = array![];
         let mut characters = array![];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
     #[test]
     fn test_bullet_out_of_bounds() {
         let address = starknet::contract_address_const::<0x0>();
+        let mut grid1 = 0;
+        let mut grid2 = 0;
+        let mut grid3 = 0;
 
         let bullet = BulletTrait::new(1, Vec2 { x: 99999, y: 9950 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
-        let map = MapTrait::new_empty(1);
+
+        let map_grid1 = 0;
+        let map_grid2 = 0;
+        let map_grid3 = 0;
+        let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
+
         let mut bullets = array![bullet];
         let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 }, STEP_COUNT)];
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, @map, 1, BULLET_SUBSTEPS
+            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.is_empty(), "Bullet should be removed when out of bounds");
