@@ -3,7 +3,7 @@ use octoguns::models::characters::CharacterPosition;
 
 fn set_grid_bit(character_x: u64, character_y: u64, grid_1: u256, grid_2: u256, grid_3: u256) -> (u256, u256, u256) {
     let (x, y) = convert_coords_to_grid_indices(character_x, character_y);
-    let index: u16 = (y * 25 + x); // valid range is 0-624
+    let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
 
     if index < 128_u16 {
         let new_grid_1 = grid_1 + pow2_const(index); 
@@ -38,14 +38,24 @@ fn set_grid_bits_from_positions(ref positions: Array<CharacterPosition>) -> (u25
 
 // Helper function to convert coordinates to grid indices
 fn convert_coords_to_grid_indices(x: u64, y: u64) -> (u16, u16) {
-    let grid_x: u16 = (x / 4000).try_into().unwrap(); // 100000 / 25 = 4000
-    let grid_y: u16 = (y / 4000).try_into().unwrap(); // 100000 / 25 = 4000
+
+    let mut grid_x: u16 = (x / 4000).try_into().unwrap();
+    let mut grid_y: u16 = (y / 4000).try_into().unwrap();
+
+    if grid_x == 0 {
+        grid_x = 1;
+    }
+    if grid_y == 0 {
+        grid_y = 1;
+    }
+
     (grid_x, grid_y)
 }
 
+
 fn check_collision(bullet_x: u64, bullet_y: u64, grid_1: u256, grid_2: u256, grid_3: u256) -> bool {
     let (x, y) = convert_coords_to_grid_indices(bullet_x, bullet_y);
-    let index: u16 = y * 25 + x;
+    let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
     if index < 128_u16 {
         let mask = pow2_const(index);
         return (grid_1 / mask) % 2 != 0;
@@ -60,7 +70,7 @@ fn check_collision(bullet_x: u64, bullet_y: u64, grid_1: u256, grid_2: u256, gri
 
 fn convert_bullet_to_grid(bullet_x: u64, bullet_y: u64) -> (u256, u256, u256) {
     let (x, y) = convert_coords_to_grid_indices(bullet_x, bullet_y);
-    let index: u16 = y * 25 + x; // valid range is 0-624
+    let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
 
     if index < 128_u16 {
         let grid_1 = pow2_const(index);
@@ -73,8 +83,6 @@ fn convert_bullet_to_grid(bullet_x: u64, bullet_y: u64) -> (u256, u256, u256) {
         return (0, 0, grid_3);
     }
 }
-
-
 
 
 #[cfg(test)]
