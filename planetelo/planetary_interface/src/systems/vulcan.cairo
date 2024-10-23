@@ -23,7 +23,7 @@ mod salute {
 
     fn dojo_init(ref world: IWorldDispatcher) {
         let planetary: PlanetaryInterface = PlanetaryInterfaceTrait::new();
-        planetary.dispatcher().register(VulcanInterfaceTrait::NAMESPACE, world.contract_address);
+        planetary.dispatcher().register(namespace, world.contract_address);
     }
 
     #[abi(embed_v0)]
