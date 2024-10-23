@@ -1,4 +1,4 @@
-import { frameCounter, recordedMove, mapObjects } from '$stores/gameStores'
+import { frameCounter, recordedMove } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
@@ -126,14 +126,6 @@ export function resetBullets() {
 }
 
 export function simulate() {
-  // Extract wall coordinates from mapObjects
-  const wallCoords = get(mapObjects).objects.map((index) => {
-    //@ts-ignore
-    let i = index.value
-    let x = (i % 25) * 4 + 2 - 50
-    let y = Math.floor(i / 25) * 4 + 2 - 50
-    return { x, y }
-  })
 
   // Update temp / new bullets
   bulletRender.update((bullets) => {

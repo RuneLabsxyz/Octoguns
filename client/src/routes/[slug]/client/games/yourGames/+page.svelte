@@ -8,7 +8,7 @@
   import { goToSession } from '$lib/game'
   import { account } from '$stores/account'
   import { areAddressesEqual } from '$lib/helper'
-
+  import { env } from '$stores/network';
   type Session = {
     value: any;
     isYourTurn: boolean;
@@ -63,7 +63,7 @@
   <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
     <h1 class="text-3xl font-bold">Your games</h1>
     <span class="flex-grow"></span>
-    <Button href="/client/games/create">+ New Game</Button>
+    <Button href={`/${$env}/client/games/create`}>+ New Game</Button>
   </div>
   <div class="overflow-y-auto overflow-x-clip h-full">
     {#if sessions.some(s => !s.isFinished && s.isStarted)}

@@ -5,6 +5,7 @@
   import { playSoundEffectLoop } from '$lib/3d/utils/audioUtils';
   import { onMount } from 'svelte';
   import { connect } from '$lib/controller';
+  import { account } from '$stores/account';
   import { env } from '$stores/network';
   import { initializeStore } from '$stores/dojoStore'
 
@@ -20,7 +21,9 @@
   async function connectAndGoto(config: string) {
     env.set(config as "mainnet" | "slot");
     await initStore();
-    await connect(config);
+    if (!$account) {
+        await connect(config);
+     }    
     goto(`${config}/client/games/openGames`);
   }
 

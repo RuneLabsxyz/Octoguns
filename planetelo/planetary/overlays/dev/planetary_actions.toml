@@ -1,4 +1,0 @@
-tag = "planetary-planetary_actions"
-writes = [
-  "planetary-Planet",
-]

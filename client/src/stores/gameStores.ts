@@ -38,10 +38,13 @@ export type TurnData = {
 }
 
 export type MapObjects = {
-  objects: number[]
+  grid1: bigint
+  grid2: bigint
+  grid3: bigint
 }
 
 export const mapObjects = writable<MapObjects>()
+
 export const keyStateStore = writable<{
   w: boolean
   a: boolean
