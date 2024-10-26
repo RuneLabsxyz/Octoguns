@@ -43,9 +43,7 @@
     }
 
   $: if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
-    console.log('map', map);
     const grids = [map.grid1, map.grid2, map.grid3];
-    console.log('grids', grids);
     coordsArray = [];
     let decimalGrids: bigint[] = [];
 
@@ -54,9 +52,7 @@
       let decimal = BigInt(`0x${grid.toString(16)}`).toString(10);
       decimalGrids.push(BigInt(decimal));
     });
-    console.log('decimalGrids', decimalGrids);
     let activeIndices = extractActiveIndices(decimalGrids);
-    console.log('activeIndices', activeIndices);
     coordsArray = activeIndices.map((index) => {
       const x = index % 25;
       const y = Math.floor(index / 25);

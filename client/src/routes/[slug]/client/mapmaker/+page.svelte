@@ -74,11 +74,6 @@
     try {
       const { grid1, grid2, grid3 } = computeGrids($grid);
 
-      console.log('base grid', $grid);
-      console.log('grid1', grid1);
-      console.log('grid2', grid2);
-      console.log('grid3', grid3);
-
       await client.mapmaker.create({
         account: $account,
         grid1: grid1.toString(), 
