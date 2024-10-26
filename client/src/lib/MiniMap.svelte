@@ -10,37 +10,37 @@
 
   let coordsArray: { x: number; y: number }[] = [];
 
-    /**
-     * Extracts active indices from three u256 bitmaps.
-     * @param decimalGrids An array of three u256 bitmaps as BigInts.
-     * @returns An array of active indices.
-     */
-    function extractActiveIndices(decimalGrids: bigint[]): number[] {
-      const activeIndices: number[] = [];
+  /**
+   * Extracts active indices from three u256 bitmaps.
+   * @param decimalGrids An array of three u256 bitmaps as BigInts.
+   * @returns An array of active indices.
+   */
+  function extractActiveIndices(decimalGrids: bigint[]): number[] {
+    const activeIndices: number[] = [];
 
-      // Process grid1 (indices 0 to 207)
-      for (let i = 0; i < 208; i++) {
-        if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
-          activeIndices.push(i);
-        }
+    // Process grid1 (indices 0 to 207)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i);
       }
-
-      // Process grid2 (indices 208 to 415)
-      for (let i = 0; i < 208; i++) {
-        if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
-          activeIndices.push(i + 208);
-        }
-      }
-
-      // Process grid3 (indices 416 to 624)
-      for (let i = 0; i < 209; i++) {
-        if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
-          activeIndices.push(i + 416);
-        }
-      }
-
-      return activeIndices;
     }
+
+    // Process grid2 (indices 208 to 415)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 208);
+      }
+    }
+
+    // Process grid3 (indices 416 to 624)
+    for (let i = 0; i < 209; i++) {
+      if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 416);
+      }
+    }
+
+    return activeIndices;
+  }
 
   $: if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
     const grids = [map.grid1, map.grid2, map.grid3];
