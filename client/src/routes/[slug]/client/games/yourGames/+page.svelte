@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dojoStore } from '$stores/dojoStore'
-  import { componentValueStore } from '$dojo/componentValueStore'
+  import { componentValueStore, type ComponentStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
@@ -18,10 +18,13 @@
 
   let playerEntity: Entity
   let sessions: Session[] = []
+  let clientComponents: any
+  let torii: any
+  let player: ComponentStore
 
-  $: ({ clientComponents, torii } = $dojoStore as any)
-  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
+  $: if ($dojoStore) ({ clientComponents, torii } = $dojoStore as any)
+  $: if ($account && torii) playerEntity = torii.poseidonHash([$account?.address])
+  $: if (clientComponents) player = componentValueStore(clientComponents.Player, playerEntity)
   $: console.log('sessions', sessions)
 
   $: if ($player && $account?.address) {

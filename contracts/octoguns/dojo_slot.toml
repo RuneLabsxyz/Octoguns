@@ -1,0 +1,22 @@
+[world]
+name = "Octoguns"
+description = "The official Dojo Starter guide, the quickest and most streamlined way to get your Dojo Autonomous World up and running. This guide will assist you with the initial setup, from cloning the repository to deploying your world."
+cover_uri = "file://assets/cover.png"
+icon_uri = "file://assets/icon.png"
+website = "https://github.com/dojoengine/dojo-starter"
+seed = "octoguns"
+
+[world.socials]
+x = "https://x.com/ohayo_dojo"
+discord = "https://discord.gg/FB2wR6uF"
+github = "https://github.com/dojoengine/dojo-starter"
+telegram = "https://t.me/dojoengine"
+
+[namespace]
+default = "octoguns"
+
+[env]
+rpc_url = "https://api.cartridge.gg/x/octoguns-alpha2/katana"
+account_address = "0x7e0bf3a560c929ce1b1777635fc5fd831f0466e2f24417474888c722cea6d4a"
+private_key = "0x3244959d128aabe33cc9c986519e2b1ec5cc6411f0436c374837ec3897a7203"
+world_address = "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8"
