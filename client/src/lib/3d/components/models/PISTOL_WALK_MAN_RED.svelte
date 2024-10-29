@@ -39,7 +39,7 @@ Command: npx @threlte/gltf@2.0.3 PISTOL_WALK_MAN_RED.glb --transform --types
     <slot name="fallback" />
   {:then gltf}
     <T.Group name="Scene">
-      <T.Group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+      <T.Group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={2}>
         <T is={gltf.nodes.mixamorigHips} />
         <T.SkinnedMesh
           name="fig0019"

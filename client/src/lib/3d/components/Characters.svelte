@@ -18,12 +18,12 @@
 <T.Group>
   <T.Group>
     {#each Object.entries(player_coords) as [key, data]}
-      <Blue_man position={[data.x, 0, data.y]} scale={200} />
+      <Blue_man position={[data.x, 0, data.y]} />
     {/each}
   </T.Group>
   <T.Group>
     {#each Object.entries(enemy_coords) as [key, data]}
-      <Red_man position={[data.x, 0, data.y]} scale={200} />
+      <Red_man position={[data.x, 0, data.y]} />
     {/each}
   </T.Group>
 </T.Group>
