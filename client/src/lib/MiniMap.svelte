@@ -10,21 +10,53 @@
 
   let coordsArray: { x: number; y: number }[] = [];
 
-  $: if (map && map.grid1 && map.grid2 && map.grid3) {
-    console.log('map', map);
+  /**
+   * Extracts active indices from three u256 bitmaps.
+   * @param decimalGrids An array of three u256 bitmaps as BigInts.
+   * @returns An array of active indices.
+   */
+  function extractActiveIndices(decimalGrids: bigint[]): number[] {
+    const activeIndices: number[] = [];
+
+    // Process grid1 (indices 0 to 207)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i);
+      }
+    }
+
+    // Process grid2 (indices 208 to 415)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 208);
+      }
+    }
+
+    // Process grid3 (indices 416 to 624)
+    for (let i = 0; i < 209; i++) {
+      if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 416);
+      }
+    }
+
+    return activeIndices;
+  }
+
+  $: if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
     const grids = [map.grid1, map.grid2, map.grid3];
     coordsArray = [];
+    let decimalGrids: bigint[] = [];
 
-    grids.forEach((grid, gridIndex) => {
-      const binary = BigInt(grid).toString(2).padStart(128, '0'); // Contracts uses 128 bits per grid part
-      
-      for (let i = 0; i < binary.length; i++) {
-        if (binary[i] === '1') {
-          const x = i % 25; // Grid width is 25 
-          const y = Math.floor(i / 25) + gridIndex * 16; 
-          coordsArray.push({ x, y });
-        }
-      }
+    grids.forEach((grid) => {
+      // Convert hex to decimal
+      let decimal = BigInt(`0x${grid.toString(16)}`).toString(10);
+      decimalGrids.push(BigInt(decimal));
+    });
+    let activeIndices = extractActiveIndices(decimalGrids);
+    coordsArray = activeIndices.map((index) => {
+      const x = index % 25;
+      const y = Math.floor(index / 25);
+      return { x, y };
     });
   }
 

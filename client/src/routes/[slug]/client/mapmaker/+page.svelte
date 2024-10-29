@@ -10,8 +10,10 @@
   const gridSize = 25;
   const totalCells = gridSize * gridSize;
   const grid = writable<number[]>([]);
+  let client: any;
 
-  let { client } = $dojoStore as any;
+
+  $: if ($dojoStore) ({ client } = $dojoStore as any)
 
   let toastMessage = '';
   let toastStatus = 'loading';
@@ -43,23 +45,29 @@
    * @param activeIndices Array of active cell indices.
    * @returns An object containing grid1, grid2, and grid3 as BigInts.
    */
-  function computeGrids(activeIndices: number[]): { grid1: bigint; grid2: bigint; grid3: bigint } {
+   function computeGrids(activeIndices: number[]): { grid1: bigint; grid2: bigint; grid3: bigint } {
     let grid1 = BigInt(0);
     let grid2 = BigInt(0);
     let grid3 = BigInt(0);
 
     activeIndices.forEach(index => {
-      if (index < 128) {
+      if (index < 208) {
+        // Indices 0 to 207 go to grid1
         grid1 |= (1n << BigInt(index));
-      } else if (index < 256) {
-        grid2 |= (1n << BigInt(index - 128));
-      } else if (index < 384) {
-        grid3 |= (1n << BigInt(index - 256));
+      } else if (index < 416) {
+        // Indices 208 to 415 go to grid2
+        grid2 |= (1n << BigInt(index - 208));
+      } else if (index < 625) {
+        // Indices 416 to 624 go to grid3
+        grid3 |= (1n << BigInt(index - 416));
+      } else {
+        console.warn(`Index ${index} out of range for current grid setup.`);
       }
     });
 
     return { grid1, grid2, grid3 };
   }
+
 
   async function submit() {
     showToast = true;

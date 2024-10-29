@@ -1,6 +1,6 @@
 <script lang="ts">
     import { dojoStore } from '$stores/dojoStore'
-    import { componentValueStore } from '$dojo/componentValueStore'
+    import { componentValueStore, type ComponentStore } from '$dojo/componentValueStore'
     import { selectedMap } from '$stores/clientStores'
     import { goto } from '$app/navigation'
     import { type Entity, getComponentValue } from '@dojoengine/recs'
@@ -13,14 +13,18 @@
   
     let playerEntity: Entity
     let mapCount: number = 0
+    let clientComponents: any
+    let torii: any
+    let globalentity: any
+    let global: ComponentStore
   
-    $: ({ clientComponents, torii } = $dojoStore as any)
+    $: if ($dojoStore) ({ clientComponents, torii } = $dojoStore as any)
   
-    $: globalentity = torii.poseidonHash([BigInt(0).toString()])
+    $: if (torii) globalentity = torii.poseidonHash([BigInt(0).toString()])
   
-    $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
+    $: if ($account && torii) playerEntity = torii.poseidonHash([$account?.address])
   
-    $: global = componentValueStore(clientComponents.Global, globalentity)
+    $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
     let maps: any[] = []
   
     $: if ($global) {

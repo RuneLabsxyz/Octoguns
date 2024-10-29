@@ -3,53 +3,60 @@
   import { mapObjects } from '$stores/gameStores';
 
   let coordsArray: { x: number; y: number }[] = [];
+  let wallIndices: number[] = [];
+  
+  /**
+   * Extracts active indices from three u256 bitmaps.
+   * @param decimalGrids An array of three u256 bitmaps as BigInts.
+   * @returns An array of active indices.
+   */
+  function extractActiveIndices(decimalGrids: bigint[]): number[] {
+    const activeIndices: number[] = [];
 
-  // Reactive statement to compute coordsArray whenever mapObjects changes
+    // Process grid1 (indices 0 to 207)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i);
+      }
+    }
+
+    // Process grid2 (indices 208 to 415)
+    for (let i = 0; i < 208; i++) {
+      if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 208);
+      }
+    }
+
+    // Process grid3 (indices 416 to 624)
+    for (let i = 0; i < 209; i++) {
+      if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
+        activeIndices.push(i + 416);
+      }
+    }
+
+    return activeIndices;
+  }
+
   $: {
-    coordsArray = []; // Reset the array to avoid accumulation
     if ($mapObjects) {
       let { grid1, grid2, grid3 } = $mapObjects;
 
-      // Ensure grids are BigInt
-      grid1 = BigInt(grid1);
-      grid2 = BigInt(grid2);
-      grid3 = BigInt(grid3);
+      grid1 = BigInt(`0x${grid1.toString(16)}`);
+      grid2 = BigInt(`0x${grid2.toString(16)}`);
+      grid3 = BigInt(`0x${grid3.toString(16)}`);
 
-      // Helper function to extract active indices from a bigint grid
-      function extractActiveIndices(grid: bigint, offset: number = 0): number[] {
-        const activeIndices: number[] = [];
-        let index = 0;
-        let gridCopy = grid;
-
-        while (gridCopy > 0n) {
-          if (gridCopy & 1n) {
-            activeIndices.push(index + offset);
-          }
-          gridCopy >>= 1n;
-          index++;
-        }
-
-        return activeIndices;
-      }
-
-      // Extract active cell indices from each grid
-      const activeIndices1 = extractActiveIndices(grid1, 0);
-      const activeIndices2 = extractActiveIndices(grid2, 128);
-      const activeIndices3 = extractActiveIndices(grid3, 256);
-
-      // Combine all active indices
-      const allActiveIndices = [...activeIndices1, ...activeIndices2, ...activeIndices3];
-
-      // Convert indices to x and y coordinates
-      allActiveIndices.forEach((i) => {
-        const x = (i % 25); // 0-24
-        const y = Math.floor(i / 25); // 0-24
-        coordsArray.push({ x, y });
-      });
-
-      console.log('Active Coordinates:', coordsArray);
+      wallIndices = extractActiveIndices([grid1, grid2, grid3]);
     }
   }
+
+  $: {
+    coordsArray = wallIndices.map(index => {
+      let x = (index % 25) * 4 + 2;
+      let y = Math.floor(index / 25) * 4 + 2;
+      return { x, y };
+    });
+  }
+
 
   const vertexShader = `
     varying vec2 vUv;
@@ -121,8 +128,8 @@
 
 <T.Group>
   {#each coordsArray as coord}
-    <T.Mesh position={[coord.x - 12, 2, coord.y - 12]}>
-      <T.BoxGeometry args={[4, 5, 4, 50, 50, 50]} />
+  <T.Mesh position={[coord.x - 50, 2, coord.y - 50]}>
+    <T.BoxGeometry args={[4, 5, 4, 50, 50, 50]} />
       <T.ShaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}

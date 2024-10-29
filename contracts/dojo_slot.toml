@@ -17,6 +17,6 @@ default = "octoguns"
 
 [env]
 rpc_url = "https://api.cartridge.gg/x/octoguns-alpha2/katana"
-account_address = "0x7e0bf3a560c929ce1b1777635fc5fd831f0466e2f24417474888c722cea6d4a"
-private_key = "0x3244959d128aabe33cc9c986519e2b1ec5cc6411f0436c374837ec3897a7203"
+account_address = "0x68130a51ebac08ecfcc2811a43b9d4f3d72ec28b932caeabc59d1854f9440a0"
+private_key = "0x10ccfdde0f170f2a4cfb98f6ad28e82c8d871b0774a254905844c40bd68c9b2"
 world_address = "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8"

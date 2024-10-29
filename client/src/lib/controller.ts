@@ -24,7 +24,7 @@ export async function connect(network: string) {
             username.set(await controllerMainnet.username());
         }      
       } else {
-        console.log("Connecting to slot");
+        console.log("Connecting to local network");
         const res = await controllerSlot.connect();
         if (res) {
             account.set(controllerSlot.account);

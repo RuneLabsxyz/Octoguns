@@ -8,8 +8,8 @@ export function getDojoConfig() {
   console.log(configValue);
 
   const dojoConfig = createDojoConfig({
-    toriiUrl: configValue.PUBLIC_TORII_URL,
-    rpcUrl: configValue.PUBLIC_RPC_URL,
+    rpcUrl: 'https://api.cartridge.gg/x/planetelo/katana',
+    toriiUrl: 'https://api.cartridge.gg/x/planetelo-octoguns/torii',
     manifest,
   });
 

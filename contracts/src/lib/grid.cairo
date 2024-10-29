@@ -5,17 +5,21 @@ fn set_grid_bit(character_x: u64, character_y: u64, grid_1: u256, grid_2: u256, 
     let (x, y) = convert_coords_to_grid_indices(character_x, character_y);
     let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
 
-    if index < 128_u16 {
+    if index < 208_u16 {
+        // Indices 0 to 207 go to grid_1
         let new_grid_1 = grid_1 + pow2_const(index); 
         return (new_grid_1, grid_2, grid_3);
-    } else if index < 256_u16 {
-        let new_grid_2 = grid_2 + pow2_const(index - 128_u16); 
+    } else if index < 416_u16 {
+        // Indices 208 to 415 go to grid_2
+        let new_grid_2 = grid_2 + pow2_const(index - 208_u16); 
         return (grid_1, new_grid_2, grid_3);
     } else {
-        let new_grid_3 = grid_3 + pow2_const(index - 256_u16);
+        // Indices 416 to 624 go to grid_3
+        let new_grid_3 = grid_3 + pow2_const(index - 416_u16);
         return (grid_1, grid_2, new_grid_3);
     }
 }
+
 
 fn set_grid_bits_from_positions(ref positions: Array<CharacterPosition>) -> (u256, u256, u256) {
     let mut grid1: u256 = 0;
@@ -56,30 +60,31 @@ fn convert_coords_to_grid_indices(x: u64, y: u64) -> (u16, u16) {
 fn check_collision(bullet_x: u64, bullet_y: u64, grid_1: u256, grid_2: u256, grid_3: u256) -> bool {
     let (x, y) = convert_coords_to_grid_indices(bullet_x, bullet_y);
     let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
-    if index < 128_u16 {
+    if index < 208_u16 {
         let mask = pow2_const(index);
         return (grid_1 / mask) % 2 != 0;
-    } else if index < 256_u16 {
-        let mask = pow2_const(index - 128_u16);
+    } else if index < 416_u16 {
+        let mask = pow2_const(index - 208_u16);
         return (grid_2 / mask) % 2 != 0;
     } else {
-        let mask = pow2_const(index - 256_u16);
+        let mask = pow2_const(index - 416_u16);
         return (grid_3 / mask) % 2 != 0;
     }
 }
+
 
 fn convert_bullet_to_grid(bullet_x: u64, bullet_y: u64) -> (u256, u256, u256) {
     let (x, y) = convert_coords_to_grid_indices(bullet_x, bullet_y);
     let index: u16 = (25 * (y - 1) + x); // valid range is 0-624
 
-    if index < 128_u16 {
+    if index < 208_u16 {
         let grid_1 = pow2_const(index);
         return (grid_1, 0, 0);
-    } else if index < 256_u16 {
-        let grid_2 = pow2_const(index - 128_u16);
+    } else if index < 416_u16 {
+        let grid_2 = pow2_const(index - 208_u16);
         return (0, grid_2, 0);
     } else {
-        let grid_3 = pow2_const(index - 256_u16);
+        let grid_3 = pow2_const(index - 416_u16);
         return (0, 0, grid_3);
     }
 }
