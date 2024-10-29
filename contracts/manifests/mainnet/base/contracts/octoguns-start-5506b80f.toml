@@ -1,6 +1,6 @@
 kind = "DojoContract"
-class_hash = "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe"
-original_class_hash = "0x623bd6af3f6a90aa5a1bb9d7f7a18819afbee64365cc8ba95f683f5b45bbefe"
+class_hash = "0x18d7f3422a7d8b32eeb46b112b0931f13e86e5649a75548a9bfa2e4d1289243"
+original_class_hash = "0x18d7f3422a7d8b32eeb46b112b0931f13e86e5649a75548a9bfa2e4d1289243"
 base_class_hash = "0x0"
 abi = "manifests/mainnet/base/abis/contracts/octoguns-start-5506b80f.json"
 reads = []

@@ -368,6 +368,20 @@
   },
   {
     "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "struct",
     "name": "octoguns::models::map::Map",
     "members": [
       {
@@ -375,8 +389,16 @@
         "type": "core::integer::u32"
       },
       {
-        "name": "map_objects",
-        "type": "core::array::Array::<core::integer::u16>"
+        "name": "grid1",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "grid2",
+        "type": "core::integer::u256"
+      },
+      {
+        "name": "grid3",
+        "type": "core::integer::u256"
       }
     ]
   },
