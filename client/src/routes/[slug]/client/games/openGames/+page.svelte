@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dojoStore } from '$stores/dojoStore'
-  import { componentValueStore, type ComponentStore } from '$dojo/componentValueStore'
+  import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
@@ -8,26 +8,19 @@
   import { goToSession, joinSession } from '$lib/game'
   import { account } from '$stores/account'
   import { env } from '$stores/network';
-
   let availableSessions: any = null
   let currentSessions: any = null
   let playerEntity: Entity
-  let clientComponents: any
-  let torii: any
-  let client: any
-  let globalentity: any
-  let global: ComponentStore
-  let player: ComponentStore
 
-  $: if ($dojoStore) ({ clientComponents, torii, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
 
-  $: if (torii) globalentity = torii.poseidonHash([BigInt(0).toString()])
+  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($account && torii) playerEntity = torii.poseidonHash([$account?.address])
+  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
-  $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
-  $: if (clientComponents) player = componentValueStore(clientComponents.Player, playerEntity)
+  $: global = componentValueStore(clientComponents.Global, globalentity)
+  $: player = componentValueStore(clientComponents.Player, playerEntity)
 
   $: if ($global) {
     if ($player) {

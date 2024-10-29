@@ -10,10 +10,8 @@
   const gridSize = 25;
   const totalCells = gridSize * gridSize;
   const grid = writable<number[]>([]);
-  let client: any;
 
-
-  $: if ($dojoStore) ({ client } = $dojoStore as any)
+  let { client } = $dojoStore as any;
 
   let toastMessage = '';
   let toastStatus = 'loading';

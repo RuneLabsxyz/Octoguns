@@ -4,7 +4,6 @@
   import { selectedMap } from '$stores/clientStores'
   import { goto } from '$app/navigation'
   import { type Entity, getComponentValue } from '@dojoengine/recs'
-  import { type ComponentStore } from '$dojo/componentValueStore'
   import MiniMap from '$lib/MiniMap.svelte'
   import Button from '$lib/ui/Button.svelte'
   import TxToast from '$lib/ui/TxToast.svelte'
@@ -17,21 +16,15 @@
   let playerEntity: Entity
   let localSelectedMap: number | null = null
   let mapCount: number = 0
-  let clientComponents: any
-  let torii: any
-  let client: any
-  let globalentity: any
-  let player: ComponentStore
-  let global: ComponentStore
 
-  $: if ($dojoStore) ({ clientComponents, torii, client } = $dojoStore as any)
+  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
-  $: if (torii) globalentity = torii.poseidonHash([BigInt(0).toString()])
+  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($account && torii) playerEntity = torii.poseidonHash([$account?.address])
+  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
-  $: if (clientComponents) player = componentValueStore(clientComponents.Player, playerEntity)
-  $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
+  $: player = componentValueStore(clientComponents.Player, playerEntity)
+  $: global = componentValueStore(clientComponents.Global, globalentity)
   let maps: any[] = []
 
   $: if ($global) {

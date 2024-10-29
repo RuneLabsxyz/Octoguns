@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import manifest from '../../contracts/manifests/dev/deployment/manifest.json';
+import manifest from '$manifests/deployment/manifest.json';
 import { createDojoConfig } from '@dojoengine/core';
 import { CONFIG } from '$stores/network'; 
 
@@ -8,8 +8,8 @@ export function getDojoConfig() {
   console.log(configValue);
 
   const dojoConfig = createDojoConfig({
-    rpcUrl: 'https://api.cartridge.gg/x/planetelo/katana',
-    toriiUrl: 'https://api.cartridge.gg/x/planetelo-octoguns/torii',
+    toriiUrl: configValue.PUBLIC_TORII_URL,
+    rpcUrl: configValue.PUBLIC_RPC_URL,
     manifest,
   });
 
