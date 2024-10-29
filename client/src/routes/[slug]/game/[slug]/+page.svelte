@@ -55,19 +55,29 @@
   let characterPosition: ComponentStore
   let map: ComponentStore
   let isTurn: boolean
+  let sessionEntity: string
+
+  let clientComponents: any
+  let torii: any
+  let client: any
+  let globalentity: any
+  let player: ComponentStore
+  let global: ComponentStore
+
   $: sessionId.set(parseInt(gameId))
 
-  $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
+
+  $: if ($dojoStore)  ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
 
-  $: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
+  $: if (torii) sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
 
   $: sessionData = componentValueStore(clientComponents.Session, sessionEntity)
   $: sessionMetaData = componentValueStore(
     clientComponents.SessionMeta,
     sessionEntity
   )
-
+  
   $: if ($sessionData)
     map = componentValueStore(
       clientComponents.Map,
