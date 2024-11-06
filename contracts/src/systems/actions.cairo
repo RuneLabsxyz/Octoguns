@@ -20,6 +20,8 @@ mod actions {
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
     use octoguns::lib::grid::{convert_coords_to_grid_indices, set_grid_bits_from_positions};
+    use octoguns::models::global::{Global, GlobalTrait, GlobalImpl};
+    use octoguns::consts::{GLOBAL_KEY};
 
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
 
@@ -27,6 +29,8 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         fn move(self: @ContractState, session_id: u32, mut moves: TurnMove) {
             let mut world = self.world(@"octoguns");
+
+            let mut global: Global = world.read_model(GLOBAL_KEY);
             let session_primitives: SessionPrimitives = world.read_model(session_id);
             let max_steps = session_primitives.sub_moves_per_turn;
 
@@ -85,7 +89,7 @@ mod actions {
                     match shot {
                         Option::Some(s) => {
                             let bullet = BulletTrait::new(
-                                world.dispatcher.uuid(),
+                                global.uuid(),
                                 Vec2 { x: player_position.coords.x, y: player_position.coords.y },
                                 s.angle,
                                 player_character_id,
@@ -203,6 +207,7 @@ mod actions {
 
             world.write_model(@session);
             world.write_model(@session_meta);
+            world.write_model(@global);
         }
     }
 }
