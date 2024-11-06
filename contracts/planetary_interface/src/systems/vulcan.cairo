@@ -21,6 +21,7 @@ mod salute {
     };
     use planetary_interface::utils::misc::{WORLD};
 
+
     fn dojo_init(ref self: ContractState) {
         let world = self.world(@"vulcan");
         let planetary: PlanetaryInterface = PlanetaryInterfaceTrait::new();

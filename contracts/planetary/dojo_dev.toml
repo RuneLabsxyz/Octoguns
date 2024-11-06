@@ -16,8 +16,11 @@ github = "https://github.com/underware-gg/pistols-64"
 [namespace]
 default = "planetary"
 
+[writers]
+planetary = ["planetary-planetary_actions"]
+
 [env]
-rpc_url = "https://api.cartridge.gg/x/planetelo/katana"
-account_address = "0x4fccfb802ccd4f5aaf727831851d930cadcb594f048c86756d39f5b3ff62ff7"
-private_key = "0x117d7b2718659058eab0715fe0376463f70da1937c541762d74845c558ae058"
-world_address = "0x27ff3447ba2c7e891a1d6b03490d9d7038806cc58b2d214dcd5d2eb26376369"
+rpc_url = "http://localhost:5050"
+account_address = "0x127fd5f1fe78a71f8bcd1fec63e3fe2f0486b6ecd5c86a0466c3a21fa5cfcec"
+private_key = "0xc5b2fcab997346f3ea1c00b002ecf6f382c5f9c9659a3894eb783c5320f912"
+world_address = "0x012e4037b9904e439251127d689aed16e4494c3e82a12982ed3183d7bf29350b"
