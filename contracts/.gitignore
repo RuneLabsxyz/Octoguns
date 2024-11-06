@@ -1,5 +1,0 @@
-target
-bindings
-.env.*
-.env
-manifests/dev

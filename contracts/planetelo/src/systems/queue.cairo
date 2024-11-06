@@ -1,12 +1,12 @@
 // define the interface
-#[dojo::interface]
-trait IQueue {
-    fn queue(world: @IWorldDispatcher, game: felt252, playlist: u128);
-    fn dequeue(world: @IWorldDispatcher, game: felt252, playlist: u128);
-    fn matchmake(world: @IWorldDispatcher, game: felt252, playlist: u128);
-    fn settle(world: @IWorldDispatcher, game: felt252, game_id: u128);
-    fn get_elo(world: @IWorldDispatcher, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
-    fn get_queue_length(world: @IWorldDispatcher, game: felt252, playlist: u128) -> u32;
+#[starknet::interface]
+trait IQueue<T> {
+    fn queue(ref self: T, game: felt252, playlist: u128);
+    fn dequeue(ref self: T, game: felt252, playlist: u128);
+    fn matchmake(ref self: T, game: felt252, playlist: u128);
+    fn settle(ref self: T, game: felt252, game_id: u128);
+    fn get_elo(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
+    fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u32;
 }
 
 // dojo decorator
@@ -35,9 +35,10 @@ mod queue {
     impl QueueImpl of IQueue<ContractState> {
         
 
-        fn queue(world: @IWorldDispatcher, game: felt252, playlist: u128) {
+        fn queue(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
-            let mut player = get!(world, (address, game, playlist), PlayerStatus);
+            let world = self.world(@"planetelo");
+            let mut player: PlayerStatus = get!(world, (address, game, playlist), PlayerStatus);
             let mut elo = get!(world, (address, game, playlist), Elo);
             let mut player_model = get!(world, (address), Player);
             if elo.value == 0 {
@@ -67,8 +68,10 @@ mod queue {
         }
 
 
-        fn dequeue(world: @IWorldDispatcher, game: felt252, playlist: u128) {
+        fn dequeue(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
+            let world = self.world(@"planetelo");
+
             let mut player = get!(world, (address, game), PlayerStatus);
 
             assert!(player.status == QueueStatus::Queued, "Player is not in the queue");
@@ -89,8 +92,10 @@ mod queue {
             set!(world, (player, index, queue));
         }
 
-        fn matchmake(world: @IWorldDispatcher, game: felt252, playlist: u128) {
+        fn matchmake(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
+            let world = self.world(@"planetelo");
+
             let mut player_status = get!(world, (address, game, playlist), PlayerStatus);
 
             assert!(player_status.status != QueueStatus::None, "Player is not in the queue");
@@ -234,7 +239,9 @@ mod queue {
 
         }
 
-        fn settle(world: @IWorldDispatcher, game: felt252, game_id: u128) {
+        fn settle(ref self: ContractState, game: felt252, game_id: u128) {
+
+            let world = self.world(@"planetelo");
 
             let mut game_model = get!(world, (game, game_id), Game);
 
@@ -312,12 +319,14 @@ mod queue {
             
         }
 
-        fn get_elo(world: @IWorldDispatcher, address: ContractAddress, game: felt252, playlist: u128) -> u64 {
+        fn get_elo(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> u64 {
+            let world = self.world(@"planetelo");
             let elo = get!(world, (address, game, playlist), Elo);
             elo.value
         }
 
-        fn get_queue_length(world: @IWorldDispatcher, game: felt252, playlist: u128) -> u32 {
+        fn get_queue_length(self: @ContractState, game: felt252, playlist: u128) -> u32 {
+            let world = self.world(@"planetelo");
             let queue = get!(world, (game, playlist), Queue);
             queue.length
         }
