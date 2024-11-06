@@ -1576,299 +1576,6 @@
       "systems": []
     },
     {
-      "address": "0x43f4dded58c5821bfaf7b5a8f37fa35666c786934143990a899579a3eb9c5f5",
-      "class_hash": "0x2335aafa083e5861e7327791a509ee94ac0b57655039396dd8fca036f373de7",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "planetelo__ContractImpl",
-          "interface_name": "dojo::contract::interface::IContract"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::interface::IContract",
-          "items": [
-            {
-              "type": "function",
-              "name": "dojo_name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "PlaneteloInterfaceImpl",
-          "interface_name": "octoguns::planetelo::IPlanetelo"
-        },
-        {
-          "type": "struct",
-          "name": "planetary_interface::interfaces::octoguns::Settings",
-          "members": [
-            {
-              "name": "bullet_speed",
-              "type": "core::integer::u64"
-            },
-            {
-              "name": "bullet_sub_steps",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "bullets_per_turn",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "sub_moves_per_turn",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "max_distance_per_sub_move",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "octoguns::planetelo::IPlanetelo",
-          "items": [
-            {
-              "type": "function",
-              "name": "create_playlist",
-              "inputs": [
-                {
-                  "name": "maps",
-                  "type": "core::array::Array::<core::integer::u32>"
-                },
-                {
-                  "name": "settings",
-                  "type": "planetary_interface::interfaces::octoguns::Settings"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u32"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "OneOnOneImpl",
-          "interface_name": "planetary_interface::interfaces::one_on_one::IOneOnOne"
-        },
-        {
-          "type": "enum",
-          "name": "planetary_interface::interfaces::one_on_one::Status",
-          "variants": [
-            {
-              "name": "None",
-              "type": "()"
-            },
-            {
-              "name": "Active",
-              "type": "()"
-            },
-            {
-              "name": "Draw",
-              "type": "()"
-            },
-            {
-              "name": "Winner",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "planetary_interface::interfaces::one_on_one::IOneOnOne",
-          "items": [
-            {
-              "type": "function",
-              "name": "create_match",
-              "inputs": [
-                {
-                  "name": "p1",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "p2",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "playlist_id",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u128"
-                }
-              ],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "settle_match",
-              "inputs": [
-                {
-                  "name": "match_id",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "planetary_interface::interfaces::one_on_one::Status"
-                }
-              ],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "dojo_init",
-          "inputs": [],
-          "outputs": [],
-          "state_mutability": "view"
-        },
-        {
-          "type": "impl",
-          "name": "WorldProviderImpl",
-          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
-        },
-        {
-          "type": "struct",
-          "name": "dojo::world::iworld::IWorldDispatcher",
-          "members": [
-            {
-              "name": "contract_address",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::world_provider::IWorldProvider",
-          "items": [
-            {
-              "type": "function",
-              "name": "world_dispatcher",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::world::iworld::IWorldDispatcher"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "UpgradeableImpl",
-          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::upgradeable::IUpgradeable",
-          "items": [
-            {
-              "type": "function",
-              "name": "upgrade",
-              "inputs": [
-                {
-                  "name": "new_class_hash",
-                  "type": "core::starknet::class_hash::ClassHash"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "constructor",
-          "name": "constructor",
-          "inputs": []
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-          "kind": "struct",
-          "members": [
-            {
-              "name": "class_hash",
-              "type": "core::starknet::class_hash::ClassHash",
-              "kind": "data"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Upgraded",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-              "kind": "nested"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "octoguns::planetelo::planetelo::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "UpgradeableEvent",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-              "kind": "nested"
-            },
-            {
-              "name": "WorldProviderEvent",
-              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-              "kind": "nested"
-            }
-          ]
-        }
-      ],
-      "init_calldata": [],
-      "tag": "octoguns-planetelo",
-      "systems": []
-    },
-    {
       "address": "0x1173ccc0cdb6cc1ac2417dd95ca410e11ace4c301021b9e3382ea7104fe440f",
       "class_hash": "0x61f9e9774f09a03aed71e4302304020406e15b57ba1297648d93ba7bbc9d331",
       "abi": [
@@ -2308,6 +2015,299 @@
       ],
       "init_calldata": [],
       "tag": "octoguns-start",
+      "systems": []
+    },
+    {
+      "address": "0x5633fee4831e24134754abb6d889a27620de2e996fe24bb30d3dee4b89a9f8f",
+      "class_hash": "0x2335aafa083e5861e7327791a509ee94ac0b57655039396dd8fca036f373de7",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "planetelo__ContractImpl",
+          "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "struct",
+          "name": "core::byte_array::ByteArray",
+          "members": [
+            {
+              "name": "data",
+              "type": "core::array::Array::<core::bytes_31::bytes31>"
+            },
+            {
+              "name": "pending_word",
+              "type": "core::felt252"
+            },
+            {
+              "name": "pending_word_len",
+              "type": "core::integer::u32"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": [
+            {
+              "type": "function",
+              "name": "dojo_name",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "PlaneteloInterfaceImpl",
+          "interface_name": "octoguns::planetelo::IPlanetelo"
+        },
+        {
+          "type": "struct",
+          "name": "planetary_interface::interfaces::octoguns::Settings",
+          "members": [
+            {
+              "name": "bullet_speed",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "bullet_sub_steps",
+              "type": "core::integer::u32"
+            },
+            {
+              "name": "bullets_per_turn",
+              "type": "core::integer::u32"
+            },
+            {
+              "name": "sub_moves_per_turn",
+              "type": "core::integer::u32"
+            },
+            {
+              "name": "max_distance_per_sub_move",
+              "type": "core::integer::u32"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "octoguns::planetelo::IPlanetelo",
+          "items": [
+            {
+              "type": "function",
+              "name": "create_playlist",
+              "inputs": [
+                {
+                  "name": "maps",
+                  "type": "core::array::Array::<core::integer::u32>"
+                },
+                {
+                  "name": "settings",
+                  "type": "planetary_interface::interfaces::octoguns::Settings"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u32"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "OneOnOneImpl",
+          "interface_name": "planetary_interface::interfaces::one_on_one::IOneOnOne"
+        },
+        {
+          "type": "enum",
+          "name": "planetary_interface::interfaces::one_on_one::Status",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "Active",
+              "type": "()"
+            },
+            {
+              "name": "Draw",
+              "type": "()"
+            },
+            {
+              "name": "Winner",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "planetary_interface::interfaces::one_on_one::IOneOnOne",
+          "items": [
+            {
+              "type": "function",
+              "name": "create_match",
+              "inputs": [
+                {
+                  "name": "p1",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "p2",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "playlist_id",
+                  "type": "core::integer::u128"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u128"
+                }
+              ],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "settle_match",
+              "inputs": [
+                {
+                  "name": "match_id",
+                  "type": "core::integer::u128"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "planetary_interface::interfaces::one_on_one::Status"
+                }
+              ],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "dojo_init",
+          "inputs": [],
+          "outputs": [],
+          "state_mutability": "view"
+        },
+        {
+          "type": "impl",
+          "name": "WorldProviderImpl",
+          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
+        },
+        {
+          "type": "struct",
+          "name": "dojo::world::iworld::IWorldDispatcher",
+          "members": [
+            {
+              "name": "contract_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::world_provider::IWorldProvider",
+          "items": [
+            {
+              "type": "function",
+              "name": "world_dispatcher",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "dojo::world::iworld::IWorldDispatcher"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "UpgradeableImpl",
+          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::upgradeable::IUpgradeable",
+          "items": [
+            {
+              "type": "function",
+              "name": "upgrade",
+              "inputs": [
+                {
+                  "name": "new_class_hash",
+                  "type": "core::starknet::class_hash::ClassHash"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "constructor",
+          "name": "constructor",
+          "inputs": []
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "class_hash",
+              "type": "core::starknet::class_hash::ClassHash",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Upgraded",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "enum",
+          "variants": []
+        },
+        {
+          "type": "event",
+          "name": "octoguns::planetelo::planetelo::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "UpgradeableEvent",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+              "kind": "nested"
+            },
+            {
+              "name": "WorldProviderEvent",
+              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+              "kind": "nested"
+            }
+          ]
+        }
+      ],
+      "init_calldata": [],
+      "tag": "planetelo-planetelo",
       "systems": []
     }
   ],
