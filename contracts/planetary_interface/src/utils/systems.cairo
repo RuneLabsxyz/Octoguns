@@ -3,7 +3,7 @@ use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait, Resource};
 use planetary_interface::utils::misc::{ZERO};
 
 pub fn get_world_contract_address(world: IWorldDispatcher, selector: felt252) -> ContractAddress {
-    if let Resource::Contract((_, contract_address)) = world.resource(selector) {
+    if let Resource::Contract((contract_address, _)) = world.resource(selector) {
         (contract_address)
     } else {
         (ZERO())
