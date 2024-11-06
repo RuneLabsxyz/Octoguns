@@ -19,6 +19,9 @@ mod queue {
         PlanetaryInterface, PlanetaryInterfaceTrait,
         IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
     };
+    use dojo::model::{ModelStorage, ModelValueStorage, Model};
+    use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+
 
     use planetary_interface::interfaces::one_on_one::{
         IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
@@ -37,19 +40,19 @@ mod queue {
 
         fn queue(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
-            let world = self.world(@"planetelo");
-            let mut player: PlayerStatus = get!(world, (address, game, playlist), PlayerStatus);
-            let mut elo = get!(world, (address, game, playlist), Elo);
-            let mut player_model = get!(world, (address), Player);
+            let mut world = self.world(@"planetelo");
+            let mut player: PlayerStatus = world.read_model((address, game, playlist));
+            let mut elo: Elo = world.read_model((address, game, playlist));
+            let mut player_model: Player = world.read_model((address));
             if elo.value == 0 {
                 elo.value = 800;
-                set!(world, (elo));
+                world.write_model(@elo);
             }
 
             assert!(player.status == QueueStatus::None, "Player is already in the queue");
             player_model.queues_joined += 1;
 
-            let mut queue = get!(world, (game, playlist), Queue);
+            let mut queue: Queue = world.read_model((game, playlist));
             
             let new = QueueIndex {
                 game: game,
@@ -63,22 +66,25 @@ mod queue {
             queue.length += 1;
             player.status = QueueStatus::Queued;
 
-            set!(world, (player, new, queue, player_model));
+            world.write_model(@player_model);
+            world.write_model(@player);
+            world.write_model(@new);
+            world.write_model(@queue);
             
         }
 
 
         fn dequeue(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
-            let world = self.world(@"planetelo");
+            let mut world = self.world(@"planetelo");
 
-            let mut player = get!(world, (address, game), PlayerStatus);
+            let mut player: PlayerStatus = world.read_model((address, game));
 
             assert!(player.status == QueueStatus::Queued, "Player is not in the queue");
 
-            let mut queue = get!(world, (game, playlist), Queue);
-            let mut index = get!(world, (game, playlist, player.index), QueueIndex);
-            let mut last_index = get!(world, (game, playlist, queue.length - 1), QueueIndex);
+            let mut queue: Queue = world.read_model((game, playlist));
+            let mut index: QueueIndex = world.read_model((game, playlist, player.index));
+            let mut last_index: QueueIndex = world.read_model((game, playlist, queue.length - 1));
 
             index.player = last_index.player;
             index.index = last_index.index;
@@ -88,32 +94,34 @@ mod queue {
             queue.length -= 1;
             player.status = QueueStatus::None;
 
-            delete!(world, (last_index));
-            set!(world, (player, index, queue));
+            world.erase_model(@last_index);
+            world.write_model(@player);
+            world.write_model(@index);
+            world.write_model(@queue);
         }
 
         fn matchmake(ref self: ContractState, game: felt252, playlist: u128) {
             let address = get_caller_address();
-            let world = self.world(@"planetelo");
+            let mut world = self.world(@"planetelo");
 
-            let mut player_status = get!(world, (address, game, playlist), PlayerStatus);
+            let mut player_status: PlayerStatus = world.read_model((address, game, playlist));
 
             assert!(player_status.status != QueueStatus::None, "Player is not in the queue");
             let timestamp = get_block_timestamp();
 
-            let mut player_index = get!(world, (game, playlist, player_status.index), QueueIndex);
+            let mut player_index: QueueIndex = world.read_model((game, playlist, player_status.index));
             let time_diff = timestamp - player_index.timestamp;
             let time_diff_secs = time_diff;
             println!("time_diff_secs: {}", time_diff_secs);
             assert!(time_diff_secs > 30, "Must be in queue for at least 30 seconds to refresh");
 
-            let mut queue = get!(world, (game, playlist), Queue);
+            let mut queue: Queue = world.read_model((game, playlist));
             assert!(queue.length > 1, "There must be at least 2 players in the queue to matchmake");
             let mut potential_index = player_index;
             let mut i = 0;
             let mut found = false;
             while i < queue.length {
-                let potential_index = get!(world, (game, playlist, i), QueueIndex);
+                let potential_index: QueueIndex = world.read_model((game, playlist, i));
                 if potential_index.player == player_index.player {
                     i+=1;
                     continue;
@@ -147,11 +155,11 @@ mod queue {
             
             let dispatcher = IOneOnOneDispatcher{ contract_address };
 
-            let game_id = dispatcher.create_match(player_index.player, potential_index.player, playlist);
+            let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
 
             player_status.status = QueueStatus::InGame(game_id);
 
-            let mut potential_status = get!(world, (potential_index.player, game, playlist), PlayerStatus);
+            let mut potential_status: PlayerStatus = world.read_model((potential_index.player, game, playlist));
             potential_status.status = QueueStatus::InGame(game_id);
 
             let game_model = Game {
@@ -166,8 +174,8 @@ mod queue {
             let last_index = queue.length - 1;
             let second_last_index = queue.length -2;
 
-            let mut last_player = get!(world, (game, playlist, last_index), QueueIndex);
-            let mut second_last_player = get!(world, (game, playlist, second_last_index), QueueIndex);
+            let mut last_player: QueueIndex = world.read_model((game, playlist, last_index));
+            let mut second_last_player: QueueIndex = world.read_model((game, playlist, second_last_index));
 
             let mut replacing = QueueIndex { game, playlist, index: 0, player: contract_address_const::<0x0>(), elo: 0, timestamp: 0 };
 
@@ -190,7 +198,10 @@ mod queue {
                 second_last_player.elo = 0;
                 second_last_player.timestamp = 0;
 
-                set!(world, (last_player, second_last_player, player_index, potential_index));
+                world.write_model(@last_player);
+                world.write_model(@second_last_player);
+                world.write_model(@player_index);
+                world.write_model(@potential_index);
                 
             }
 
@@ -208,8 +219,9 @@ mod queue {
                 player_index.player = replacing.player;
                 player_index.elo = replacing.elo;
                 player_index.timestamp = replacing.timestamp;
-                set!(world, (player_index));
-                delete!(world, (replacing, potential_index));
+                world.write_model(@player_index);
+                world.erase_model(@replacing);
+                world.erase_model(@potential_index);
             }
 
             else if potential_index.index < queue.length - 2 {
@@ -223,27 +235,31 @@ mod queue {
                 potential_index.player = replacing.player;
                 potential_index.elo = replacing.elo;
                 potential_index.timestamp = replacing.timestamp;
-                set!(world, (potential_index));
-                delete!(world, (replacing, player_index));
+                world.write_model(@potential_index);
+                world.erase_model(@replacing);
+                world.erase_model(@player_index);
             }
 
             else {
-                delete!(world, (player_index, potential_index));
+                world.erase_model(@player_index);
+                world.erase_model(@potential_index);
             }
 
 
             queue.length -= 2;
-            set!(world, (player_status, potential_status, game_model, queue));
-
+            world.write_model(@player_status);
+            world.write_model(@potential_status);
+            world.write_model(@game_model);
+            world.write_model(@queue);
             
 
         }
 
         fn settle(ref self: ContractState, game: felt252, game_id: u128) {
 
-            let world = self.world(@"planetelo");
+            let mut world = self.world(@"planetelo");
 
-            let mut game_model = get!(world, (game, game_id), Game);
+            let mut game_model: Game = world.read_model((game, game_id));
 
 
             let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
@@ -253,11 +269,11 @@ mod queue {
 
             let status = dispatcher.settle_match(game_id);
             
-            let mut player_one = get!(world, (game_model.player1, game_model.game, game_model.playlist), PlayerStatus);
-            let mut player_two = get!(world, (game_model.player2, game_model.game, game_model.playlist), PlayerStatus);
-            let mut player_one_elo = get!(world, (game_model.player1, game_model.game, game_model.playlist), Elo);
+            let mut player_one: PlayerStatus = world.read_model((game_model.player1, game_model.game, game_model.playlist));
+            let mut player_two: PlayerStatus = world.read_model((game_model.player2, game_model.game, game_model.playlist));
+            let mut player_one_elo: Elo = world.read_model((game_model.player1, game_model.game, game_model.playlist));
             let one_elo: u64 = player_one_elo.value;
-            let mut player_two_elo = get!(world, (game_model.player2, game_model.game, game_model.playlist), Elo);
+            let mut player_two_elo: Elo = world.read_model((game_model.player2, game_model.game, game_model.playlist));
             let two_elo: u64 = player_two_elo.value;
 
             let (mag, sign) = EloTrait::rating_change(800_u64, 800_u64, 50_u16, 20_u8);
@@ -288,7 +304,10 @@ mod queue {
                     player_one.status = QueueStatus::None;
                     player_two.status = QueueStatus::None;
 
-                    set!(world, (player_one, player_two, player_one_elo, player_two_elo));
+                    world.write_model(@player_one);
+                    world.write_model(@player_two);
+                    world.write_model(@player_one_elo);
+                    world.write_model(@player_two_elo);
                 },
                 Status::Winner(winner) => {
 
@@ -312,7 +331,11 @@ mod queue {
                     player_one.status = QueueStatus::None;
                     player_two.status = QueueStatus::None;
 
-                    set!(world, (player_one, player_two, player_one_elo, player_two_elo));
+                    world.write_model(@player_one);
+                    world.write_model(@player_two);
+                    world.write_model(@player_one_elo);
+                    world.write_model(@player_two_elo);
+
                 }
             }
             
@@ -321,13 +344,13 @@ mod queue {
 
         fn get_elo(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> u64 {
             let world = self.world(@"planetelo");
-            let elo = get!(world, (address, game, playlist), Elo);
+            let elo: Elo = world.read_model((address, game, playlist));
             elo.value
         }
 
         fn get_queue_length(self: @ContractState, game: felt252, playlist: u128) -> u32 {
             let world = self.world(@"planetelo");
-            let queue = get!(world, (game, playlist), Queue);
+            let queue: Queue = world.read_model((game, playlist));
             queue.length
         }
 
