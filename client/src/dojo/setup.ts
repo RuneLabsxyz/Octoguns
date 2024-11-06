@@ -14,8 +14,8 @@ export type SetupResult = Awaited<ReturnType<typeof setup>>
 export async function setup(worldAddress: string | undefined, { ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
-    rpcUrl: config.rpcUrl,
-    toriiUrl: config.toriiUrl,
+    rpcUrl: "http://localhost:5050",
+    toriiUrl: "http://localhost:8080",
     relayUrl: '',
     worldAddress: worldAddress ?? ''
   })

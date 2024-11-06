@@ -44,11 +44,11 @@
       {$username}
     </Button>
   {/if}
-  <Button href={`/${$env}/client/games/openGames`}>New Game</Button>
+  <Button href={`/${$env}/client/matchmaking`}>Matchmaking</Button>
   <Button href={`/${$env}/client/games/yourGames`}>Your Games</Button>
   <Button href={`/${$env}/client/maps`}>Maps</Button>
   <div class="flex-grow"></div>
-  <Button href="/">Back to home screen</Button>
+    <Button href="/">Back to home screen</Button>
   </div>
   <div class="m-7 md:ml-0 bg-white flex-grow border-4 border-black rounded-lg">
     <slot />
