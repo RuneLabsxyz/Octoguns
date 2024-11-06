@@ -38,7 +38,7 @@ mod start {
             // Do shit
             let address = get_caller_address();
             let mut player: Player = world.read_model(address);
-            let id = world.dispatcher.uuid();
+            let id = global.uuid();
             global.create_session(id);
             player.games.append(id);
 
@@ -51,6 +51,7 @@ mod start {
             world.write_model(@global);
             world.write_model(@player);
             world.write_model(@session_primitives);
+            world.write_model(@global);
             id
         }
 
@@ -65,7 +66,7 @@ mod start {
             let mut global: Global = world.read_model(GLOBAL_KEY);
             let mut player_1: Player = world.read_model(player_address_1);
             let mut player_2: Player = world.read_model(player_address_2);
-            let id = world.dispatcher.uuid();
+            let id = global.uuid();
             player_1.games.append(id);
             player_2.games.append(id);
 
@@ -80,6 +81,7 @@ mod start {
             world.write_model(@player_1);
             world.write_model(@player_2);
             world.write_model(@session_primitives);
+            world.write_model(@global);
         }
 
         fn join(self: @ContractState, session_id: u32) {
