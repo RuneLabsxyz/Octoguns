@@ -3,7 +3,7 @@ use octoguns::consts::GLOBAL_KEY;
 use starknet::ContractAddress;
 
 #[derive(Drop, Serde)]
-#[dojo::model(namespace: "planetelo")]
+#[dojo::model]
 struct Playlist {
     #[key]
     id: u128,
@@ -13,7 +13,7 @@ struct Playlist {
 
 
 #[derive(Copy, Drop, Serde)]
-#[dojo::model(namespace: "planetelo")]
+#[dojo::model]
 struct PlaylistGlobal {
     #[key]
     global_key: u32,
@@ -41,7 +41,7 @@ trait IPlanetelo<T> {
     fn create_playlist(self: @T, maps: Array<u32>, settings: Settings) -> u32;
 }
 
-#[dojo::contract(namespace: "planetelo")]
+#[dojo::contract]
 mod planetelo {
     use octoguns::consts::GLOBAL_KEY;
     use super::{Playlist, PlaylistGlobal, IPlanetelo};
