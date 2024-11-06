@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 
 export const dojoStore = writable();
 export const isSetup = writable(false);
+export const planeteloStore = writable();
 
 let setupPromise: Promise<void> | undefined;
 
@@ -11,7 +12,7 @@ async function setupInternal() {
   try {
     console.log('Initializing store...');
     const { dojoConfig, WORLD_ADDRESS } = getDojoConfig();
-    const result = await setup(WORLD_ADDRESS, dojoConfig);
+    const result = await setup(dojoConfig);
     console.log('Setup complete');
     dojoStore.set(result);
     isSetup.set(true);

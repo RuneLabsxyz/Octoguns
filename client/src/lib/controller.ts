@@ -11,7 +11,7 @@ export const controllerMainnet = new Controller({
 })
 
 export const controllerSlot = new Controller({
-  rpc: "https://api.cartridge.gg/x/octoguns-alpha2/katana"
+  rpc: "http://localhost:5050"
 })
 
 export async function connect(network: string) {

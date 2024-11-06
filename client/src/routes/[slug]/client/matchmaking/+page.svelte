@@ -9,6 +9,8 @@
     import { cn } from '$lib/css/cn'
     import { account  } from '$stores/account'
     import { env } from '$stores/network';
+    import { planeteloStore } from '$stores/dojoStore';
+    import { get } from 'svelte/store';
   
     let playerEntity: Entity
     let mapCount: number = 0
@@ -26,9 +28,17 @@
     $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
 
   
+    async function getStatus() {
+      let planetelo: any = get(planeteloStore);
+      console.log(planetelo)
+      console.log(await planetelo.dojo_name())
+    }
 
+    async function queue() {
+      let planetelo: any = get(planeteloStore);
+      console.log(await planetelo.invoke("queue", [0x6f63746f67756e73, 0x0]))
+    }
 
-  
     async function createMap() {
       goto(`/${$env}/client/mapmaker`)
     }
@@ -37,7 +47,15 @@
   
   <div class={cn('flex flex-col h-full')}>
     <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-      <Button on:click={() => {}}>Queue</Button>
+      <Button on:click={() => {
+
+      }}>Queue</Button>
+    </div>
+
+    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
+      <Button on:click={() => {
+        getStatus()
+      }}>Get Status</Button>
     </div>
 </div>
 
