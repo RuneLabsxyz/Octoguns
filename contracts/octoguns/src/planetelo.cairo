@@ -3,7 +3,7 @@ use octoguns::consts::GLOBAL_KEY;
 use starknet::ContractAddress;
 
 #[derive(Drop, Serde)]
-#[dojo::model(namespace: "planetelo", nomapping: true)]
+#[dojo::model(namespace: "planetelo")]
 struct Playlist {
     #[key]
     id: u128,
@@ -13,7 +13,7 @@ struct Playlist {
 
 
 #[derive(Copy, Drop, Serde)]
-#[dojo::model(namespace: "planetelo", nomapping: true)]
+#[dojo::model(namespace: "planetelo")]
 struct PlaylistGlobal {
     #[key]
     global_key: u32,
@@ -36,12 +36,12 @@ pub enum Status {
 
 }
 
-#[dojo::interface]
-trait IPlanetelo {
-    fn create_playlist(ref world: IWorldDispatcher, maps: Array<u32>, settings: Settings) -> u32;
+#[starknet::interface]
+trait IPlanetelo<T> {
+    fn create_playlist(self: @T, maps: Array<u32>, settings: Settings) -> u32;
 }
 
-#[dojo::contract(namespace: "planetelo", nomapping: true)]
+#[dojo::contract(namespace: "planetelo")]
 mod planetelo {
     use octoguns::consts::GLOBAL_KEY;
     use super::{Playlist, PlaylistGlobal, IPlanetelo};
@@ -50,14 +50,19 @@ mod planetelo {
     use planetary_interface::interfaces::octoguns::{
         OctogunsInterface, OctogunsInterfaceTrait, 
         IOctogunsStartDispatcher, IOctogunsStartDispatcherTrait, Settings};
-    use octoguns::lib::dice::{Dice, DiceTrait};
+    use octoguns::lib::dice::{Dice, DiceTrait, DiceImpl};
     use octoguns::models::sessions::{Session, SessionMeta};
     use starknet::{ContractAddress, get_block_timestamp};
+    use dojo::world::{WorldStorage, WorldStorageTrait};
+
+    use dojo::model::{ModelStorage, ModelValueStorage, Model};
+
 
     #[abi(embed_v0)]
     impl PlaneteloInterfaceImpl of IPlanetelo<ContractState> {
-        fn create_playlist(ref world: IWorldDispatcher, maps: Array<u32>, settings: Settings) -> u32 {
-            let mut global = get!(world, GLOBAL_KEY, (PlaylistGlobal));
+        fn create_playlist(self: @ContractState, maps: Array<u32>, settings: Settings) -> u32 {
+            let mut world = self.world(@"planetelo");
+            let mut global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
             let id = global.playlist_count;
             global.playlist_count += 1;
 
@@ -66,21 +71,26 @@ mod planetelo {
                 maps,
                 settings
             };
-            set!(world, (global, playlist));
+            world.write_model(@playlist);
+            world.write_model(@global);
             id
         }
     }
 
     #[abi(embed_v0)]
     impl OneOnOneImpl of IOneOnOne<ContractState> {
-        fn create_match(ref world: IWorldDispatcher, p1: ContractAddress, p2: ContractAddress, playlist_id: u128) -> u128{
+        fn create_match(ref self: ContractState, p1: ContractAddress, p2: ContractAddress, playlist_id: u128) -> u128{
+            let mut world = self.world(@"planetelo");
+            let mut octoguns = self.world(@"octoguns");
+            let start_dispatcher = octoguns.dns(@"start");
+            
             let octoguns_interface = OctogunsInterfaceTrait::new();
             let start_dispatcher: IOctogunsStartDispatcher = octoguns_interface.start_dispatcher();
 
-            let global = get!(world, GLOBAL_KEY, (PlaylistGlobal));
+            let global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
             assert!(playlist_id < global.playlist_count.into(), "Playlist does not exist");
 
-            let playlist = get!(world, playlist_id, (Playlist));
+            let playlist: Playlist = world.read_model(playlist_id);
 
             let map_count = playlist.maps.len();
 
@@ -94,9 +104,10 @@ mod planetelo {
             id
         }
 
-        fn settle_match(ref world: IWorldDispatcher, match_id: u128) -> Status {
-            let session = get!(world, match_id, (Session));
-            let session_meta = get!(world, match_id, (SessionMeta));
+        fn settle_match(ref self: ContractState, match_id: u128) -> Status {
+            let mut world = self.world(@"planetelo");
+            let session: Session = world.read_model(match_id);
+            let session_meta: SessionMeta = world.read_model(match_id);
 
             match session.state {
                 0 => {

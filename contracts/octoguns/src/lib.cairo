@@ -22,6 +22,7 @@ mod lib {
     mod grid;
     mod trig;
     mod bitwise;
+    mod dice;
 }
 
 mod planetelo;

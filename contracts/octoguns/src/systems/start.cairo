@@ -2,18 +2,19 @@ use starknet::{ContractAddress, get_caller_address};
 use octoguns::models::sessions::{
     Session, SessionTrait, SessionMeta, SessionMetaTrait, SessionPrimitives,
 };
-use octoguns::types::Settings;
-#[dojo::interface]
-trait IStart {
-    fn create(ref world: IWorldDispatcher, map_id: u32, settings: Settings) -> u32;
+use octoguns::types::{Settings};
+
+#[starknet::interface]
+trait IStart<T> {
+    fn create(self: @T, map_id: u32, settings: Settings) -> u32;
     fn create_closed(
-        ref world: IWorldDispatcher,
+        self: @T,
         map_id: u32,
         player_address_1: ContractAddress,
         player_address_2: ContractAddress,
         settings: Settings
-    ) -> u32;
-    fn join(ref world: IWorldDispatcher, session_id: u32);
+    );
+    fn join(self: @T, session_id: u32);
 }
 
 #[dojo::contract]
@@ -21,21 +22,25 @@ mod start {
     use super::IStart;
     use octoguns::models::sessions::{
         Session, SessionTrait, SessionMeta, SessionMetaTrait, SessionPrimitives,
-        SessionPrimitivesTrait
+        SessionPrimitivesTrait, SessionPrimitivesImpl, SessionMetaImpl
     };
     use starknet::{ContractAddress, get_caller_address};
     use octoguns::models::global::{Global, GlobalTrait};
     use octoguns::consts::GLOBAL_KEY;
     use octoguns::models::player::{Player};
-    use octoguns::types::Settings;
+    use octoguns::types::{Settings};
+    use dojo::model::{ModelStorage, ModelValueStorage, Model};
+
 
     #[abi(embed_v0)]
     impl StartImpl of IStart<ContractState> {
-        fn create(ref world: IWorldDispatcher, map_id: u32, settings: Settings) -> u32 {
-            let mut global = get!(world, GLOBAL_KEY, (Global));
+        fn create(self: @ContractState, map_id: u32, settings: Settings) -> u32 {
+            let mut world = self.world(@"octoguns");
+            let mut global: Global = world.read_model(GLOBAL_KEY);
+            // Do shit
             let address = get_caller_address();
-            let mut player = get!(world, address, (Player));
-            let id = world.uuid();
+            let mut player: Player = world.read_model(address);
+            let id = global.uuid();
             global.create_session(id);
             player.games.append(id);
 
@@ -43,20 +48,27 @@ mod start {
             let session_meta = SessionMetaTrait::new(id);
             let session_primitives = SessionPrimitivesTrait::new(id, settings);
 
-            set!(world, (session, session_meta, global, player, session_primitives));
+            world.write_model(@session);
+            world.write_model(@session_meta);
+            world.write_model(@global);
+            world.write_model(@player);
+            world.write_model(@session_primitives);
+            world.write_model(@global);
             id
         }
 
         fn create_closed(
-            ref world: IWorldDispatcher,
+            self: @ContractState,
             map_id: u32,
             player_address_1: ContractAddress,
             player_address_2: ContractAddress,
             settings: Settings
-        ) -> u32{
-            let mut player_1 = get!(world, player_address_1, (Player));
-            let mut player_2 = get!(world, player_address_2, (Player));
-            let id = world.uuid();
+        ) {
+            let mut world = self.world(@"octoguns");
+            let mut global: Global = world.read_model(GLOBAL_KEY);
+            let mut player_1: Player = world.read_model(player_address_1);
+            let mut player_2: Player = world.read_model(player_address_2);
+            let id = global.uuid();
             player_1.games.append(id);
             player_2.games.append(id);
 
@@ -66,15 +78,20 @@ mod start {
                 id,
                 settings
             );
-            set!(world, (session, session_meta, player_1, player_2, session_primitives));
-            id
+            world.write_model(@session);
+            world.write_model(@session_meta);
+            world.write_model(@player_1);
+            world.write_model(@player_2);
+            world.write_model(@session_primitives);
+            world.write_model(@global);
         }
 
-        fn join(ref world: IWorldDispatcher, session_id: u32) {
-            let mut global = get!(world, GLOBAL_KEY, (Global));
+        fn join(self: @ContractState, session_id: u32) {
+            let mut world = self.world(@"octoguns");
+            let mut global: Global = world.read_model(GLOBAL_KEY);
             let address = get_caller_address();
-            let mut session = get!(world, session_id, (Session));
-            let mut player = get!(world, address, (Player));
+            let mut session: Session = world.read_model(session_id);
+            let mut player: Player = world.read_model(address);
 
             assert!(session.state == 0, "already started session");
 
@@ -83,8 +100,9 @@ mod start {
             session.join(address);
             player.games.append(session.session_id);
 
-            set!(world, (session, player, global));
+            world.write_model(@session);
+            world.write_model(@player);
+            world.write_model(@global);
         }
-
     }
 }

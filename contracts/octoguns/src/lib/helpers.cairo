@@ -4,12 +4,14 @@ use octoguns::models::bullet::{Bullet};
 use octoguns::models::sessions::{SessionMeta};
 use octoguns::types::IVec2;
 use starknet::{ContractAddress, get_caller_address};
-use dojo::world::IWorldDispatcher;
+use dojo::world::WorldStorage;
+use dojo::model::{ModelStorage, ModelValueStorage, Model};
+
 use octoguns::consts::MOVE_SPEED;
 
-fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
+fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
     let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
-    let session_meta = get!(world, session_id, (SessionMeta));
+    let session_meta: SessionMeta = world.read_model(session_id);
     let bullets = session_meta.bullets; //  type: array<u32>
 
     let mut i = 0;
@@ -19,7 +21,7 @@ fn get_all_bullets(world: IWorldDispatcher, session_id: u32) -> Array<Bullet> {
 
     while i < bullets.len() {
         let bullet_id = *bullets.at(i);
-        let bullet = get!(world, bullet_id, (Bullet));
+        let bullet: Bullet = world.read_model(bullet_id);
 
         all_live_bullets.append(bullet);
         i += 1;
@@ -79,4 +81,3 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
         return false;
     }
 }
-

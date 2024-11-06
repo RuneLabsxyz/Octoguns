@@ -4,7 +4,8 @@ pub struct Global{
     #[key]
     id: u32,
     pending_sessions: Array<u32>,
-    map_count: u32
+    map_count: u32,
+    nonce: u32
 }
 
 #[generate_trait]
@@ -27,4 +28,10 @@ impl GlobalImpl of GlobalTrait {
         };
         self.pending_sessions = new_sessions;
     } 
+
+    fn uuid(ref self: Global) -> u32 {
+        let id = self.nonce;
+        self.nonce += 1;
+        id
+    }
 }
