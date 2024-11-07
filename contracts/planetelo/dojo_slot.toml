@@ -16,7 +16,7 @@ telegram = "https://t.me/dojoengine"
 default = "planetelo"
 
 [writers]
-planetelo = ["planetelo-queue"]
+"planetelo" = ["planetelo-queue"]
 
 [env]
 rpc_url = "https://api.cartridge.gg/x/planetelo/katana"
