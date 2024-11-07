@@ -119,7 +119,8 @@ mod tournament {
                 round:1, 
                 config, 
                 round_start_time: get_block_timestamp(), 
-                pairings: ArrayTrait::new()
+                pairings: ArrayTrait::new(),
+                status: TournamentStatus::Joining
             };
             world.write_model(@tournament);
             world.write_model(@global_tournament);
@@ -182,23 +183,16 @@ mod tournament {
 
         fn advance_tournament(ref self: ContractState, tournament_id: u128) {
             let mut world = self.world(@"planetelo");
+            let mut tournament: Tournament = world.read_model(tournament_id);
 
             let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
             let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(tournament.game)}, selector_from_tag!("planetelo-planetelo"));
             
             let dispatcher = IOneOnOneDispatcher{ contract_address };
 
-            let mut tournament: Tournament = world.read_model(tournament_id);
 
             assert!(tournament.status == TournamentStatus::InRound, "Tournament not in round");
 
-            let mut new_pairings: Array<Pairing> = ArrayTrait::new();
-            let mut i = tournament.round
-            loop {
-                let pairing = tournament.pairings[i];
-                dispatcher.advance_match(pairing.game_id);
-                i+=1;
-            }
 
             tournament.round += 1;
 

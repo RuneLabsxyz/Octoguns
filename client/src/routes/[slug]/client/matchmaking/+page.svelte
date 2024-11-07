@@ -33,7 +33,7 @@
       let planetelo: any = get(planeteloStore);
       console.log(planetelo)
       planetelo.connect($account!)
-      console.log(await planetelo.get_status($account!.address, 0x6f63746f67756e73, 0x0))
+      console.log(await planetelo.get_status($account!.address, '0x6f63746f67756e73', '0x0'))
     }
 
     async function queue() {
