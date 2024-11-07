@@ -16,7 +16,9 @@ pub struct TournamentConfig {
     entry_time: u64
 }
 
-#[derive(Copy, Drop, Serde)]
+
+
+#[derive(Drop, Serde)]
 #[dojo::model]
 pub struct Tournament {
     #[key]
@@ -26,16 +28,26 @@ pub struct Tournament {
     round: u8,
     start_time: u64,
     config: TournamentConfig,
+    pairings: Array<Pairing>,
 }
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Copy, Drop, Serde, Introspect)]
+pub struct Pairing {
+    player_1: ContractAddress,
+    player_2: ContractAddress,
+    game_id: u128,
+    status: u8, //0 = waiting, 1 = in_game, 2 = finished
+}
+
+
+#[derive(Drop, Serde)]
 #[dojo::model]
 pub struct Pool {
     #[key]
     tournament_id: u128,
     #[key]
     wins: u8,
-    players: ArrayTrait<ContractAddress>,
+    players: Array<ContractAddress>,
 }
 
 
@@ -78,16 +90,25 @@ mod tournament {
             tournament_id
         }   
 
-        fn join_tournament(ref self: ContractState, tournament_id: u128) -> u128 {
+        fn join_tournament(ref self: ContractState, tournament_id: u128) {
             let mut world = self.world(@"planetelo");
 
             let tournament: Tournament = world.read_model(tournament_id);
 
             assert!(tournament.round == 1, "Tournament not joinable");
+            let mut pool: Pool = world.read_model((tournament_id, 0));
 
+            let player = get_caller_address();
+            pool.players.push(player);
 
             world.write_model(pool);
-            pool_id
+            
+        }
+
+        fn advance_tournament(ref self: ContractState, tournament_id: u128) {
+            let mut world = self.world(@"planetelo");
+
+            let tournament: Tournament = world.read_model(tournament_id);
         }
 
 
