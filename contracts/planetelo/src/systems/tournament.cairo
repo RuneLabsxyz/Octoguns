@@ -15,6 +15,14 @@ pub struct TournamentConfig {
     entry_time: u64
 }
 
+#[derive(Copy, Drop, Serde, Introspect, PartialEq)]
+pub enum TournamentStatus {
+    Joining,
+    InRound,
+    RoundSettled,
+    Finished
+}   
+
 pub const GLOBAL_TOURNAMENT_ID: u128 = 0;
 
 #[derive(Drop, Serde)]
@@ -44,6 +52,7 @@ pub struct Tournament {
     round_start_time: u64,
     config: TournamentConfig,
     pairings: Array<Pairing>,
+    status: TournamentStatus
 }
 
 #[derive(Copy, Drop, Serde, Introspect)]
@@ -72,6 +81,7 @@ mod tournament {
     use super::{ITournamentActionsDispatcher, 
                 Tournament,
                 TournamentConfig, 
+                TournamentStatus,
                 Pool, 
                 GlobalTournament,
                 GlobalTournamentTrait, 
@@ -173,7 +183,27 @@ mod tournament {
         fn advance_tournament(ref self: ContractState, tournament_id: u128) {
             let mut world = self.world(@"planetelo");
 
-            let tournament: Tournament = world.read_model(tournament_id);
+            let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
+            let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(tournament.game)}, selector_from_tag!("planetelo-planetelo"));
+            
+            let dispatcher = IOneOnOneDispatcher{ contract_address };
+
+            let mut tournament: Tournament = world.read_model(tournament_id);
+
+            assert!(tournament.status == TournamentStatus::InRound, "Tournament not in round");
+
+            let mut new_pairings: Array<Pairing> = ArrayTrait::new();
+            let mut i = tournament.round
+            loop {
+                let pairing = tournament.pairings[i];
+                dispatcher.advance_match(pairing.game_id);
+                i+=1;
+            }
+
+            tournament.round += 1;
+
+            world.write_model(@tournament);
+
         }
 
 
