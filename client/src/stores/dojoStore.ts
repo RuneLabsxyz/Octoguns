@@ -1,39 +1,52 @@
-import { getDojoConfig } from '../dojoConfig';
-import { setup } from '$dojo/setup';
-import { writable } from 'svelte/store';
+import { dojoConfig } from '../dojoConfig'
+import { setup } from '$dojo/setup'
+import { get, writable } from 'svelte/store'
+import { Account } from 'starknet'
 
-export const dojoStore = writable();
-export const isSetup = writable(false);
+type SetupResult = Awaited<ReturnType<typeof setup>>
 
-let setupPromise: Promise<void> | undefined;
+export const dojoStore = writable<SetupResult>()
+export const accountStore = writable<Account | null>()
+export const isSetup = writable(false)
+export const settingUp = writable(false)
 
-async function setupInternal() {
+export async function initializeStore() {
+  if (get(settingUp)) {
+    console.warn('Concurrent setting up!')
+    return await getDojo()
+  }
+  settingUp.set(true)
+
   try {
-    console.log('Initializing store...');
-    const { dojoConfig, WORLD_ADDRESS } = getDojoConfig();
-    const result = await setup(WORLD_ADDRESS, dojoConfig);
-    console.log('Setup complete');
-    dojoStore.set(result);
-    isSetup.set(true);
+    console.log('Initializing store...')
+    const result = await setup('world_adress', dojoConfig)
+    console.log('setup complete')
+    dojoStore.set(result)
+
+    accountStore.set(result.burnerManager.getActiveAccount())
+    console.log('set stores')
+    isSetup.set(true)
+
+    dojoStore.subscribe((value) => {
+      console.log(value)
+    })
   } catch (error) {
-    console.error('Failed to initialize store:', error);
-    isSetup.set(false);
+    console.log('Failed to initialize store:', error)
+    isSetup.set(false)
+  } finally {
+    settingUp.set(false)
   }
 }
 
-export async function initializeStore(force = false) {
-  if (!setupPromise || force) {
-    setupPromise = setupInternal();
-  }
-  return setupPromise;
-}
-
-export function waitForInitialization(): Promise<void> {
-  return new Promise((ok, _) => {
-    isSetup.subscribe(val => {
+export async function getDojo(): Promise<SetupResult> {
+  return new Promise((ok, err) => {
+    dojoStore.subscribe((val) => {
       if (val) {
-        ok()
+        ok(val)
       }
+    })
+    isSetup.subscribe((val) => {
+      err('Failed to initalize store.')
     })
   })
 }
