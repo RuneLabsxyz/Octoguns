@@ -9,7 +9,7 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
-import manifest from "../../../contracts/planetelo/manifest_dev.json"
+import manifest from "../../../contracts/planetelo/manifest_sepolia.json"
 import { Contract } from 'starknet'
 import { planeteloStore } from '$stores/dojoStore'
 
@@ -19,8 +19,8 @@ export type SetupResult = Awaited<ReturnType<typeof setup>>
 export async function setup({ ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
-    rpcUrl: "http://localhost:5050",
-    toriiUrl: "http://localhost:8080",
+    rpcUrl: config.rpcUrl,
+    toriiUrl: config.toriiUrl,
     relayUrl: '',
     worldAddress: manifest.world.address ?? ''
   })

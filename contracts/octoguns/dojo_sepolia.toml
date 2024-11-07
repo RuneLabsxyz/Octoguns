@@ -17,8 +17,8 @@ default = "octoguns"
 mappings = { "planetelo" = ["planetelo", "PlaylistGlobal", "Playlist"]}
 
 [writers]
-octoguns = ["octoguns-actions", "octoguns-start", "octoguns-spawn", "octoguns-mapmaker"]
-planetelo = ["planetelo-queue"]
+"octoguns" = ["octoguns-actions", "octoguns-start", "octoguns-spawn", "octoguns-mapmaker"]
+"planetelo" = ["planetelo-planetelo"]
 
 
 [env]

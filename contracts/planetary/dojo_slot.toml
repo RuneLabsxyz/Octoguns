@@ -17,7 +17,7 @@ github = "https://github.com/underware-gg/pistols-64"
 default = "planetary"
 
 [writers]
-planetary = ["planetary-planetary_actions"]
+"planetary" = ["planetary-planetary_actions"]
 
 [env]
 rpc_url = "https://api.cartridge.gg/x/planetelo/katana"

@@ -19,7 +19,7 @@
   let network = data.network
 
   onMount(async () => {
-    env.set(network as "mainnet" | "slot");
+    env.set(network as "mainnet" | "slot" | "sepolia");
     await initStore();
   });
 </script>

@@ -19,7 +19,7 @@
   }
 
   async function connectAndGoto(config: string) {
-    env.set(config as "mainnet" | "slot");
+    env.set(config as "mainnet" | "slot" | "sepolia");
     await initStore();
     if (!$account) {
         await connect(config);
@@ -42,6 +42,7 @@
       <div>
           <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button>
           <Button on:click={() => connectAndGoto('slot')}>Play Slot</Button>
+          <Button on:click={() => connectAndGoto('sepolia')}>Play Sepolia</Button>
       </div>
     </div>
   </div>

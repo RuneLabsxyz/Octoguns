@@ -17,8 +17,8 @@ default = "octoguns"
 mappings = { "planetelo" = ["queue", "PlaylistGlobal", "Playlist"]}
 
 [writers]
-octoguns = ["octoguns-actions", "octoguns-start", "octoguns-spawn", "octoguns-mapmaker"]
-planetelo = ["planetelo-queue"]
+"octoguns" = ["octoguns-actions", "octoguns-start", "octoguns-spawn", "octoguns-mapmaker"]
+"planetelo" = ["planetelo-planetelo"]
 
 [env]
 rpc_url = "https://api.cartridge.gg/x/planetelo/katana"

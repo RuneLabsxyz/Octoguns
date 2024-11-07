@@ -9,8 +9,8 @@ export function getDojoConfig() {
 
   
   const dojoConfig = createDojoConfig({
-  //  rpcUrl: 'https://api.cartridge.gg/x/planetelo/katana',
-  //  toriiUrl: 'https://api.cartridge.gg/x/planetelo-octoguns/torii',
+    rpcUrl: 'https://api.cartridge.gg/x/starknet/sepolia',
+    toriiUrl: 'https://api.cartridge.gg/x/planetelo/torii',
     manifest,
   });
 
