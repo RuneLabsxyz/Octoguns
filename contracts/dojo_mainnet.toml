@@ -19,4 +19,4 @@ default = "octoguns"
 rpc_url = "https://api.cartridge.gg/x/starknet/mainnet"  
 # account_address = "" # env: DOJO_ACCOUNT_ADDRESS
 # private_key = ""     # env: DOJO_PRIVATE_KEY
-world_address = "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8"
+world_address = "0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2"
