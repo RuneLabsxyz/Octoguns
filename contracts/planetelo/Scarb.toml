@@ -17,3 +17,6 @@ planetary_interface = { path = "../planetary_interface" }
 build-external-contracts = [
   "dojo::world::world_contract::world"
 ]
+
+[profile.dev]
+[profile.slot]

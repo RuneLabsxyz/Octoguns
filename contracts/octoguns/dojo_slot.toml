@@ -14,9 +14,16 @@ telegram = "https://t.me/dojoengine"
 
 [namespace]
 default = "octoguns"
+mappings = { "planetelo" = ["queue", "PlaylistGlobal", "Playlist"]}
+
+[writers]
+octoguns = ["octoguns-actions", "octoguns-start", "octoguns-spawn", "octoguns-mapmaker"]
+planetelo = ["planetelo-queue"]
 
 [env]
-rpc_url = "https://api.cartridge.gg/x/octoguns-alpha2/katana"
-account_address = "0x7e0bf3a560c929ce1b1777635fc5fd831f0466e2f24417474888c722cea6d4a"
-private_key = "0x3244959d128aabe33cc9c986519e2b1ec5cc6411f0436c374837ec3897a7203"
-world_address = "0x6715946eb3900f0be7dc465125c194280fdca727bf3071972dcda5ad9a612c8"
+rpc_url = "https://api.cartridge.gg/x/planetelo/katana"
+account_address = "0x1e29ab4fd68681f52b53983e35b1726eea96db43f4bd48b42637f2ecf496f4e"
+private_key = "0x560b45910f203be0247b1de3135120f1eca91bcfe335e03be6f623f0de924b0"
+#world_address = "0x012e4037b9904e439251127d689aed16e4494c3e82a12982ed3183d7bf29350b"
+
+[profile.slot]

@@ -1,9 +1,9 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x303f3cee39508b72f6e0c23ca82d9a5cabdb288eb9133dbfc0474b398b19556",
-    "seed": "planetelo",
-    "name": "Planetelo",
+    "address": "0x12e4037b9904e439251127d689aed16e4494c3e82a12982ed3183d7bf29350b",
+    "seed": "planetary",
+    "name": "Planetary",
     "abi": [
       {
         "type": "impl",
@@ -1121,12 +1121,12 @@
   },
   "contracts": [
     {
-      "address": "0x7aa1c2ac28702f775cd111802aacb50bbc906571fc1975ebf14067362a8a989",
-      "class_hash": "0x6cf871116ccb1ef433b71f86eca6c16cf78a02970bf3e878f48c448ff67c7f9",
+      "address": "0x2c7b710d2d8e44748a9bc6f73fddeff85f997587fbbf42dc8307ecfefe29307",
+      "class_hash": "0x2d485868d70c61e49215212cb18d998de3c30e9cdbaad40a63c47b5c18c65d6",
       "abi": [
         {
           "type": "impl",
-          "name": "queue__ContractImpl",
+          "name": "planetary_actions__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
         },
         {
@@ -1166,159 +1166,53 @@
         },
         {
           "type": "impl",
-          "name": "QueueImpl",
-          "interface_name": "planetelo::systems::queue::IQueue"
-        },
-        {
-          "type": "enum",
-          "name": "planetelo::models::QueueStatus",
-          "variants": [
-            {
-              "name": "None",
-              "type": "()"
-            },
-            {
-              "name": "Queued",
-              "type": "()"
-            },
-            {
-              "name": "InGame",
-              "type": "core::integer::u128"
-            }
-          ]
+          "name": "ActionsImpl",
+          "interface_name": "planetary::systems::actions::IPlanetaryActions"
         },
         {
           "type": "interface",
-          "name": "planetelo::systems::queue::IQueue",
+          "name": "planetary::systems::actions::IPlanetaryActions",
           "items": [
             {
               "type": "function",
-              "name": "queue",
+              "name": "register",
               "inputs": [
                 {
-                  "name": "game",
+                  "name": "name",
                   "type": "core::felt252"
                 },
                 {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "dequeue",
-              "inputs": [
-                {
-                  "name": "game",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "matchmake",
-              "inputs": [
-                {
-                  "name": "game",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "settle",
-              "inputs": [
-                {
-                  "name": "game",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "game_id",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "get_elo",
-              "inputs": [
-                {
-                  "name": "address",
+                  "name": "world_address",
                   "type": "core::starknet::contract_address::ContractAddress"
-                },
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "unregister",
+              "inputs": [
                 {
-                  "name": "game",
+                  "name": "name",
                   "type": "core::felt252"
-                },
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "get_world_address",
+              "inputs": [
                 {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
+                  "name": "name",
+                  "type": "core::felt252"
                 }
               ],
               "outputs": [
                 {
-                  "type": "core::integer::u64"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "get_queue_length",
-              "inputs": [
-                {
-                  "name": "game",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u32"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "get_status",
-              "inputs": [
-                {
-                  "name": "address",
                   "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "game",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "playlist",
-                  "type": "core::integer::u128"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "planetelo::models::QueueStatus"
                 }
               ],
               "state_mutability": "view"
@@ -1424,7 +1318,7 @@
         },
         {
           "type": "event",
-          "name": "planetelo::systems::queue::queue::Event",
+          "name": "planetary::systems::actions::planetary_actions::Event",
           "kind": "enum",
           "variants": [
             {
@@ -1441,40 +1335,200 @@
         }
       ],
       "init_calldata": [],
-      "tag": "planetelo-queue",
+      "tag": "planetary-planetary_actions",
+      "systems": []
+    },
+    {
+      "address": "0x5fc03420be836544de69529eb637a18a55507a08af4d9a1a26e0222ad425dda",
+      "class_hash": "0xfe8cc1f027cae28a03736eb673ca81ef79a8cd880fc5cf526b0ceefbb43eb4",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "salute__ContractImpl",
+          "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "struct",
+          "name": "core::byte_array::ByteArray",
+          "members": [
+            {
+              "name": "data",
+              "type": "core::array::Array::<core::bytes_31::bytes31>"
+            },
+            {
+              "name": "pending_word",
+              "type": "core::felt252"
+            },
+            {
+              "name": "pending_word_len",
+              "type": "core::integer::u32"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": [
+            {
+              "type": "function",
+              "name": "dojo_name",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "dojo_init",
+          "inputs": [],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "type": "impl",
+          "name": "IVulcanImpl",
+          "interface_name": "planetary_interface::systems::vulcan::IVulcan"
+        },
+        {
+          "type": "interface",
+          "name": "planetary_interface::systems::vulcan::IVulcan",
+          "items": [
+            {
+              "type": "function",
+              "name": "live_long",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::felt252"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "WorldProviderImpl",
+          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
+        },
+        {
+          "type": "struct",
+          "name": "dojo::world::iworld::IWorldDispatcher",
+          "members": [
+            {
+              "name": "contract_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::world_provider::IWorldProvider",
+          "items": [
+            {
+              "type": "function",
+              "name": "world_dispatcher",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "dojo::world::iworld::IWorldDispatcher"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "UpgradeableImpl",
+          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::upgradeable::IUpgradeable",
+          "items": [
+            {
+              "type": "function",
+              "name": "upgrade",
+              "inputs": [
+                {
+                  "name": "new_class_hash",
+                  "type": "core::starknet::class_hash::ClassHash"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "constructor",
+          "name": "constructor",
+          "inputs": []
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "class_hash",
+              "type": "core::starknet::class_hash::ClassHash",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Upgraded",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "enum",
+          "variants": []
+        },
+        {
+          "type": "event",
+          "name": "planetary_interface::systems::vulcan::salute::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "UpgradeableEvent",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+              "kind": "nested"
+            },
+            {
+              "name": "WorldProviderEvent",
+              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+              "kind": "nested"
+            }
+          ]
+        }
+      ],
+      "init_calldata": [],
+      "tag": "planetary-salute",
       "systems": []
     }
   ],
   "models": [
     {
       "members": [],
-      "class_hash": "0x2b80b08ba832f3f4977bfdb4fc79c79e2a40c272c6b23b5f8d03fa5491f5ddb",
-      "tag": "Elo"
-    },
-    {
-      "members": [],
-      "class_hash": "0x72addb0bbcd04d2137b1459ab713a08651084c1b64614a6fe02b29bce2f84a2",
-      "tag": "Game"
-    },
-    {
-      "members": [],
-      "class_hash": "0x7d950a261d8e32a4507cd9d9d9df0c0e31dc429e889258792dc15099fdc7fb8",
-      "tag": "Player"
-    },
-    {
-      "members": [],
-      "class_hash": "0x5d7faf39c0f395610ebe607e27dbcdf3c637cccd89ebe02450cb286acb4060d",
-      "tag": "PlayerStatus"
-    },
-    {
-      "members": [],
-      "class_hash": "0x31bc397ead2fcaecdf5ae4d71d5acfd59e915acc372747570b9d2abb473b8fa",
-      "tag": "Queue"
-    },
-    {
-      "members": [],
-      "class_hash": "0x205d94bf9975d3c46a078cc5672e20326a47934a0c25a2ea0711e44b63c9ff6",
-      "tag": "QueueIndex"
+      "class_hash": "0x4c23f4968714694d8553b36801cf364bfa7988f5cc3f7d90dd27f156249b785",
+      "tag": "Planet"
     }
   ],
   "events": []

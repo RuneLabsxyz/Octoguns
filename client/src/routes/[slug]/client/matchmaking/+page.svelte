@@ -11,6 +11,7 @@
     import { env } from '$stores/network';
     import { planeteloStore } from '$stores/dojoStore';
     import { get } from 'svelte/store';
+    import { AccountInterface, type Call } from 'starknet';
   
     let playerEntity: Entity
     let mapCount: number = 0
@@ -31,14 +32,25 @@
     async function getStatus() {
       let planetelo: any = get(planeteloStore);
       console.log(planetelo)
-      console.log(await planetelo.dojo_name())
+      planetelo.connect($account!)
+      console.log(await planetelo.get_status($account!.address, 0x6f63746f67756e73, 0x0))
     }
 
     async function queue() {
       let planetelo: any = get(planeteloStore);
-      console.log(await planetelo.invoke("queue", [0x6f63746f67756e73, 0x0]))
-    }
+      planetelo.connect($account!)
+      console.log($account);
+      let signer: AccountInterface = $account!;
+      let res = await signer.execute([{
+        contractAddress: planetelo.address,
+        entrypoint: "queue",
+        calldata: ['0x6f63746f67756e73', '0x0']
+      }])
+      console.log(res)
 
+      //await $account?.execute(call)
+    }
+ 
     async function createMap() {
       goto(`/${$env}/client/mapmaker`)
     }
@@ -48,7 +60,7 @@
   <div class={cn('flex flex-col h-full')}>
     <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
       <Button on:click={() => {
-
+        queue()
       }}>Queue</Button>
     </div>
 

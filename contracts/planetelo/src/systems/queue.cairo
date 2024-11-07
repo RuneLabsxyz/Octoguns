@@ -1,6 +1,5 @@
 // define the interface
-use planetary_interface::interfaces::one_on_one::{Status};
-
+use planetelo::models::QueueStatus;
 #[starknet::interface]
 trait IQueue<T> {
     fn queue(ref self: T, game: felt252, playlist: u128);
@@ -9,7 +8,7 @@ trait IQueue<T> {
     fn settle(ref self: T, game: felt252, game_id: u128);
     fn get_elo(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
     fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u32;
-    fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> Status;
+    fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> QueueStatus;
 }
 
 // dojo decorator
@@ -357,7 +356,7 @@ mod queue {
             queue.length
         }
 
-        fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> Status {
+        fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> QueueStatus {
             let world = self.world(@"planetelo");
             let player: PlayerStatus = world.read_model((address, game, playlist));
             player.status
