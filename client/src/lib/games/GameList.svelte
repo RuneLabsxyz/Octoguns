@@ -1,12 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
-  export let availableSessions
+  let { availableSessions } = $props();
 
   const dispatch = createEventDispatcher()
 
-  $: pendingSessions = availableSessions
-  let showAll = false
+  let pendingSessions = $derived(availableSessions)
+  let showAll = $state(false)
 
   function onClick(session: any) {
     dispatch('select', session)
@@ -16,9 +16,9 @@
     showAll = !showAll
   }
 
-  $: displayedSessions = showAll 
+  let displayedSessions = $derived(showAll 
     ? pendingSessions.slice().reverse()
-    : pendingSessions.slice(-9).reverse()
+    : pendingSessions.slice(-9).reverse())
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-5 gap-3">
@@ -35,7 +35,7 @@
         </p>
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
-          on:click={() => onClick(session)}
+          onclick={() => onClick(session)}
         >
           Join
         </button>
@@ -48,7 +48,7 @@
   <div class="flex justify-center mt-4">
     <button
       class="border-4 rounded-lg border-black py-2 px-4 hover:bg-gray-300"
-      on:click={toggleShowAll}
+      onclick={toggleShowAll}
     >
       {showAll ? 'Show Less' : 'Show All Games'}
     </button>

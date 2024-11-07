@@ -1,14 +1,20 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { selectedMap } from '$stores/clientStores';
 
-  export let map: {
+  interface Props {
+    map: {
     map_id: number;
     grid1: number;
     grid2: number;
     grid3: number;
   };
+  }
 
-  let coordsArray: { x: number; y: number }[] = [];
+  let { map }: Props = $props();
+
+  let coordsArray: { x: number; y: number }[] = $state([]);
 
   /**
    * Extracts active indices from three u256 bitmaps.
@@ -42,30 +48,32 @@
     return activeIndices;
   }
 
-  $: if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
-    const grids = [map.grid1, map.grid2, map.grid3];
-    coordsArray = [];
-    let decimalGrids: bigint[] = [];
+  run(() => {
+    if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
+      const grids = [map.grid1, map.grid2, map.grid3];
+      coordsArray = [];
+      let decimalGrids: bigint[] = [];
 
-    grids.forEach((grid) => {
-      // Convert hex to decimal
-      let decimal = BigInt(`0x${grid.toString(16)}`).toString(10);
-      decimalGrids.push(BigInt(decimal));
-    });
-    let activeIndices = extractActiveIndices(decimalGrids);
-    coordsArray = activeIndices.map((index) => {
-      const x = index % 25;
-      const y = Math.floor(index / 25);
-      return { x, y };
-    });
-  }
+      grids.forEach((grid) => {
+        // Convert hex to decimal
+        let decimal = BigInt(`0x${grid.toString(16)}`).toString(10);
+        decimalGrids.push(BigInt(decimal));
+      });
+      let activeIndices = extractActiveIndices(decimalGrids);
+      coordsArray = activeIndices.map((index) => {
+        const x = index % 25;
+        const y = Math.floor(index / 25);
+        return { x, y };
+      });
+    }
+  });
 
   function selectMap() {
     selectedMap.set(map.map_id);
   }
 </script>
 
-<button class="minimap" on:click={selectMap} title={`Select Map ID: ${map.map_id}`}>
+<button class="minimap" onclick={selectMap} title={`Select Map ID: ${map.map_id}`}>
   {#each coordsArray as coord}
     <div
       class="block"

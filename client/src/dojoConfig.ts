@@ -1,19 +1,12 @@
-import { get } from 'svelte/store';
-import manifest from '$manifests/deployment/manifest.json';
-import { createDojoConfig } from '@dojoengine/core';
-import { CONFIG } from '$stores/network'; 
+import { get } from 'svelte/store'
+import manifest from '$manifests/deployment/manifest.json'
+import { createDojoConfig } from '@dojoengine/core'
+import { CONFIG } from '$stores/network'
 
-export function getDojoConfig() {
-  const configValue = get(CONFIG);
-  console.log(configValue);
+export const dojoConfig = createDojoConfig({
+  toriiUrl: 'http://127.0.0.1/8080',
+  rpcUrl: 'http://127.0.0.1/5050',
+  manifest,
+})
 
-  const dojoConfig = createDojoConfig({
-    toriiUrl: configValue.PUBLIC_TORII_URL,
-    rpcUrl: configValue.PUBLIC_RPC_URL,
-    manifest,
-  });
-
-  const WORLD_ADDRESS = configValue.PUBLIC_WORLD_ADDRESS;
-
-  return { dojoConfig, WORLD_ADDRESS };
-}
+export type Config = typeof dojoConfig

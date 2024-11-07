@@ -3,7 +3,7 @@
     import * as THREE from 'three'
   
     const textureLoader = new THREE.TextureLoader()
-    const wallTexture = textureLoader.load('/sprites/wall.png')
+    const wallTexture = $state(textureLoader.load('/sprites/wall.png'))
   
     wallTexture.wrapS = THREE.RepeatWrapping
     wallTexture.wrapT = THREE.RepeatWrapping

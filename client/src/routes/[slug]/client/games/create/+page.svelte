@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
@@ -13,44 +15,17 @@
   import { env } from '$stores/network';
 
   let loadingToGame = false
-  let playerEntity: Entity
-  let localSelectedMap: number | null = null
-  let mapCount: number = 0
+  let playerEntity: Entity = $state()
+  let localSelectedMap: number | null = $state(null)
+  let mapCount: number = $state(0)
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
 
-  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
 
-  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
 
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
-  $: global = componentValueStore(clientComponents.Global, globalentity)
-  let maps: any[] = []
+  let maps: any[] = $state([])
 
-  $: if ($global) {
-    mapCount = $global.map_count
-    maps = []
-    for (let i = 0; i < mapCount; i++) {
-      const map = getComponentValue(
-        clientComponents.Map,
-        torii.poseidonHash([BigInt(i).toString()])
-      )
-      maps.push(map)
-    }
-  }
-  $: console.log('global', $global)
 
-  $: {
-    localSelectedMap = $selectedMap
-  }
 
-  $: if ($player) {
-    let lastPlayerGameValue =
-      $player.games.length > 0
-        ? $player.games[$player.games.length - 1].value
-        : null
-    startSession(lastPlayerGameValue)
-  }
 
   function startSession(lastPlayerGameValue: number) {
     if (loadingToGame) {
@@ -64,9 +39,9 @@
     console.log('selected map', map_id)
   }
 
-  let toastMessage = '';
-  let toastStatus = 'loading';
-  let showToast = false;
+  let toastMessage = $state('');
+  let toastStatus = $state('loading');
+  let showToast = $state(false);
 
   async function createGame() {
     if ($account) {
@@ -105,6 +80,41 @@
   function disconnect() {
     clearAccountStorage();
   }
+  let { clientComponents, torii, client } = $derived($dojoStore as any)
+  let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
+  run(() => {
+    if ($account) playerEntity = torii.poseidonHash([$account?.address])
+  });
+  let player = $derived(componentValueStore(clientComponents.Player, playerEntity))
+  let global = $derived(componentValueStore(clientComponents.Global, globalentity))
+  run(() => {
+    if ($global) {
+      mapCount = $global.map_count
+      maps = []
+      for (let i = 0; i < mapCount; i++) {
+        const map = getComponentValue(
+          clientComponents.Map,
+          torii.poseidonHash([BigInt(i).toString()])
+        )
+        maps.push(map)
+      }
+    }
+  });
+  run(() => {
+    console.log('global', $global)
+  });
+  run(() => {
+    localSelectedMap = $selectedMap
+  });
+  run(() => {
+    if ($player) {
+      let lastPlayerGameValue =
+        $player.games.length > 0
+          ? $player.games[$player.games.length - 1].value
+          : null
+      startSession(lastPlayerGameValue)
+    }
+  });
 </script>
 
 <div class={cn('flex flex-col h-full')}>

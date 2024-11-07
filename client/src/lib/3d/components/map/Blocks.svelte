@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { T } from '@threlte/core';
   import { mapObjects } from '$stores/gameStores';
 
-  let coordsArray: { x: number; y: number }[] = [];
-  let wallIndices: number[] = [];
+  let coordsArray: { x: number; y: number }[] = $state([]);
+  let wallIndices: number[] = $state([]);
   
   /**
    * Extracts active indices from three u256 bitmaps.
@@ -37,7 +39,7 @@
     return activeIndices;
   }
 
-  $: {
+  run(() => {
     if ($mapObjects) {
       let { grid1, grid2, grid3 } = $mapObjects;
 
@@ -47,15 +49,15 @@
 
       wallIndices = extractActiveIndices([grid1, grid2, grid3]);
     }
-  }
+  });
 
-  $: {
+  run(() => {
     coordsArray = wallIndices.map(index => {
       let x = (index % 25) * 4 + 2;
       let y = Math.floor(index / 25) * 4 + 2;
       return { x, y };
     });
-  }
+  });
 
 
   const vertexShader = `

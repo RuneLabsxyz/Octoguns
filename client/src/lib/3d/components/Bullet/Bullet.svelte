@@ -1,29 +1,40 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { T } from '@threlte/core'
   import { onMount } from 'svelte'
   import type { BulletCoords } from '$stores/coordsStores'
   import type { BufferGeometry, Points } from 'three'
   import { Color, Vector3 } from 'three'
 
-  export let bullet: BulletCoords
-  export let initialPosition: BulletCoords | undefined
-  export let trailSpacing: number = 0.01
-  export let compressionFactor: number = 1
+  interface Props {
+    bullet: BulletCoords;
+    initialPosition: BulletCoords | undefined;
+    trailSpacing?: number;
+    compressionFactor?: number;
+  }
 
-  let geometry: BufferGeometry | undefined
-  let pointsRef: Points | undefined
+  let {
+    bullet,
+    initialPosition,
+    trailSpacing = 0.01,
+    compressionFactor = 1
+  }: Props = $props();
 
-  $: x = bullet.coords.x
-  $: y = bullet.coords.y
+  let geometry: BufferGeometry | undefined = $state()
+  let pointsRef: Points | undefined = $state()
 
-  $: initialX = initialPosition?.coords.x ?? x
-  $: initialY = initialPosition?.coords.y ?? y
+  let x = $derived(bullet.coords.x)
+  let y = $derived(bullet.coords.y)
 
-  $: length = Math.sqrt((x - initialX) ** 2 + (y - initialY) ** 2)
-  $: count = Math.floor(length / trailSpacing)
+  let initialX = $derived(initialPosition?.coords.x ?? x)
+  let initialY = $derived(initialPosition?.coords.y ?? y)
+
+  let length = $derived(Math.sqrt((x - initialX) ** 2 + (y - initialY) ** 2))
+  let count = $derived(Math.floor(length / trailSpacing))
 
   // Calculate direction vector
-  $: direction = new Vector3(x - initialX, 0, y - initialY).normalize()
+  let direction = $derived(new Vector3(x - initialX, 0, y - initialY).normalize())
 
   // Function to generate random red shades
   function getRandomRedShade() {
@@ -33,7 +44,7 @@
     return new Color(red / 255, green / 255, blue / 255)
   }
 
-  $: positions = (() => {
+  let positions = $derived((() => {
     const posArray = new Float32Array(count * 3)
     const colorArray = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
@@ -57,23 +68,25 @@
       colorArray[i * 3 + 2] = color.b
     }
     return { positions: posArray, colors: colorArray }
-  })()
+  })())
 
-  $: if (geometry && positions) {
-    geometry.attributes.position.needsUpdate = true
-    geometry.computeBoundingSphere()
+  run(() => {
+    if (geometry && positions) {
+      geometry.attributes.position.needsUpdate = true
+      geometry.computeBoundingSphere()
 
-    if (geometry.boundingSphere) {
-      const radius =
-        Math.max(Math.abs(x - initialX), Math.abs(y - initialY), 1) * 2
-      geometry.boundingSphere.radius = radius
-      geometry.boundingSphere.center.set(
-        (x + initialX) / 2,
-        1,
-        (y + initialY) / 2
-      )
+      if (geometry.boundingSphere) {
+        const radius =
+          Math.max(Math.abs(x - initialX), Math.abs(y - initialY), 1) * 2
+        geometry.boundingSphere.radius = radius
+        geometry.boundingSphere.center.set(
+          (x + initialX) / 2,
+          1,
+          (y + initialY) / 2
+        )
+      }
     }
-  }
+  });
 
   onMount(() => {
     if (pointsRef) {

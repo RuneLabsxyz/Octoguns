@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { T, useThrelte } from '@threlte/core'
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
@@ -38,12 +40,14 @@
   import { Inspector } from 'three-inspect'
 
   let { renderer, scene } = useThrelte()
-  let cameras: PerspectiveCamera[] = []
+  let cameras: PerspectiveCamera[] = $state([])
   let numCameras = 1
-  let birdViewCamera: any
+  let birdViewCamera: any = $state()
 
-  let characterId: number = 0
-  $: characterId = $playerCharacterId
+  let characterId: number = $state(0)
+  run(() => {
+    characterId = $playerCharacterId
+  });
 
   let hasShotInCurrentRecording = writable(false)
 
@@ -103,9 +107,11 @@
     }
   }
 
-  $: if ($frameCounter) {
-    simulate()
-  }
+  run(() => {
+    if ($frameCounter) {
+      simulate()
+    }
+  });
 
   onMount(() => {
     addEventListeners()
@@ -120,9 +126,11 @@
     }
   })
 
-  $: if ($recordingMode) {
-    hasShotInCurrentRecording.set(false)
-  }
+  run(() => {
+    if ($recordingMode) {
+      hasShotInCurrentRecording.set(false)
+    }
+  });
 
   onDestroy(() => {
     removeEventListeners()

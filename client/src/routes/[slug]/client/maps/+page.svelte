@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
     import { dojoStore } from '$stores/dojoStore'
     import { componentValueStore } from '$dojo/componentValueStore'
     import { selectedMap } from '$stores/clientStores'
@@ -11,29 +13,33 @@
     import { account  } from '$stores/account'
     import { env } from '$stores/network';
   
-    let playerEntity: Entity
-    let mapCount: number = 0
+    let playerEntity: Entity = $state()
+    let mapCount: number = $state(0)
   
-    $: ({ clientComponents, torii } = $dojoStore as any)
+    let { clientComponents, torii } = $derived($dojoStore as any)
   
-    $: globalentity = torii.poseidonHash([BigInt(0).toString()])
+    let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
   
-    $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
+    run(() => {
+    if ($account) playerEntity = torii.poseidonHash([$account?.address])
+  });
   
-    $: global = componentValueStore(clientComponents.Global, globalentity)
-    let maps: any[] = []
+    let global = $derived(componentValueStore(clientComponents.Global, globalentity))
+    let maps: any[] = $state([])
   
-    $: if ($global) {
-      mapCount = $global.map_count
-      maps = []
-      for (let i = 0; i < mapCount; i++) {
-        const map = getComponentValue(
-          clientComponents.Map,
-          torii.poseidonHash([BigInt(i).toString()])
-        )
-        maps.push(map)
+    run(() => {
+    if ($global) {
+        mapCount = $global.map_count
+        maps = []
+        for (let i = 0; i < mapCount; i++) {
+          const map = getComponentValue(
+            clientComponents.Map,
+            torii.poseidonHash([BigInt(i).toString()])
+          )
+          maps.push(map)
+        }
       }
-    }
+  });
 
   
     async function createMap() {

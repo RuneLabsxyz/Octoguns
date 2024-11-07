@@ -2,11 +2,15 @@
   import { fade } from 'svelte/transition';
   import { onMount } from 'svelte';
 
-  export let message = '';
-  export let status = 'loading'; // 'loading', 'success', or 'error'
-  export let duration = 3000; // Duration in milliseconds
+  interface Props {
+    message?: string;
+    status?: string; // 'loading', 'success', or 'error'
+    duration?: number; // Duration in milliseconds
+  }
 
-  let visible = true;
+  let { message = '', status = 'loading', duration = 3000 }: Props = $props();
+
+  let visible = $state(true);
 
   onMount(() => {
     if (status !== 'loading') {

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
@@ -16,47 +18,53 @@
     isFinished: boolean;
   };
 
-  let playerEntity: Entity
-  let sessions: Session[] = []
+  let playerEntity: Entity = $state()
+  let sessions: Session[] = $state([])
 
-  $: ({ clientComponents, torii } = $dojoStore as any)
-  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
-  $: console.log('sessions', sessions)
+  let { clientComponents, torii } = $derived($dojoStore as any)
+  run(() => {
+    if ($account) playerEntity = torii.poseidonHash([$account?.address])
+  });
+  let player = $derived(componentValueStore(clientComponents.Player, playerEntity))
+  run(() => {
+    console.log('sessions', sessions)
+  });
 
-  $: if ($player && $account?.address) {
-    const currentSessions = $player.games.map((game: { value: any }) => ({ value: game.value }))
-    sessions = []
+  run(() => {
+    if ($player && $account?.address) {
+      const currentSessions = $player.games.map((game: { value: any }) => ({ value: game.value }))
+      sessions = []
 
-    for (const session of currentSessions) {
-      const sessionEntity = torii.poseidonHash([BigInt(session.value).toString()])
-      if (sessionEntity) {
-        const sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity)
-        const sessionMetaDataStore = componentValueStore(clientComponents.SessionMeta, sessionEntity)
-        
-        sessionDataStore.subscribe((data) => {
-          if (data) {
-            const newSession: Session = {
-              value: session.value,
-              isYourTurn: false,
-              isStarted: false,
-              isFinished: data.state === 3
-            }
-            sessionMetaDataStore.subscribe((metaData) => {
-              if (metaData) {
-                newSession.isStarted = metaData.p1_character !== 0
-                const currentPlayerId = areAddressesEqual(data.player1, $account.address) ? 1 : 2
-                newSession.isYourTurn = 
-                  (currentPlayerId === 1 && metaData.turn_count % 2 === 0) ||
-                  (currentPlayerId === 2 && metaData.turn_count % 2 === 1)
+      for (const session of currentSessions) {
+        const sessionEntity = torii.poseidonHash([BigInt(session.value).toString()])
+        if (sessionEntity) {
+          const sessionDataStore = componentValueStore(clientComponents.Session, sessionEntity)
+          const sessionMetaDataStore = componentValueStore(clientComponents.SessionMeta, sessionEntity)
+          
+          sessionDataStore.subscribe((data) => {
+            if (data) {
+              const newSession: Session = {
+                value: session.value,
+                isYourTurn: false,
+                isStarted: false,
+                isFinished: data.state === 3
               }
-            })
-            sessions = [...sessions, newSession]
-          }
-        })
+              sessionMetaDataStore.subscribe((metaData) => {
+                if (metaData) {
+                  newSession.isStarted = metaData.p1_character !== 0
+                  const currentPlayerId = areAddressesEqual(data.player1, $account.address) ? 1 : 2
+                  newSession.isYourTurn = 
+                    (currentPlayerId === 1 && metaData.turn_count % 2 === 0) ||
+                    (currentPlayerId === 2 && metaData.turn_count % 2 === 1)
+                }
+              })
+              sessions = [...sessions, newSession]
+            }
+          })
+        }
       }
     }
-  }
+  });
 </script>
 
 <div class={cn('flex flex-col h-full')}>

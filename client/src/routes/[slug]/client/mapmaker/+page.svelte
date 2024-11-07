@@ -13,9 +13,9 @@
 
   let { client } = $dojoStore as any;
 
-  let toastMessage = '';
-  let toastStatus = 'loading';
-  let showToast = false;
+  let toastMessage = $state('');
+  let toastStatus = $state('loading');
+  let showToast = $state(false);
 
   onMount(() => {
     grid.set([]);
@@ -130,13 +130,13 @@
 <div class="controls">
   <button
     class="ml-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition"
-    on:click={resetGrid}
+    onclick={resetGrid}
   >
     Reset Grid
   </button>
   <button
     class="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-    on:click={submit}
+    onclick={submit}
   >
     Submit
   </button>
@@ -147,11 +147,10 @@
     <button
       type="button"
       class="cell {isActive(index, $grid) ? 'active' : ''}"
-      on:click={() => toggleCell(Math.floor(index / gridSize), index % gridSize)}
-      on:keydown={(e) =>
-        e.key === 'Enter' && toggleCell(Math.floor(index / gridSize), index % gridSize)
-      }
-    />
+      onclick={() => toggleCell(Math.floor(index / gridSize), index % gridSize)}
+      onkeydown={(e) =>
+        e.key === 'Enter' && toggleCell(Math.floor(index / gridSize), index % gridSize)}
+></button>
   {/each}
 </div>
 

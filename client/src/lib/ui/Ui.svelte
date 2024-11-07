@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import StartGame from './StartGame.svelte'
   import YouWin from './YouWin.svelte'
   import { birdView } from '$stores/cameraStores'
@@ -29,23 +31,29 @@
   import Button from './Button.svelte'
   import { Eraser, Repeat, Send } from 'lucide-svelte'
   import GameFinished from './ingame/GameFinished.svelte'
-  export let moveHandler: any
-
-  let isRecorded: boolean
-  let justRecorded: boolean
-  let hasReset: boolean
-
-  $: if (isMoveRecorded) {
-    if (isRecorded == true && $isMoveRecorded == false && !hasReset) {
-      // This is just sad, but I don't see a way to make it better
-      justRecorded = true
-      setTimeout(() => {
-        justRecorded = false
-      }, 5000)
-    }
-    hasReset = false
-    isRecorded = $isMoveRecorded
+  interface Props {
+    moveHandler: any;
   }
+
+  let { moveHandler }: Props = $props();
+
+  let isRecorded: boolean = $state()
+  let justRecorded: boolean = $state()
+  let hasReset: boolean = $state()
+
+  run(() => {
+    if (isMoveRecorded) {
+      if (isRecorded == true && $isMoveRecorded == false && !hasReset) {
+        // This is just sad, but I don't see a way to make it better
+        justRecorded = true
+        setTimeout(() => {
+          justRecorded = false
+        }, 5000)
+      }
+      hasReset = false
+      isRecorded = $isMoveRecorded
+    }
+  });
 
   function setRecordingMode(e: Event) {
     recordingMode.set(!$recordingMode)

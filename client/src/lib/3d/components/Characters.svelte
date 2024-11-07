@@ -6,11 +6,11 @@
   } from '$stores/coordsStores'
   import { T } from '@threlte/core'
 
-  let player_coords: CoordsStore
-  let enemy_coords: CoordsStore
+  let player_coords: CoordsStore = $derived($playerCharacterCoords)
+  let enemy_coords: CoordsStore = $derived($enemyCharacterCoords)
 
-  $: player_coords = $playerCharacterCoords
-  $: enemy_coords = $enemyCharacterCoords
+  
+  
 </script>
 
 <T.Group>

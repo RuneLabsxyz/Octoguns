@@ -8,12 +8,16 @@
   import { useThrelte } from '@threlte/core'
   import Hand from '../models/hand.svelte'
 
-  $: playerCoords = $playerCharacterCoords[$playerCharacterId]
+  let playerCoords = $derived($playerCharacterCoords[$playerCharacterId])
 
   let {renderer} = useThrelte()
 
-  export let cameras: PerspectiveCamera[] = []
-  export let numCameras: number = 1
+  interface Props {
+    cameras?: PerspectiveCamera[];
+    numCameras?: number;
+  }
+
+  let { cameras = $bindable([]), numCameras = 1 }: Props = $props();
 </script>
 
 {#if !$birdView}

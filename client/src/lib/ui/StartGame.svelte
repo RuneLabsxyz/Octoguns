@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { gameState, sessionId, currentPlayerId } from '$stores/gameStores'
   import { dojoStore } from '$stores/dojoStore'
   import { onMount } from 'svelte'
@@ -6,7 +8,7 @@
   import SettingUp from './ingame/SettingUp.svelte'
   import { account } from '$stores/account'
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
+  let { clientComponents, torii, client } = $derived($dojoStore as any)
 
 
 
@@ -17,10 +19,12 @@
     }
   }
 
-  $: if ($gameState === 1 && $currentPlayerId === 2 && $account) {
-    console.log('Spawning characters')
-    spawn()
-  }
+  run(() => {
+    if ($gameState === 1 && $currentPlayerId === 2 && $account) {
+      console.log('Spawning characters')
+      spawn()
+    }
+  });
 
 </script>
 

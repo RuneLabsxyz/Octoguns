@@ -13,7 +13,7 @@
     return '#4caf50'
   }
 
-  $: barWidth = Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100)
+  let barWidth = $derived(Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100))
 </script>
 
 <div class="step-bar-container">

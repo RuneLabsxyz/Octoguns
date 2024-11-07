@@ -6,9 +6,14 @@
   import { controllerMainnet, controllerSlot } from '$lib/controller'
   import { username } from '$stores/account'
   import { env } from '$stores/network';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
   
-  let loading = true
-  let showControllerModal = false
+  let loading = $state(true)
+  let showControllerModal = $state(false)
 
   onMount(async () => {
     if ( $env === "mainnet") {
@@ -51,7 +56,7 @@
   <Button href="/">Back to home screen</Button>
   </div>
   <div class="m-7 md:ml-0 bg-white flex-grow border-4 border-black rounded-lg">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

@@ -3,7 +3,7 @@
   import { onMount } from 'svelte'
   import { env } from '$stores/network'
 
-  let isStoreInitialized = false;
+  let isStoreInitialized = $state(false);
 
   async function initStore() {
     try {
@@ -15,7 +15,7 @@
     }
   }
 
-  export let data
+  let { data, children } = $props();
   let network = data.network
 
   onMount(async () => {
@@ -25,7 +25,7 @@
 </script>
 
 {#if isStoreInitialized}
-  <slot />
+  {@render children?.()}
 {:else}
   <div>Loading...</div>
 {/if}

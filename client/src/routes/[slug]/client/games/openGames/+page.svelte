@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
@@ -8,43 +10,47 @@
   import { goToSession, joinSession } from '$lib/game'
   import { account } from '$stores/account'
   import { env } from '$stores/network';
-  let availableSessions: any = null
-  let currentSessions: any = null
-  let playerEntity: Entity
+  let availableSessions: any = $state(null)
+  let currentSessions: any = $state(null)
+  let playerEntity: Entity = $state()
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
+  let { clientComponents, torii, client } = $derived($dojoStore as any)
 
 
-  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
+  let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
 
-  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
+  run(() => {
+    if ($account) playerEntity = torii.poseidonHash([$account?.address])
+  });
 
-  $: global = componentValueStore(clientComponents.Global, globalentity)
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
+  let global = $derived(componentValueStore(clientComponents.Global, globalentity))
+  let player = $derived(componentValueStore(clientComponents.Player, playerEntity))
 
-  $: if ($global) {
-    if ($player) {
-      console.log('player', $player)
-      currentSessions = $player.games.map((game: { value: any }) => game.value)
+  run(() => {
+    if ($global) {
+      if ($player) {
+        console.log('player', $player)
+        currentSessions = $player.games.map((game: { value: any }) => game.value)
 
-      let playerGames = new Set(currentSessions)
+        let playerGames = new Set(currentSessions)
 
-      currentSessions = currentSessions.map((e: any) => ({ value: e }))
+        currentSessions = currentSessions.map((e: any) => ({ value: e }))
 
-      availableSessions = $global.pending_sessions.filter(
-        (session: { value: unknown }) => !playerGames.has(session.value)
-      )
+        availableSessions = $global.pending_sessions.filter(
+          (session: { value: unknown }) => !playerGames.has(session.value)
+        )
 
-      console.log('currentSessions', currentSessions, currentSessions.length)
-      console.log(
-        'availableSessions',
-        availableSessions,
-        availableSessions.length
-      )
-    } else {
-      availableSessions = $global.pending_sessions
+        console.log('currentSessions', currentSessions, currentSessions.length)
+        console.log(
+          'availableSessions',
+          availableSessions,
+          availableSessions.length
+        )
+      } else {
+        availableSessions = $global.pending_sessions
+      }
     }
-  }
+  });
 </script>
 
 <div class={cn('flex flex-col h-full')}>
