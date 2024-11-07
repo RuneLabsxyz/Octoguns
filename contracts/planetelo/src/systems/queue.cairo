@@ -33,7 +33,7 @@ mod queue {
 
     use planetelo::models::{PlayerStatus, QueueStatus, Elo, QueueIndex, Game, Queue, Player};
     use planetelo::elo::EloTrait;
-
+    use planetelo::helpers::get_planetelo_address;
     use planetelo::consts::ELO_DIFF;
 
     #[abi(embed_v0)]
@@ -152,12 +152,18 @@ mod queue {
             assert!(found, "No match found");
 
             let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-            let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(game)}, selector_from_tag!("planetelo-planetelo"));
+            assert!(planetary.get_world_address(game) != starknet::contract_address_const::<0x0>(), "Planetary Error");
+
+            let world_address = planetary.get_world_address(game);
+            assert!(world_address != starknet::contract_address_const::<0x0>(), "Error Getting World Address");
+
+            let planetelo_address = get_planetelo_address(world_address);
+            assert!(planetelo_address != starknet::contract_address_const::<0x0>(), "Error Getting Planetelo Address");
             
-            let dispatcher = IOneOnOneDispatcher{ contract_address };
+            let dispatcher = IOneOnOneDispatcher{ contract_address: planetelo_address };
 
             let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
-
+            assert!(game_id != 0, "Error Creating Match");
             player_status.status = QueueStatus::InGame(game_id);
 
             let mut potential_status: PlayerStatus = world.read_model((potential_index.player, game, playlist));
