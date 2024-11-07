@@ -140,8 +140,5 @@ mod grid_tests {
         positions.append(character_position_1);
         positions.append(character_position_2);
         let (grid1, grid2, grid3) = set_grid_bits_from_positions(ref positions);
-        println!("grid1: {}", grid1);
-        println!("grid2: {}", grid2);
-        println!("grid3: {}", grid3);
     }
 }

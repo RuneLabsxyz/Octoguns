@@ -114,7 +114,6 @@ mod queue {
             let mut player_index: QueueIndex = world.read_model((game, playlist, player_status.index));
             let time_diff = timestamp - player_index.timestamp;
             let time_diff_secs = time_diff;
-            println!("time_diff_secs: {}", time_diff_secs);
             assert!(time_diff_secs > 30, "Must be in queue for at least 30 seconds to refresh");
 
             let mut queue: Queue = world.read_model((game, playlist));

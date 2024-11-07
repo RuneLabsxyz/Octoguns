@@ -28,3 +28,4 @@ build-external-contracts = [
 default = "octoguns"
 
 [profile.mainnet]
+[profile.sepolia]
