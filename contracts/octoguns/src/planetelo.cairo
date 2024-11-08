@@ -110,7 +110,7 @@ mod planetelo {
             let mut octoguns = self.world(@"octoguns");
             let (contract_address, _) = octoguns.dns(@"start").unwrap();
             let start_dispatcher = IOctogunsStartDispatcher {contract_address};
-            
+
             let global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
             assert!(playlist_id < global.playlist_count.into(), "Playlist does not exist");
 
@@ -132,6 +132,10 @@ mod planetelo {
             let mut world = self.world(@"planetelo");
             let session: Session = world.read_model(match_id);
             let session_meta: SessionMeta = world.read_model(match_id);
+
+            if (session.player1 == session.player2) {
+                return Status::Draw;
+            }
 
             match session.state {
                 0 => {

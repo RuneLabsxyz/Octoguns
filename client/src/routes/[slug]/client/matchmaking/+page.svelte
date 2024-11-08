@@ -43,8 +43,29 @@
       let planetelo: any = get(planeteloStore);
       console.log(planetelo)
       console.log($account)
-      planetelo.connect($account!)
-      console.log(await planetelo.get_status($account!.address, '0x6f63746f67756e73', '0x0'))
+      let signer: AccountInterface = $account!;
+      planetelo.connect(signer);
+      console.log(planetelo)
+      
+      let res = await planetelo.get_status($account!.address, GAME_ID, PLAYLIST)
+      console.log(res)
+
+      //let res = await dojoProvider.call('planetelo', {
+      //  contractAddress: planetelo.address,
+      //  entrypoint: "get_status",
+      //  calldata: [$account!.address, GAME_ID, PLAYLIST]
+      //})
+      //console.log(res)
+    }
+
+    async function settle() {
+      let planetelo: any = get(planeteloStore);
+      let signer: AccountInterface = $account!;
+      let res = await signer.execute([{
+        contractAddress: planetelo.address,
+        entrypoint: "settle",
+        calldata: ['0x6f63746f67756e73', '0x0']
+      }])
     }
 
     async function queue() {
@@ -95,6 +116,12 @@
       <Button on:click={() => {
         getStatus()
       }}>Get Status</Button>
+    </div>
+
+    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
+      <Button on:click={() => {
+        settle()
+      }}>Settle</Button>
     </div>
 </div>
 

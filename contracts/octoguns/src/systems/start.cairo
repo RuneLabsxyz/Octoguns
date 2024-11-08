@@ -71,6 +71,7 @@ mod start {
             let id = global.uuid();
             player_1.games.append(id);
             player_2.games.append(id);
+            assert!(player_1.player != player_2.player, "Players cannot be the same");
 
             let session = SessionTrait::new_closed(id, player_address_1, player_address_2, map_id);
             let session_meta = SessionMetaTrait::new(id);

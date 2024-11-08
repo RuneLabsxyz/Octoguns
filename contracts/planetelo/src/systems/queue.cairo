@@ -150,6 +150,7 @@ mod queue {
             };
 
             assert!(found, "No match found");
+            assert!(player_index.player != potential_index.player, "Player cannot play against themselves");
 
             let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
             assert!(planetary.get_world_address(game) != starknet::contract_address_const::<0x0>(), "Planetary Error");
@@ -163,7 +164,6 @@ mod queue {
             let dispatcher = IOneOnOneDispatcher{ contract_address: planetelo_address };
 
             let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
-            assert!(game_id != 0, "Error Creating Match");
             player_status.status = QueueStatus::InGame(game_id);
 
             let mut potential_status: PlayerStatus = world.read_model((potential_index.player, game, playlist));

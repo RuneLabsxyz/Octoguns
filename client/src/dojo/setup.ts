@@ -39,7 +39,7 @@ export async function setup({ ...config }: DojoConfig) {
   let contracts = JSON.parse(JSON.stringify(manifest.contracts));
   console.log(contracts[0]);
 
-  const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
+  const myTestContract = new Contract(contracts[0].abi, contracts[0].address).typedv2(contracts[0].abi);
   planeteloStore.set(myTestContract);
   // setup world
   const client = await setupWorld(dojoProvider)
