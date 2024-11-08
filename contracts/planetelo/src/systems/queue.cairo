@@ -17,10 +17,7 @@ mod queue {
 
     use super::{IQueue};
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp, contract_address_const};
-    use planetary_interface::interfaces::planetary::{
-        PlanetaryInterface, PlanetaryInterfaceTrait,
-        IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
-    };
+ 
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
@@ -31,10 +28,11 @@ mod queue {
 
     use planetary_interface::utils::systems::{get_world_contract_address};
 
-    use planetelo::models::{PlayerStatus, QueueStatus, Elo, QueueIndex, Game, Queue, Player};
+    use planetelo::models::{PlayerStatus, QueueStatus, Elo, Member, Game, Queue, Player};
     use planetelo::elo::EloTrait;
     use planetelo::helpers::get_planetelo_address;
     use planetelo::consts::ELO_DIFF;
+    use planetelo::helpers::{find_match, get_planetelo_dispatcher};
 
     #[abi(embed_v0)]
     impl QueueImpl of IQueue<ContractState> {
@@ -119,58 +117,22 @@ mod queue {
             let mut queue: Queue = world.read_model((game, playlist));
             assert!(queue.length > 1, "There must be at least 2 players in the queue to matchmake");
 
-            let mut members: Array<Member> = queue.members.clone();
-            let mut found = false;
+            let maybe_match: Option<Member> = find_match(queue.members, player_index);
 
-            loop {
-                match members.pop_front() {
-                    Option::Some(member) => {
-                        if member.player == address {
-                            //do nothing
-                        }
-                        else {
-                            potential_index = member;
-
-                            let mut elo_diff = 0;
-                            if potential_index.elo > player_index.elo {
-                                elo_diff = potential_index.elo - player_index.elo;
-                            }
-                            else {
-                                elo_diff = player_index.elo - potential_index.elo;
-                            }
-                            if elo_diff < ELO_DIFF {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    Option::None => {
-                        break;
-                    }
-                }
-            };
-
-            assert!(found, "No match found");
-            assert!(player_index.player != potential_index.player, "Player cannot play against themselves");
-
-            let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-            assert!(planetary.get_world_address(game) != starknet::contract_address_const::<0x0>(), "Planetary Error");
-
-            let world_address = planetary.get_world_address(game);
-            assert!(world_address != starknet::contract_address_const::<0x0>(), "Error Getting World Address");
-
-            let planetelo_address = get_planetelo_address(world_address);
-            assert!(planetelo_address != starknet::contract_address_const::<0x0>(), "Error Getting Planetelo Address");
-            
-            let dispatcher = IOneOnOneDispatcher{ contract_address: planetelo_address };
+            let dispatcher = get_planetelo_dispatcher(game);
 
             let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
-            player_status.status = QueueStatus::InGame(game_id);
+            let status: QueueStatus = QueueStatus::None;
+            match maybe_match {
+                Option::Some(match_member) => {
+                    status = QueueStatus::InGame(game_id);
+                },
+                Option::None => {
+                    panic!("No match found");
+                }
+            }
 
-            let mut potential_status: PlayerStatus = world.read_model((potential_index.player, game, playlist));
-            potential_status.status = QueueStatus::InGame(game_id);
-
-            let game_model = Game {
+           let game_model = Game {
                 game: game,
                 id: game_id,
                 playlist: playlist,
@@ -178,88 +140,8 @@ mod queue {
                 player2: potential_index.player,
                 timestamp: timestamp
             };
-
-            let last_index = queue.length - 1;
-            let second_last_index = queue.length -2;
-
-            let mut last_player: QueueIndex = world.read_model((game, playlist, last_index));
-            let mut second_last_player: QueueIndex = world.read_model((game, playlist, second_last_index));
-
-            let mut replacing = QueueIndex { game, playlist, index: 0, player: contract_address_const::<0x0>(), elo: 0, timestamp: 0 };
-
-            //if both are not in the last two positions, move last 2 positions to their spots and delelete the last 2 positions
-            if player_index.index < queue.length - 2 && potential_index.index < queue.length - 2 {
-
-                player_index.player = last_player.player;
-                player_index.elo = last_player.elo;
-                player_index.timestamp = last_player.timestamp;
-
-                last_player.player = contract_address_const::<0x0>();
-                last_player.elo = 0;
-                last_player.timestamp = 0;
-
-                potential_index.player = second_last_player.player;
-                potential_index.elo = second_last_player.elo;
-                potential_index.timestamp = second_last_player.timestamp;
-
-                second_last_player.player = contract_address_const::<0x0>();
-                second_last_player.elo = 0;
-                second_last_player.timestamp = 0;
-
-                world.write_model(@last_player);
-                world.write_model(@second_last_player);
-                world.write_model(@player_index);
-                world.write_model(@potential_index);
-                
-            }
-
-            //if one is in the last two positions, move that player to the spot of the player who is in game and delete the last position
-            else if player_index.index < queue.length - 2 {
-                if potential_index.index == queue.length - 2 {
-                    let mut replacing = last_player;
-                }
-                else if potential_index.index == queue.length - 1 {
-                    let mut replacing = second_last_player;
-                }
-
-                
-
-                player_index.player = replacing.player;
-                player_index.elo = replacing.elo;
-                player_index.timestamp = replacing.timestamp;
-                world.write_model(@player_index);
-                world.erase_model(@replacing);
-                world.erase_model(@potential_index);
-            }
-
-            else if potential_index.index < queue.length - 2 {
-                if player_index.index == queue.length - 2 {
-                    let mut replacing = last_player;
-                }
-                else if player_index.index == queue.length - 1 {
-                    let mut replacing = second_last_player;
-                }
-
-                potential_index.player = replacing.player;
-                potential_index.elo = replacing.elo;
-                potential_index.timestamp = replacing.timestamp;
-                world.write_model(@potential_index);
-                world.erase_model(@replacing);
-                world.erase_model(@player_index);
-            }
-
-            else {
-                world.erase_model(@player_index);
-                world.erase_model(@potential_index);
-            }
-
-
-            queue.length -= 2;
-            world.write_model(@player_status);
-            world.write_model(@potential_status);
-            world.write_model(@game_model);
-            world.write_model(@queue);
-            
+    
+        
 
         }
 
@@ -359,7 +241,7 @@ mod queue {
         fn get_queue_length(self: @ContractState, game: felt252, playlist: u128) -> u32 {
             let world = self.world(@"planetelo");
             let queue: Queue = world.read_model((game, playlist));
-            queue.length
+            queue.members.len()
         }
 
         fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> QueueStatus {

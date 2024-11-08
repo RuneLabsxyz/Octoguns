@@ -34,7 +34,7 @@ pub struct PlayerStatus {
     pub index: u32
 }
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 #[dojo::model]
 pub struct Queue {
     #[key]
@@ -44,14 +44,16 @@ pub struct Queue {
     pub members: Array<Member>
 }
 
-#[derive(Copy, Drop, Serde, Introspect)]
+#[derive(Clone, Drop, Serde, Introspect)]
 pub struct Member {
+    #[key]
+    pub id: u128,
     pub player: ContractAddress,
     pub timestamp: u64,
     pub elo: u64
 }
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 #[dojo::model]
 pub struct Game {
     #[key]
@@ -70,3 +72,16 @@ pub enum QueueStatus {
     Queued,
     InGame: u128
 }      
+
+#[derive(Clone, Drop, Serde)]
+#[dojo::model]
+pub struct Global {
+    pub nonce: u128
+}
+
+#[generate_trait]
+impl GlobalImpl of GlobalTrait {
+    uuid(self: @Global) -> u128 {
+        self.nonce
+    }
+}
