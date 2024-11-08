@@ -118,32 +118,33 @@ mod queue {
 
             let mut queue: Queue = world.read_model((game, playlist));
             assert!(queue.length > 1, "There must be at least 2 players in the queue to matchmake");
-            let mut potential_index = player_index;
-            let mut i = 0;
+
+            let mut members: Array<Member> = queue.members.clone();
             let mut found = false;
-            while i < queue.length {
-                let potential_index: QueueIndex = world.read_model((game, playlist, i));
-                if potential_index.player == player_index.player {
-                    i+=1;
-                    continue;
-                }
-                if potential_index.elo > player_index.elo {
-                    if potential_index.elo - player_index.elo > ELO_DIFF {
-                        i+=1;
-                        continue;
+
+            loop {
+                match members.pop_front() {
+                    Option::Some(member) => {
+                        if member.player == address {
+                            //do nothing
+                        }
+                        else {
+                            potential_index = member;
+
+                            let mut elo_diff = 0;
+                            if potential_index.elo > player_index.elo {
+                                elo_diff = potential_index.elo - player_index.elo;
+                            }
+                            else {
+                                elo_diff = player_index.elo - potential_index.elo;
+                            }
+                            if elo_diff < ELO_DIFF {
+                                found = true;
+                                break;
+                            }
+                        }
                     }
-                    else {
-                        found = true;
-                        break;
-                    }
-                } 
-                else {
-                    if player_index.elo - potential_index.elo > ELO_DIFF {
-                        i+=1;
-                        continue;
-                    }
-                    else {
-                        found = true;
+                    Option::None => {
                         break;
                     }
                 }

@@ -41,18 +41,11 @@ pub struct Queue {
     pub game: felt252,
     #[key]
     pub playlist: u128,
-    pub length: u32
+    pub members: Array<Member>
 }
 
-#[derive(Copy, Drop, Serde)]
-#[dojo::model]
-pub struct QueueIndex {
-    #[key]
-    pub game: felt252,
-    #[key]
-    pub playlist: u128,
-    #[key]
-    pub index: u32,
+#[derive(Copy, Drop, Serde, Introspect)]
+pub struct Member {
     pub player: ContractAddress,
     pub timestamp: u64,
     pub elo: u64
