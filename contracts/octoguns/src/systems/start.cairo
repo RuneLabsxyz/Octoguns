@@ -13,7 +13,7 @@ trait IStart<T> {
         player_address_1: ContractAddress,
         player_address_2: ContractAddress,
         settings: Settings
-    );
+    ) -> u128;
     fn join(self: @T, session_id: u32);
 }
 
@@ -63,7 +63,7 @@ mod start {
             player_address_1: ContractAddress,
             player_address_2: ContractAddress,
             settings: Settings
-        ) {
+        ) -> u128{
             let mut world = self.world(@"octoguns");
             let mut global: Global = world.read_model(GLOBAL_KEY);
             let mut player_1: Player = world.read_model(player_address_1);
@@ -84,6 +84,8 @@ mod start {
             world.write_model(@player_2);
             world.write_model(@session_primitives);
             world.write_model(@global);
+
+            id.into()
         }
 
         fn join(self: @ContractState, session_id: u32) {

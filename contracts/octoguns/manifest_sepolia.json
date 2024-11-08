@@ -1763,7 +1763,7 @@
     },
     {
       "address": "0x682d495537159dcc19e713a2f7e88a8a880c88d1e3875b6a45212181854ab39",
-      "class_hash": "0x1b809c6db3a60ed4ce30d36c655131c01a5793901ce4aa644115f5aab7a54dc",
+      "class_hash": "0x2660f34c7ab33d74e1e663de5068c32efa1b59b29b5af0199b67dbfad7be661",
       "abi": [
         {
           "type": "impl",
@@ -1881,7 +1881,11 @@
                   "type": "octoguns::types::Settings"
                 }
               ],
-              "outputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u128"
+                }
+              ],
               "state_mutability": "view"
             },
             {
@@ -2019,7 +2023,7 @@
     },
     {
       "address": "0x5633fee4831e24134754abb6d889a27620de2e996fe24bb30d3dee4b89a9f8f",
-      "class_hash": "0x2335aafa083e5861e7327791a509ee94ac0b57655039396dd8fca036f373de7",
+      "class_hash": "0x28fd8f0b2af6d3c878a7cae7ecc580d3bf3ce855f7fdea261f9927ffc5f16e6",
       "abi": [
         {
           "type": "impl",
@@ -2114,6 +2118,13 @@
                   "type": "core::integer::u32"
                 }
               ],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "spawn_default_playlist",
+              "inputs": [],
+              "outputs": [],
               "state_mutability": "view"
             }
           ]

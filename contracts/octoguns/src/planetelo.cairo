@@ -39,6 +39,8 @@ pub enum Status {
 #[starknet::interface]
 trait IPlanetelo<T> {
     fn create_playlist(self: @T, maps: Array<u32>, settings: Settings) -> u32;
+    fn spawn_default_playlist(self: @T);
+
 }
 
 #[dojo::contract]
@@ -63,6 +65,7 @@ mod planetelo {
         fn create_playlist(self: @ContractState, maps: Array<u32>, settings: Settings) -> u32 {
             let mut world = self.world(@"planetelo");
             let mut global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
+            assert!(global.playlist_count > 0, "Spawn Default First");
             let id = global.playlist_count;
             global.playlist_count += 1;
 
@@ -75,6 +78,29 @@ mod planetelo {
             world.write_model(@global);
             id
         }
+
+        fn spawn_default_playlist(self: @ContractState) {
+            let mut world = self.world(@"planetelo");
+            let mut global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
+            assert!(global.playlist_count == 0, "Playlist already exists");
+
+            let maps = array![0];
+            let settings = Settings {
+                bullet_speed: 300,
+                bullet_sub_steps: 3,
+                bullets_per_turn: 1,
+                sub_moves_per_turn: 100,
+                max_distance_per_sub_move: 400,
+            };
+            let playlist: Playlist = Playlist {
+                id: 0,
+                maps,
+                settings
+            };
+            world.write_model(@playlist);
+            global.playlist_count = 1;
+            world.write_model(@global);
+        }
     }
 
     #[abi(embed_v0)]
@@ -82,11 +108,9 @@ mod planetelo {
         fn create_match(ref self: ContractState, p1: ContractAddress, p2: ContractAddress, playlist_id: u128) -> u128{
             let mut world = self.world(@"planetelo");
             let mut octoguns = self.world(@"octoguns");
-            let start_dispatcher = octoguns.dns(@"start");
+            let (contract_address, _) = octoguns.dns(@"start").unwrap();
+            let start_dispatcher = IOctogunsStartDispatcher {contract_address};
             
-            let octoguns_interface = OctogunsInterfaceTrait::new();
-            let start_dispatcher: IOctogunsStartDispatcher = octoguns_interface.start_dispatcher();
-
             let global: PlaylistGlobal = world.read_model(GLOBAL_KEY);
             assert!(playlist_id < global.playlist_count.into(), "Playlist does not exist");
 
