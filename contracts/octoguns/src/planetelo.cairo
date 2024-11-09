@@ -49,7 +49,7 @@ mod planetelo {
     use super::{Playlist, PlaylistGlobal, IPlanetelo};
     use planetelo_interface::interfaces::planetelo::{IOneOnOne, Status};
     use planetelo_interface::interfaces::octoguns::{
-        OctogunsTrait, Octoguns,
+        OctogunsTrait,
         IOctogunsStartDispatcher, IOctogunsStartDispatcherTrait, Settings};
     use octoguns::lib::dice::{Dice, DiceTrait, DiceImpl};
     use octoguns::models::sessions::{Session, SessionMeta};

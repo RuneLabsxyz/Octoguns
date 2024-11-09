@@ -31,7 +31,7 @@ dependencies = [
  "alexandria_math",
  "dojo",
  "origami_algebra",
- "planetary_interface",
+ "planetelo_interface",
 ]
 
 [[package]]
@@ -43,7 +43,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "planetary_interface"
+name = "planetelo_interface"
 version = "0.1.0"
 dependencies = [
  "dojo",

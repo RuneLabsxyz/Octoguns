@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2",
-    "seed": "octoguns",
+    "address": "0x66de84576f89a2515c1f11d98071745351238e25a2c76603313b09155662cfd",
+    "seed": "fdsaf",
     "name": "Octoguns",
     "abi": [
       {
@@ -1121,7 +1121,7 @@
   },
   "contracts": [
     {
-      "address": "0x17f2595ea7e968a4cb08e249d3429df5968aecbc6c2f1790d5d2d92fe2a1fe6",
+      "address": "0x447d58c417c4310e18d1ba750a612cf82d390539a6c482e3e75dbb859c083ce",
       "class_hash": "0x18ecc8ded7425656bfdf18bf4fcb86a12f6bc94183de10ef17c4e9704fa01e",
       "abi": [
         {
@@ -1375,7 +1375,7 @@
       "systems": []
     },
     {
-      "address": "0x39ce051bf688be834e815eb981b50d06ada04ed24258d455c915729fd1e4168",
+      "address": "0x738520124dba21fb11d45d5831682c7723c74340ead66f45886861675b4033b",
       "class_hash": "0x5ebb65ccfaced79072fed9661f6c70a71389e2ea0bafe73b91ee2da13657f7a",
       "abi": [
         {
@@ -1576,7 +1576,7 @@
       "systems": []
     },
     {
-      "address": "0x1173ccc0cdb6cc1ac2417dd95ca410e11ace4c301021b9e3382ea7104fe440f",
+      "address": "0x405681132586cb67d035580a7435b6c58513eb92bb347b6e56bf14811c8c177",
       "class_hash": "0x6c3d6a7a56075c6868564c9bae1171a31267c4654d407692137940f9ad94f27",
       "abi": [
         {
@@ -1762,7 +1762,7 @@
       "systems": []
     },
     {
-      "address": "0x682d495537159dcc19e713a2f7e88a8a880c88d1e3875b6a45212181854ab39",
+      "address": "0x603c50c4b6bd38ac56539a354509f5329741799767aab8f09a00c58bd7e3de4",
       "class_hash": "0x2b7cc043e16365af348366a701d1af9bf6f1391ee09a9ed601d380e697f107d",
       "abi": [
         {
@@ -2022,8 +2022,8 @@
       "systems": []
     },
     {
-      "address": "0x5633fee4831e24134754abb6d889a27620de2e996fe24bb30d3dee4b89a9f8f",
-      "class_hash": "0x6430961fcbbb90967940f6c72d787c8d8a68c59dca98c7e41998b58a7bc1a1f",
+      "address": "0x6bd786db9a6544a3e892f9f4c700d1dbd747ef48b98de81a297d60d8a7914d4",
+      "class_hash": "0x1aa94ff71f32792dc113cc83276e6f90512d0631c36eaead14c8235436fc91c",
       "abi": [
         {
           "type": "impl",
@@ -2072,7 +2072,7 @@
         },
         {
           "type": "struct",
-          "name": "planetary_interface::interfaces::octoguns::Settings",
+          "name": "planetelo_interface::interfaces::octoguns::Settings",
           "members": [
             {
               "name": "bullet_speed",
@@ -2110,7 +2110,7 @@
                 },
                 {
                   "name": "settings",
-                  "type": "planetary_interface::interfaces::octoguns::Settings"
+                  "type": "planetelo_interface::interfaces::octoguns::Settings"
                 }
               ],
               "outputs": [
@@ -2132,11 +2132,11 @@
         {
           "type": "impl",
           "name": "OneOnOneImpl",
-          "interface_name": "planetary_interface::interfaces::one_on_one::IOneOnOne"
+          "interface_name": "planetelo_interface::interfaces::planetelo::IOneOnOne"
         },
         {
           "type": "enum",
-          "name": "planetary_interface::interfaces::one_on_one::Status",
+          "name": "planetelo_interface::interfaces::planetelo::Status",
           "variants": [
             {
               "name": "None",
@@ -2158,7 +2158,7 @@
         },
         {
           "type": "interface",
-          "name": "planetary_interface::interfaces::one_on_one::IOneOnOne",
+          "name": "planetelo_interface::interfaces::planetelo::IOneOnOne",
           "items": [
             {
               "type": "function",
@@ -2195,7 +2195,7 @@
               ],
               "outputs": [
                 {
-                  "type": "planetary_interface::interfaces::one_on_one::Status"
+                  "type": "planetelo_interface::interfaces::planetelo::Status"
                 }
               ],
               "state_mutability": "external"
@@ -2355,7 +2355,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x6f5e74ee8ffb7dc34d4386d508ce7d57761321fa24e11dc2858d97c71d8de01",
+      "class_hash": "0x548a938b43e277e2d4e666f75f314140d836509a944c900fc9f302516ff36e7",
       "tag": "Playlist"
     },
     {

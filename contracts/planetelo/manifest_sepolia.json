@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x3a2addbe1ceb7fc53f80d36f1cba688b74c721dc00b0931c0d84944a17d2133",
-    "seed": "fasdfsad",
+    "address": "0x51e80b5881c2f188b78ba442c503f1fea1a7211aa21a0f8ab0abed119ae27ac",
+    "seed": "aaasd",
     "name": "Planetelo",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x7eade70cffcfbde0ef5d3a4d22107af2a89093fac1a89d5cae2a9fd5f85c4ac",
-      "class_hash": "0x57d2436e0b2bfb26d27313a192ac06a0ccf7fafcfd8458119d72655de3aae4e",
+      "address": "0x63a62150c03bc4ac54a085f5d73ed8f0893faddb4bf5728612bb5cdd7dabfcf",
+      "class_hash": "0x3ef08f4359e8f3781a9a90ff280dfcc2dd86aba6aaa233c768e0eea3cbdaf21",
       "abi": [
         {
           "type": "impl",
@@ -1170,29 +1170,19 @@
           "interface_name": "planetelo::systems::queue::IQueue"
         },
         {
-          "type": "enum",
-          "name": "planetelo::models::QueueStatus",
-          "variants": [
-            {
-              "name": "None",
-              "type": "()"
-            },
-            {
-              "name": "Queued",
-              "type": "()"
-            },
-            {
-              "name": "InGame",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
           "type": "struct",
-          "name": "planetelo::models::Member",
+          "name": "planetelo::models::QueueMember",
           "members": [
             {
-              "name": "id",
+              "name": "game",
+              "type": "core::felt252"
+            },
+            {
+              "name": "playlist",
+              "type": "core::integer::u128"
+            },
+            {
+              "name": "index",
               "type": "core::integer::u128"
             },
             {
@@ -1316,7 +1306,7 @@
               ],
               "outputs": [
                 {
-                  "type": "core::integer::u32"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1340,7 +1330,7 @@
               ],
               "outputs": [
                 {
-                  "type": "planetelo::models::QueueStatus"
+                  "type": "core::integer::u8"
                 }
               ],
               "state_mutability": "view"
@@ -1360,7 +1350,7 @@
               ],
               "outputs": [
                 {
-                  "type": "core::array::Array::<planetelo::models::Member>"
+                  "type": "core::array::Array::<planetelo::models::QueueMember>"
                 }
               ],
               "state_mutability": "view"
@@ -1487,8 +1477,8 @@
       "systems": []
     },
     {
-      "address": "0x34016058d70055b058d6c588e27cbf40cbbe877ccc11e6db697c5dcf19cf3e7",
-      "class_hash": "0x6a454facf1c4bb74ca29357cd31316121013be3e2a3fde316589a4fcde32ccb",
+      "address": "0x48c7cc914f47bddb8d9c72b571ca3bdd92d1cd0d1b4f8b6af1217df3f53fe87",
+      "class_hash": "0x23d67862ab72cf3252f37e2aff0db2cc3eb4d0ed57d10bc35138b4bd162b93a",
       "abi": [
         {
           "type": "impl",
@@ -1762,11 +1752,6 @@
     },
     {
       "members": [],
-      "class_hash": "0x5d23236016227a0ec730188ea14aabac44eff3c000b119e1d31615619fe2a01",
-      "tag": "Member"
-    },
-    {
-      "members": [],
       "class_hash": "0x7d950a261d8e32a4507cd9d9d9df0c0e31dc429e889258792dc15099fdc7fb8",
       "tag": "Player"
     },
@@ -1782,8 +1767,13 @@
     },
     {
       "members": [],
-      "class_hash": "0x580ef110fb5400663f514413f378a12467e419a4fb93fd6b1a1249ee67e6d57",
+      "class_hash": "0x4182b0a5e8e5e60e91084285042cc25ffb9793c8273be65db87a07cff6d7f3b",
       "tag": "Queue"
+    },
+    {
+      "members": [],
+      "class_hash": "0x4875c7172d1e43019ddefe8365b00c88b0984edb4b53514c39de445f1bcbe56",
+      "tag": "QueueMember"
     },
     {
       "members": [],
