@@ -1,24 +1,25 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy'
-
-  import { dojoStore } from '$stores/dojoStore'
-  import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
-  import { cn } from '$lib/css/cn
+  import { cn } from '$lib/css/cn'
   import { goToSession, joinSession } from '$lib/game'
-  import { account } from '$stores/account'
   import { env } from '$stores/network'
   import { openSessions } from '$lib/api/sessions'
-  import { type Session } from '$src/dojo/models.gen'
+  import { openSessionMetas } from '$lib/api/sessionMeta'
+  import type { Session, SessionMeta } from '$src/dojo/models.gen'
 
   let availableSessions: Session[] | null = $state(null)
+  let availableSessionMetas: SessionMeta[] | null = $state(null)
   let currentSessions: any = $state(null)
   let playerEntity: Entity = $state()
 
   openSessions.subscribe((sessions) => {
     availableSessions = sessions
+  })
+
+  openSessionMetas.subscribe((sessions) => {
+    currentSessions = sessions
   })
 </script>
 
@@ -37,6 +38,7 @@
       <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
       <GameList
         {availableSessions}
+        {availableSessionMetas}
         on:select={(session) => joinSession(session.detail)}
       />
     {:else}
