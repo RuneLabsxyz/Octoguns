@@ -92,18 +92,23 @@ export const yourSessions: Readable<Session[]> = derived(
   }
 )
 
-export const yourActiveSessions = derived([yourSessions], ([sessions], set) => {
-  set(sessions.filter((session) => session.state === 1 || session.state === 2))
-})
+export const yourActiveSessions: Readable<Session[]> = derived(
+  [yourSessions],
+  ([sessions], set) => {
+    set(
+      sessions.filter((session) => session.state === 1 || session.state === 2)
+    )
+  }
+)
 
-export const yourUnstartedSessions = derived(
+export const yourUnstartedSessions: Readable<Session[]> = derived(
   [yourSessions],
   ([sessions], set) => {
     set(sessions.filter((session) => session.state === 0))
   }
 )
 
-export const yourFinishedSessions = derived(
+export const yourFinishedSessions: Readable<Session[]> = derived(
   [yourSessions],
   ([sessions], set) => {
     set(sessions.filter((session) => session.state === 3))

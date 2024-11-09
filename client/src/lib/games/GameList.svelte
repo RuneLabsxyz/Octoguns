@@ -1,11 +1,15 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
+  import type { Session, SessionMeta } from '$src/dojo/models.gen'
 
-  let { availableSessions } = $props();
+  let { availableSessions } = $props<{
+    availableSessions: Session[]
+  }>()
 
   const dispatch = createEventDispatcher()
 
-  let pendingSessions = $derived(availableSessions)
+  let pendingSessions: Session[] = $derived(availableSessions)
+
   let showAll = $state(false)
 
   function onClick(session: any) {
@@ -16,9 +20,11 @@
     showAll = !showAll
   }
 
-  let displayedSessions = $derived(showAll 
-    ? pendingSessions.slice().reverse()
-    : pendingSessions.slice(-9).reverse())
+  let displayedSessions = $derived(
+    showAll
+      ? pendingSessions.slice().reverse()
+      : pendingSessions.slice(-9).reverse()
+  )
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-5 gap-3">

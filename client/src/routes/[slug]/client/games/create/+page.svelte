@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
@@ -12,20 +12,15 @@
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
   import { account, username, clearAccountStorage } from '$stores/account'
-  import { env } from '$stores/network';
+  import { env } from '$stores/network'
+  import { createGame as createGameCall } from '$src/lib/api/actions'
 
   let loadingToGame = false
   let playerEntity: Entity = $state()
   let localSelectedMap: number | null = $state(null)
   let mapCount: number = $state(0)
 
-
-
-
   let maps: any[] = $state([])
-
-
-
 
   function startSession(lastPlayerGameValue: number) {
     if (loadingToGame) {
@@ -39,37 +34,33 @@
     console.log('selected map', map_id)
   }
 
-  let toastMessage = $state('');
-  let toastStatus = $state('loading');
-  let showToast = $state(false);
+  let toastMessage = $state('')
+  let toastStatus = $state('loading')
+  let showToast = $state(false)
 
   async function createGame() {
     if ($account) {
       console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
       console.log('selectedMap', $selectedMap)
-      showToast = true;
-      toastMessage = 'Creating game...';
-      toastStatus = 'loading';
+      showToast = true
+      toastMessage = 'Creating game...'
+      toastStatus = 'loading'
       try {
-        await client.start.create({
-          account: $account,
-          map_id: $selectedMap,
-          session_primitives: SESSION_PRIMITIVES,
-        })
-        toastMessage = 'Game created successfully!';
-        toastStatus = 'success';
-        loadingToGame = true;
+        createGameCall($selectedMap, SESSION_PRIMITIVES)
+        toastMessage = 'Game created successfully!'
+        toastStatus = 'success'
+        loadingToGame = true
       } catch (error) {
-        console.error('Error creating game:', error);
-        toastMessage = 'Failed to create game.';
-        toastStatus = 'error';
-        loadingToGame = false;
+        console.error('Error creating game:', error)
+        toastMessage = 'Failed to create game.'
+        toastStatus = 'error'
+        loadingToGame = false
       }
     } else {
       console.error('No active account found')
-      toastMessage = 'No active account found.';
-      toastStatus = 'error';
-      showToast = true;
+      toastMessage = 'No active account found.'
+      toastStatus = 'error'
+      showToast = true
     }
   }
 
@@ -78,15 +69,19 @@
   }
 
   function disconnect() {
-    clearAccountStorage();
+    clearAccountStorage()
   }
   let { clientComponents, torii, client } = $derived($dojoStore as any)
   let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
   run(() => {
     if ($account) playerEntity = torii.poseidonHash([$account?.address])
-  });
-  let player = $derived(componentValueStore(clientComponents.Player, playerEntity))
-  let global = $derived(componentValueStore(clientComponents.Global, globalentity))
+  })
+  let player = $derived(
+    componentValueStore(clientComponents.Player, playerEntity)
+  )
+  let global = $derived(
+    componentValueStore(clientComponents.Global, globalentity)
+  )
   run(() => {
     if ($global) {
       mapCount = $global.map_count
@@ -99,13 +94,13 @@
         maps.push(map)
       }
     }
-  });
+  })
   run(() => {
     console.log('global', $global)
-  });
+  })
   run(() => {
     localSelectedMap = $selectedMap
-  });
+  })
   run(() => {
     if ($player) {
       let lastPlayerGameValue =
@@ -114,7 +109,7 @@
           : null
       startSession(lastPlayerGameValue)
     }
-  });
+  })
 </script>
 
 <div class={cn('flex flex-col h-full')}>

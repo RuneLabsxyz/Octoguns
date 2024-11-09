@@ -1,56 +1,25 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import GameList from '$lib/games/GameList.svelte'
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
-  import { cn } from '$lib/css/cn'
+  import { cn } from '$lib/css/cn
   import { goToSession, joinSession } from '$lib/game'
   import { account } from '$stores/account'
-  import { env } from '$stores/network';
-  let availableSessions: any = $state(null)
+  import { env } from '$stores/network'
+  import { openSessions } from '$lib/api/sessions'
+  import { type Session } from '$src/dojo/models.gen'
+
+  let availableSessions: Session[] | null = $state(null)
   let currentSessions: any = $state(null)
   let playerEntity: Entity = $state()
 
-  let { clientComponents, torii, client } = $derived($dojoStore as any)
-
-
-  let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
-
-  run(() => {
-    if ($account) playerEntity = torii.poseidonHash([$account?.address])
-  });
-
-  let global = $derived(componentValueStore(clientComponents.Global, globalentity))
-  let player = $derived(componentValueStore(clientComponents.Player, playerEntity))
-
-  run(() => {
-    if ($global) {
-      if ($player) {
-        console.log('player', $player)
-        currentSessions = $player.games.map((game: { value: any }) => game.value)
-
-        let playerGames = new Set(currentSessions)
-
-        currentSessions = currentSessions.map((e: any) => ({ value: e }))
-
-        availableSessions = $global.pending_sessions.filter(
-          (session: { value: unknown }) => !playerGames.has(session.value)
-        )
-
-        console.log('currentSessions', currentSessions, currentSessions.length)
-        console.log(
-          'availableSessions',
-          availableSessions,
-          availableSessions.length
-        )
-      } else {
-        availableSessions = $global.pending_sessions
-      }
-    }
-  });
+  openSessions.subscribe((sessions) => {
+    availableSessions = sessions
+  })
 </script>
 
 <div class={cn('flex flex-col h-full')}>
@@ -59,22 +28,22 @@
     <span class="flex-grow"></span>
     <Button href={`/${$env}/client/games/create`}>+ New Game</Button>
   </div>
-    <div
-      class={cn('flex flex-col', {
-        'justify-center': !availableSessions,
-      })}
-    >
-      {#if availableSessions && availableSessions.length > 0}
-        <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
-        <GameList
-          {availableSessions}
-          on:select={(session) => joinSession(session.detail)}
-        />
-      {:else}
-        <div class="self-center align-middle flex flex-col gap-2">
-          <p>No games are currently available.</p>
-          <Button href={`/${$env}/client/games/create`}>+ New Game</Button>
-        </div>
-      {/if}
-    </div>
+  <div
+    class={cn('flex flex-col', {
+      'justify-center': !availableSessions,
+    })}
+  >
+    {#if availableSessions && availableSessions.length > 0}
+      <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
+      <GameList
+        {availableSessions}
+        on:select={(session) => joinSession(session.detail)}
+      />
+    {:else}
+      <div class="self-center align-middle flex flex-col gap-2">
+        <p>No games are currently available.</p>
+        <Button href={`/${$env}/client/games/create`}>+ New Game</Button>
+      </div>
+    {/if}
   </div>
+</div>
