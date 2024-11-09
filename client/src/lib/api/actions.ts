@@ -1,15 +1,5 @@
-import {
-  accountStore,
-  dojoStore,
-  getDojo,
-  getDojoContext,
-} from '$src/stores/dojoStore'
-import type { TurnMove } from '$src/dojo/models.gen'
-import { derived, writable, type Readable, type Writable } from 'svelte/store'
-import { currentPlayer } from './player'
-import { dojoConfig } from '$src/dojoConfig'
-import { componentValueStore } from '$src/dojo/componentValueStore'
-import get from './utils'
+import { getDojoContext } from '$src/stores/dojoStore'
+import type { TurnMove, SessionPrimitives } from '$src/dojo/models.gen'
 
 export async function move(session_id: number, moves: TurnMove) {
   // Get the context
@@ -19,6 +9,80 @@ export async function move(session_id: number, moves: TurnMove) {
       account,
       session_id: session_id,
       moves: moves,
+    })
+  } catch (err) {
+    console.log('An error occurred while spawning: ', err)
+  }
+}
+
+export async function createMap(grid1: bigint, grid2: bigint, grid3: bigint) {
+  const [account, { client }] = await getDojoContext()
+  try {
+    await client.mapmaker.create({
+      account,
+      grid1: grid1,
+      grid2: grid2,
+      grid3: grid3,
+    })
+  } catch (err) {
+    console.log('An error occurred while spawning: ', err)
+  }
+}
+
+export async function spawn(session_id: number) {
+  const [account, { client }] = await getDojoContext()
+  try {
+    await client.spawn.spawn({
+      account,
+      session_id: session_id,
+    })
+  } catch (err) {
+    console.log('An error occurred while spawning: ', err)
+  }
+}
+
+export async function createGame(
+  map_id: number,
+  session_primitives: SessionPrimitives
+) {
+  const [account, { client }] = await getDojoContext()
+  try {
+    await client.start.create({
+      account,
+      map_id: map_id,
+      session_primitives: session_primitives,
+    })
+  } catch (err) {
+    console.log('An error occurred while spawning: ', err)
+  }
+}
+
+export async function createClosedGame(
+  map_id: number,
+  player_address_1: bigint,
+  player_address_2: bigint,
+  session_primitives: SessionPrimitives
+) {
+  const [account, { client }] = await getDojoContext()
+  try {
+    await client.start.create_closed({
+      account,
+      map_id: map_id,
+      player_address_1: player_address_1,
+      player_address_2: player_address_2,
+      session_primitives: session_primitives,
+    })
+  } catch (err) {
+    console.log('An error occurred while spawning: ', err)
+  }
+}
+
+export async function joinGame(session_id: number) {
+  const [account, { client }] = await getDojoContext()
+  try {
+    await client.start.join({
+      account,
+      session_id: session_id,
     })
   } catch (err) {
     console.log('An error occurred while spawning: ', err)

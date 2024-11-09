@@ -1,14 +1,8 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore, getDojoContext } from '$src/stores/dojoStore'
-import {
-  derived,
-  readable,
-  writable,
-  type Readable,
-  type Writable,
-} from 'svelte/store'
+import { getDojo, accountStore } from '$src/stores/dojoStore'
+import { derived, type Readable } from 'svelte/store'
 
 async function GlobalValue() {
   const { torii, clientComponents } = await getDojo()

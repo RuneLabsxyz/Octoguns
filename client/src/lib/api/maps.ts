@@ -1,5 +1,5 @@
 import { currentGlobal } from './global'
-import { derived, writable, type Readable, type Writable } from 'svelte/store'
+import { derived, type Readable } from 'svelte/store'
 import type { Map } from '$src/dojo/models.gen'
 import { getDojo } from '$src/stores/dojoStore'
 import { componentValueStore } from '$src/dojo/componentValueStore'

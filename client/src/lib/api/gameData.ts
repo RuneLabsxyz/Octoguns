@@ -1,23 +1,12 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type {
-  SessionMeta,
-  Global,
   Bullet,
   CharacterModel,
   CharacterPosition,
 } from '$src/dojo/models.gen'
-import { getDojo, accountStore, getDojoContext } from '$src/stores/dojoStore'
-import {
-  derived,
-  readable,
-  writable,
-  type Readable,
-  type Writable,
-} from 'svelte/store'
-import { account } from '$src/stores/account'
+import { getDojo } from '$src/stores/dojoStore'
+import { derived, type Readable } from 'svelte/store'
 import { currentPlayer } from './player'
-import { currentGlobal } from './global'
-import { poseidonHash } from '@dojoengine/torii-wasm'
 import { sessionMeta } from '$src/lib/api/sessionMeta'
 import { Session } from '$src/lib/api/sessions'
 import { get } from 'svelte/store'
