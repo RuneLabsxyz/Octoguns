@@ -61,8 +61,6 @@ fn update_queue(ref world: WorldStorage, game: felt252, playlist: u128, ref p1: 
         world.erase_model(@second_last_member);
         return;
     }
-
-
     else if p_at_end {
         // the last player was already deleted, but the second last was not
         // we take the other player that was at the end and move them to the other player's spot

@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x51e80b5881c2f188b78ba442c503f1fea1a7211aa21a0f8ab0abed119ae27ac",
-    "seed": "aaasd",
+    "address": "0x31bb4fc69df81eb8b0add40f19a7cc2df002bb3986693ac8538c692833c670e",
+    "seed": "aaasdfdasf",
     "name": "Planetelo",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x63a62150c03bc4ac54a085f5d73ed8f0893faddb4bf5728612bb5cdd7dabfcf",
-      "class_hash": "0xe25762bad5c703e77b986e1f72d5b0e633fb467af6be72b26521a147b3215",
+      "address": "0x23f767911972980bbbc34595129319d2a7d84b4e958aca435af8c28c6b37a69",
+      "class_hash": "0x560f45b3d00a84f63aa95fa6d1507784e85037b614c36e60264034fceb223d4",
       "abi": [
         {
           "type": "impl",
@@ -1354,6 +1354,30 @@
                 }
               ],
               "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "get_player_game_id",
+              "inputs": [
+                {
+                  "name": "address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "game",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "playlist",
+                  "type": "core::integer::u128"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u128"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
@@ -1477,7 +1501,7 @@
       "systems": []
     },
     {
-      "address": "0x48c7cc914f47bddb8d9c72b571ca3bdd92d1cd0d1b4f8b6af1217df3f53fe87",
+      "address": "0x4a1280d557362c026ff37e351098788c25e028b757aa674cb59ef957d34600b",
       "class_hash": "0x23d67862ab72cf3252f37e2aff0db2cc3eb4d0ed57d10bc35138b4bd162b93a",
       "abi": [
         {

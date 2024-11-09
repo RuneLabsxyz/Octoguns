@@ -14,6 +14,7 @@ trait IQueue<T> {
     fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u128;
     fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u8;
     fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<QueueMember>;
+    fn get_player_game_id(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u128;
 }
 
 // dojo decorator
@@ -166,7 +167,6 @@ mod queue {
             };
 
             world.write_model(@game_model);
-            world.write_model(@queue);
             world.write_model(@player_status);
             world.write_model(@opponent_status);
             
@@ -250,6 +250,14 @@ mod queue {
             let mut members: Array<QueueMember> = get_queue_members(world, game, playlist);
             members
         }
+
+        fn get_player_game_id(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> u128 {
+            let world = self.world(@"planetelo");
+            let player: PlayerStatus = world.read_model((address, game, playlist));
+            match player.status {
+                QueueStatus::InGame(id) => id,
+                _ => panic!("Player is not in a game"),
+            }        }
 
     }
 }
