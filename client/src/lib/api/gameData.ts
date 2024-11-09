@@ -19,6 +19,7 @@ import { currentPlayer } from './player'
 import { currentGlobal } from './global'
 import { poseidonHash } from '@dojoengine/torii-wasm'
 import { sessionMeta } from '$src/lib/api/sessionMeta'
+import { Session } from '$src/lib/api/sessions'
 import { get } from 'svelte/store'
 
 export async function bullet(
@@ -101,4 +102,116 @@ export async function characterPosition(
       set(result)
     }
   )
+}
+
+export async function gameCharacterModel(
+  session_id: number
+): Promise<Readable<[CharacterModel | null, CharacterModel | null]>> {
+  const SessionMeta = await sessionMeta(Number(session_id))
+  const session = await Session(Number(session_id))
+  const { torii, clientComponents } = await getDojo()
+
+  // Get the current player's address
+  const currentPlayerAddress = get(currentPlayer)?.player
+
+  return derived(SessionMeta, ($SessionMeta, set) => {
+    if (!$SessionMeta) {
+      set([null, null])
+      return
+    }
+
+    const sessionValue = get(session)
+
+    if (sessionValue == null) {
+      set([null, null])
+      return
+    }
+
+    // Determine the character entity IDs for the current player and the enemy
+    let yourCharacterEntityId: number | null = null
+    let enemyCharacterEntityId: number | null = null
+
+    if (sessionValue.player1 === currentPlayerAddress) {
+      yourCharacterEntityId = Number($SessionMeta.p1_character)
+      enemyCharacterEntityId = Number($SessionMeta.p2_character)
+    } else if (sessionValue.player2 === currentPlayerAddress) {
+      yourCharacterEntityId = Number($SessionMeta.p2_character)
+      enemyCharacterEntityId = Number($SessionMeta.p1_character)
+    }
+
+    if (yourCharacterEntityId === null || enemyCharacterEntityId === null) {
+      set([null, null])
+      return
+    }
+
+    async function fetchCharacterModels() {
+      // Get the CharacterModels for both your character and the enemy
+      const yourCharacterModelStore = await characterModel(
+        Number(yourCharacterEntityId)
+      )
+      const enemyCharacterModelStore = await characterModel(
+        Number(enemyCharacterEntityId)
+      )
+
+      set([get(yourCharacterModelStore), get(enemyCharacterModelStore)])
+    }
+
+    fetchCharacterModels()
+  })
+}
+
+export async function gameCharacterPosition(
+  session_id: number
+): Promise<Readable<[CharacterPosition | null, CharacterPosition | null]>> {
+  const SessionMeta = await sessionMeta(Number(session_id))
+  const session = await Session(Number(session_id))
+  const { torii, clientComponents } = await getDojo()
+
+  // Get the current player's address
+  const currentPlayerAddress = get(currentPlayer)?.player
+
+  return derived(SessionMeta, ($SessionMeta, set) => {
+    if (!$SessionMeta) {
+      set([null, null])
+      return
+    }
+
+    const sessionValue = get(session)
+
+    if (sessionValue == null) {
+      set([null, null])
+      return
+    }
+
+    // Determine the character entity IDs for the current player and the enemy
+    let yourCharacterEntityId: number | null = null
+    let enemyCharacterEntityId: number | null = null
+
+    if (sessionValue.player1 === currentPlayerAddress) {
+      yourCharacterEntityId = Number($SessionMeta.p1_character)
+      enemyCharacterEntityId = Number($SessionMeta.p2_character)
+    } else if (sessionValue.player2 === currentPlayerAddress) {
+      yourCharacterEntityId = Number($SessionMeta.p2_character)
+      enemyCharacterEntityId = Number($SessionMeta.p1_character)
+    }
+
+    if (yourCharacterEntityId === null || enemyCharacterEntityId === null) {
+      set([null, null])
+      return
+    }
+
+    async function fetchCharacterModels() {
+      // Get the CharacterModels for both your character and the enemy
+      const yourCharacterModelStore = await characterPosition(
+        Number(yourCharacterEntityId)
+      )
+      const enemyCharacterModelStore = await characterPosition(
+        Number(enemyCharacterEntityId)
+      )
+
+      set([get(yourCharacterModelStore), get(enemyCharacterModelStore)])
+    }
+
+    fetchCharacterModels()
+  })
 }
