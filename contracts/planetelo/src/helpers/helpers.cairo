@@ -11,7 +11,7 @@ use dojo::model::{ModelStorage, ModelValueStorage, Model};
 use starknet::contract_address_const;
 
 
-use planetelo::models::{QueueStatus, Queue, Game};
+use planetelo::models::{QueueStatus, Queue, Game, QueueMember};
 
 use planetelo::models::Member;
 use planetelo::consts::ELO_DIFF;
@@ -67,15 +67,9 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
                     else {
                         elo_diff = player.elo - potential_index.elo;
                     }
-                    if elo_diff != 0 {
-                        panic!("Both elos should be the same");
-                    }
                     if elo_diff < ELO_DIFF {
                         res = Option::Some(potential_index);
                         break;
-                    }
-                    else {
-                        panic!("Elo difference is too high");
                     }
             },
             Option::None => {
@@ -88,12 +82,12 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
 
 }
 
-fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Array<Member> {
-    let mut members: Array<Member> = ArrayTrait::new();
+fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Array<QueueMember> {
+    let mut members: Array<QueueMember> = ArrayTrait::new();
     let queue: Queue = world.read_model((game, playlist));
     let mut i = 0;
-    while i < queue.members.len() {
-        let member: Member = world.read_model( *queue.members[i]);
+    while i < queue.length {
+        let member: QueueMember = world.read_model((game, playlist, i));
         assert!(member.elo != 0, "Member elo must be set");
         members.append(member);
         i+=1;
@@ -101,12 +95,12 @@ fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Arra
     members
 }
 
-fn get_queue_members_except_player(world: WorldStorage, game: felt252, playlist: u128, player: ContractAddress) -> Array<Member> {
-    let mut members: Array<Member> = ArrayTrait::new();
+fn get_queue_members_except_player(world: WorldStorage, game: felt252, playlist: u128, player: ContractAddress) -> Array<QueueMember> {
+    let mut members: Array<QueueMember> = ArrayTrait::new();
     let queue: Queue = world.read_model((game, playlist));
     let mut i = 0;
-    while i < queue.members.len() {
-        let member: Member = world.read_model( *queue.members[i]);
+    while i < queue.length {
+        let member: QueueMember = world.read_model((game, playlist, i));
         assert!(member.elo != 0, "Member elo must be set");
         if member.player != player {
             members.append(member);
@@ -128,7 +122,6 @@ fn update_elos(status: Status, game_model: @Game, one_elo: @u64, two_elo: @u64) 
             panic!("Match is still active");
         },
         Status::Draw => {
-            panic!("Match should not be draw");
             let (mag, sign) = EloTrait::rating_change(*one_elo, *two_elo, 50_u16, 20_u8);
             assert!(mag != 0, "elo should change");
             if sign {
@@ -155,14 +148,10 @@ fn update_elos(status: Status, game_model: @Game, one_elo: @u64, two_elo: @u64) 
             if sign {
                 p1_elo += mag;
                 p2_elo -= mag;
-                assert!(p1_elo != 800, "elo should change (update)");
-                assert!(p2_elo != 800, "elo should change (update)");
             }   
             else {
                 p1_elo -= mag;
                 p2_elo += mag;
-                assert!(p1_elo != 800, "elo should change (update)");
-                assert!(p2_elo != 800, "elo should change (update)");
             }
 
         }

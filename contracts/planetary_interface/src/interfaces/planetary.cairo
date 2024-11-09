@@ -40,7 +40,7 @@ impl PlanetaryInterfaceImpl of PlanetaryInterfaceTrait {
     // dispatchers
     fn dispatcher(self: PlanetaryInterface) -> IPlanetaryActionsDispatcher {
         (IPlanetaryActionsDispatcher{
-            contract_address: get_world_contract_address(self.world, Self::ACTIONS_SELECTOR)
+            contract_address: self.world.dns(@"planetary_actions").unwrap()
         })
     }
 }
