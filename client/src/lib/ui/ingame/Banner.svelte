@@ -3,12 +3,7 @@
   import Background from '$lib/ui/Background.svelte'
   import { slide } from 'svelte/transition'
 
-  interface Props {
-    color?: string;
-    children?: import('svelte').Snippet;
-  }
-
-  let { color = '', children }: Props = $props();
+  let { color = '', children } = $props()
 </script>
 
 <div

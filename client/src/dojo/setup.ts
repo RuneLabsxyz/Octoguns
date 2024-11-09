@@ -36,7 +36,6 @@ export async function setup(
 
   // setup world
   const client = await setupWorld(dojoProvider)
-
   // create burner manager
   const burnerManager = new BurnerManager({
     masterAccount: new Account(

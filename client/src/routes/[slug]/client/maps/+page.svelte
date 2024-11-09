@@ -11,6 +11,7 @@
   import { env } from '$stores/network'
   import { maps as getMaps } from '$lib/api/maps'
   import type { Map } from '$src/dojo/models.gen'
+  import { onMount } from 'svelte'
 
   let maps: Map[] | null = $state([])
 

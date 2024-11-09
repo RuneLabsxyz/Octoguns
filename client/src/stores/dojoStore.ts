@@ -19,7 +19,10 @@ export async function initializeStore() {
 
   try {
     console.log('Initializing store...')
-    const result = await setup('world_adress', dojoConfig)
+    const result = await setup(
+      '0x0190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2',
+      dojoConfig
+    )
     console.log('setup complete')
     dojoStore.set(result)
 

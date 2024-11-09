@@ -19,16 +19,13 @@
   }
 
   async function connectAndGoto(config: string) {
-    env.set(config as 'mainnet' | 'slot')
-    await initStore()
-    if (!$account) {
-      await connect(config)
-    }
-    goto(`${config}/client/games/openGames`)
+    env.set('slot')
+    goto(`/slot/client/games/openGames`)
   }
 
   onMount(() => {
     playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
+    initStore()
   })
 </script>
 
