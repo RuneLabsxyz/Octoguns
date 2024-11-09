@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x303f3cee39508b72f6e0c23ca82d9a5cabdb288eb9133dbfc0474b398b19556",
-    "seed": "planetelo",
+    "address": "0x18263f0c4437435871c9ca4b5975af02bf2c23d7551aba5616f2ed6b1f6c168",
+    "seed": "jflkadsj",
     "name": "Planetelo",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x55914ca87ffbf6736d70c9a95d20402edb037baab85a16876f9a02024fed3f9",
-      "class_hash": "0x7cc9421a4c7e6eb453c7ac75c193351f475e51583970634888d0e9e529a866",
+      "address": "0xba94411e33f483e8f45361942af6ef37687fe31e7f00ae942a9d712bc83792",
+      "class_hash": "0x2b2b0430d7c04de1c8b0e07a6e61b29eae65d757a41f7422acae3235310bc27",
       "abi": [
         {
           "type": "impl",
@@ -1184,6 +1184,28 @@
             {
               "name": "InGame",
               "type": "core::integer::u128"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "planetelo::models::Member",
+          "members": [
+            {
+              "name": "id",
+              "type": "core::integer::u128"
+            },
+            {
+              "name": "player",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "timestamp",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "elo",
+              "type": "core::integer::u64"
             }
           ]
         },
@@ -1322,6 +1344,26 @@
                 }
               ],
               "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "get_queue_members",
+              "inputs": [
+                {
+                  "name": "game",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "playlist",
+                  "type": "core::integer::u128"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::array::Array::<planetelo::models::Member>"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
@@ -1445,7 +1487,7 @@
       "systems": []
     },
     {
-      "address": "0x1b84a054206715ec462be5e6de50404c48dd51fc67ce0904a36e0b58c451530",
+      "address": "0x2529fc6d48aa42dda44e417557b7d2d7cd691a0d55f5b30d7f4c4a478628e59",
       "class_hash": "0x6a454facf1c4bb74ca29357cd31316121013be3e2a3fde316589a4fcde32ccb",
       "abi": [
         {
@@ -1710,8 +1752,18 @@
     },
     {
       "members": [],
+      "class_hash": "0xb499568eb655fa0603345a4070852a56a118cb50c4bdc477fd67bd2aa77c8b",
+      "tag": "Global"
+    },
+    {
+      "members": [],
       "class_hash": "0x4d9d93a52718ad7da24a04a55bcd70c05ad83142472bc8ad771381978fef7d9",
       "tag": "GlobalTournament"
+    },
+    {
+      "members": [],
+      "class_hash": "0x5d23236016227a0ec730188ea14aabac44eff3c000b119e1d31615619fe2a01",
+      "tag": "Member"
     },
     {
       "members": [],
@@ -1720,7 +1772,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x5d7faf39c0f395610ebe607e27dbcdf3c637cccd89ebe02450cb286acb4060d",
+      "class_hash": "0x278202613e13d3c314f620a4ca593ad686cecb39a9c362a6c4734882af212cf",
       "tag": "PlayerStatus"
     },
     {
@@ -1730,13 +1782,8 @@
     },
     {
       "members": [],
-      "class_hash": "0x31bc397ead2fcaecdf5ae4d71d5acfd59e915acc372747570b9d2abb473b8fa",
+      "class_hash": "0x580ef110fb5400663f514413f378a12467e419a4fb93fd6b1a1249ee67e6d57",
       "tag": "Queue"
-    },
-    {
-      "members": [],
-      "class_hash": "0x205d94bf9975d3c46a078cc5672e20326a47934a0c25a2ea0711e44b63c9ff6",
-      "tag": "QueueIndex"
     },
     {
       "members": [],

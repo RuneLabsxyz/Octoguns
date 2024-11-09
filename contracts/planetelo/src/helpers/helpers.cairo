@@ -26,10 +26,12 @@ fn get_planetelo_address(world_address: ContractAddress) -> ContractAddress {
     let mut world = IWorldDispatcher {contract_address: world_address};
     let mut world_storage = WorldStorageTrait::new(world, @"planetelo");
     let maybe_planetelo = world_storage.dns(@"planetelo");
+
     match maybe_planetelo {
         Option::Some((address, _)) => address,
         Option::None => panic!("Error Getting Planetelo Address"),
     }
+
 }
 
 fn get_planetelo_dispatcher(game: felt252) -> IOneOnOneDispatcher {
@@ -65,19 +67,26 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
                     else {
                         elo_diff = player.elo - potential_index.elo;
                     }
+                    if elo_diff != 0 {
+                        panic!("Both elos should be the same");
+                    }
                     if elo_diff < ELO_DIFF {
                         res = Option::Some(potential_index);
                         break;
                     }
+                    else {
+                        panic!("Elo difference is too high");
+                    }
                 }
             },
             Option::None => {
+                panic!("??");
                 break;
             }
         }
     };
+    Option::None
 
-    res
 
 }
 
@@ -87,7 +96,8 @@ fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Arra
     let mut i = 0;
     while i < queue.members.len() {
         let member: Member = world.read_model( *queue.members[i]);
-        members.append(member)
+        members.append(member);
+        i+=1;
     };
     members
 }

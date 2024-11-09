@@ -4,7 +4,7 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "planetelo"
+seed = "jflkadsj"
 
 [world.socials]
 x = "https://x.com/ohayo_dojo"
@@ -23,4 +23,3 @@ rpc_url = "https://api.cartridge.gg/x/starknet/sepolia"
 # Default account for katana with seed = 0
 account_address = "0x07b876bb215c7d875a50546e06f886318043c6b0dfbeac1d21e3d68cbabc42e8"
 #private_key = "0xc5b2fcab997346f3ea1c00b002ecf6f382c5f9c9659a3894eb783c5320f912"
-#world_address = "0x0303f3cee39508b72f6e0c23ca82d9a5cabdb288eb9133dbfc0474b398b19556"

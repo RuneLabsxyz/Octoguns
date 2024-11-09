@@ -1,5 +1,8 @@
 // define the interface
 use planetelo::models::QueueStatus;
+use planetelo::models::Member;
+use dojo::model::{ModelStorage, ModelValueStorage, Model};
+
 #[starknet::interface]
 trait IQueue<T> {
     fn queue(ref self: T, game: felt252, playlist: u128);
@@ -9,6 +12,7 @@ trait IQueue<T> {
     fn get_elo(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
     fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u32;
     fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> QueueStatus;
+    fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<Member>;
 }
 
 // dojo decorator
@@ -211,6 +215,13 @@ mod queue {
             let world = self.world(@"planetelo");
             let player: PlayerStatus = world.read_model((address, game, playlist));
             player.status
+        }
+
+        fn get_queue_members(self: @ContractState, game: felt252, playlist: u128) -> Array<Member> {
+            let world = self.world(@"planetelo");
+            let queue: Queue = world.read_model((game, playlist));
+            let mut members: Array<Member> = get_queue_members(world, game, playlist);
+            members
         }
 
     }
