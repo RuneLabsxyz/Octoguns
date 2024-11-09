@@ -11,24 +11,7 @@ import {
 } from 'svelte/store'
 import { account } from '$src/stores/account'
 import { currentPlayer } from './player'
-
-async function GlobalValue() {
-  const { torii, clientComponents } = await getDojo()
-  const valueHash = torii.poseidonHash(['0']) // global uses 0 as id
-
-  return componentValueStore(clientComponents.Global, valueHash)
-}
-
-export const currentGlobal: Readable<Global | null> = derived(
-  [accountStore],
-  ([account], set) => {
-    if (account?.address == undefined) {
-      return
-    }
-
-    get(GlobalValue()).subscribe(set)
-  }
-)
+import { currentGlobal } from './global'
 
 export async function Session(
   sessionId: number
