@@ -1,40 +1,34 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { T } from '@threlte/core'
   import { onMount } from 'svelte'
-  import type { BulletCoords } from '$stores/coordsStores'
   import type { BufferGeometry, Points } from 'three'
   import { Color, Vector3 } from 'three'
+  import type { BulletWithPosition } from '$lib/api/gameState'
 
   interface Props {
-    bullet: BulletCoords;
-    initialPosition: BulletCoords | undefined;
-    trailSpacing?: number;
-    compressionFactor?: number;
+    bullet: BulletWithPosition
+    trailSpacing?: number
+    compressionFactor?: number
   }
 
-  let {
-    bullet,
-    initialPosition,
-    trailSpacing = 0.01,
-    compressionFactor = 1
-  }: Props = $props();
+  let { bullet, trailSpacing = 0.01, compressionFactor = 1 }: Props = $props()
 
   let geometry: BufferGeometry | undefined = $state()
   let pointsRef: Points | undefined = $state()
 
-  let x = $derived(bullet.coords.x)
-  let y = $derived(bullet.coords.y)
+  let x = $derived(bullet.position.x)
+  let y = $derived(bullet.position.y)
 
-  let initialX = $derived(initialPosition?.coords.x ?? x)
-  let initialY = $derived(initialPosition?.coords.y ?? y)
+  let initialX = $derived(bullet.shot_at.x)
+  let initialY = $derived(bullet.shot_at.y)
 
   let length = $derived(Math.sqrt((x - initialX) ** 2 + (y - initialY) ** 2))
   let count = $derived(Math.floor(length / trailSpacing))
 
   // Calculate direction vector
-  let direction = $derived(new Vector3(x - initialX, 0, y - initialY).normalize())
+  let direction = $derived(
+    new Vector3(x - initialX, 0, y - initialY).normalize()
+  )
 
   // Function to generate random red shades
   function getRandomRedShade() {
@@ -44,33 +38,35 @@
     return new Color(red / 255, green / 255, blue / 255)
   }
 
-  let positions = $derived((() => {
-    const posArray = new Float32Array(count * 3)
-    const colorArray = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      const t = i / (count - 1)
-      const compressedT = Math.pow(t, compressionFactor)
-      const px = initialX + (x - initialX) * compressedT
-      const py = initialY + (y - initialY) * compressedT
+  let positions = $derived(
+    (() => {
+      const posArray = new Float32Array(count * 3)
+      const colorArray = new Float32Array(count * 3)
+      for (let i = 0; i < count; i++) {
+        const t = i / (count - 1)
+        const compressedT = Math.pow(t, compressionFactor)
+        const px = initialX + (x - initialX) * compressedT
+        const py = initialY + (y - initialY) * compressedT
 
-      const randomFactor = 0.1
-      const vx = px + (Math.random() - 0.5) * randomFactor
-      const vy = 1 + (Math.random() - 0.5) * randomFactor
-      const vz = py + (Math.random() - 0.5) * randomFactor
+        const randomFactor = 0.1
+        const vx = px + (Math.random() - 0.5) * randomFactor
+        const vy = 1 + (Math.random() - 0.5) * randomFactor
+        const vz = py + (Math.random() - 0.5) * randomFactor
 
-      posArray[i * 3 + 0] = vx // x
-      posArray[i * 3 + 1] = vy // y
-      posArray[i * 3 + 2] = vz // z
+        posArray[i * 3 + 0] = vx // x
+        posArray[i * 3 + 1] = vy // y
+        posArray[i * 3 + 2] = vz // z
 
-      const color = getRandomRedShade()
-      colorArray[i * 3 + 0] = color.r
-      colorArray[i * 3 + 1] = color.g
-      colorArray[i * 3 + 2] = color.b
-    }
-    return { positions: posArray, colors: colorArray }
-  })())
+        const color = getRandomRedShade()
+        colorArray[i * 3 + 0] = color.r
+        colorArray[i * 3 + 1] = color.g
+        colorArray[i * 3 + 2] = color.b
+      }
+      return { positions: posArray, colors: colorArray }
+    })()
+  )
 
-  run(() => {
+  $effect(() => {
     if (geometry && positions) {
       geometry.attributes.position.needsUpdate = true
       geometry.computeBoundingSphere()
@@ -86,7 +82,7 @@
         )
       }
     }
-  });
+  })
 
   onMount(() => {
     if (pointsRef) {

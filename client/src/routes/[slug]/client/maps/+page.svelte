@@ -13,13 +13,7 @@
   import type { Map } from '$src/dojo/models.gen'
   import { onMount } from 'svelte'
 
-  let maps: Map[] | null = $state([])
-
-  getMaps.subscribe((mapsValue) => {
-    if (mapsValue) {
-      maps = mapsValue
-    }
-  })
+  let maps: Map[] | null = $derived($getMaps)
 
   async function createMap() {
     goto(`/${$env}/client/mapmaker`)

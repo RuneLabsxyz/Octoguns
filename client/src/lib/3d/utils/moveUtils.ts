@@ -9,6 +9,7 @@ import {
   isMoveRecorded,
   replayMode,
 } from '$stores/gameStores'
+
 import { playerCharacterCoords } from '$stores/coordsStores'
 import { inPointerLock } from '$stores/cameraStores'
 import type { TurnData } from '$stores/gameStores'

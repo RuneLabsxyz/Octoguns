@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import StartGame from './StartGame.svelte'
-  import YouWin from './YouWin.svelte'
   import { birdView } from '$stores/cameraStores'
   import { isEnded, recordingMode, replayMode } from '$stores/gameStores'
   import {
@@ -31,11 +30,9 @@
   import Button from './Button.svelte'
   import { Eraser, Repeat, Send } from 'lucide-svelte'
   import GameFinished from './ingame/GameFinished.svelte'
-  interface Props {
-    moveHandler: any;
-  }
+  import getGame from '$lib/api/svelte/context'
 
-  let { moveHandler }: Props = $props();
+  let { session } = getGame()
 
   let isRecorded: boolean = $state()
   let justRecorded: boolean = $state()
@@ -53,7 +50,7 @@
       hasReset = false
       isRecorded = $isMoveRecorded
     }
-  });
+  })
 
   function setRecordingMode(e: Event) {
     recordingMode.set(!$recordingMode)

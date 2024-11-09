@@ -3,6 +3,7 @@ import { derived, type Readable } from 'svelte/store'
 import type { Map } from '$src/dojo/models.gen'
 import { getDojo } from '$src/stores/dojoStore'
 import { componentValueStore } from '$src/dojo/componentValueStore'
+import { currentSession, currentSessionId } from './sessions'
 
 export async function getMap(map_id: number): Promise<Readable<Map | null>> {
   // We consider they are unchangeable
@@ -20,6 +21,20 @@ export async function getMap(map_id: number): Promise<Readable<Map | null>> {
     }
   )
 }
+
+export const currentMap = derived([currentSession], ([session], set) => {
+  if (session == null) {
+    set(null);
+    return;
+  }
+
+  let unsubscribe = () => {};
+
+  getMap(Number(session.map_id))
+    .then(val => unsubscribe = val.subscribe(set));
+
+  return () => unsubscribe();
+})
 
 export const maps: Readable<Map[] | null> = derived(
   currentGlobal,
@@ -51,3 +66,4 @@ export const maps: Readable<Map[] | null> = derived(
     fetchMapStores()
   }
 )
+

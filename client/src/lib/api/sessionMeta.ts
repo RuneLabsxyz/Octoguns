@@ -19,9 +19,10 @@ import {
   yourActiveSessions,
   yourFinishedSessions,
   yourUnstartedSessions,
+  currentSessionId,
 } from './sessions'
 
-export async function sessionMeta(
+export async function SessionMeta(
   session_id: number
 ): Promise<Readable<SessionMeta | null>> {
   const { torii, clientComponents } = await getDojo()
@@ -39,6 +40,19 @@ export async function sessionMeta(
   )
 }
 
+export const currentSessionMeta = derived(
+  [currentSessionId],
+  ([currentSession], set) => {
+    if (currentSession == undefined) {
+      set(null)
+      return;
+    }
+
+    SessionMeta(currentSession).then(val => val.subscribe(set))
+  }
+)
+
+
 export const openSessionMetas: Readable<SessionMeta[]> = derived(
   [openSessions],
   ([sessions], set) => {
@@ -48,7 +62,7 @@ export const openSessionMetas: Readable<SessionMeta[]> = derived(
     }
     Promise.all(
       sessions.map(async (session) => {
-        const sessionMetaValue = await sessionMeta(Number(session.session_id))
+        const sessionMetaValue = await SessionMeta(Number(session.session_id))
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {
@@ -72,7 +86,7 @@ export const yourSessionMetas: Readable<SessionMeta[]> = derived(
     }
     Promise.all(
       sessions.map(async (session) => {
-        const sessionMetaValue = await sessionMeta(Number(session.session_id))
+        const sessionMetaValue = await SessionMeta(Number(session.session_id))
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {
@@ -96,7 +110,7 @@ export const yourActiveSessionMetas: Readable<SessionMeta[]> = derived(
     }
     Promise.all(
       sessions.map(async (session) => {
-        const sessionMetaValue = await sessionMeta(Number(session.session_id))
+        const sessionMetaValue = await SessionMeta(Number(session.session_id))
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {
@@ -120,7 +134,7 @@ export const yourFinishedSessionsMetas: Readable<SessionMeta[]> = derived(
     }
     Promise.all(
       sessions.map(async (session) => {
-        const sessionMetaValue = await sessionMeta(Number(session.session_id))
+        const sessionMetaValue = await SessionMeta(Number(session.session_id))
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {
@@ -144,7 +158,7 @@ export const yourUnstartedSessionsMetas: Readable<SessionMeta[]> = derived(
     }
     Promise.all(
       sessions.map(async (session) => {
-        const sessionMetaValue = await sessionMeta(Number(session.session_id))
+        const sessionMetaValue = await SessionMeta(Number(session.session_id))
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {

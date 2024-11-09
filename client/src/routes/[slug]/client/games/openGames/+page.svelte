@@ -9,6 +9,8 @@
   import { openSessionMetas } from '$lib/api/sessionMeta'
   import type { Session, SessionMeta } from '$src/dojo/models.gen'
 
+  // TODO: Migrate this to directly using stores
+
   let availableSessions: Session[] | null = $state(null)
   let availableSessionMetas: SessionMeta[] | null = $state(null)
 

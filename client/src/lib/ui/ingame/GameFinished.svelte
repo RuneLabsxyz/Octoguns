@@ -1,22 +1,21 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  import {
-    characterIds,
-    currentPlayerId,
-    isEnded,
-  } from '$src/stores/gameStores'
+  import getGame from '$lib/api/svelte/context'
   import Button from '$lib/ui/Button.svelte'
   import Banner from './Banner.svelte'
 
-  let isWinner: boolean | null = $state(null)
-  run(() => {
-    if ($currentPlayerId != null) {
-      // As defined in the contract, the winner is the player whose character id is not 0
-      // id 0 means character is dead
-      isWinner = !($characterIds[$currentPlayerId] === 0)
+  const { sessionMeta, currentPlayerId } = getGame()
+
+  let isWinner: boolean | null = $derived.by(() => {
+    if ($currentPlayerId == null) {
+      return null
     }
-  });
+
+    return (
+      [$sessionMeta?.p1_character, $sessionMeta?.p2_character][
+        $currentPlayerId
+      ] !== 0
+    )
+  })
 </script>
 
 <Banner color={isWinner ? '#facc15' : '#2563eb'}>

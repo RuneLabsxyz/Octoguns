@@ -1,33 +1,13 @@
 <script lang="ts">
-  import {
-    playerCharacterCoords,
-    enemyCharacterCoords,
-    type CoordsStore
-  } from '$stores/coordsStores'
+  import getGame from '$lib/api/svelte/context'
   import { T } from '@threlte/core'
+  import Character from './Character/Character.svelte'
 
-  let player_coords: CoordsStore = $derived($playerCharacterCoords)
-  let enemy_coords: CoordsStore = $derived($enemyCharacterCoords)
-
-  
-  
+  const { characters } = getGame()
 </script>
 
 <T.Group>
-  <T.Group>
-    {#each Object.entries(player_coords) as [key, data]}
-      <T.Mesh position={[data.x, 0, data.y]} {key}>
-        <T.BoxGeometry args={[1, 1, 1]} />
-        <T.MeshStandardMaterial color="blue" />
-      </T.Mesh>
-    {/each}
-  </T.Group>
-  <T.Group>
-    {#each Object.entries(enemy_coords) as [key, data]}
-      <T.Mesh position={[data.x, 0, data.y]} {key}>
-        <T.BoxGeometry args={[1, 1, 1]} />
-        <T.MeshStandardMaterial color="red" />
-      </T.Mesh>
-    {/each}
-  </T.Group>
+  {#each characters as character}
+    <Character {character} />
+  {/each}
 </T.Group>

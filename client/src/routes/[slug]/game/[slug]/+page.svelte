@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import { Canvas } from '@threlte/core'
   import Scene from '$lib/3d/Scene.svelte'
@@ -35,6 +35,8 @@
     setEnemyCharacterCoords,
     setBulletCoords,
   } from '$stores/coordsStores'
+
+  import { Game } from '$lib/api/game'
   import { get } from 'svelte/store'
   import { areAddressesEqual, getBulletPosition } from '$lib/helper'
   import { move } from '$dojo/createSystemCalls'
@@ -47,17 +49,17 @@
   import { account } from '$stores/account'
   import { connect } from '$lib/controller'
   import { controllerMainnet, controllerSlot } from '$lib/controller'
-  import { env } from '$stores/network';
+  import { env } from '$stores/network'
   import { onMount } from 'svelte'
+  import { currentSession, currentSessionId } from '$lib/api/sessions.js'
+  import GameComponent from '$lib/ui/Game.svelte'
+  import { GameState } from '$lib/api/gameState.js'
 
-  let { data } = $props();
-  let gameId = data.gameId
-  let calldata: TurnData = $state()
-  let characterData: ComponentStore = $state()
-  let characterPosition: ComponentStore = $state()
-  let map: ComponentStore = $state()
-  let isTurn: boolean = $state()
-  let sessionEntity: string = $state()
+  let { data } = $props()
+
+  const gameStorePromise = $state(
+    Game(parseInt(data.gameId), $account?.address ?? null)
+  )
 
   let clientComponents: any = $state()
   let torii: any = $state()
@@ -67,62 +69,62 @@
   let global: ComponentStore
 
   run(() => {
-    sessionId.set(parseInt(gameId))
-  });
-
+    sessionId.set()
+  })
 
   run(() => {
-    if ($dojoStore)  ({ clientComponents, torii, client } = $dojoStore as SetupResult)
-  });
-
+    if ($dojoStore)
+      ({ clientComponents, torii, client } = $dojoStore as SetupResult)
+  })
 
   run(() => {
     if (torii) sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
-  });
+  })
 
-  let sessionData = $derived(componentValueStore(clientComponents.Session, sessionEntity))
-  let sessionMetaData = $derived(componentValueStore(
-    clientComponents.SessionMeta,
-    sessionEntity
-  ))
-  
+  let sessionData = $derived(
+    componentValueStore(clientComponents.Session, sessionEntity)
+  )
+  let sessionMetaData = $derived(
+    componentValueStore(clientComponents.SessionMeta, sessionEntity)
+  )
+
   run(() => {
     if ($sessionData)
       map = componentValueStore(
         clientComponents.Map,
         torii.poseidonHash([BigInt($sessionData.map_id).toString()])
       )
-  });
+  })
 
   run(() => {
     gameState.set($sessionData.state)
-  });
+  })
   run(() => {
     console.log($isMoveRecorded)
-  });
+  })
 
   // Some logs to see what's going on
   run(() => {
     console.log('session', $sessionData)
-  });
+  })
   run(() => {
     console.log('sessionMeta', $sessionMetaData)
-  });
+  })
   run(() => {
     console.log('sessionMeta bullets', $sessionMetaData.bullets)
-  });
+  })
 
   run(() => {
     if ($sessionData.state === 3) {
       isEnded.set(true)
     }
-  });
+  })
 
   run(() => {
     if ($sessionMetaData) {
       turnCount.set($sessionMetaData.turn_count)
     }
-  });
+  })
 
   run(() => {
     if ($sessionMetaData) {
@@ -151,7 +153,7 @@
         }
       })
     }
-  });
+  })
 
   run(() => {
     if ($sessionMetaData) {
@@ -164,7 +166,7 @@
         isTurnPlayer.set(isTurn)
       })
     }
-  });
+  })
 
   run(() => {
     if ($sessionMetaData) {
@@ -174,10 +176,14 @@
       ])
       if (map) {
         console.log('map', $map)
-        mapObjects.set({ grid1: get(map).grid1, grid2: get(map).grid2, grid3: get(map).grid3 })
+        mapObjects.set({
+          grid1: get(map).grid1,
+          grid2: get(map).grid2,
+          grid3: get(map).grid3,
+        })
       }
     }
-  });
+  })
 
   run(() => {
     if ($sessionMetaData.bullets) {
@@ -189,7 +195,9 @@
       $sessionMetaData.bullets.forEach((bulletId) => {
         let turn_count = $sessionMetaData.turn_count
         //@ts-ignore Only gives error bc torii gives primtive types and ts thinks it's a number
-        let bulletEntity = torii.poseidonHash([BigInt(bulletId.value).toString()])
+        let bulletEntity = torii.poseidonHash([
+          BigInt(bulletId.value).toString(),
+        ])
         let bulletStore = componentValueStore(
           clientComponents.Bullet,
           bulletEntity
@@ -246,7 +254,7 @@
         })
       })
     }
-  });
+  })
 
   run(() => {
     if ($isMoveRecorded)
@@ -254,7 +262,7 @@
         sub_moves: $recordedMove.sub_moves,
         shots: $recordedMove.shots,
       }
-  });
+  })
   // Extract character data w/ characterIds
   run(() => {
     if ($characterIds) {
@@ -295,47 +303,25 @@
         }
       })
     }
-  });
-
-  function handleMove() {
-    console.log('calldata', calldata)
-    //TEMPORARY
-    //REMOVE
-    //@ts-ignore
-    move(client, $account, $sessionId, calldata)
-    frameCounter.set(0)
-    recordedMove.set({ sub_moves: [], shots: [] })
-    isMoveRecorded.set(false)
-    recordingMode.set(false)
-    replayMode.set(false)
-    bulletStart.set([])
-    bulletRender.set([])
-  }
+  })
 
   onMount(async () => {
-    if ($env === "mainnet") {
+    if ($env === 'mainnet') {
       if (await controllerMainnet.probe()) {
         // auto connect
-        await connect("mainnet");
+        await connect('mainnet')
       }
     } else {
       if (await controllerSlot.probe()) {
         // auto connect
-        await connect("slot");
+        await connect('slot')
       }
     }
-  })  
+  })
 </script>
 
-{#if $gameState === 0}
-  <Waiting />
-{/if}
-
-<div class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
-  <Ui moveHandler={handleMove} />
-</div>
-<div class="absolute h-full w-full">
-  <Canvas>
-    <Scene />
-  </Canvas>
-</div>
+{#await gameStorePromise}
+  <p>Game is loading...</p>
+{:then gameStore}
+  <GameComponent {gameStore} />
+{/await}

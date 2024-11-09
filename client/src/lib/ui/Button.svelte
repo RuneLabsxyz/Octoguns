@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import { createEventDispatcher } from 'svelte'
   import { cn } from '$lib/css/cn'
   import { clickSound } from '$lib/3d/utils/audioUtils'
 
   interface Props {
-    inline?: boolean;
-    small?: boolean;
-    href?: string | undefined;
-    selected?: boolean;
-    className?: string;
-    children?: import('svelte').Snippet;
+    inline?: boolean
+    small?: boolean
+    href?: string | undefined
+    selected?: boolean
+    className?: string
+    children?: import('svelte').Snippet
+    [key: string]: any
   }
 
   let {
@@ -20,14 +21,14 @@
     href = undefined,
     selected = false,
     className = '',
-    children
-  }: Props = $props();
+    children,
+    ...rest
+  }: Props = $props()
 
   const dispatcher = createEventDispatcher()
 
-  let classes = $state('')
-  run(() => {
-    classes = cn(
+  let classes = $derived(
+    cn(
       'box-border border-4 border-black rounded-lg hover:bg-gray-300 btn shadow-md text-center',
       className,
       {
@@ -36,7 +37,7 @@
         'bg-lime-100 hover:bg-lime-100 selected': selected,
       }
     )
-  });
+  )
 
   function handleClick(event: MouseEvent) {
     clickSound()
@@ -45,11 +46,11 @@
 </script>
 
 {#if href}
-  <a {href} onclick={handleClick} class={classes}>
+  <a {href} onclick={handleClick} class={classes} {...rest}>
     {@render children?.()}
   </a>
 {:else}
-  <button onclick={handleClick} class={classes}>
+  <button onclick={handleClick} class={classes} {...rest}>
     {@render children?.()}
   </button>
 {/if}

@@ -13,7 +13,7 @@ import { account } from '$src/stores/account'
 import { currentPlayer } from './player'
 import { currentGlobal } from './global'
 
-export async function Session(
+export async function SessionStore(
   sessionId: number
 ): Promise<Readable<Session | null>> {
   // We consider they are unchangeable
@@ -32,6 +32,20 @@ export async function Session(
   )
 }
 
+export const currentSessionId = writable<number | undefined>()
+
+export const currentSession: Readable<Session | null> = derived(
+  [currentSessionId],
+  ([currentSessionId], set) => {
+    if (currentSessionId == undefined) {
+      set(null)
+      return
+    }
+
+    SessionStore(currentSessionId).then((val) => val.subscribe(set))
+  }
+)
+
 /**
  * This allows players to see and join available game sessions.
  */
@@ -45,7 +59,7 @@ export const openSessions: Readable<Session[]> = derived(
     }
     Promise.all(
       global.pending_sessions.map(async (session_id) => {
-        const session = await Session(Number(session_id))
+        const session = await SessionStore(Number(session_id))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {
@@ -77,7 +91,7 @@ export const yourSessions: Readable<Session[]> = derived(
 
     Promise.all(
       player.games.map(async (session_id) => {
-        const session = await Session(Number(session_id))
+        const session = await SessionStore(Number(session_id))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {

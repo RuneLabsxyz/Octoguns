@@ -1,64 +1,63 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import getGame from '$lib/api/svelte/context'
+  import { getBigInt } from '$lib/api/utils'
+  import { T } from '@threlte/core'
 
-  import { T } from '@threlte/core';
-  import { mapObjects } from '$stores/gameStores';
-
-  let coordsArray: { x: number; y: number }[] = $state([]);
-  let wallIndices: number[] = $state([]);
-  
   /**
    * Extracts active indices from three u256 bitmaps.
    * @param decimalGrids An array of three u256 bitmaps as BigInts.
    * @returns An array of active indices.
    */
   function extractActiveIndices(decimalGrids: bigint[]): number[] {
-    const activeIndices: number[] = [];
+    const activeIndices: number[] = []
 
     // Process grid1 (indices 0 to 207)
     for (let i = 0; i < 208; i++) {
       if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i);
+        activeIndices.push(i)
       }
     }
 
     // Process grid2 (indices 208 to 415)
     for (let i = 0; i < 208; i++) {
       if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i + 208);
+        activeIndices.push(i + 208)
       }
     }
 
     // Process grid3 (indices 416 to 624)
     for (let i = 0; i < 209; i++) {
       if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i + 416);
+        activeIndices.push(i + 416)
       }
     }
 
-    return activeIndices;
+    return activeIndices
   }
 
-  run(() => {
-    if ($mapObjects) {
-      let { grid1, grid2, grid3 } = $mapObjects;
+  let { map } = getGame()
 
-      grid1 = BigInt(`0x${grid1.toString(16)}`);
-      grid2 = BigInt(`0x${grid2.toString(16)}`);
-      grid3 = BigInt(`0x${grid3.toString(16)}`);
+  let wallIndices: number[] = $derived.by(() => {
+    if ($map) {
+      let { grid1, grid2, grid3 } = $map
 
-      wallIndices = extractActiveIndices([grid1, grid2, grid3]);
+      return extractActiveIndices([
+        getBigInt(grid1),
+        getBigInt(grid2),
+        getBigInt(grid3),
+      ])
+    } else {
+      return []
     }
-  });
+  })
 
-  run(() => {
-    coordsArray = wallIndices.map(index => {
-      let x = (index % 25) * 4 + 2;
-      let y = Math.floor(index / 25) * 4 + 2;
-      return { x, y };
-    });
-  });
-
+  let coordsArray: { x: number; y: number }[] = $derived(
+    wallIndices.map((index) => {
+      let x = (index % 25) * 4 + 2
+      let y = Math.floor(index / 25) * 4 + 2
+      return { x, y }
+    })
+  )
 
   const vertexShader = `
     varying vec2 vUv;
@@ -115,7 +114,7 @@
 
       gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
     }
-  `;
+  `
 
   const fragmentShader = `
     varying vec2 vUv;
@@ -125,16 +124,16 @@
       // Use the noise value for coloring and make it transparent
       gl_FragColor = vec4(vec3(vNoise * 0.4), 0.2); // Adjust the alpha value as needed
     }
-  `;
+  `
 </script>
 
 <T.Group>
   {#each coordsArray as coord}
-  <T.Mesh position={[coord.x - 50, 2, coord.y - 50]}>
-    <T.BoxGeometry args={[4, 5, 4, 50, 50, 50]} />
+    <T.Mesh position={[coord.x - 50, 2, coord.y - 50]}>
+      <T.BoxGeometry args={[4, 5, 4, 50, 50, 50]} />
       <T.ShaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
+        {vertexShader}
+        {fragmentShader}
         wireframe={false}
         transparent={true}
       />

@@ -2,7 +2,7 @@
   import { T, useFrame } from '@threlte/core'
   import { PointLight } from 'three'
 
-  // This let's light load on mount
+  // This lets light load on mount
   useFrame(() => {})
 </script>
 

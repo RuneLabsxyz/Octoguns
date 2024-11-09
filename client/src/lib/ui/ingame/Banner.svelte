@@ -1,9 +1,16 @@
-<script>
+<script lang="ts">
   import { cn } from '$lib/css/cn'
   import Background from '$lib/ui/Background.svelte'
+  import type { Snippet } from 'svelte'
   import { slide } from 'svelte/transition'
 
-  let { color = '', children } = $props()
+  let {
+    color = '',
+    children,
+  }: {
+    color?: string
+    children?: Snippet
+  } = $props()
 </script>
 
 <div

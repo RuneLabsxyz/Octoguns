@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { currentPlayerId } from '$src/stores/gameStores'
+  import getGame from '$lib/api/svelte/context'
   import Background from '$lib/ui/Background.svelte'
   import Overlay from './Overlay.svelte'
+
+  const { currentPlayerId } = getGame()
 </script>
 
 <Overlay>

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { cn } from '$lib/css/cn'
   import { birdView } from '$src/stores/cameraStores'
-  import { turnCount } from '$src/stores/gameStores'
   import { Camera, ArrowLeftRight, User } from 'lucide-svelte'
   import StepBar from '../StepBar.svelte'
+  import getGame from '$lib/api/svelte/context'
+
+  const { turnCount } = getGame()
 </script>
 
 <div class="overflow-hidden">
