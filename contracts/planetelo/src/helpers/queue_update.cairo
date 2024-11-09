@@ -57,6 +57,8 @@ fn update_queue(ref world: WorldStorage, game: felt252, playlist: u128, ref p1: 
     if p_at_end && p_at_2end {
         queue.length -= 2;
         world.write_model(@queue);
+        world.erase_model(@last_member);
+        world.erase_model(@second_last_member);
         return;
     }
 

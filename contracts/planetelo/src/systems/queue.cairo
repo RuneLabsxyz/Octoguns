@@ -237,6 +237,7 @@ mod queue {
             let player: PlayerStatus = world.read_model((address, game, playlist));
             match player.status {
                 QueueStatus::None => 0,
+                
                 QueueStatus::Queued => 1,
                 QueueStatus::InGame(_) => 2,
             }
