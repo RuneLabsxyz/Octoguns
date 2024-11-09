@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x18263f0c4437435871c9ca4b5975af02bf2c23d7551aba5616f2ed6b1f6c168",
-    "seed": "jflkadsj",
+    "address": "0x2ba126f73bbb77ca56a675097a4f98d1757dc290d1512a28768c97959c0c940",
+    "seed": "jflkadfassj",
     "name": "Planetelo",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0xba94411e33f483e8f45361942af6ef37687fe31e7f00ae942a9d712bc83792",
-      "class_hash": "0x2b2b0430d7c04de1c8b0e07a6e61b29eae65d757a41f7422acae3235310bc27",
+      "address": "0x5f9396d5b3e7156fa62aba5f36a290fda5312bae51a637678303c40cd370bee",
+      "class_hash": "0x41d8e1b976a0260993a90450ee03cd5bc134a49f8b4cd7344bcb9fa0d7f9924",
       "abi": [
         {
           "type": "impl",
@@ -1487,7 +1487,7 @@
       "systems": []
     },
     {
-      "address": "0x2529fc6d48aa42dda44e417557b7d2d7cd691a0d55f5b30d7f4c4a478628e59",
+      "address": "0x23a50816deffb742b622f2b3cf5198e2a9c8c057bb62e01dcf4abdf772fa7f2",
       "class_hash": "0x6a454facf1c4bb74ca29357cd31316121013be3e2a3fde316589a4fcde32ccb",
       "abi": [
         {

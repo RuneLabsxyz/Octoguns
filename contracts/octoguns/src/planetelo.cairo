@@ -129,11 +129,12 @@ mod planetelo {
         }
 
         fn settle_match(ref self: ContractState, match_id: u128) -> Status {
-            let mut world = self.world(@"planetelo");
+            let mut world = self.world(@"octoguns");
             let session: Session = world.read_model(match_id);
             let session_meta: SessionMeta = world.read_model(match_id);
 
             if (session.player1 == session.player2) {
+                panic!("Player 1 and Player 2 are the same");
                 return Status::Draw;
             }
 
@@ -149,6 +150,7 @@ mod planetelo {
                 },
                 3 => {
                     if session_meta.p1_character == 0 && session_meta.p2_character == 0 {
+                        panic!("both ids 0");
                         Status::Draw
                     } else if session_meta.p1_character == 0 {
                         Status::Winner(session.player2)

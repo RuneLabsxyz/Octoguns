@@ -40,10 +40,10 @@
   $: {
     if ($mapObjects) {
       let { grid1, grid2, grid3 } = $mapObjects;
-
-      grid1 = BigInt(`0x${grid1.toString(16)}`);
-      grid2 = BigInt(`0x${grid2.toString(16)}`);
-      grid3 = BigInt(`0x${grid3.toString(16)}`);
+      console.log(grid1, grid2, grid3);
+      grid1 = BigInt(grid1.toString(16));
+      grid2 = BigInt(grid2.toString(16));
+      grid3 = BigInt(grid3.toString(16));
 
       wallIndices = extractActiveIndices([grid1, grid2, grid3]);
     }

@@ -14,6 +14,7 @@
     import { AccountInterface, type Call } from 'starknet';
     import { onMount } from 'svelte';
     import { DojoProvider } from '@dojoengine/core';
+    import { connect } from '$lib/controller'
 
     let playerEntity: Entity
     let mapCount: number = 0
@@ -38,7 +39,9 @@
   
     $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
 
+    let game_id = 0
 
+    
     async function getStatus() {
       let planetelo: any = get(planeteloStore);
       console.log(planetelo)
@@ -64,7 +67,7 @@
       let res = await signer.execute([{
         contractAddress: planetelo.address,
         entrypoint: "settle",
-        calldata: ['0x6f63746f67756e73', '0x0']
+        calldata: ['0x6f63746f67756e73', '0x6']
       }])
     }
 
@@ -100,7 +103,9 @@
   
   </script>
   
-  <div class={cn('flex flex-col h-full')}>
+
+
+  <div class={cn('flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8')}>
     <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
       <Button on:click={() => {
         queue()
@@ -123,7 +128,7 @@
         settle()
       }}>Settle</Button>
     </div>
-</div>
+  </div>
 
   
   

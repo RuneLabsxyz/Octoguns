@@ -49,7 +49,7 @@
 
     grids.forEach((grid) => {
       // Convert hex to decimal
-      let decimal = BigInt(`0x${grid.toString(16)}`).toString(10);
+      let decimal = BigInt(grid.toString(16)).toString(10);
       decimalGrids.push(BigInt(decimal));
     });
     let activeIndices = extractActiveIndices(decimalGrids);

@@ -9,9 +9,9 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
-import manifest from "../../../contracts/planetelo/manifest_sepolia.json"
 import { Contract } from 'starknet'
 import { planeteloStore } from '$stores/dojoStore'
+import manifest from '../../../contracts/planetelo/manifest_sepolia.json'
 
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>
@@ -22,7 +22,7 @@ export async function setup({ ...config }: DojoConfig) {
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: manifest.world.address ?? ''
+    worldAddress: '0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2'
   })
 
   // create contract components
@@ -33,6 +33,7 @@ export async function setup({ ...config }: DojoConfig) {
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
+  console.log(JSON.parse(JSON.stringify(config.manifest)));
 
   const sync = await getSyncEntities(toriiClient, contractComponents as any, undefined, [])
 

@@ -1,6 +1,6 @@
 #[starknet::interface]
 trait ISpawn<T> {
-    fn spawn(self: @T, session_id: u32);
+    fn spawn(ref self: T, session_id: u32);
 }
 
 #[dojo::contract]
@@ -16,21 +16,24 @@ mod spawn {
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
     use octoguns::models::global::{Global, GlobalTrait, GlobalImpl};
     use octoguns::consts::{GLOBAL_KEY};
+    use starknet::contract_address_const;
 
 
     #[abi(embed_v0)]
     impl SpawnImpl of ISpawn<ContractState> {
-        fn spawn(self: @ContractState, session_id: u32) {
+        fn spawn(ref self: ContractState, session_id: u32) {
             let mut world = self.world(@"octoguns");
             let mut global: Global = world.read_model(GLOBAL_KEY);
             let position_1 = Vec2 { x: 50000, y: 20000 };
             let position_2 = Vec2 { x: 50000, y: 80000 };
 
             let mut session: Session = world.read_model(session_id);
-            assert!(session.state == 1, "Not spawnable");
+
+            if session.state == 0 { 
+                assert!(session.player2 != contract_address_const::<0x0>(), "Not spawnable");
+            }
             let caller = get_caller_address();
             let mut session_meta: SessionMeta = world.read_model(session_id);
-            assert!(caller == session.player1 || caller == session.player2, "Not player");
 
             let mut session_primitives: SessionPrimitives = world.read_model(session_id);
 

@@ -20,7 +20,7 @@ use planetary_interface::interfaces::one_on_one::{
     IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
 };
 
-use planetelo::elo::{EloTrait};
+use planetelo::elo::{EloTrait, EloImpl};
 
 fn get_planetelo_address(world_address: ContractAddress) -> ContractAddress {
     let mut world = IWorldDispatcher {contract_address: world_address};
@@ -51,15 +51,15 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
     let mut found = false;
     let mut potential_index: Member = Member { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
     let mut res = Option::None;
+
+
+
+    assert!(player.elo != 0, "Player elo must be set");
     
     loop {
         match members.pop_front() {
             Option::Some(potential_index) => {
-                if potential_index.player == player.player {
-                    //do nothing
-                }
-                else {
-
+                    assert!(potential_index.elo != 0, "Potential index elo must be set");
                     let mut elo_diff = 0;
                     if potential_index.elo > player.elo {
                         elo_diff = potential_index.elo - player.elo;
@@ -77,7 +77,6 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
                     else {
                         panic!("Elo difference is too high");
                     }
-                }
             },
             Option::None => {
                 panic!("??");
@@ -85,8 +84,7 @@ fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> 
             }
         }
     };
-    Option::None
-
+    res
 
 }
 
@@ -96,13 +94,32 @@ fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Arra
     let mut i = 0;
     while i < queue.members.len() {
         let member: Member = world.read_model( *queue.members[i]);
+        assert!(member.elo != 0, "Member elo must be set");
         members.append(member);
         i+=1;
     };
     members
 }
 
-fn update_elos(status: Status, game_model: @Game, ref one_elo: u64, ref two_elo: u64) -> (u64, u64) {
+fn get_queue_members_except_player(world: WorldStorage, game: felt252, playlist: u128, player: ContractAddress) -> Array<Member> {
+    let mut members: Array<Member> = ArrayTrait::new();
+    let queue: Queue = world.read_model((game, playlist));
+    let mut i = 0;
+    while i < queue.members.len() {
+        let member: Member = world.read_model( *queue.members[i]);
+        assert!(member.elo != 0, "Member elo must be set");
+        if member.player != player {
+            members.append(member);
+        }
+        i+=1;
+    };
+    members
+}
+
+fn update_elos(status: Status, game_model: @Game, one_elo: @u64, two_elo: @u64) -> (u64, u64) {
+    let mut p1_elo = *one_elo;
+    let mut p2_elo = *two_elo;
+    
     match status {
         Status::None => {
             panic!("Match has doesn't exist");
@@ -111,18 +128,17 @@ fn update_elos(status: Status, game_model: @Game, ref one_elo: u64, ref two_elo:
             panic!("Match is still active");
         },
         Status::Draw => {
-
-            let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, 50_u16, 20_u8);
-
+            panic!("Match should not be draw");
+            let (mag, sign) = EloTrait::rating_change(*one_elo, *two_elo, 50_u16, 20_u8);
+            assert!(mag != 0, "elo should change");
             if sign {
-                one_elo += mag;
-                two_elo -= mag;
+                p1_elo += mag;
+                p2_elo -= mag;
             }
             else {
-                one_elo -= mag;
-                two_elo += mag;
+                p1_elo -= mag;
+                p2_elo += mag;
             }
-            
 
         },
         Status::Winner(winner) => {
@@ -132,20 +148,75 @@ fn update_elos(status: Status, game_model: @Game, ref one_elo: u64, ref two_elo:
             if winner == *game_model.player1 {
                 did_win = 100;
             }
-
-            let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, did_win, 20_u8);
-
+            assert!(p1_elo != 0, "elo should not be 0");
+            assert!(p2_elo != 0, "elo should not be 0");
+            let (mag, sign) = EloTrait::rating_change(*one_elo, *two_elo, did_win, 20_u8);
+            assert!(mag != 0, "mag shouldnt be 0 should change");
             if sign {
-                one_elo += mag;
-                two_elo -= mag;
-            }
+                p1_elo += mag;
+                p2_elo -= mag;
+                assert!(p1_elo != 800, "elo should change (update)");
+                assert!(p2_elo != 800, "elo should change (update)");
+            }   
             else {
-                one_elo -= mag;
-                two_elo += mag;
+                p1_elo -= mag;
+                p2_elo += mag;
+                assert!(p1_elo != 800, "elo should change (update)");
+                assert!(p2_elo != 800, "elo should change (update)");
             }
 
         }
     }
+    (p1_elo, p2_elo)
 
-    (one_elo, two_elo)
+}
+
+
+#[cfg(test)]
+mod tests {
+    // Local imports
+
+    use planetelo::elo::{EloTrait};
+
+    #[test]
+    fn test_elo_change_positive_01() {
+        let (mag, sign) = EloTrait::rating_change(1200_u64, 1400_u64, 100_u16, 20_u8);
+        assert(mag == 15, 'Elo: wrong change mag');
+        assert(!sign, 'Elo: wrong change sign');
+    }
+
+    #[test]
+    fn test_elo_change_positive_02() {
+        let (mag, sign) = EloTrait::rating_change(1300_u64, 1200_u64, 100_u16, 20_u8);
+        assert(mag == 7, 'Elo: wrong change mag');
+        assert(!sign, 'Elo: wrong change sign');
+    }
+
+    #[test]
+    fn test_elo_change_positive_03() {
+        let (mag, sign) = EloTrait::rating_change(1900_u64, 2100_u64, 100_u16, 20_u8);
+        assert(mag == 15, 'Elo: wrong change mag');
+        assert(!sign, 'Elo: wrong change sign');
+    }
+
+    #[test]
+    fn test_elo_change_negative_01() {
+        let (mag, sign) = EloTrait::rating_change(1200_u64, 1400_u64, 0_u16, 20_u8);
+        assert(mag == 5, 'Elo: wrong change mag');
+        assert(sign, 'Elo: wrong change sign');
+    }
+
+    #[test]
+    fn test_elo_change_negative_02() {
+        let (mag, sign) = EloTrait::rating_change(1300_u64, 1200_u64, 0_u16, 20_u8);
+        assert(mag == 13, 'Elo: wrong change mag');
+        assert(sign, 'Elo: wrong change sign');
+    }
+
+    #[test]
+    fn test_elo_change_draw() {
+        let (mag, sign) = EloTrait::rating_change(1200_u64, 1400_u64, 50_u16, 20_u8);
+        assert(mag == 5, 'Elo: wrong change mag');
+        assert(!sign, 'Elo: wrong change sign');
+    }
 }

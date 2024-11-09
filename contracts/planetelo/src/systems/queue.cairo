@@ -26,11 +26,11 @@ mod queue {
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
 
-    use planetary_interface::interfaces::one_on_one::{
+    use planetelo_interface::interfaces::planetelo::{
         IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
     };
 
-    use planetary_interface::interfaces::planetary::{
+    use planetelo_interface::interfaces::planetary::{
         PlanetaryInterface, PlanetaryInterfaceTrait,
         IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait
     };
@@ -40,7 +40,7 @@ mod queue {
     use planetelo::models::{PlayerStatus, QueueStatus, Elo, Member, Game, Queue, Player, Global, GlobalTrait};
     use planetelo::elo::EloTrait;
     use planetelo::consts::ELO_DIFF;
-    use planetelo::helpers::helpers::{find_match, get_planetelo_dispatcher, update_elos, get_queue_members};
+    use planetelo::helpers::helpers::{find_match, get_planetelo_dispatcher, update_elos, get_queue_members, get_queue_members_except_player};
     use planetelo::helpers::queue_update::update_queue;
 
     #[abi(embed_v0)]
@@ -65,7 +65,7 @@ mod queue {
             player_model.queues_joined += 1;
 
             let mut queue: Queue = world.read_model((game, playlist));
-            
+            assert!(elo.value != 0, "Elo must be set");
             let new = Member {
                 id: id.into(),
                 player: address,
@@ -76,6 +76,7 @@ mod queue {
             queue.members.append(id);
 
             player.status = QueueStatus::Queued;
+            player.index = id;
 
             world.write_model(@player_model);
             world.write_model(@player);
@@ -92,7 +93,8 @@ mod queue {
 
             let mut player: PlayerStatus = world.read_model((address, game));
 
-            //todo
+            assert!(player.status != QueueStatus::None, "Player is not in the queue");
+
         }
 
         fn matchmake(ref self: ContractState, game: felt252, playlist: u128) {
@@ -104,7 +106,10 @@ mod queue {
             assert!(player_status.status != QueueStatus::None, "Player is not in the queue");
             let timestamp = get_block_timestamp();
 
-            let mut p1: Member = world.read_model((game, playlist, player_status.index));
+            let mut p1: Member = world.read_model(player_status.index);
+
+            assert!(p1.elo != 0, "player member elo should be set");
+
             let time_diff = timestamp - p1.timestamp;
             let time_diff_secs = time_diff;
             assert!(time_diff_secs > 30, "Must be in queue for at least 30 seconds to refresh");
@@ -116,7 +121,7 @@ mod queue {
 
             let mut p2: Member = Member { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
 
-            let mut members = get_queue_members(world, game, playlist);
+            let mut members = get_queue_members_except_player(world, game, playlist, address);
             let maybe_match = find_match(ref members, ref p1);
 
             match maybe_match {
@@ -124,7 +129,7 @@ mod queue {
                     p2 = match_member;
                 },
                 Option::None => {
-                    panic!("No match found");
+                    panic!("No match found?");
                 }
             }
 
@@ -165,6 +170,8 @@ mod queue {
             let mut world = self.world(@"planetelo");
 
             let mut game_model: Game = world.read_model((game, game_id));
+            assert!(game_model.player1 != contract_address_const::<0x0>(), "Player 1 should be set");
+            assert!(game_model.player2 != contract_address_const::<0x0>(), "Player 2 should be set");
 
 
             let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
@@ -183,14 +190,15 @@ mod queue {
             let mut player_two_elo: Elo = world.read_model((game_model.player2, game_model.game, game_model.playlist));
             let mut two_elo: u64 = player_two_elo.value;
 
-            let (mag, sign) = EloTrait::rating_change(800_u64, 800_u64, 50_u16, 20_u8);
 
-            let (new_one_elo, new_two_elo) = update_elos(status, @game_model, ref one_elo, ref two_elo);
+            let (one_new, two_new) = update_elos(status, @game_model, @one_elo, @two_elo);
 
-            player_one_elo.value = new_one_elo;
-            player_two_elo.value = new_two_elo;
+            assert!(one_new != 800, "elo should change queue");
+            assert!(two_new != 800, "elo should change queue");
             player_one.status = QueueStatus::None;
             player_two.status = QueueStatus::None;
+            player_one_elo.value = one_new;
+            player_two_elo.value = two_new;
 
             world.write_model(@player_one_elo);
             world.write_model(@player_two_elo);

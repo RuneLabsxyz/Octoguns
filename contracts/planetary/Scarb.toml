@@ -8,12 +8,11 @@ sierra-replace-ids = true
 
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0-rc.1" }
-planetary_interface = { path = "../planetary_interface" }
+planetary_interface = { git = "https://github.com/ZackAmes/planetelo-interface" }
 
 
 [[target.starknet-contract]]
 build-external-contracts = [
-  "planetary_interface::systems::vulcan::salute",
   "dojo::world::world_contract::world"
 ]
 
