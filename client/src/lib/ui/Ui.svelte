@@ -34,10 +34,6 @@
 
   let { session } = getGame()
 
-  let isRecorded: boolean = $state()
-  let justRecorded: boolean = $state()
-  let hasReset: boolean = $state()
-
   run(() => {
     if (isMoveRecorded) {
       if (isRecorded == true && $isMoveRecorded == false && !hasReset) {

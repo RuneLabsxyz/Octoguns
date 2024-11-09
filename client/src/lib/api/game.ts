@@ -68,6 +68,20 @@ export async function Game(sessionId: number, player_address: string | null) {
     }
   })
 
+  let currentPlayerCharacterIdStore = derived(
+    [currentPlayerIdStore, sessionMetaStore],
+    ([playerId, sessionMeta]) => {
+      if (playerId == null) {
+        return null
+      }
+
+      return [
+        Number(sessionMeta?.p1_character),
+        Number(sessionMeta?.p2_character),
+      ][playerId]
+    }
+  )
+
   let isCurrentPlayersTurnStore = derived(
     [sessionMetaStore, currentPlayerIdStore],
     ([sessionMeta, currentPlayer]) => {
@@ -92,6 +106,7 @@ export async function Game(sessionId: number, player_address: string | null) {
     map: mapStore,
     turnCount: turnCountStore,
     currentPlayerId: currentPlayerIdStore,
+    currentPlayerCharacterId: currentPlayerCharacterIdStore,
     isCurrentPlayersTurn: isCurrentPlayersTurnStore,
     bullets: bulletStore,
     characters: charactersStore,

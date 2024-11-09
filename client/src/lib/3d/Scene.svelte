@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
+  import { run } from 'svelte/legacy'
 
   import { T, useThrelte } from '@threlte/core'
   import { onDestroy, onMount } from 'svelte'
@@ -11,12 +11,7 @@
     recordedMove,
     rendererStore,
   } from '$stores/gameStores'
-  import {
-    handleKeyDown,
-    handleKeyUp,
-    handleMouseDown,
-    handleMouseUp,
-  } from '$lib/handlers'
+
   import BirdView from './components/Cameras/BirdView.svelte'
   import SplitScreen from './components/Cameras/SplitScreen.svelte'
   import {
@@ -25,48 +20,44 @@
   } from './components/Cameras/SplitScreen/CameraUtils'
   import { birdView } from '$stores/cameraStores'
   import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
-  import { PerspectiveCamera } from 'three'
+  import { Controls, PerspectiveCamera } from 'three'
   import Bullets from './components/Bullets.svelte'
   import { shoot, replayShot, simulate } from './utils/shootUtils'
-  import {
-    isMouseDownStore,
-    playerCharacterId,
-    frameCounter,
-  } from '$stores/gameStores'
+
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
   import { Inspector } from 'three-inspect'
+  import getGame from '$lib/api/svelte/context'
 
   let { renderer, scene } = useThrelte()
+  const { controls, currentPlayerCharacterId, frameCounter, move } = getGame()
+
   let cameras: PerspectiveCamera[] = $state([])
   let numCameras = 1
   let birdViewCamera: any = $state()
 
-  let characterId: number = $state(0)
-  run(() => {
-    characterId = $playerCharacterId
-  });
-
+  let characterId: number = $derived($currentPlayerCharacterId!)
   let hasShotInCurrentRecording = writable(false)
 
   let animationFrameId: number
 
   const addEventListeners = () => {
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-    window.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mouseup', handleMouseUp)
+    window.addEventListener('keydown', controls.handleKeyDown)
+    window.addEventListener('keyup', controls.handleKeyUp)
+    window.addEventListener('mousedown', controls.handleMouseDown)
+    window.addEventListener('mouseup', controls.handleMouseUp)
   }
 
   const removeEventListeners = () => {
-    window.removeEventListener('keydown', handleKeyDown)
-    window.removeEventListener('keyup', handleKeyUp)
-    window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('mouseup', handleMouseUp)
+    window.removeEventListener('keydown', controls.handleKeyDown)
+    window.removeEventListener('keyup', controls.handleKeyUp)
+    window.removeEventListener('mousedown', controls.handleMouseDown)
+    window.removeEventListener('mouseup', controls.handleMouseUp)
   }
 
+  // TODO(Red): Start to refactor this
   const animationLoop = () => {
     try {
       if ($birdView) {
@@ -77,18 +68,26 @@
           }
         }
       } else {
-        if (cameras.length > 0 && cameras.every(cam => cam && cam.isCamera)) {
+        if (cameras.length > 0 && cameras.every((cam) => cam && cam.isCamera)) {
           renderCameras(cameras, numCameras, renderer, scene)
         }
       }
 
+      // TODO(Red): This should be in the move controller
       if ($recordingMode) {
-        recordMove(cameras[0], characterId)
-        if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
-          shoot(cameras[0]) // currently only works with one camera
-          hasShotInCurrentRecording.set(true)
-        }
+        move.update(cameras[0])
+        // TODO(Red): This needs to move on the update method of the store
+        //if (
+        //  $isMouseDownStore &&
+        //  $inPointerLock &&
+        //  !$hasShotInCurrentRecording
+        //) {
+        //  shoot(cameras[0]) // currently only works with one camera
+        //  hasShotInCurrentRecording.set(true)
+        //}
       }
+
+      // TODO(Red): How to neatly handle the replay mode?
       if ($replayMode) {
         if ($frameCounter > RECORDING_FRAME_LIMIT) {
           console.log('eyyy, tf')
@@ -107,11 +106,18 @@
     }
   }
 
-  run(() => {
+  // Red: I don't know what this does, but at this point I'm too afraid to touch it
+  $effect(() => {
     if ($frameCounter) {
       simulate()
     }
-  });
+  })
+
+  $effect(() => {
+    if ($recordingMode) {
+      hasShotInCurrentRecording.set(false)
+    }
+  })
 
   onMount(() => {
     addEventListeners()
@@ -125,12 +131,6 @@
       cancelAnimationFrame(animationFrameId)
     }
   })
-
-  run(() => {
-    if ($recordingMode) {
-      hasShotInCurrentRecording.set(false)
-    }
-  });
 
   onDestroy(() => {
     removeEventListeners()

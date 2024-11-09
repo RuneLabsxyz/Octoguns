@@ -32,11 +32,6 @@ export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 export const frameCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
 
-export type TurnData = {
-  sub_moves: { x: number; y: number; xdir: boolean; ydir: boolean }[]
-  shots: { angle: number; step: number }[]
-}
-
 export type MapObjects = {
   grid1: bigint
   grid2: bigint

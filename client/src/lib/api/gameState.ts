@@ -8,9 +8,10 @@ import {
   type Writable,
   get as getValue,
   type Unsubscriber,
+  toStore,
 } from 'svelte/store'
 import get from './utils'
-import { SESSION_PRIMITIVES } from '$lib/consts'
+import { FRAME_INTERVAL, SESSION_PRIMITIVES } from '$lib/consts'
 import type {
   Session,
   SessionMeta,
@@ -21,6 +22,8 @@ import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
 import type { GameStore } from './game'
 import type { Character } from './data/characters'
 import { getDojoContext } from '$src/stores/dojoStore'
+import { ControlsStore } from './controls/controls'
+import { MoveStore } from './data/move'
 
 function handleMove() {
   //console.log('calldata', calldata)
@@ -32,7 +35,7 @@ function handleMove() {
 export type GameState = ReturnType<typeof GameState>
 export type Position = { x: number; y: number }
 
-type Marked<T> = T & { __marked?: string }
+export type Marked<T> = T & { __marked?: string }
 
 export type BulletWithPosition = BulletTy & {
   shot_at: Position
@@ -47,8 +50,7 @@ function bulletAt(
   const movesPerTurn = Number(SESSION_PRIMITIVES.sub_moves_per_turn)
   const shotStep = Number(bullet.shot_step)
 
-  // TODO(Red): frame may need to be divided by 3?
-  const frameDiff = movesPerTurn * turn + frame - shotStep
+  const frameDiff = movesPerTurn * turn + frame / FRAME_INTERVAL - shotStep
 
   const position = getBulletPosition(bullet, frameDiff)
 
@@ -108,6 +110,35 @@ export function GameState(game: GameStore) {
       })
     })
   )
+  const controlsStore = ControlsStore()
+
+  // Red: This may break badly :/
+  const currentCharacterStore = toStore(
+    () => {
+      const playerId = getValue(game.currentPlayerId)
+      if (playerId == null) {
+        return null
+      }
+      return getValue(characters[playerId])
+    },
+    (newCharacter) => {
+      const playerId = getValue(game.currentPlayerId)
+      if (playerId == null) {
+        return null
+      }
+
+      characters[playerId].set(newCharacter)
+    }
+  )
+
+  const moveStore = MoveStore({
+    controlsStore,
+    currentCharacterStore: currentCharacterStore,
+    frameCounterStore: frameCounter,
+    incrementFrame() {
+      frameCounter.update((frame) => frame + 1)
+    },
+  })
 
   return {
     ...game,
@@ -115,6 +146,8 @@ export function GameState(game: GameStore) {
     frameCounter: readonly(frameCounter),
     bullets,
     characters,
+    controls: controlsStore,
+    move: moveStore,
 
     spawn: async () => {
       const [account, { client }] = await getDojoContext()
@@ -124,7 +157,6 @@ export function GameState(game: GameStore) {
         session_id: getValue(game.sessionId),
       })
     },
-    move: () => {},
 
     submitMove: () => {},
     /// destroy() MUST be called when the subscription is ending, it cleans up gracefully all subscriptions to the various stores
