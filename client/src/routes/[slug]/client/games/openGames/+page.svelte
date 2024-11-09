@@ -11,15 +11,13 @@
 
   let availableSessions: Session[] | null = $state(null)
   let availableSessionMetas: SessionMeta[] | null = $state(null)
-  let currentSessions: any = $state(null)
-  let playerEntity: Entity = $state()
 
   openSessions.subscribe((sessions) => {
     availableSessions = sessions
   })
 
   openSessionMetas.subscribe((sessions) => {
-    currentSessions = sessions
+    availableSessionMetas = sessions
   })
 </script>
 
