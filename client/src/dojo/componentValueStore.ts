@@ -15,6 +15,8 @@ import { dojoStore } from '$stores/dojoStore'
 
 export type ComponentStore = ReturnType<typeof componentValueStore>
 
+// TODO: Rewrite this to make it easier 
+
 export function componentValueStore<S extends Schema>(
   component: Component<S>,
   entityId: Entity | undefined,

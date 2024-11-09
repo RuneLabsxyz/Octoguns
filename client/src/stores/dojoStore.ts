@@ -1,6 +1,6 @@
 import { getDojoConfig } from '../dojoConfig';
-import { setup } from '$dojo/setup';
-import { writable } from 'svelte/store';
+import { setup, type SetupResult } from '$dojo/setup';
+import { get, writable } from 'svelte/store';
 
 export const dojoStore = writable();
 export const isSetup = writable(false);
@@ -26,6 +26,15 @@ export async function initializeStore(force = false) {
     setupPromise = setupInternal();
   }
   return setupPromise;
+}
+
+export async function getDojo(): Promise<SetupResult> {
+  if (get(isSetup)) {
+    return get(dojoStore) as SetupResult;
+  } else {
+    await waitForInitialization();
+    return get(dojoStore) as SetupResult;
+  }
 }
 
 export function waitForInitialization(): Promise<void> {

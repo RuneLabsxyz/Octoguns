@@ -45,7 +45,7 @@
   import { account } from '$stores/account'
   import { connect } from '$lib/controller'
   import { controllerMainnet, controllerSlot } from '$lib/controller'
-  import { env } from '$stores/network';
+  import { env } from '$stores/network'
   import { onMount } from 'svelte'
 
   export let data
@@ -59,10 +59,11 @@
 
   $: ({ clientComponents, torii, client } = $dojoStore as SetupResult)
 
-
   $: sessionEntity = torii.poseidonHash([BigInt(gameId).toString()])
 
   $: sessionData = componentValueStore(clientComponents.Session, sessionEntity)
+  $: console.log('Got session data!', $sessionData)
+
   $: sessionMetaData = componentValueStore(
     clientComponents.SessionMeta,
     sessionEntity
@@ -267,18 +268,18 @@
   }
 
   onMount(async () => {
-    if ($env === "mainnet") {
+    if ($env === 'mainnet') {
       if (await controllerMainnet.probe()) {
         // auto connect
-        await connect("mainnet");
+        await connect('mainnet')
       }
     } else {
       if (await controllerSlot.probe()) {
         // auto connect
-        await connect("slot");
+        await connect('slot')
       }
     }
-  })  
+  })
 </script>
 
 {#if $gameState === 0}
