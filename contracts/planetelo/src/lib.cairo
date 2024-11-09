@@ -4,7 +4,10 @@ mod systems {
 }
 
 mod models;
-mod helpers;
+mod helpers {
+    mod helpers;
+    mod queue_update;
+};
 mod elo;
 
 

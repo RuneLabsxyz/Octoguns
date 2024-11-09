@@ -30,9 +30,9 @@ mod queue {
 
     use planetelo::models::{PlayerStatus, QueueStatus, Elo, Member, Game, Queue, Player};
     use planetelo::elo::EloTrait;
-    use planetelo::helpers::get_planetelo_address;
     use planetelo::consts::ELO_DIFF;
     use planetelo::helpers::{find_match, get_planetelo_dispatcher};
+    use planetelo::helpers::queue_update::update_queue;
 
     #[abi(embed_v0)]
     impl QueueImpl of IQueue<ContractState> {
@@ -123,8 +123,11 @@ mod queue {
 
             let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
             let status: QueueStatus = QueueStatus::None;
+            let mut p2: Member = Member { player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
+
             match maybe_match {
                 Option::Some(match_member) => {
+                    p2 = match_member;
                     status = QueueStatus::InGame(game_id);
                 },
                 Option::None => {
@@ -132,14 +135,15 @@ mod queue {
                 }
             }
 
-           let game_model = Game {
-                game: game,
-                id: game_id,
-                playlist: playlist,
-                player1: address,
-                player2: potential_index.player,
-                timestamp: timestamp
-            };
+            update_queue(world, p1, p2);
+
+            //create game
+
+            //set queue, game, 
+
+
+
+
     
         
 
