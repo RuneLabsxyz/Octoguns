@@ -12,12 +12,23 @@ import {
 import { account } from '$src/stores/account'
 import { currentPlayer } from './player'
 
-async function Global() {
+async function GlobalValue() {
   const { torii, clientComponents } = await getDojo()
   const valueHash = torii.poseidonHash(['0']) // global uses 0 as id
 
   return componentValueStore(clientComponents.Global, valueHash)
 }
+
+export const currentGlobal: Readable<Global | null> = derived(
+  [accountStore],
+  ([account], set) => {
+    if (account?.address == undefined) {
+      return
+    }
+
+    get(GlobalValue()).subscribe(set)
+  }
+)
 
 export async function Session(
   sessionId: number
@@ -37,6 +48,41 @@ export async function Session(
     }
   )
 }
+
+/**
+ * This allows players to see and join available game sessions.
+ */
+
+export const openSessions: Readable<Session[]> = derived(
+  [currentPlayer, currentGlobal],
+  ([player, global], set) => {
+    if (global == null || player == null) {
+      set([])
+      return
+    }
+    Promise.all(
+      global.pending_sessions.map(async (session_id) => {
+        const session = await Session(Number(session_id))
+        return new Promise<Session>((resolve) => {
+          session.subscribe((value) => {
+            if (value) {
+              resolve(value)
+            }
+          })
+        })
+      })
+    ).then((sessions) => {
+      // Filter out sessions where player is player1 or player2 and state is not 0
+      const filteredSessions = sessions.filter(
+        (session) =>
+          session.player1 !== player.player &&
+          session.player2 !== player.player &&
+          session.state === 0
+      )
+      set(filteredSessions)
+    })
+  }
+)
 
 export const yourSessions: Readable<Session[]> = derived(
   [currentPlayer],
