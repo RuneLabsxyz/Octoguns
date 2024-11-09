@@ -13,7 +13,6 @@ use starknet::contract_address_const;
 
 use planetelo::models::{QueueStatus, Queue, Game, QueueMember};
 
-use planetelo::models::Member;
 use planetelo::consts::ELO_DIFF;
 
 use planetary_interface::interfaces::one_on_one::{
@@ -47,9 +46,9 @@ fn get_planetelo_dispatcher(game: felt252) -> IOneOnOneDispatcher {
     IOneOnOneDispatcher{ contract_address: planetelo_address }
 }
 
-fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> {
+fn find_match(ref members: Array<QueueMember>, ref player: QueueMember) -> Option<QueueMember> {
     let mut found = false;
-    let mut potential_index: Member = Member { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
+    let mut potential_index: QueueMember = QueueMember { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
     let mut res = Option::None;
 
 

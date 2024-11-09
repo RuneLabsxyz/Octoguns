@@ -47,7 +47,7 @@ fn update_queue(ref world: WorldStorage, game: felt252, playlist: u128, ref p1: 
 
 
     let mut last_member: QueueMember = world.read_model((game, playlist, last_index));
-    let mut last2_member: QueueMember = world.read_model((game, playlist, second_last_index));
+    let mut second_last_member: QueueMember = world.read_model((game, playlist, second_last_index));
 
     let mut i = 0;
     let mut member: QueueMember = world.read_model((game, playlist, i));
@@ -56,9 +56,11 @@ fn update_queue(ref world: WorldStorage, game: felt252, playlist: u128, ref p1: 
 
     if p_at_end && p_at_2end {
         queue.length -= 2;
-        world.write_model(queue);
+        world.write_model(@queue);
         return;
     }
+
+
     else if p_at_end {
         // the last player was already deleted, but the second last was not
         // we take the other player that was at the end and move them to the other player's spot
@@ -66,113 +68,67 @@ fn update_queue(ref world: WorldStorage, game: felt252, playlist: u128, ref p1: 
         // if p1 was updated, then we know p2 was not   
         // if p2 was updated, then we know p1 was not
         if p1_updated {
+            p2.player = second_last_member.player;
+            p2.elo = second_last_member.elo;
+            p2.timestamp = second_last_member.timestamp;
+
+            world.erase_model(@second_last_member);
+            world.write_model(@p2);
+        }
+        else if p2_updated {
+            p1.player = second_last_member.player;
+            p1.elo = second_last_member.elo;
+            p1.timestamp = second_last_member.timestamp;
+
+            world.erase_model(@second_last_member);
+            world.write_model(@p1);
+
+        }
+        else {
+            panic!("no player updated, but p_at_end is true");
+        }
+    }
+    else if p_at_2end {
+        // the last player was already deleted, but the second last was not
+        // we take the other player that was at the end and move them to the other player's spot
+        //then we delete the last player
+        if p1_updated {
             p2.player = last_member.player;
             p2.elo = last_member.elo;
             p2.timestamp = last_member.timestamp;
 
-            last_member.player = contract_address_const::<0x0>();
-            last_member.elo = 0;
-            last_member.timestamp = 0;
+            world.erase_model(@last_member);
+            world.write_model(@p2);
         }
         else if p2_updated {
             p1.player = last_member.player;
             p1.elo = last_member.elo;
             p1.timestamp = last_member.timestamp;
 
-            last_member.player = contract_address_const::<0x0>();
-            last_member.elo = 0;
-            last_member.timestamp = 0;
+            world.erase_model(@last_member);
+            world.write_model(@p1);
+
         }
         else {
-            panic!("no player updated, but p_at_end is true");
+            panic!("no player updated, but p_at_2end is true");
         }
+    }
+    else {
+        // neither player was at the end, se we just replace p1 with the last, and p2 with the second last
+        p1.player = last_member.player;
+        p1.elo = last_member.elo;
+        p1.timestamp = last_member.timestamp;
+
+        p2.player = second_last_member.player;
+        p2.elo = second_last_member.elo;
+        p2.timestamp = second_last_member.timestamp;
 
         world.erase_model(@last_member);
+        world.erase_model(@second_last_member);
         world.write_model(@p1);
+        world.write_model(@p2);
     }
-    else if 
-
-    while i < length {
-                member_id = *members[i];
-                let mut member: Member = world.read_model((game, playlist, member_id));
-
-                if (member.id != p1.id && member.id != p2.id && !p_at_end) {
-                    //if both are not in the last two positions, move last 2 positions to their spots and delelete the last 2 positions
-                    p1.player = last_member.player;
-                    p1.elo = last_member.elo;
-                    p1.timestamp = last_member.timestamp;
-
-                    last_member.player = contract_address_const::<0x0>();
-                    last_member.elo = 0;
-                    last_member.timestamp = 0;
-
-                    p2.player = last2_member.player;
-                    p2.elo = last2_member.elo;
-                    p2.timestamp = last2_member.timestamp;
-
-                    last2_member.player = contract_address_const::<0x0>();
-                    last2_member.elo = 0;
-                    last2_member.timestamp = 0;
-
-                    world.erase_model(@last_member);
-                    world.erase_model(@last2_member);
-                    world.write_model(@p2);
-                    world.write_model(@p1);
-                    
-                }
-                else if (member.id == p1.id) {
-                        if (!end_updated && !p1_updated) {
-                            p1.player = last_member.player;
-                            p1.elo = last_member.elo;
-                            p1.timestamp = last_member.timestamp;                            end_updated = true;
-                            p1_updated = true;
-                            world.erase_model(@last_member);
-                            world.write_model(@p1);
-                        }
-                        else if (!second_end_updated && !p1_updated) {
-                            p1.player = last2_member.player;
-                            p1.elo = last2_member.elo;
-                            p1.timestamp = last2_member.timestamp;                            second_end_updated = true;
-                            p1_updated = true;
-                            world.erase_model(@last2_member);
-                            world.write_model(@p1);
-                        }
-                        else {
-                            panic!("p1 not updated");
-                        }
-                }
-                else if (member.id == p2.id) {
-                    if (!end_updated && !p2_updated) {
-                        p2.player = last_member.player;
-                        p2.elo = last_member.elo;
-                        p2.timestamp = last_member.timestamp;                        end_updated = true;
-                        p2_updated = true;
-                        world.erase_model(@last_member);
-                        world.write_model(@p2);
-                    }
-                    else if (!second_end_updated && !p2_updated) {
-                        p2.player = last2_member.player;
-                        p2.elo = last2_member.elo;
-                        p2.timestamp = last2_member.timestamp;                        second_end_updated = true;
-                        p2_updated = true;
-                        world.erase_model(@last2_member);
-                        world.write_model(@p2);
-                    }
-                    else {
-                        panic!("p2 not updated");
-                    }
-
-                    if (member.id != p1.id && member.id != p2.id) {
-                        new_member_ids.append(member.id);
-                    }
-                }
-                
-              
-                i+=1;
-    };
-
-    new_member_ids
-
-
+    queue.length -= 2;
+    world.write_model(@queue);
 
 }

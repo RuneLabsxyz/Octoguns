@@ -1,6 +1,6 @@
 // define the interface
 use planetelo::models::QueueStatus;
-use planetelo::models::Member;
+use planetelo::models::QueueMember;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
 
 #[starknet::interface]
@@ -11,8 +11,8 @@ trait IQueue<T> {
     fn settle(ref self: T, game: felt252, game_id: u128);
     fn get_elo(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
     fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u32;
-    fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> QueueStatus;
-    fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<Member>;
+    fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u8;
+    fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<QueueMember>;
 }
 
 // dojo decorator
@@ -222,10 +222,23 @@ mod queue {
             queue.members.len()
         }
 
-        fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> QueueStatus {
+        fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> u8 {
             let world = self.world(@"planetelo");
             let player: PlayerStatus = world.read_model((address, game, playlist));
-            player.status
+            match player.status {
+                QueueStatus::None => 0,
+                QueueStatus::Queued => 1,
+                QueueStatus::InGame(_) => 2,
+            }
+        }
+
+        fn get_game_id(self: @ContractState, game: felt252, playlist: u128) -> u128 {
+            let world = self.world(@"planetelo");
+            let player: PlayerStatus = world.read_model((address, game, playlist));
+            match player.status {
+                QueueStatus::InGame(id) => id,
+                _ => panic!("Player is not in a game")
+            }
         }
 
         fn get_queue_members(self: @ContractState, game: felt252, playlist: u128) -> Array<Member> {
