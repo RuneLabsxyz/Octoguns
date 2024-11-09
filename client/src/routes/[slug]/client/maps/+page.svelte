@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy'
-
   import { dojoStore } from '$stores/dojoStore'
   import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
@@ -10,7 +8,6 @@
   import Button from '$lib/ui/Button.svelte'
   import TxToast from '$lib/ui/TxToast.svelte'
   import { cn } from '$lib/css/cn'
-  import { account } from '$stores/account'
   import { env } from '$stores/network'
   import { maps as getMaps } from '$lib/api/maps'
   import type { Map } from '$src/dojo/models.gen'

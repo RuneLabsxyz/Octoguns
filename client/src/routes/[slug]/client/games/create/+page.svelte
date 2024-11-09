@@ -1,11 +1,6 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy'
-
-  import { dojoStore } from '$stores/dojoStore'
-  import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
   import { goto } from '$app/navigation'
-  import { type Entity, getComponentValue } from '@dojoengine/recs'
   import MiniMap from '$lib/MiniMap.svelte'
   import Button from '$lib/ui/Button.svelte'
   import TxToast from '$lib/ui/TxToast.svelte'
@@ -14,13 +9,25 @@
   import { account, username, clearAccountStorage } from '$stores/account'
   import { env } from '$stores/network'
   import { createGame as createGameCall } from '$src/lib/api/actions'
+  import { maps as mapsValue } from '$src/lib/api/maps'
+  import { yourUnstartedSessions } from '$src/lib/api/sessions'
+  import type { Map } from '$src/dojo/models.gen'
 
   let loadingToGame = false
-  let playerEntity: Entity = $state()
   let localSelectedMap: number | null = $state(null)
-  let mapCount: number = $state(0)
 
-  let maps: any[] = $state([])
+  let maps: Map[] | null = $state(null)
+
+  mapsValue.subscribe((mapValues) => {
+    maps = mapValues
+  })
+
+  yourUnstartedSessions.subscribe((sessions) => {
+    if (loadingToGame) {
+      let session = sessions[-1]
+      startSession(Number(session.session_id))
+    }
+  })
 
   function startSession(lastPlayerGameValue: number) {
     if (loadingToGame) {
@@ -63,53 +70,6 @@
       showToast = true
     }
   }
-
-  function goBack() {
-    goto('/client/games')
-  }
-
-  function disconnect() {
-    clearAccountStorage()
-  }
-  let { clientComponents, torii, client } = $derived($dojoStore as any)
-  let globalentity = $derived(torii.poseidonHash([BigInt(0).toString()]))
-  run(() => {
-    if ($account) playerEntity = torii.poseidonHash([$account?.address])
-  })
-  let player = $derived(
-    componentValueStore(clientComponents.Player, playerEntity)
-  )
-  let global = $derived(
-    componentValueStore(clientComponents.Global, globalentity)
-  )
-  run(() => {
-    if ($global) {
-      mapCount = $global.map_count
-      maps = []
-      for (let i = 0; i < mapCount; i++) {
-        const map = getComponentValue(
-          clientComponents.Map,
-          torii.poseidonHash([BigInt(i).toString()])
-        )
-        maps.push(map)
-      }
-    }
-  })
-  run(() => {
-    console.log('global', $global)
-  })
-  run(() => {
-    localSelectedMap = $selectedMap
-  })
-  run(() => {
-    if ($player) {
-      let lastPlayerGameValue =
-        $player.games.length > 0
-          ? $player.games[$player.games.length - 1].value
-          : null
-      startSession(lastPlayerGameValue)
-    }
-  })
 </script>
 
 <div class={cn('flex flex-col h-full')}>
@@ -122,17 +82,19 @@
   <div
     class="grid grid-fill justify-around auto-cols-min px-3 overflow-auto overflow-x-hidden"
   >
-    {#each maps as map}
-      {#if map}
-        <Button
-          className="w-fit h-fit"
-          selected={localSelectedMap === map.map_id}
-          on:click={() => selectMap(map.map_id)}
-        >
-          <MiniMap {map} />
-        </Button>
-      {/if}
-    {/each}
+    {#if maps}
+      {#each maps as map}
+        {#if map}
+          <Button
+            className="w-fit h-fit"
+            selected={localSelectedMap === map.map_id}
+            on:click={() => selectMap(Number(map.map_id))}
+          >
+            <MiniMap {map} />
+          </Button>
+        {/if}
+      {/each}
+    {/if}
   </div>
 </div>
 

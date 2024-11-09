@@ -3,25 +3,25 @@
   import { onMount } from 'svelte'
   import { env } from '$stores/network'
 
-  let isStoreInitialized = $state(false);
+  let isStoreInitialized = $state(false)
 
   async function initStore() {
     try {
-      await initializeStore(true);
-      console.log('Store initialized');
-      isStoreInitialized = true; 
+      await initializeStore()
+      console.log('Store initialized')
+      isStoreInitialized = true
     } catch (error) {
-      console.error('Failed to initialize store:', error);
+      console.error('Failed to initialize store:', error)
     }
   }
 
-  let { data, children } = $props();
+  let { data, children } = $props()
   let network = data.network
 
   onMount(async () => {
-    env.set(network as "mainnet" | "slot");
-    await initStore();
-  });
+    env.set(network as 'mainnet' | 'slot')
+    await initStore()
+  })
 </script>
 
 {#if isStoreInitialized}
@@ -29,5 +29,3 @@
 {:else}
   <div>Loading...</div>
 {/if}
-
-
