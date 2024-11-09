@@ -1,9 +1,11 @@
 use starknet::ContractAddress;
 use dojo::world::storage::{WorldStorage, WorldStorageTrait};
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
-use planetary_interface::interfaces::planetary::{
-    PlanetaryInterface, PlanetaryInterfaceTrait,
-    IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
+use planetelo_interface::interfaces::planetary::{
+    PlanetaryTrait,
+    IPlanetaryActions, 
+    IPlanetaryActionsDispatcher,
+    IPlanetaryActionsDispatcherTrait
 };
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
 
@@ -15,7 +17,7 @@ use planetelo::models::{QueueStatus, Queue, Game, QueueMember};
 
 use planetelo::consts::ELO_DIFF;
 
-use planetary_interface::interfaces::one_on_one::{
+use planetelo_interface::interfaces::planetelo::{
     IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
 };
 
@@ -35,10 +37,12 @@ fn get_planetelo_address(world_address: ContractAddress) -> ContractAddress {
 
 fn get_planetelo_dispatcher(game: felt252) -> IOneOnOneDispatcher {
 
-    let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-    assert!(planetary.get_world_address(game) != starknet::contract_address_const::<0x0>(), "Planetary Error");
+    let (contract_address, _) = PlanetaryTrait::new().dns(@"planetary_actions").unwrap();
 
+    let planetary: IPlanetaryActionsDispatcher = IPlanetaryActionsDispatcher {contract_address};
+    
     let world_address = planetary.get_world_address(game);
+
     assert!(world_address != starknet::contract_address_const::<0x0>(), "Error Getting World Address");
 
  
@@ -48,8 +52,8 @@ fn get_planetelo_dispatcher(game: felt252) -> IOneOnOneDispatcher {
 
 fn find_match(ref members: Array<QueueMember>, ref player: QueueMember) -> Option<QueueMember> {
     let mut found = false;
-    let mut potential_index: QueueMember = QueueMember { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
     let mut res = Option::None;
+    let mut potential_index = player.clone();
 
 
 

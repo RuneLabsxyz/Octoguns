@@ -1,9 +1,9 @@
 use starknet::{ContractAddress, ClassHash, contract_address_const};
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait, Resource};
+use dojo::world::storage::{WorldStorage, WorldStorageTrait};
 
-use planetary_interface::utils::systems::{get_world_contract_address};
-use planetary_interface::interfaces::planetary::{
-    PlanetaryInterface, PlanetaryInterfaceTrait,
+use planetelo_interface::interfaces::planetary::{
+    Planetary, PlanetaryTrait,
     IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
 };
 
@@ -71,46 +71,26 @@ trait IOctogunsActions<TState> {
     fn move(ref self: TState, session_id: u32, moves: TurnMove);
 }
 
-
-
-#[derive(Copy, Drop)]
 struct OctogunsInterface {
-    world: IWorldDispatcher
+    world: WorldStorage
 }
 
 #[generate_trait]
-impl OctogunsInterfaceImpl of OctogunsInterfaceTrait {
-    
-    const NAMESPACE: felt252 = 'octoguns';
-    const ACTIONS_SELECTOR: felt252 = selector_from_tag!("octoguns-actions");
-    const START_SELECTOR: felt252 = selector_from_tag!("octoguns-start");
-    const SPAWN_SELECTOR: felt252 = selector_from_tag!("octoguns-spawn");
-    
-    fn new() -> OctogunsInterface {
-        let world_address: ContractAddress = PlanetaryInterfaceTrait::new().dispatcher().get_world_address(Self::NAMESPACE);
-        (OctogunsInterface{
-            world: IWorldDispatcher{contract_address: world_address}
-        })
+impl OctogunsImpl of OctogunsTrait {
+    fn new(contract_address: ContractAddress) -> WorldStorage {
+        OctogunsTrait::new(contract_address)
     }
-
-    //
-    // dispatchers
     fn actions_dispatcher(self: OctogunsInterface) -> IOctogunsActionsDispatcher {
-        (IOctogunsActionsDispatcher{
-            contract_address: get_world_contract_address(self.world, Self::ACTIONS_SELECTOR)
-        })
+        let (contract_address, _) = self.world.dns(@"actions").unwrap();
+        (IOctogunsActionsDispatcher{contract_address})
     }
-
     fn start_dispatcher(self: OctogunsInterface) -> IOctogunsStartDispatcher {
-        (IOctogunsStartDispatcher{
-            contract_address: get_world_contract_address(self.world, Self::START_SELECTOR)
-        })
+        let (contract_address, _) = self.world.dns(@"start").unwrap();
+        (IOctogunsStartDispatcher{contract_address})
     }
-
     fn spawn_dispatcher(self: OctogunsInterface) -> IOctogunsSpawnDispatcher {
-        (IOctogunsSpawnDispatcher{
-            contract_address: get_world_contract_address(self.world, Self::SPAWN_SELECTOR)
-        })
-    }   
-
+        let (contract_address, _) = self.world.dns(@"spawn").unwrap();
+        (IOctogunsSpawnDispatcher{contract_address})
+    }
 }
+

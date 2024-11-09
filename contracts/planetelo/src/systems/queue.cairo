@@ -2,6 +2,7 @@
 use planetelo::models::QueueStatus;
 use planetelo::models::QueueMember;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
+use dojo::world::storage::{WorldStorage, WorldStorageTrait};
 
 #[starknet::interface]
 trait IQueue<T> {
@@ -10,7 +11,7 @@ trait IQueue<T> {
     fn matchmake(ref self: T, game: felt252, playlist: u128);
     fn settle(ref self: T, game: felt252, game_id: u128);
     fn get_elo(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u64;
-    fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u32;
+    fn get_queue_length(self: @T, game: felt252, playlist: u128) -> u128;
     fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u8;
     fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<QueueMember>;
 }
@@ -24,23 +25,30 @@ mod queue {
  
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+    use dojo::world::storage::{WorldStorage, WorldStorageTrait};
 
 
-    use planetary_interface::interfaces::one_on_one::{
+    use planetelo_interface::interfaces::planetelo::{
         IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
     };
 
-    use planetary_interface::interfaces::planetary::{
-        PlanetaryInterface, PlanetaryInterfaceTrait,
+    use planetelo_interface::interfaces::planetary::{
+        Planetary, PlanetaryTrait,
+        IPlanetaryActions, 
         IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait
     };
-
-    use planetary_interface::utils::systems::{get_world_contract_address};
 
     use planetelo::models::{PlayerStatus, QueueStatus, Elo, QueueMember, Game, Queue, Player, Global, GlobalTrait};
     use planetelo::elo::EloTrait;
     use planetelo::consts::ELO_DIFF;
-    use planetelo::helpers::helpers::{find_match, get_planetelo_dispatcher, update_elos, get_queue_members, get_queue_members_except_player};
+    use planetelo::helpers::helpers::{
+        find_match, 
+        get_planetelo_dispatcher, 
+        update_elos, 
+        get_queue_members, 
+        get_queue_members_except_player,
+        get_planetelo_address
+    };
     use planetelo::helpers::queue_update::update_queue;
 
     #[abi(embed_v0)]
@@ -146,8 +154,7 @@ mod queue {
             player_status.index = 0;
             opponent_status.index = 0;
 
-            let new_ids = update_queue(ref world, game, playlist, ref p1, ref p2);
-            queue.members = new_ids;
+            update_queue(ref world, game, playlist, ref p1, ref p2);
 
             let game_model: Game = Game {
                 game,
@@ -174,10 +181,13 @@ mod queue {
             assert!(game_model.player2 != contract_address_const::<0x0>(), "Player 2 should be set");
 
 
-            let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-            let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(game)}, selector_from_tag!("planetelo-planetelo"));
+            let planetary: WorldStorage = PlanetaryTrait::new();
+            let (contract_address, _) = planetary.dns(@"planetary_actions").unwrap();
+            let planetary_actions = IPlanetaryActionsDispatcher {contract_address};
+
+            let planetelo_address = get_planetelo_address(planetary_actions.get_world_address(game));
             
-            let dispatcher = IOneOnOneDispatcher{ contract_address };
+            let dispatcher = IOneOnOneDispatcher{ contract_address: planetelo_address    };
 
             let status = dispatcher.settle_match(game_id);
             
@@ -216,10 +226,10 @@ mod queue {
             elo.value
         }
 
-        fn get_queue_length(self: @ContractState, game: felt252, playlist: u128) -> u32 {
+        fn get_queue_length(self: @ContractState, game: felt252, playlist: u128) -> u128 {
             let world = self.world(@"planetelo");
             let queue: Queue = world.read_model((game, playlist));
-            queue.members.len()
+            queue.length
         }
 
         fn get_status(self: @ContractState, address: ContractAddress, game: felt252, playlist: u128) -> u8 {
@@ -232,19 +242,11 @@ mod queue {
             }
         }
 
-        fn get_game_id(self: @ContractState, game: felt252, playlist: u128) -> u128 {
-            let world = self.world(@"planetelo");
-            let player: PlayerStatus = world.read_model((address, game, playlist));
-            match player.status {
-                QueueStatus::InGame(id) => id,
-                _ => panic!("Player is not in a game")
-            }
-        }
 
-        fn get_queue_members(self: @ContractState, game: felt252, playlist: u128) -> Array<Member> {
+        fn get_queue_members(self: @ContractState, game: felt252, playlist: u128) -> Array<QueueMember> {
             let world = self.world(@"planetelo");
             let queue: Queue = world.read_model((game, playlist));
-            let mut members: Array<Member> = get_queue_members(world, game, playlist);
+            let mut members: Array<QueueMember> = get_queue_members(world, game, playlist);
             members
         }
 

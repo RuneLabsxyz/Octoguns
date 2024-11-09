@@ -89,20 +89,17 @@ mod tournament {
                 Pairing
         };
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp, contract_address_const};
-    use planetary_interface::interfaces::planetary::{
-        PlanetaryInterface, PlanetaryInterfaceTrait,
+    use planetelo_interface::interfaces::planetary::{
+        Planetary, PlanetaryTrait,
         IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
     };
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
 
-    use planetary_interface::interfaces::one_on_one::{
+    use planetelo_interface::interfaces::planetelo::{
         IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
-    };
-
-    use planetary_interface::utils::systems::{get_world_contract_address};
-    
+    };    
 
     #[abi(embed_v0)]
     impl TournamentImpl of ITournamentActionsDispatcher<ContractState> {
@@ -155,21 +152,16 @@ mod tournament {
             let mut i = 0;
 
 
-            let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-            let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(tournament.game)}, selector_from_tag!("planetelo-planetelo"));
-            
-            let dispatcher = IOneOnOneDispatcher{ contract_address };
-
             while i+1 < pool.players.len() {
                 let p1 = *pool.players[i];
                 let p2 = *pool.players[i+1];
 
-                let game_id = dispatcher.create_match(  p1, p2, tournament.playlist);    
+           //     let game_id = dispatcher.create_match(  p1, p2, tournament.playlist);    
 
                 let pairing = Pairing {
                     player_1: p1,
                     player_2: p2,
-                    game_id,
+                    game_id: 0,
                     status: 0,
                 };
                 tournament.pairings.append(pairing);
@@ -184,12 +176,6 @@ mod tournament {
         fn advance_tournament(ref self: ContractState, tournament_id: u128) {
             let mut world = self.world(@"planetelo");
             let mut tournament: Tournament = world.read_model(tournament_id);
-
-            let planetary: IPlanetaryActionsDispatcher = PlanetaryInterfaceTrait::new().dispatcher();
-            let contract_address = get_world_contract_address(IWorldDispatcher {contract_address: planetary.get_world_address(tournament.game)}, selector_from_tag!("planetelo-planetelo"));
-            
-            let dispatcher = IOneOnOneDispatcher{ contract_address };
-
 
             assert!(tournament.status == TournamentStatus::InRound, "Tournament not in round");
 

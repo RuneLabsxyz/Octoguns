@@ -11,7 +11,7 @@ migrate = "sozo build && sozo migrate apply"
 
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0-rc.1" }
-planetary_interface = { path = "../planetary_interface" }
+planetelo_interface = { path = "../planetelo_interface" }
 
 [[target.starknet-contract]]
 build-external-contracts = [

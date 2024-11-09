@@ -1,4 +1,4 @@
-use planetary_interface::interfaces::octoguns::Settings;
+use planetelo_interface::interfaces::octoguns::Settings;
 use octoguns::consts::GLOBAL_KEY;
 use starknet::ContractAddress;
 
@@ -47,10 +47,9 @@ trait IPlanetelo<T> {
 mod planetelo {
     use octoguns::consts::GLOBAL_KEY;
     use super::{Playlist, PlaylistGlobal, IPlanetelo};
-    use planetary_interface::interfaces::one_on_one::{IOneOnOne, Status};
-    use planetary_interface::utils::systems::{get_world_contract_address};
-    use planetary_interface::interfaces::octoguns::{
-        OctogunsInterface, OctogunsInterfaceTrait, 
+    use planetelo_interface::interfaces::planetelo::{IOneOnOne, Status};
+    use planetelo_interface::interfaces::octoguns::{
+        OctogunsTrait, Octoguns,
         IOctogunsStartDispatcher, IOctogunsStartDispatcherTrait, Settings};
     use octoguns::lib::dice::{Dice, DiceTrait, DiceImpl};
     use octoguns::models::sessions::{Session, SessionMeta};
