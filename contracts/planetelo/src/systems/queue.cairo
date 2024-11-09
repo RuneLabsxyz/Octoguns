@@ -26,12 +26,17 @@ mod queue {
         IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
     };
 
+    use planetary_interface::interfaces::planetary::{
+        PlanetaryInterface, PlanetaryInterfaceTrait,
+        IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait
+    };
+
     use planetary_interface::utils::systems::{get_world_contract_address};
 
-    use planetelo::models::{PlayerStatus, QueueStatus, Elo, Member, Game, Queue, Player};
+    use planetelo::models::{PlayerStatus, QueueStatus, Elo, Member, Game, Queue, Player, Global, GlobalTrait};
     use planetelo::elo::EloTrait;
     use planetelo::consts::ELO_DIFF;
-    use planetelo::helpers::{find_match, get_planetelo_dispatcher};
+    use planetelo::helpers::helpers::{find_match, get_planetelo_dispatcher, update_elos, get_queue_members};
     use planetelo::helpers::queue_update::update_queue;
 
     #[abi(embed_v0)]
@@ -49,27 +54,30 @@ mod queue {
                 world.write_model(@elo);
             }
 
+            let mut global: Global = world.read_model(0);
+            let id = global.uuid();
+
             assert!(player.status == QueueStatus::None, "Player is already in the queue");
             player_model.queues_joined += 1;
 
             let mut queue: Queue = world.read_model((game, playlist));
             
-            let new = QueueIndex {
-                game: game,
-                playlist: playlist,
-                index: queue.length,
+            let new = Member {
+                id: id.into(),
                 player: address,
                 timestamp: get_block_timestamp(),
                 elo: elo.value
             };
 
-            queue.length += 1;
+            queue.members.append(id);
+
             player.status = QueueStatus::Queued;
 
             world.write_model(@player_model);
             world.write_model(@player);
             world.write_model(@new);
             world.write_model(@queue);
+            world.write_model(@global);
             
         }
 
@@ -80,24 +88,7 @@ mod queue {
 
             let mut player: PlayerStatus = world.read_model((address, game));
 
-            assert!(player.status == QueueStatus::Queued, "Player is not in the queue");
-
-            let mut queue: Queue = world.read_model((game, playlist));
-            let mut index: QueueIndex = world.read_model((game, playlist, player.index));
-            let mut last_index: QueueIndex = world.read_model((game, playlist, queue.length - 1));
-
-            index.player = last_index.player;
-            index.index = last_index.index;
-            index.timestamp = last_index.timestamp;
-            index.elo = last_index.elo;
-
-            queue.length -= 1;
-            player.status = QueueStatus::None;
-
-            world.erase_model(@last_index);
-            world.write_model(@player);
-            world.write_model(@index);
-            world.write_model(@queue);
+            //todo
         }
 
         fn matchmake(ref self: ContractState, game: felt252, playlist: u128) {
@@ -109,44 +100,60 @@ mod queue {
             assert!(player_status.status != QueueStatus::None, "Player is not in the queue");
             let timestamp = get_block_timestamp();
 
-            let mut player_index: QueueIndex = world.read_model((game, playlist, player_status.index));
-            let time_diff = timestamp - player_index.timestamp;
+            let mut p1: Member = world.read_model((game, playlist, player_status.index));
+            let time_diff = timestamp - p1.timestamp;
             let time_diff_secs = time_diff;
             assert!(time_diff_secs > 30, "Must be in queue for at least 30 seconds to refresh");
 
             let mut queue: Queue = world.read_model((game, playlist));
-            assert!(queue.length > 1, "There must be at least 2 players in the queue to matchmake");
+            assert!(queue.members.len() > 1, "There must be at least 2 players in the queue to matchmake");
 
-            let maybe_match: Option<Member> = find_match(queue.members, player_index);
+            let mut status: QueueStatus = QueueStatus::None;
 
-            let dispatcher = get_planetelo_dispatcher(game);
+            let mut p2: Member = Member { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
 
-            let game_id = dispatcher.create_match(  player_index.player, potential_index.player, playlist);
-            let status: QueueStatus = QueueStatus::None;
-            let mut p2: Member = Member { player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
+            let mut members = get_queue_members(world, game, playlist);
+            let maybe_match = find_match(ref members, ref p1);
 
             match maybe_match {
                 Option::Some(match_member) => {
                     p2 = match_member;
-                    status = QueueStatus::InGame(game_id);
                 },
                 Option::None => {
                     panic!("No match found");
                 }
             }
 
-            update_queue(world, p1, p2);
+            let dispatcher = get_planetelo_dispatcher(game);
+            let p1_address = @p1.player;
+            let p2_address = @p2.player;
 
-            //create game
+            let game_id = dispatcher.create_match(  *p1_address, *p2_address, playlist);
 
-            //set queue, game, 
+            status = QueueStatus::InGame(game_id);
+            
+            let mut opponent_status: PlayerStatus = world.read_model((p2.player, game, playlist));
 
+            player_status.status = status;
+            opponent_status.status = status;
 
+            let new_ids = update_queue(ref world, game, playlist, ref p1, ref p2);
+            queue.members = new_ids;
 
+            let game_model: Game = Game {
+                game,
+                playlist,
+                player1: p1.player,
+                player2: p2.player,
+                id: game_id,
+                timestamp: get_block_timestamp()
+            };
 
-    
-        
-
+            world.write_model(@game_model);
+            world.write_model(@queue);
+            world.write_model(@player_status);
+            world.write_model(@opponent_status);
+            
         }
 
         fn settle(ref self: ContractState, game: felt252, game_id: u128) {
@@ -165,74 +172,26 @@ mod queue {
             
             let mut player_one: PlayerStatus = world.read_model((game_model.player1, game_model.game, game_model.playlist));
             let mut player_two: PlayerStatus = world.read_model((game_model.player2, game_model.game, game_model.playlist));
+            
             let mut player_one_elo: Elo = world.read_model((game_model.player1, game_model.game, game_model.playlist));
-            let one_elo: u64 = player_one_elo.value;
+            let mut one_elo: u64 = player_one_elo.value;
+            
             let mut player_two_elo: Elo = world.read_model((game_model.player2, game_model.game, game_model.playlist));
-            let two_elo: u64 = player_two_elo.value;
+            let mut two_elo: u64 = player_two_elo.value;
 
             let (mag, sign) = EloTrait::rating_change(800_u64, 800_u64, 50_u16, 20_u8);
 
+            let (new_one_elo, new_two_elo) = update_elos(status, @game_model, ref one_elo, ref two_elo);
 
-            match status {
-                Status::None => {
-                    panic!("Match has doesn't exist");
-                },
-                Status::Active => {
-                    panic!("Match is still active");
-                },
-                Status::Draw => {
+            player_one_elo.value = new_one_elo;
+            player_two_elo.value = new_two_elo;
+            player_one.status = QueueStatus::None;
+            player_two.status = QueueStatus::None;
 
-                    let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, 50_u16, 20_u8);
-
-
-                    if sign {
-                        player_one_elo.value += mag;
-                        player_two_elo.value -= mag;
-                    }
-                    else {
-                        player_one_elo.value -= mag;
-                        player_two_elo.value += mag;
-                    }
-                    
-
-                    player_one.status = QueueStatus::None;
-                    player_two.status = QueueStatus::None;
-
-                    world.write_model(@player_one);
-                    world.write_model(@player_two);
-                    world.write_model(@player_one_elo);
-                    world.write_model(@player_two_elo);
-                },
-                Status::Winner(winner) => {
-
-                    let mut did_win: u16 = 0;
-
-                    if winner == game_model.player1 {
-                        did_win = 100;
-                    }
-
-                    let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, did_win, 20_u8);
-
-                    if sign {
-                        player_one_elo.value += mag;
-                        player_two_elo.value -= mag;
-                    }
-                    else {
-                        player_one_elo.value -= mag;
-                        player_two_elo.value += mag;
-                    }
-                    
-                    player_one.status = QueueStatus::None;
-                    player_two.status = QueueStatus::None;
-
-                    world.write_model(@player_one);
-                    world.write_model(@player_two);
-                    world.write_model(@player_one_elo);
-                    world.write_model(@player_two_elo);
-
-                }
-            }
-            
+            world.write_model(@player_one_elo);
+            world.write_model(@player_two_elo);
+            world.write_model(@player_one);
+            world.write_model(@player_two);
             
         }
 

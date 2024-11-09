@@ -5,13 +5,22 @@ use planetary_interface::interfaces::planetary::{
     PlanetaryInterface, PlanetaryInterfaceTrait,
     IPlanetaryActionsDispatcher, IPlanetaryActionsDispatcherTrait,
 };
+use dojo::model::{ModelStorage, ModelValueStorage, Model};
+
+
+use starknet::contract_address_const;
+
+
+use planetelo::models::{QueueStatus, Queue, Game};
 
 use planetelo::models::Member;
 use planetelo::consts::ELO_DIFF;
 
-use planetary_interface::interfaces::one_on_one_dispatcher::{
-    IOneOnOneDispatcher, IOneOnOneDispatcherTrait,
+use planetary_interface::interfaces::one_on_one::{
+    IOneOnOneDispatcher, IOneOnOneDispatcherTrait, Status
 };
+
+use planetelo::elo::{EloTrait};
 
 fn get_planetelo_address(world_address: ContractAddress) -> ContractAddress {
     let mut world = IWorldDispatcher {contract_address: world_address};
@@ -36,27 +45,28 @@ fn get_planetelo_dispatcher(game: felt252) -> IOneOnOneDispatcher {
     IOneOnOneDispatcher{ contract_address: planetelo_address }
 }
 
-fn find_match(members: @Array<Member>, player_index: Member) -> Option<Member> {
+fn find_match(ref members: Array<Member>, ref player: Member) -> Option<Member> {
     let mut found = false;
-    let mut potential_index: Member = Member { player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
+    let mut potential_index: Member = Member { id: 0, player: contract_address_const::<0x0>(), timestamp: 0, elo: 0 };
+    let mut res = Option::None;
+    
     loop {
         match members.pop_front() {
-            Option::Some(member) => {
-                if member.player == address {
+            Option::Some(potential_index) => {
+                if potential_index.player == player.player {
                     //do nothing
                 }
                 else {
-                    potential_index = member;
 
                     let mut elo_diff = 0;
-                    if potential_index.elo > player_index.elo {
-                        elo_diff = potential_index.elo - player_index.elo;
+                    if potential_index.elo > player.elo {
+                        elo_diff = potential_index.elo - player.elo;
                     }
                     else {
-                        elo_diff = player_index.elo - potential_index.elo;
+                        elo_diff = player.elo - potential_index.elo;
                     }
                     if elo_diff < ELO_DIFF {
-                        found = true;
+                        res = Option::Some(potential_index);
                         break;
                     }
                 }
@@ -67,22 +77,65 @@ fn find_match(members: @Array<Member>, player_index: Member) -> Option<Member> {
         }
     };
 
+    res
+
 }
 
 fn get_queue_members(world: WorldStorage, game: felt252, playlist: u128) -> Array<Member> {
-    let mut members: Array<Member> = Array::new();
+    let mut members: Array<Member> = ArrayTrait::new();
     let queue: Queue = world.read_model((game, playlist));
-    let member_ids = queue.members;
-    loop {
-        match member_ids.pop_front() {
-            Option::Some(id) => {
-                let member: Member = world.read_model(id);
-                members.append(member);
-            },
-            Option::None => {
-                break;
+    let mut i = 0;
+    while i < queue.members.len() {
+        let member: Member = world.read_model( *queue.members[i]);
+        members.append(member)
+    };
+    members
+}
+
+fn update_elos(status: Status, game_model: @Game, ref one_elo: u64, ref two_elo: u64) -> (u64, u64) {
+    match status {
+        Status::None => {
+            panic!("Match has doesn't exist");
+        },
+        Status::Active => {
+            panic!("Match is still active");
+        },
+        Status::Draw => {
+
+            let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, 50_u16, 20_u8);
+
+            if sign {
+                one_elo += mag;
+                two_elo -= mag;
             }
+            else {
+                one_elo -= mag;
+                two_elo += mag;
+            }
+            
+
+        },
+        Status::Winner(winner) => {
+
+            let mut did_win: u16 = 0;
+
+            if winner == *game_model.player1 {
+                did_win = 100;
+            }
+
+            let (mag, sign) = EloTrait::rating_change(one_elo, two_elo, did_win, 20_u8);
+
+            if sign {
+                one_elo += mag;
+                two_elo -= mag;
+            }
+            else {
+                one_elo -= mag;
+                two_elo += mag;
+            }
+
         }
     }
-    members
+
+    (one_elo, two_elo)
 }
