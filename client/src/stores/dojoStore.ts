@@ -50,3 +50,8 @@ export async function getDojo(): Promise<SetupResult> {
     })
   })
 }
+
+export async function getDojoContext(): Promise<[Account, SetupResult]> {
+  const dojo = await getDojo()
+  return [dojo.burnerManager.getActiveAccount()!, dojo]
+}
