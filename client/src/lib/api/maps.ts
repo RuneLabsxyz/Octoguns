@@ -24,16 +24,17 @@ export async function getMap(map_id: number): Promise<Readable<Map | null>> {
 
 export const currentMap = derived([currentSession], ([session], set) => {
   if (session == null) {
-    set(null);
-    return;
+    set(null)
+    return
   }
 
-  let unsubscribe = () => {};
+  let unsubscribe = () => {}
 
-  getMap(Number(session.map_id))
-    .then(val => unsubscribe = val.subscribe(set));
+  getMap(Number(session.map_id)).then(
+    (val) => (unsubscribe = val.subscribe(set))
+  )
 
-  return () => unsubscribe();
+  return () => unsubscribe()
 })
 
 export const maps: Readable<Map[] | null> = derived(
@@ -66,4 +67,3 @@ export const maps: Readable<Map[] | null> = derived(
     fetchMapStores()
   }
 )
-
