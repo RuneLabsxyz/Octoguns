@@ -23,13 +23,43 @@ private_key = "0xc5b2fcab997346f3ea1c00b002ecf6f382c5f9c9659a3894eb783c5320f912"
 world_address = "0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2"
 
 [writers]
-"octoguns-Bullet" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
+"octoguns-Bullet" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
 "octoguns-TurnData" = ["octoguns-actions"]
-"octoguns-CharacterModel" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
-"octoguns-CharacterPosition" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
+"octoguns-CharacterModel" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-CharacterPosition" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
 "octoguns-Global" = ["octoguns-mapmaker", "octoguns-start"]
-"octoguns-Map" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
+"octoguns-Map" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
 "octoguns-Player" = ["octoguns-spawn", "octoguns-start"]
-"octoguns-Session" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
-"octoguns-Session-SessionMeta" = ["octoguns-actions", "octoguns-mapmaker", "octoguns-spawn", "octoguns-start"]
-"octoguns-Session-SessionPrimitives" = ["octoguns-start"]
+"octoguns-Session" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-SessionMeta" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-SessionPrimitives" = ["octoguns-start"]
