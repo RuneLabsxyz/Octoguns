@@ -12,7 +12,6 @@ import {
 
 import { playerCharacterCoords } from '$stores/coordsStores'
 import { inPointerLock } from '$stores/cameraStores'
-import type { TurnData } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import { Camera } from 'three'
 import {

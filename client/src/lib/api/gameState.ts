@@ -157,8 +157,6 @@ export function GameState(game: GameStore) {
         session_id: getValue(game.sessionId),
       })
     },
-
-    submitMove: () => {},
     /// destroy() MUST be called when the subscription is ending, it cleans up gracefully all subscriptions to the various stores
     /// required for this class to work.
     destroy: () => {

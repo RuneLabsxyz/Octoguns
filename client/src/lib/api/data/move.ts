@@ -5,13 +5,16 @@ import {
   RECORDING_FRAME_LIMIT,
 } from '$lib/consts'
 import { clamp, normalizeAndScaleVector } from '$lib/helper'
-import { inPointerLock } from '$src/stores/cameraStores'
+import { birdView, inPointerLock } from '$src/stores/cameraStores'
 import type { Readable } from 'svelte/motion'
-import { type Writable, get, writable } from 'svelte/store'
+import { type Writable, get, readonly, writable } from 'svelte/store'
 import { Camera, Controls, Vector3 } from 'three'
 import { type KeyState, ControlsStore } from '../controls/controls'
 import type { Marked, Position } from '../gameState'
 import type { Character } from './characters'
+import { frameCounter, rendererStore } from '$src/stores/gameStores'
+import { CallData } from 'starknet'
+import { getDojoContext } from '$src/stores/dojoStore'
 
 export type Submove = { x: number; y: number; xdir: boolean; ydir: boolean }
 export type Shot = { angle: number; step: number }
@@ -130,7 +133,9 @@ export type MoveStore = ReturnType<typeof MoveStore>
 export function MoveStore(ctx: {
   controlsStore: ControlsStore
   currentCharacterStore: Writable<Marked<Character> | null>
+  initialCharacterStore: Readable<Character | null>
   frameCounterStore: Readable<number>
+  sessionIdStore: Readable<number>
   incrementFrame: () => void
 }) {
   const currentSubmoveStore = writable<Position>()
@@ -167,6 +172,13 @@ export function MoveStore(ctx: {
   }
 
   return {
+    isRecording: readonly(isRecordingStore),
+    isReplaying: readonly(isReplayingStore),
+    hasRecorded: readonly(hasRecordedStore),
+
+    currentSubmove: readonly(currentSubmoveStore),
+    recordedMove: readonly(recordedMoveStore),
+
     update: (camera: Camera) => {
       if (get(isRecordingStore)) {
         recordMove(context, camera)
@@ -182,6 +194,50 @@ export function MoveStore(ctx: {
       if (get(isReplayingStore)) {
         // TODO: Replay the move
       }
+    },
+
+    startRecording() {
+      isRecordingStore.set(true)
+      birdView.set(false)
+      isReplayingStore.set(false)
+      inPointerLock.set(true)
+      get(rendererStore).domElement.requestPointerLock()
+    },
+
+    replay() {
+      isRecordingStore.set(false)
+      // Reset the frame counter
+      frameCounter.set(0)
+      // Reset the positions to the one present on chain
+      ctx.currentCharacterStore.set(get(ctx.initialCharacterStore))
+      isReplayingStore.set(true)
+    },
+
+    reset() {
+      frameCounter.set(0)
+      hasRecordedStore.set(false)
+      isRecordingStore.set(false)
+      isReplayingStore.set(false)
+      currentSubmoveStore.set({ x: 0, y: 0 })
+      recordedMoveStore.set({
+        shots: [],
+        sub_moves: [],
+      })
+    },
+
+    async submit() {
+      // TODO: Handle the submit
+      const callData = get(recordedMoveStore)
+      console.log('callData', callData)
+      const [account, { client }] = await getDojoContext()
+      client.actions.move({
+        account,
+        session_id: get(ctx.sessionIdStore),
+        //@ts-expect-error - This is just sad...
+        moves: callData,
+      })
+
+      this.reset()
     },
   }
 }
