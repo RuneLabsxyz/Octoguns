@@ -21,7 +21,7 @@
     let elo: number;
     let queue_length: number;
     let game_id: number;
-    let winner: number;
+    let winner: number = 0;
     let intervalId: any;
 
     let planetelo: any = get(planeteloStore);
@@ -35,7 +35,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'queue',
-                calldata: ["0x6f63746f67756e73", "0x0"]
+                calldata: ["0x6f63746f67756e75", "0x0"]
             }]
         );
         console.log(res);
@@ -47,7 +47,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'matchmake',
-                calldata: ["0x6f63746f67756e73", "0x0"]
+                calldata: ["0x6f63746f67756e75", "0x0"]
             }]
         );
         console.log(res);
@@ -66,7 +66,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'settle',
-                calldata: ["0x6f63746f67756e73", game_id!]
+                calldata: ["0x6f63746f67756e75", game_id!]
             }]
         );
         console.log(res);
@@ -74,15 +74,13 @@
 
 
     const get_status = async () => {
-        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e73", "0x0"));
-        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e73", "0x0");
-        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e73", "0x0"));
+        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e75", "0x0"));
+        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e75", "0x0");
+        console.log(elo)
+        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e75", "0x0"));
         if (status == 2) {
-            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e73", "0x0"));
+            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e75", "0x0"));
             console.log(actions)
-            winner = parseInt(await actions.get_result(game_id));
-            console.log(winner)
-            console.log(status)
         }
         console.log(status)
     }
@@ -109,9 +107,8 @@
                 <p>Players in Queue: {queue_length}</p>
             </div>
             {#if status === 2}
-                {#if winner != 0}
                     <div class="winner-container">
-                        <p class="winner-text">Player {winner} Won!</p>
+                        <p class="winner-text">Game Over!</p>
                         <button 
                             class="queue-button settle" 
                             on:click={handleSettle}
@@ -119,16 +116,15 @@
                             Settle
                         </button>
                     </div>
-                {:else}
                     <div class="guess-container">
+                      <p>In Game</p>
                         <button 
                             class="queue-button playing" 
-                            on:click={() => goto(`sepolia/game/${game_id}`)}
+                            on:click={() => goto(`/sepolia/game/${game_id}`)}
                         >
                             Go To Game
                         </button>
                     </div>
-                {/if}
             {:else}
                 <button 
                     class="queue-button {buttonClass}" 

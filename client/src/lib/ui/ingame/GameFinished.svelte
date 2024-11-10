@@ -11,7 +11,7 @@
   $: if ($currentPlayerId != null) {
     // As defined in the contract, the winner is the player whose character id is not 0
     // id 0 means character is dead
-    isWinner = !($characterIds[$currentPlayerId] === 0)
+    isWinner = !($characterIds[$currentPlayerId] != 0)
   }
 </script>
 
@@ -31,7 +31,7 @@
     </p>
 
     <Button
-      href="/client/games"
+      href="/sepolia/client/matchmaking"
       class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
       >Back to menu</Button
     >

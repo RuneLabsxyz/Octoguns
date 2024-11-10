@@ -14,7 +14,5 @@ export function getDojoConfig() {
     manifest,
   });
 
-  const WORLD_ADDRESS = configValue.PUBLIC_WORLD_ADDRESS;
-
-  return { dojoConfig, WORLD_ADDRESS };
+  return { dojoConfig };
 }

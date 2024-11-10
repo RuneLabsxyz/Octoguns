@@ -148,7 +148,7 @@ fn update_elos(status: Status, game_model: @Game, one_elo: @u64, two_elo: @u64) 
             assert!(p2_elo != 0, "elo should not be 0");
             let (mag, sign) = EloTrait::rating_change(*one_elo, *two_elo, did_win, 20_u8);
             assert!(mag != 0, "mag shouldnt be 0 should change");
-            if sign {
+            if !sign {
                 p1_elo += mag;
                 p2_elo -= mag;
             }   

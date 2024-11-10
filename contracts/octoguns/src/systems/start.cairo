@@ -108,9 +108,6 @@ mod start {
             );
             session_meta.p2_character = id2;
 
-            session.state = 2;
-
-
 
             world.write_model(@c1);
             world.write_model(@p1);

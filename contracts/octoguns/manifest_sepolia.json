@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x594841d343ff9e9c125e060d772be8d0a09d1840575c541921d7f610b7887fc",
-    "seed": "fdsaasdfssf",
+    "address": "0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc",
+    "seed": "fdsafdasasdsssfasdfssf",
     "name": "Octoguns",
     "abi": [
       {
@@ -1121,7 +1121,7 @@
   },
   "contracts": [
     {
-      "address": "0x79cd719ae2e8ab0d62753588b90221774f9252a23a7cefe371d3728319163d1",
+      "address": "0x3451db8ccea9054ec016d1bd9ec40cde6ba895e92762bfb0a7f4136aee7652",
       "class_hash": "0x18ecc8ded7425656bfdf18bf4fcb86a12f6bc94183de10ef17c4e9704fa01e",
       "abi": [
         {
@@ -1375,7 +1375,7 @@
       "systems": []
     },
     {
-      "address": "0x4021a255b5ad788c7b5eeba940d820843a96fe944258ad11099a316be6e004f",
+      "address": "0x7219a096b58c54f88c9d61943a3e6e278056a7d01e3ad8cb73d778a5aaa364d",
       "class_hash": "0x5ebb65ccfaced79072fed9661f6c70a71389e2ea0bafe73b91ee2da13657f7a",
       "abi": [
         {
@@ -1576,7 +1576,7 @@
       "systems": []
     },
     {
-      "address": "0x3cdfbff32daa99b996b91bd932e91fb2858f1d6f4aac98a189826e638c5acd",
+      "address": "0x4a9b6ecaa6a57875a7e1b3600d42cf6e6fd260dd85e5a4f5aa8288c08dbfd6d",
       "class_hash": "0x6c3d6a7a56075c6868564c9bae1171a31267c4654d407692137940f9ad94f27",
       "abi": [
         {
@@ -1762,8 +1762,8 @@
       "systems": []
     },
     {
-      "address": "0x1ee9605ec827bda6e9834ac0b6a5e0b210b1d6aa8cbc88c2bea3de392194df8",
-      "class_hash": "0x2b7cc043e16365af348366a701d1af9bf6f1391ee09a9ed601d380e697f107d",
+      "address": "0x7f938d33e2a6938082a094102d9cdd765a7688389b0de5f90e2dc8e4ee6dfcd",
+      "class_hash": "0xca73b71b52f9ae4fce269442a08868ef9b83aeacfbf9f32eb3e6ff69128d62",
       "abi": [
         {
           "type": "impl",
@@ -2022,7 +2022,7 @@
       "systems": []
     },
     {
-      "address": "0x2be4f778f0b82af2daee6d7d7cd7938976ddebdaeb690a1c91b2f93aa5a6ae5",
+      "address": "0x2adbf7a614d31d427d8227104e6796eb9c88439ccc240c5a5f9d3a19d0ea6d5",
       "class_hash": "0x5e3a52d7af64c0ccba8fa8490cc790ac58c4a7694f3c872f78091e653bbbca1",
       "abi": [
         {

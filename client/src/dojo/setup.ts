@@ -13,6 +13,8 @@ import { Contract } from 'starknet'
 import { planeteloStore } from '$stores/dojoStore'
 import manifest from '../../../contracts/planetelo/manifest_sepolia.json'
 
+console.log(manifest.world.address)
+
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
@@ -22,7 +24,7 @@ export async function setup({ ...config }: DojoConfig) {
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: '0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2'
+    worldAddress: '0x02148d9f41fd5b4687f3753b0e94187a78f46923db0619a4d99c9fd33ce9bf21'
   })
 
   // create contract components
@@ -33,14 +35,14 @@ export async function setup({ ...config }: DojoConfig) {
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
-  console.log(JSON.parse(JSON.stringify(config.manifest)));
+  console.log(JSON.parse(JSON.stringify(manifest)));
 
   const sync = await getSyncEntities(toriiClient, contractComponents as any, undefined, [])
 
   let contracts = JSON.parse(JSON.stringify(manifest.contracts));
   console.log(contracts[0]);
 
-  const myTestContract = new Contract(contracts[0].abi, contracts[0].address).typedv2(contracts[0].abi);
+  const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
   planeteloStore.set(myTestContract);
   // setup world
   const client = await setupWorld(dojoProvider)
