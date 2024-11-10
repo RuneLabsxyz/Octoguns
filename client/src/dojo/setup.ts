@@ -33,7 +33,12 @@ export async function setup(
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
 
-  // const sync = await getSyncEntities(toriiClient, contractComponents as any, [])
+  const sync = await getSyncEntities(
+    toriiClient,
+    contractComponents as any,
+    undefined,
+    []
+  )
 
   // setup world
   const client = await setupWorld(dojoProvider)
@@ -73,6 +78,6 @@ export async function setup(
     toriiClient,
 
     torii,
-    // sync,
+    sync,
   }
 }
