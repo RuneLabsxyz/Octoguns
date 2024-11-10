@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Map } from '$src/dojo/models.gen'
   import { selectedMap } from '$stores/clientStores'
+  import { getBigInt } from './api/utils'
 
   let { map } = $props<{
     map: Map | null
@@ -53,7 +54,7 @@
 
       grids.forEach((grid) => {
         // Convert hex to decimal
-        let decimal = BigInt(`0x${grid.toString(16)}`).toString(10)
+        let decimal = BigInt(grid).toString(10)
         decimalGrids.push(BigInt(decimal))
       })
       let activeIndices = extractActiveIndices(decimalGrids)

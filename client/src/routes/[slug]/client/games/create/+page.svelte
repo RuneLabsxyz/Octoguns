@@ -12,6 +12,8 @@
   import { maps as mapsValue } from '$src/lib/api/maps'
   import { yourUnstartedSessions } from '$src/lib/api/sessions'
   import type { Map } from '$src/dojo/models.gen'
+  import { accountStore } from '$src/stores/dojoStore'
+  import { onMount } from 'svelte'
 
   let loadingToGame = false
   let localSelectedMap: number | null = $state(null)
@@ -44,9 +46,16 @@
   let toastMessage = $state('')
   let toastStatus = $state('loading')
   let showToast = $state(false)
+  const currentAccount = $derived($account ?? $accountStore)
+
+  onMount(() => {
+    window.addEventListener('unhandledrejection', (promiseRejectionEvent) => {
+      console.error('unhandled: ', Error())
+    })
+  })
 
   async function createGame() {
-    if ($account) {
+    if (currentAccount) {
       console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
       console.log('selectedMap', $selectedMap)
       showToast = true

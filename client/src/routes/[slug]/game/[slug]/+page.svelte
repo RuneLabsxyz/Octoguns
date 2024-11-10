@@ -13,6 +13,7 @@
     Game(parseInt(data.gameId), $account?.address ?? null)
   )
 
+  /*
   onMount(async () => {
     if ($env === 'mainnet') {
       if (await controllerMainnet.probe()) {
@@ -26,6 +27,7 @@
       }
     }
   })
+  */
 </script>
 
 {#await gameStorePromise}

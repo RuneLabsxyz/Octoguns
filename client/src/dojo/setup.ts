@@ -9,6 +9,7 @@ import { Account } from 'starknet'
 import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
+import { account } from '$src/stores/account'
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export async function setup(
@@ -57,12 +58,13 @@ export async function setup(
   })
 
   try {
+    console.log('Starting burner!')
     await burnerManager.init()
     if (burnerManager.list().length === 0) {
       await burnerManager.create()
     }
   } catch (e) {
-    console.error(e)
+    console.error('An error occurred while creating burner:', e)
   }
 
   return {
