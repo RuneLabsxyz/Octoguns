@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import { connect } from '$lib/controller'
   import { controllerMainnet, controllerSlot } from '$lib/controller'
-  import { username } from '$stores/account'
+  import { username , account} from '$stores/account'
   import { env } from '$stores/network';
   
   let loading = true
@@ -38,12 +38,20 @@
   {#if loading}
     <p>Loading</p>
   {/if}
-  {#if username}
+  {#if $username && $account}
     <Button on:click={toggleControllerModal}>
       <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
       {$username}
     </Button>
   {/if}
+  {#if !$username && !$account}
+    <Button on:click={ () => connect('sepolia')}>
+      <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
+      Connect Wallet
+    </Button>
+  {/if}
+
+
   <Button href={`/${$env}/client/matchmaking`}>Matchmaking</Button>
   <Button href={`/${$env}/client/games/yourGames`}>Your Games</Button>
   <Button href={`/${$env}/client/maps`}>Maps</Button>

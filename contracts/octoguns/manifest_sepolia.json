@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x66de84576f89a2515c1f11d98071745351238e25a2c76603313b09155662cfd",
-    "seed": "fdsaf",
+    "address": "0x594841d343ff9e9c125e060d772be8d0a09d1840575c541921d7f610b7887fc",
+    "seed": "fdsaasdfssf",
     "name": "Octoguns",
     "abi": [
       {
@@ -1121,7 +1121,7 @@
   },
   "contracts": [
     {
-      "address": "0x447d58c417c4310e18d1ba750a612cf82d390539a6c482e3e75dbb859c083ce",
+      "address": "0x79cd719ae2e8ab0d62753588b90221774f9252a23a7cefe371d3728319163d1",
       "class_hash": "0x18ecc8ded7425656bfdf18bf4fcb86a12f6bc94183de10ef17c4e9704fa01e",
       "abi": [
         {
@@ -1375,7 +1375,7 @@
       "systems": []
     },
     {
-      "address": "0x738520124dba21fb11d45d5831682c7723c74340ead66f45886861675b4033b",
+      "address": "0x4021a255b5ad788c7b5eeba940d820843a96fe944258ad11099a316be6e004f",
       "class_hash": "0x5ebb65ccfaced79072fed9661f6c70a71389e2ea0bafe73b91ee2da13657f7a",
       "abi": [
         {
@@ -1576,7 +1576,7 @@
       "systems": []
     },
     {
-      "address": "0x405681132586cb67d035580a7435b6c58513eb92bb347b6e56bf14811c8c177",
+      "address": "0x3cdfbff32daa99b996b91bd932e91fb2858f1d6f4aac98a189826e638c5acd",
       "class_hash": "0x6c3d6a7a56075c6868564c9bae1171a31267c4654d407692137940f9ad94f27",
       "abi": [
         {
@@ -1762,7 +1762,7 @@
       "systems": []
     },
     {
-      "address": "0x603c50c4b6bd38ac56539a354509f5329741799767aab8f09a00c58bd7e3de4",
+      "address": "0x1ee9605ec827bda6e9834ac0b6a5e0b210b1d6aa8cbc88c2bea3de392194df8",
       "class_hash": "0x2b7cc043e16365af348366a701d1af9bf6f1391ee09a9ed601d380e697f107d",
       "abi": [
         {
@@ -2022,8 +2022,8 @@
       "systems": []
     },
     {
-      "address": "0x6bd786db9a6544a3e892f9f4c700d1dbd747ef48b98de81a297d60d8a7914d4",
-      "class_hash": "0x1aa94ff71f32792dc113cc83276e6f90512d0631c36eaead14c8235436fc91c",
+      "address": "0x2be4f778f0b82af2daee6d7d7cd7938976ddebdaeb690a1c91b2f93aa5a6ae5",
+      "class_hash": "0x5e3a52d7af64c0ccba8fa8490cc790ac58c4a7694f3c872f78091e653bbbca1",
       "abi": [
         {
           "type": "impl",
@@ -2125,6 +2125,22 @@
               "name": "spawn_default_playlist",
               "inputs": [],
               "outputs": [],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "get_result",
+              "inputs": [
+                {
+                  "name": "session_id",
+                  "type": "core::integer::u32"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u8"
+                }
+              ],
               "state_mutability": "view"
             }
           ]

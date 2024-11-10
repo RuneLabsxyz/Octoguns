@@ -40,7 +40,7 @@ pub enum Status {
 trait IPlanetelo<T> {
     fn create_playlist(self: @T, maps: Array<u32>, settings: Settings) -> u32;
     fn spawn_default_playlist(self: @T);
-
+    fn get_result(self: @T, session_id: u32) -> u8;
 }
 
 #[dojo::contract]
@@ -99,6 +99,18 @@ mod planetelo {
             world.write_model(@playlist);
             global.playlist_count = 1;
             world.write_model(@global);
+        }
+
+        fn get_result(self: @ContractState, session_id: u32) -> u8 {
+            let mut world = self.world(@"octoguns");
+            let session: SessionMeta = world.read_model(session_id);
+            if session.p1_character == 0 {
+                return 2;
+            } else if session.p2_character == 0 {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
 

@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import { username, account, clearAccountStorage } from '$stores/account';
   import Button from '$lib/ui/Button.svelte';
-
+  import { connect } from '$lib/controller';
   export let show = false;
   const dispatch = createEventDispatcher();
 
@@ -14,7 +14,6 @@
   function logout() {
     clearAccountStorage();
     closeModal();
-    goto('/');
   }
 
   let showCopied = false;
@@ -36,12 +35,13 @@
   }
 </script>
 
-{#if show && $account && $username}
+{#if show && $username}
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white border-4 border-black rounded-lg p-6 w-11/12 max-w-md">
       <div class="flex items-center mb-4">
         <img src="/logos/controller/controller.png" alt="Controller" class="w-12 h-12 mx-auto" />
       </div>
+      {#if $account?.address}
       <div class="mb-4 space-y-4">
         <div class="flex flex-col items-center space-y-2">
           <p class="font-bold text-lg">{$username.toUpperCase()}</p>
@@ -63,6 +63,10 @@
         </div>
         <slot></slot>
       </div>
+
+        {:else}
+      <button on:click={ () => connect('sepolia')}>Connect Wallet</button> 
+      {/if}
       <div class="flex justify-between">
         <Button on:click={logout}>Logout</Button>
         <Button on:click={closeModal}>Close</Button>

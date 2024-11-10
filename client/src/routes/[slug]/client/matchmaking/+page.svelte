@@ -15,122 +15,135 @@
     import { onMount } from 'svelte';
     import { DojoProvider } from '@dojoengine/core';
     import { connect } from '$lib/controller'
+    import { Contract } from 'starknet';
 
-    let playerEntity: Entity
-    let mapCount: number = 0
-    let clientComponents: any
-    let torii: any
-    let globalentity: any
-    let global: ComponentStore
-    let dojoProvider: DojoProvider
-    let status: string = 'checking'
-    let gameId: string | null = null
-    let queueIndex: number | null = null
+    let status: number;
+    let elo: number;
+    let queue_length: number;
+    let game_id: number;
+    let winner: number;
+    let intervalId: any;
 
+    let planetelo: any = get(planeteloStore);
+    let {config, dojoProvider}: any = get(dojoStore);
 
-    const GAME_ID = '0x6f63746f67756e73'
-    const PLAYLIST = '0x0'
-  
-    $: if ($dojoStore) ({ clientComponents, torii, dojoProvider } = $dojoStore as any)
-  
-    $: if (torii) globalentity = torii.poseidonHash([BigInt(0).toString()])
-  
-    $: if ($account && torii) playerEntity = torii.poseidonHash([$account?.address])
-  
-    $: if (clientComponents) global = componentValueStore(clientComponents.Global, globalentity)
+    const actions = new Contract(config.manifest.contracts[4].abi, config.manifest.contracts[4].address, dojoProvider.provider).typedv2(config.manifest.contracts[4].abi);
 
-    let game_id = 0
-
-    
-    async function getStatus() {
-      let planetelo: any = get(planeteloStore);
-      console.log(planetelo)
-      console.log($account)
-      let signer: AccountInterface = $account!;
-      planetelo.connect(signer);
-      console.log(planetelo)
-      
-      let res = await planetelo.get_status($account!.address, GAME_ID, PLAYLIST)
-      console.log(res)
-
-      //let res = await dojoProvider.call('planetelo', {
-      //  contractAddress: planetelo.address,
-      //  entrypoint: "get_status",
-      //  calldata: [$account!.address, GAME_ID, PLAYLIST]
-      //})
-      //console.log(res)
+    async function handleQueue() {
+        console.log(planetelo.address);
+        let res = await $account?.execute(
+            [{
+                contractAddress: planetelo.address,
+                entrypoint: 'queue',
+                calldata: ["0x6f63746f67756e73", "0x0"]
+            }]
+        );
+        console.log(res);
     }
 
-    async function settle() {
-      let planetelo: any = get(planeteloStore);
-      let signer: AccountInterface = $account!;
-      let res = await signer.execute([{
-        contractAddress: planetelo.address,
-        entrypoint: "settle",
-        calldata: ['0x6f63746f67756e73', '0x6']
-      }])
+    async function handleMatchmake() {
+        console.log(planetelo.address);
+        let res = await $account?.execute(
+            [{
+                contractAddress: planetelo.address,
+                entrypoint: 'matchmake',
+                calldata: ["0x6f63746f67756e73", "0x0"]
+            }]
+        );
+        console.log(res);
     }
 
-    async function queue() {
-      let planetelo: any = get(planeteloStore);
-      planetelo.connect($account!)
-      console.log($account);
-      let signer: AccountInterface = $account!;
-      let res = await signer.execute([{
-        contractAddress: planetelo.address,
-        entrypoint: "queue",
-        calldata: ['0x6f63746f67756e73', '0x0']
-      }])
-      console.log(res)
+    $: buttonText = status === 0 ? 'Queue' 
+                  : status === 1 ? 'Matchmake' 
+                  : 'Play';
 
-      //await $account?.execute(call)
+    $: buttonClass = status === 0 ? '' 
+                  : status === 1 ? 'queuing'
+                  : 'playing';
+
+    async function handleSettle() {
+        let res = await $account?.execute(
+            [{
+                contractAddress: planetelo.address,
+                entrypoint: 'settle',
+                calldata: ["0x6f63746f67756e73", game_id!]
+            }]
+        );
+        console.log(res);
     }
 
-    async function matchmake() {
-      let planetelo: any = get(planeteloStore);
-      planetelo.connect($account!)
-      let signer: AccountInterface = $account!;
-      console.log(planetelo.address)
-      let res = await signer.execute([{
-        contractAddress: planetelo.address,
-        entrypoint: "matchmake",
-        calldata: ['0x6f63746f67756e73', '0x0']
-      }])
-      console.log(res)
 
-      //await $account?.execute(call)
+    const get_status = async () => {
+        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e73", "0x0"));
+        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e73", "0x0");
+        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e73", "0x0"));
+        if (status == 2) {
+            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e73", "0x0"));
+            console.log(actions)
+            winner = parseInt(await actions.get_result(game_id));
+            console.log(winner)
+            console.log(status)
+        }
+        console.log(status)
     }
-  
-  </script>
-  
 
+    onMount(() => {
+        if (!$account) {
+            connect('sepolia');
+        }
+        get_status();
+        // Poll status every 2 seconds
+        intervalId = setInterval(get_status, 2000);
 
-  <div class={cn('flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8')}>
-    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-      <Button on:click={() => {
-        queue()
-      }}>Queue</Button>
-    </div>
-    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-      <Button on:click={() => {
-        matchmake()
-      }}>Matchmake</Button>
-    </div>
+        // Cleanup interval on component destroy
+        return () => {
+            clearInterval(intervalId);
+        };
+    });
+</script>
 
-    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-      <Button on:click={() => {
-        getStatus()
-      }}>Get Status</Button>
-    </div>
-
-    <div class="flex p-5 py-2 mb-4 items-center border-b-4 border-black">
-      <Button on:click={() => {
-        settle()
-      }}>Settle</Button>
-    </div>
-  </div>
-
-  
+{#if $dojoStore}
+        <div class="queue-container">
+            <div class="stats">
+                <p>ELO: {elo}</p>
+                <p>Players in Queue: {queue_length}</p>
+            </div>
+            {#if status === 2}
+                {#if winner != 0}
+                    <div class="winner-container">
+                        <p class="winner-text">Player {winner} Won!</p>
+                        <button 
+                            class="queue-button settle" 
+                            on:click={handleSettle}
+                        >
+                            Settle
+                        </button>
+                    </div>
+                {:else}
+                    <div class="guess-container">
+                        <button 
+                            class="queue-button playing" 
+                            on:click={() => goto(`sepolia/game/${game_id}`)}
+                        >
+                            Go To Game
+                        </button>
+                    </div>
+                {/if}
+            {:else}
+                <button 
+                    class="queue-button {buttonClass}" 
+                    on:click={status == 0 ? handleQueue : handleMatchmake}
+                >
+                    {buttonText}
+                </button>
+            {/if}
+            {#if status === 1}
+                <p class="status">Finding a match...</p>
+            {/if}
+        </div>
+    {:else}
+        <p>Setting up...</p>
+    {/if}
   
   <style>
     .grid-fill {
@@ -170,6 +183,52 @@
   
     .right-0 {
       right: 0;
+    }
+
+    .queue-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .stats {
+        display: flex;
+        gap: 2rem;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .queue-button {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .queue-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .queue-button.queuing {
+        background-color: #FFA500;
+    }
+
+    .queue-button.playing {
+        background-color: #2196F3;
+    }
+
+    .queue-button.settle {
+        background-color: #9C27B0;
     }
   </style>
   
