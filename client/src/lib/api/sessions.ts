@@ -24,6 +24,7 @@ export async function SessionStore(
   return derived(
     [componentValueStore(clientComponents.Session, valueHash)],
     ([val], set) => {
+      console.log('Managed to fetch a session', val)
       let result: Session = {
         ...val,
       }

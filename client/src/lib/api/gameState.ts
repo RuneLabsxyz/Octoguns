@@ -131,9 +131,21 @@ export function GameState(game: GameStore) {
     }
   )
 
+  const initialCharacterStore = derived(
+    [game.currentPlayerId, game.characters],
+    ([playerId, characters]) => {
+      if (playerId == null) {
+        return null
+      }
+      return (characters ?? [null, null])[playerId - 1]
+    }
+  )
+
   const moveStore = MoveStore({
     controlsStore,
     currentCharacterStore: currentCharacterStore,
+    sessionIdStore: game.sessionId,
+    initialCharacterStore: initialCharacterStore,
     frameCounterStore: frameCounter,
     incrementFrame() {
       frameCounter.update((frame) => frame + 1)

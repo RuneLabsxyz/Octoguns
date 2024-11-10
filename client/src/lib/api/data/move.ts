@@ -25,14 +25,15 @@ export type TurnData = {
 }
 
 type Context = {
+  incrementFrame: () => void
+  addMove: (move: Submove) => void
+  addShot: (shot: Shot) => void
   keyStateStore: Readable<KeyState>
   isMouseDownStore: Readable<boolean>
   characterStore: Writable<Marked<Character> | null>
   currentSubmoveStore: Writable<Position>
   frameCounterStore: Readable<number>
-  incrementFrame: () => void
-  addMove: (move: Submove) => void
-  addShot: (shot: Shot) => void
+  recordedMoveStore: Readable<TurnData>
 }
 
 function recordMove(ctx: Context, camera: Camera) {
@@ -128,6 +129,38 @@ function recordMove(ctx: Context, camera: Camera) {
   // Reset move direction is not necessary since moveDirection is now scoped within the function
 }
 
+function replayMove(ctx: Context) {
+  let move = get(ctx.recordedMoveStore)
+  let move_index = Math.floor(get(frameCounter) / FRAME_INTERVAL)
+  if (move_index >= move.sub_moves.length) {
+    console.warn('Move index exceeds recorded sub-moves.')
+    return
+  }
+  let sub_move = move.sub_moves[move_index]
+  console.log(move)
+
+  if (
+    get(frameCounter) % FRAME_INTERVAL === 0 &&
+    get(frameCounter) < RECORDING_FRAME_LIMIT
+  ) {
+    let x_dif = sub_move.x
+    let y_dif = sub_move.y
+    if (!sub_move.xdir) x_dif *= -1
+    if (!sub_move.ydir) y_dif *= -1
+
+    ctx.characterStore.update((character) => {
+      if (character == null) {
+        return null
+      }
+      character.coords.x += x_dif / SCALING_FACTOR
+      character.coords.y += x_dif / SCALING_FACTOR
+      return character
+    })
+  }
+
+  frameCounter.update((fc) => fc + 1)
+}
+
 export type MoveStore = ReturnType<typeof MoveStore>
 
 export function MoveStore(ctx: {
@@ -154,6 +187,7 @@ export function MoveStore(ctx: {
     isMouseDownStore: ctx.controlsStore.isMouseDownStore,
     characterStore: ctx.currentCharacterStore,
     frameCounterStore: ctx.frameCounterStore,
+    recordedMoveStore: readonly(recordedMoveStore),
     incrementFrame: ctx.incrementFrame,
 
     currentSubmoveStore: currentSubmoveStore,
@@ -193,6 +227,12 @@ export function MoveStore(ctx: {
 
       if (get(isReplayingStore)) {
         // TODO: Replay the move
+        replayMove(context)
+
+        if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
+          frameCounter.set(0)
+          isReplayingStore.set(false)
+        }
       }
     },
 

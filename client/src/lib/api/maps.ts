@@ -40,7 +40,6 @@ export const currentMap = derived([currentSession], ([session], set) => {
 export const maps: Readable<Map[] | null> = derived(
   currentGlobal,
   ($currentGlobal, set) => {
-    console.log('getting maps')
     if (!$currentGlobal?.map_count) {
       set(null)
       return
@@ -59,6 +58,8 @@ export const maps: Readable<Map[] | null> = derived(
           if (map) {
             mapsArray.push(map)
             set(mapsArray)
+
+            console.log('Fetched maps :)')
           }
         })
       })
