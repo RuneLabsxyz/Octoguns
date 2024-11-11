@@ -308,7 +308,7 @@ export function MoveStore(ctx: {
     },
   }
 
-  return {
+  const value = {
     isRecording: readonly(isRecordingStore),
     isReplaying: readonly(isReplayingStore),
     hasRecorded: readonly(hasRecordedStore),
@@ -382,6 +382,14 @@ export function MoveStore(ctx: {
       // TODO: Handle the submit
       const callData = get(recordedMoveStore)
       console.log('callData', callData)
+
+      // Unmark the character, so it is updated
+      ctx.currentCharacterStore.update((character) => {
+        if (character?.__marked) {
+          delete character.__marked
+        }
+        return character
+      })
       const [account, { client }] = await getDojoContext()
       client.actions.move({
         account,
@@ -390,7 +398,9 @@ export function MoveStore(ctx: {
         moves: callData,
       })
 
-      this.reset()
+      value.reset()
     },
   }
+
+  return value
 }
