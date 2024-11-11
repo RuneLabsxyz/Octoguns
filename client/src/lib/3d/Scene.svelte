@@ -5,12 +5,6 @@
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
-  import {
-    recordingMode,
-    replayMode,
-    recordedMove,
-    rendererStore,
-  } from '$stores/gameStores'
 
   import BirdView from './components/Cameras/BirdView.svelte'
   import SplitScreen from './components/Cameras/SplitScreen.svelte'
@@ -29,6 +23,7 @@
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
   import { Inspector } from 'three-inspect'
   import getGame from '$lib/api/svelte/context'
+  import { rendererStore } from '$src/stores/gameStores'
 
   let { renderer, scene } = useThrelte()
   const { controls, currentPlayerCharacterId, frameCounter, move } = getGame()
@@ -72,28 +67,7 @@
         }
       }
 
-      // TODO(Red): This should be in the move controller
-      if ($recordingMode) {
-        move.update(cameras[0])
-        // TODO(Red): This needs to move on the update method of the store
-        //if (
-        //  $isMouseDownStore &&
-        //  $inPointerLock &&
-        //  !$hasShotInCurrentRecording
-        //) {
-        //  shoot(cameras[0]) // currently only works with one camera
-        //  hasShotInCurrentRecording.set(true)
-        //}
-      }
-
-      // TODO(Red): How to neatly handle the replay mode?
-      if ($replayMode) {
-        if ($frameCounter > RECORDING_FRAME_LIMIT) {
-          console.log('eyyy, tf')
-          replayMode.set(false)
-        }
-        replayShot($recordedMove, cameras[0])
-      }
+      move.update(cameras[0])
 
       animationFrameId = requestAnimationFrame(animationLoop)
     } catch (error) {
@@ -103,19 +77,6 @@
       }
     }
   }
-
-  // Red: I don't know what this does, but at this point I'm too afraid to touch it
-  $effect(() => {
-    if ($frameCounter) {
-      simulate()
-    }
-  })
-
-  $effect(() => {
-    if ($recordingMode) {
-      hasShotInCurrentRecording.set(false)
-    }
-  })
 
   onMount(() => {
     addEventListeners()

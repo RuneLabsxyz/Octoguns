@@ -108,6 +108,7 @@ export const yourSessions: Readable<Session[]> = derived(
         })
       })
     ).then((sessions) => {
+      console.log("Got sessions", sessions)
       set(sessions)
     })
   }
@@ -115,23 +116,34 @@ export const yourSessions: Readable<Session[]> = derived(
 
 export const yourActiveSessions: Readable<Session[]> = derived(
   [yourSessions],
-  ([sessions], set) => {
-    set(
-      sessions.filter((session) => session.state === 1 || session.state === 2)
-    )
+  ([sessions]) => {
+    if (sessions != null) {
+      return sessions.filter((session) => session.state === 1 || session.state === 2)
+    } else {
+      return [];
+    }
+    
   }
 )
 
 export const yourUnstartedSessions: Readable<Session[]> = derived(
   [yourSessions],
-  ([sessions], set) => {
-    set(sessions.filter((session) => session.state === 0))
+  ([sessions]) => {
+    if (sessions != null) {
+      return sessions.filter((session) => session.state === 0)
+    } else {
+      return [];
+    }
   }
 )
 
 export const yourFinishedSessions: Readable<Session[]> = derived(
   [yourSessions],
-  ([sessions], set) => {
-    set(sessions.filter((session) => session.state === 3))
+  ([sessions]) => {
+    if (sessions != null) {
+      return sessions.filter((session) => session.state === 3)
+    } else {
+      return [];
+    }
   }
 )

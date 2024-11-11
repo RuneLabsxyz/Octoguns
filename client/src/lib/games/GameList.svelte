@@ -41,6 +41,7 @@
       <div
         class="flex justify-between items-center border-4 rounded-lg border-black flex-col w-full card"
       >
+        {session.session_id}
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
           onclick={() => joiningGame(Number(session.session_id))}
