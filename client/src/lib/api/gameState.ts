@@ -16,6 +16,7 @@ import type {
   Session,
   SessionMeta,
   Bullet as BulletTy,
+  Bullet,
 } from '$src/dojo/models.gen'
 import { getBulletPosition } from '$lib/helper'
 import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
@@ -24,6 +25,7 @@ import type { Character } from './data/characters'
 import { getDojoContext } from '$src/stores/dojoStore'
 import { ControlsStore } from './controls/controls'
 import { MoveStore } from './data/move'
+import { playSoundEffect } from '$lib/3d/utils/audioUtils'
 
 function handleMove() {
   //console.log('calldata', calldata)
@@ -73,8 +75,17 @@ export function GameState(game: GameStore) {
   const unsubscribes: Unsubscriber[] = []
   const frameCounter = writable(0)
 
+  const additionalBullets: Writable<Bullet[]> = writable([])
+
+  const combinedBullets: Readable<Bullet[]> = derived(
+    [game.bullets, additionalBullets],
+    ([chainBullets, additionalBullets]) => {
+      return [...(chainBullets ?? []), ...additionalBullets]
+    }
+  )
+
   const bullets: Readable<BulletWithPosition[] | null> = derived(
-    [game.bullets, frameCounter, game.turnCount],
+    [combinedBullets, frameCounter, game.turnCount],
     ([bullets, frame, turn]) => {
       if (bullets == null || turn == null) {
         return null
@@ -147,8 +158,25 @@ export function GameState(game: GameStore) {
     sessionIdStore: game.sessionId,
     initialCharacterStore: initialCharacterStore,
     frameCounterStore: frameCounter,
+    currentPlayerIdStore: game.currentPlayerId,
     incrementFrame() {
       frameCounter.update((frame) => frame + 1)
+    },
+    resetFrameCounter() {
+      frameCounter.set(0)
+    },
+    addAdditionalBullet(bullet) {
+      additionalBullets.update((u) => {
+        u.push(bullet)
+        return u
+      })
+
+      // Add the sound
+      playSoundEffect('/audio/sfx/shot.wav')
+    },
+    currentTurnStore: game.turnCount,
+    resetAdditionalBullets() {
+      additionalBullets.set([])
     },
   })
 
@@ -160,6 +188,7 @@ export function GameState(game: GameStore) {
     characters,
     controls: controlsStore,
     move: moveStore,
+    currentCharacter: currentCharacterStore,
 
     spawn: async () => {
       const [account, { client }] = await getDojoContext()

@@ -3,7 +3,7 @@
   import { onMount } from 'svelte'
   import type { BufferGeometry, Points } from 'three'
   import { Color, Vector3 } from 'three'
-  import type { BulletWithPosition } from '$lib/api/gameState'
+  import type { BulletWithPosition, Position } from '$lib/api/gameState'
 
   interface Props {
     bullet: BulletWithPosition
@@ -16,11 +16,21 @@
   let geometry: BufferGeometry | undefined = $state()
   let pointsRef: Points | undefined = $state()
 
-  let x = $derived(bullet.position.x)
-  let y = $derived(bullet.position.y)
+  function normalizeCoords(coords: Position): Position {
+    return {
+      x: coords.x / 1000 - 50,
+      y: coords.y / 1000 - 50,
+    }
+  }
 
-  let initialX = $derived(bullet.shot_at.x)
-  let initialY = $derived(bullet.shot_at.y)
+  let normalizedPos = $derived(normalizeCoords(bullet.position))
+
+  let x = $derived(normalizedPos.x)
+  let y = $derived(normalizedPos.y)
+
+  let normalizedInitial = $derived(normalizeCoords(bullet.shot_at))
+  let initialX = $derived(normalizedInitial.x)
+  let initialY = $derived(normalizedInitial.y)
 
   let length = $derived(Math.sqrt((x - initialX) ** 2 + (y - initialY) ** 2))
   let count = $derived(Math.floor(length / trailSpacing))

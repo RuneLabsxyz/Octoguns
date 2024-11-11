@@ -38,21 +38,21 @@
           <div class="flex justify-around mt-4">
             <Button
               on:click={reset}
-              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+              className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
             >
               <Eraser class="inline-block" />
               <div>Reset</div>
             </Button>
             <Button
               on:click={replay}
-              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+              className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
             >
               <Repeat class="inline-block" />
               <div>Replay</div>
             </Button>
             <Button
               on:click={submit}
-              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+              className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
             >
               <Send class="inline-block" />
               Submit Move
@@ -67,7 +67,7 @@
           <div class="flex justify-around mt-4">
             <Button
               on:click={startRecording}
-              class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+              className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
             >
               Play
             </Button>

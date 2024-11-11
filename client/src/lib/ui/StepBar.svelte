@@ -15,6 +15,8 @@
     return '#4caf50'
   }
 
+  $inspect($frameCounter)
+
   let barWidth = $derived(
     Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100)
   )

@@ -3,18 +3,26 @@ import {
   SCALING_FACTOR,
   FRAME_INTERVAL,
   RECORDING_FRAME_LIMIT,
+  TURN_COUNT,
 } from '$lib/consts'
 import { clamp, normalizeAndScaleVector } from '$lib/helper'
 import { birdView, inPointerLock } from '$src/stores/cameraStores'
-import type { Readable } from 'svelte/motion'
-import { type Writable, get, readonly, writable } from 'svelte/store'
-import { Camera, Controls, Vector3 } from 'three'
+import {
+  type Readable,
+  type Writable,
+  get,
+  readonly,
+  writable,
+} from 'svelte/store'
+import { Camera, PerspectiveCamera, Vector3 } from 'three'
+import * as THREE from 'three'
 import { type KeyState, ControlsStore } from '../controls/controls'
 import type { Marked, Position } from '../gameState'
 import type { Character } from './characters'
-import { frameCounter, rendererStore } from '$src/stores/gameStores'
-import { CallData } from 'starknet'
+import { rendererStore } from '$src/stores/gameStores'
 import { getDojoContext } from '$src/stores/dojoStore'
+import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
+import type { Bullet } from '$src/dojo/models.gen'
 
 export type Submove = { x: number; y: number; xdir: boolean; ydir: boolean }
 export type Shot = { angle: number; step: number }
@@ -24,21 +32,77 @@ export type TurnData = {
   shots: Shot[]
 }
 
+function denormalizeCoords(coords: Position): Position {
+  return {
+    x: (coords.x + 50) * 100,
+    y: (coords.y + 50) * 100,
+  }
+}
+
 type Context = {
   incrementFrame: () => void
   addMove: (move: Submove) => void
   addShot: (shot: Shot) => void
+  addAdditionalBullet: (bullet: Bullet) => void
   keyStateStore: Readable<KeyState>
   isMouseDownStore: Readable<boolean>
+  hasShot: Writable<boolean>
   characterStore: Writable<Marked<Character> | null>
   currentSubmoveStore: Writable<Position>
   frameCounterStore: Readable<number>
   recordedMoveStore: Readable<TurnData>
+  currentPlayerIdStore: Readable<number | null>
+  currentTurnStore: Readable<number | null>
+}
+
+function shoot(ctx: Context, camera: PerspectiveCamera) {
+  if (!camera || !camera.isCamera) {
+    console.error('Invalid camera object')
+    return
+  }
+
+  const frame = get(ctx.frameCounterStore)
+  let move_index = Math.floor(frame / 3)
+
+  let direction = getYawAngle(camera)
+  if (direction < 0) {
+    direction = 360 + direction
+  }
+
+  direction = Math.round(truncate(direction, 8) * 10 ** 8)
+
+  console.log(
+    `Bullet shot at move index ${move_index} with angle ${direction} degrees`
+  )
+
+  const bullet = { angle: direction, step: move_index }
+
+  ctx.addShot(bullet)
+
+  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8))
+  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10 ** 8))
+
+  //
+  const cameraPosition = camera.position
+  // Create a temporary bullet for showing
+  const newBullet: Bullet = {
+    bullet_id: 0,
+    shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
+    shot_at: denormalizeCoords({
+      x: cameraPosition.x,
+      y: cameraPosition.z,
+    }),
+    velocity: { x: vx, y: vy, xdir: true, ydir: true },
+
+    shot_by: get(ctx.currentPlayerIdStore) ?? 0,
+  }
+
+  ctx.addAdditionalBullet(newBullet)
 }
 
 function recordMove(ctx: Context, camera: Camera) {
   const moveDirection = new Vector3()
-  const { forward, backward, left, right } = get(ctx.keyStateStore)
+  const { forward, backward, left, right } = get<KeyState>(ctx.keyStateStore)
   const isMouseDown = get(ctx.isMouseDownStore)
 
   if (forward) moveDirection.z -= 1
@@ -46,8 +110,8 @@ function recordMove(ctx: Context, camera: Camera) {
   if (left) moveDirection.x -= 1
   if (right) moveDirection.x += 1
 
-  if (isMouseDown && get(inPointerLock)) {
-    // TODO(Red): Shoot!
+  if (isMouseDown && get(inPointerLock) && !get(ctx.hasShot)) {
+    shoot(ctx, camera as PerspectiveCamera)
   }
 
   if (moveDirection.length() > 0) {
@@ -103,7 +167,7 @@ function recordMove(ctx: Context, camera: Camera) {
       return subMove
     })
 
-    if (get(ctx.frameCounterStore) % FRAME_INTERVAL === 0) {
+    if (get<number>(ctx.frameCounterStore) % FRAME_INTERVAL === 0) {
       const current = normalizeAndScaleVector(
         get(ctx.currentSubmoveStore).x,
         get(ctx.currentSubmoveStore).y,
@@ -121,17 +185,47 @@ function recordMove(ctx: Context, camera: Camera) {
 
       ctx.currentSubmoveStore.set({ x: 0, y: 0 })
     }
-
-    // Increment frame counter
-    ctx.incrementFrame()
   }
 
   // Reset move direction is not necessary since moveDirection is now scoped within the function
 }
 
+function replayShot(ctx: Context, camera: PerspectiveCamera) {
+  let move: TurnData = get(ctx.recordedMoveStore)
+  let frame = get(ctx.frameCounterStore)
+  let move_index = Math.floor(frame / FRAME_INTERVAL)
+
+  let shot = move.shots.find((shot) => shot.step === move_index)
+  if (shot) {
+    let angle = shot.angle
+
+    console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
+
+    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8))
+    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8))
+
+    const cameraPosition = camera.position
+    // Create a temporary bullet for showing
+    const newBullet: Bullet = {
+      bullet_id: 0,
+      shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
+      shot_at: denormalizeCoords({
+        x: cameraPosition.x,
+        y: cameraPosition.z,
+      }),
+      velocity: { x: vx, y: vy, xdir: true, ydir: true },
+
+      shot_by: get(ctx.currentPlayerIdStore) ?? 0,
+    }
+
+    ctx.addAdditionalBullet(newBullet)
+  }
+}
+
 function replayMove(ctx: Context) {
-  let move = get(ctx.recordedMoveStore)
-  let move_index = Math.floor(get(frameCounter) / FRAME_INTERVAL)
+  let move: TurnData = get(ctx.recordedMoveStore)
+  let frame = get(ctx.frameCounterStore)
+  let move_index = Math.floor(frame / FRAME_INTERVAL)
   if (move_index >= move.sub_moves.length) {
     console.warn('Move index exceeds recorded sub-moves.')
     return
@@ -139,10 +233,7 @@ function replayMove(ctx: Context) {
   let sub_move = move.sub_moves[move_index]
   console.log(move)
 
-  if (
-    get(frameCounter) % FRAME_INTERVAL === 0 &&
-    get(frameCounter) < RECORDING_FRAME_LIMIT
-  ) {
+  if (frame % FRAME_INTERVAL === 0 && frame < RECORDING_FRAME_LIMIT) {
     let x_dif = sub_move.x
     let y_dif = sub_move.y
     if (!sub_move.xdir) x_dif *= -1
@@ -158,7 +249,7 @@ function replayMove(ctx: Context) {
     })
   }
 
-  frameCounter.update((fc) => fc + 1)
+  ctx.incrementFrame()
 }
 
 export type MoveStore = ReturnType<typeof MoveStore>
@@ -169,9 +260,17 @@ export function MoveStore(ctx: {
   initialCharacterStore: Readable<Character | null>
   frameCounterStore: Readable<number>
   sessionIdStore: Readable<number>
+  currentPlayerIdStore: Readable<number | null>
+  currentTurnStore: Readable<number | null>
   incrementFrame: () => void
+  resetFrameCounter: () => void
+  addAdditionalBullet: (bullet: Bullet) => void
+  resetAdditionalBullets: () => void
 }) {
-  const currentSubmoveStore = writable<Position>()
+  const currentSubmoveStore = writable<Position>({
+    x: 0,
+    y: 0,
+  })
   const recordedMoveStore = writable<TurnData>({
     shots: [],
     sub_moves: [],
@@ -181,14 +280,19 @@ export function MoveStore(ctx: {
   const isRecordingStore = writable<boolean>(false)
   const isReplayingStore = writable<boolean>(false)
   const hasRecordedStore = writable<boolean>(false)
+  const hasShotStore = writable<boolean>(false)
 
   const context: Context = {
     keyStateStore: ctx.controlsStore.keyStateStore,
     isMouseDownStore: ctx.controlsStore.isMouseDownStore,
     characterStore: ctx.currentCharacterStore,
     frameCounterStore: ctx.frameCounterStore,
+    hasShot: hasShotStore,
+    currentTurnStore: ctx.currentTurnStore,
+    currentPlayerIdStore: ctx.currentPlayerIdStore,
     recordedMoveStore: readonly(recordedMoveStore),
     incrementFrame: ctx.incrementFrame,
+    addAdditionalBullet: ctx.addAdditionalBullet,
 
     currentSubmoveStore: currentSubmoveStore,
     addMove(move) {
@@ -226,11 +330,14 @@ export function MoveStore(ctx: {
       }
 
       if (get(isReplayingStore)) {
-        // TODO: Replay the move
         replayMove(context)
+        replayShot(context, camera as PerspectiveCamera)
 
-        if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
-          frameCounter.set(0)
+        // Increment frame counter
+        ctx.incrementFrame()
+
+        if (get(ctx.frameCounterStore) === RECORDING_FRAME_LIMIT) {
+          ctx.resetFrameCounter()
           isReplayingStore.set(false)
         }
       }
@@ -247,22 +354,24 @@ export function MoveStore(ctx: {
     replay() {
       isRecordingStore.set(false)
       // Reset the frame counter
-      frameCounter.set(0)
+      ctx.resetFrameCounter()
       // Reset the positions to the one present on chain
       ctx.currentCharacterStore.set(get(ctx.initialCharacterStore))
       isReplayingStore.set(true)
     },
 
     reset() {
-      frameCounter.set(0)
+      ctx.resetFrameCounter()
       hasRecordedStore.set(false)
       isRecordingStore.set(false)
       isReplayingStore.set(false)
+      hasShotStore.set(false)
       currentSubmoveStore.set({ x: 0, y: 0 })
       recordedMoveStore.set({
         shots: [],
         sub_moves: [],
       })
+      ctx.resetAdditionalBullets()
     },
 
     async submit() {

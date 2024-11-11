@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy'
-
   import { T, useThrelte } from '@threlte/core'
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
@@ -13,14 +11,11 @@
     resetCamera,
   } from './components/Cameras/SplitScreen/CameraUtils'
   import { birdView } from '$stores/cameraStores'
-  import { Controls, PerspectiveCamera } from 'three'
+  import { PerspectiveCamera } from 'three'
   import Bullets from './components/Bullets.svelte'
-  import { shoot, replayShot, simulate } from './utils/shootUtils'
 
-  import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
 
-  import { RECORDING_FRAME_LIMIT } from '$lib/consts'
   import getGame from '$lib/api/svelte/context'
   import { rendererStore } from '$src/stores/gameStores'
 

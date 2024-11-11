@@ -8,7 +8,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/hand.glb --transform -t
 
   import type { Snippet } from 'svelte'
   import { T, type Props } from '@threlte/core'
-  import { useGltf } from '@threlte/extras'
+  import { useDraco, useGltf } from '@threlte/extras'
 
   let {
     fallback,
@@ -73,8 +73,10 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/hand.glb --transform -t
       ['CSS_Arms_OBJ_Smoothed_:default2']: THREE.MeshStandardMaterial
     }
   }
-
-  const gltf = useGltf<GLTFResult>('/3d/hand-transformed.glb')
+  const dracoLoader = useDraco()
+  const gltf = useGltf<GLTFResult>('/3d/hand-transformed.glb', {
+    dracoLoader,
+  })
 </script>
 
 <T.Group bind:ref dispose={false} {...props}>
