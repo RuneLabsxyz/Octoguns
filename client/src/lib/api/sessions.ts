@@ -61,7 +61,7 @@ export const openSessions: Readable<Session[]> = derived(
     console.log(' Getting opensessions:', global.pending_sessions)
     Promise.all(
       global.pending_sessions.map(async (session_id) => {
-        const session = await SessionStore(Number(session_id.value))
+        const session = await SessionStore(Number((session_id as any).value))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {
@@ -98,7 +98,7 @@ export const yourSessions: Readable<Session[]> = derived(
 
     Promise.all(
       player.games.map(async (session_id) => {
-        const session = await SessionStore(Number(session_id.value))
+        const session = await SessionStore(Number((session_id as any).value))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {
