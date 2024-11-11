@@ -15,44 +15,33 @@
     yourActiveSessions,
     yourFinishedSessions,
     yourSessions,
+    yourUnstartedSessions,
   } from '$lib/api/sessions'
   import {
     yourSessionMetas,
     yourFinishedSessionsMetas,
     yourActiveSessionMetas,
+    yourUnstartedSessionsMetas,
   } from '$lib/api/sessionMeta'
   import type { Session, SessionMeta } from '$src/dojo/models.gen'
 
-  let activeSessions: Session[] | null = $state(null)
-  let finishedSessions: Session[] | null = $state(null)
-  let sessions: Session[] | null = $state(null)
-  let activeSessionMetas: SessionMeta[] | null = $state(null)
-  let finishedSessionMetas: SessionMeta[] | null = $state(null)
-  let sessionMetas: SessionMeta[] | null = $state(null)
+  // session data
+  let activeSessions: Session[] | null = $derived($yourActiveSessions)
+  let unstartedSessions: Session[] | null = $derived($yourUnstartedSessions)
+  let finishedSessions: Session[] | null = $derived($yourFinishedSessions)
+  let sessions: Session[] | null = $derived($yourSessions)
 
-  yourActiveSessions.subscribe((sessions) => {
-    activeSessions = sessions
-  })
-
-  yourFinishedSessions.subscribe((sessions) => {
-    finishedSessions = sessions
-  })
-
-  yourSessions.subscribe((sessions) => {
-    sessions = sessions
-  })
-
-  yourActiveSessionMetas.subscribe((sessions) => {
-    activeSessionMetas = sessions
-  })
-
-  yourFinishedSessionsMetas.subscribe((sessions) => {
-    finishedSessionMetas = sessions
-  })
-
-  yourSessionMetas.subscribe((sessions) => {
-    sessionMetas = sessions
-  })
+  //session metas data
+  let activeSessionMetas: SessionMeta[] | null = $derived(
+    $yourActiveSessionMetas
+  )
+  let unstartedSessionsMetas: SessionMeta[] | null = $derived(
+    $yourUnstartedSessionsMetas
+  )
+  let finishedSessionMetas: SessionMeta[] | null = $derived(
+    $yourFinishedSessionsMetas
+  )
+  let sessionMetas: SessionMeta[] | null = $derived($yourSessionMetas)
 </script>
 
 <div class={cn('flex flex-col h-full')}>
@@ -74,8 +63,8 @@
     <div class="pb-5 border-b-2 mb-5 border-gray-800">
       <h1 class="text-xl ml-5 mb-3 font-bold">Your not started games</h1>
       <GameList
-        availableSessions={sessions}
-        availableSessionMetas={sessionMetas}
+        availableSessions={unstartedSessions}
+        availableSessionMetas={unstartedSessionsMetas}
         on:select={(session) => goToSession(session.detail)}
       />
     </div>

@@ -89,10 +89,11 @@ export const yourSessions: Readable<Session[]> = derived(
       set([])
       return
     }
+    console.log('Player:', player.games)
 
     Promise.all(
       player.games.map(async (session_id) => {
-        const session = await SessionStore(Number(session_id))
+        const session = await SessionStore(Number(session_id.value))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {
