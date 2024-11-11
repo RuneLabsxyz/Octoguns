@@ -47,7 +47,9 @@ type Context = {
   keyStateStore: Readable<KeyState>
   isMouseDownStore: Readable<boolean>
   hasShot: Writable<boolean>
-  characterStore: Writable<Marked<Character> | null>
+  characterStore: Writable<Marked<Character> | null> & {
+    reset: () => void
+  }
   currentSubmoveStore: Writable<Position>
   frameCounterStore: Readable<number>
   recordedMoveStore: Readable<TurnData>
@@ -227,7 +229,7 @@ function replayMove(ctx: Context) {
     return
   }
   let sub_move = move.sub_moves[move_index]
-  console.log(move)
+  console.log(sub_move)
 
   if (frame % FRAME_INTERVAL === 0 && frame < RECORDING_FRAME_LIMIT) {
     let x_dif = sub_move.x
@@ -239,8 +241,8 @@ function replayMove(ctx: Context) {
       if (character == null) {
         return null
       }
-      character.coords.x += x_dif / SCALING_FACTOR
-      character.coords.y += x_dif / SCALING_FACTOR
+      character.coords.x += x_dif
+      character.coords.y += x_dif
       return character
     })
   }
@@ -252,8 +254,9 @@ export type MoveStore = ReturnType<typeof MoveStore>
 
 export function MoveStore(ctx: {
   controlsStore: ControlsStore
-  currentCharacterStore: Writable<Marked<Character> | null>
-  initialCharacterStore: Readable<Character | null>
+  currentCharacterStore: Writable<Marked<Character> | null> & {
+    reset: () => void
+  }
   frameCounterStore: Readable<number>
   sessionIdStore: Readable<number>
   currentPlayerIdStore: Readable<number | null>
@@ -352,7 +355,8 @@ export function MoveStore(ctx: {
       // Reset the frame counter
       ctx.resetFrameCounter()
       // Reset the positions to the one present on chain
-      ctx.currentCharacterStore.set(get(ctx.initialCharacterStore))
+      ctx.currentCharacterStore.reset()
+
       isReplayingStore.set(true)
     },
 
@@ -360,10 +364,7 @@ export function MoveStore(ctx: {
       ctx.resetFrameCounter()
 
       // Reset the positions to the one present on chain
-
-      const initialCharacter = get(ctx.initialCharacterStore)
-      console.log('Resetting!', initialCharacter)
-      ctx.currentCharacterStore.set(initialCharacter)
+      ctx.currentCharacterStore.reset()
 
       hasRecordedStore.set(false)
       isRecordingStore.set(false)

@@ -138,7 +138,19 @@ export function GameState(game: GameStore) {
     }
   )
 
-  const currentCharacterStore: Writable<Marked<Character> | null> = {
+  const initialCharacterStore = derived(
+    [game.currentPlayerId, game.characters],
+    ([playerId, characters]) => {
+      if (playerId == null) {
+        return null
+      }
+      return (characters ?? [null, null])[playerId - 1]
+    }
+  )
+
+  const currentCharacterStore: Writable<Marked<Character> | null> & {
+    reset: () => void
+  } = {
     ...currentCharacterValue,
     update(t: (value: Marked<Character> | null) => Marked<Character> | null) {
       let subscription = () => {}
@@ -159,23 +171,17 @@ export function GameState(game: GameStore) {
 
       characters[playerId - 1].set(value)
     },
+    reset() {
+      currentCharacterStore.set(
+        window.structuredClone(getValue(initialCharacterStore))
+      )
+    },
   }
-
-  const initialCharacterStore = derived(
-    [game.currentPlayerId, game.characters],
-    ([playerId, characters]) => {
-      if (playerId == null) {
-        return null
-      }
-      return (characters ?? [null, null])[playerId - 1]
-    }
-  )
 
   const moveStore = MoveStore({
     controlsStore,
     currentCharacterStore: currentCharacterStore,
     sessionIdStore: game.sessionId,
-    initialCharacterStore: initialCharacterStore,
     frameCounterStore: frameCounter,
     currentPlayerIdStore: game.currentPlayerId,
     incrementFrame() {
