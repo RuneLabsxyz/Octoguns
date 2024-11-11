@@ -3,9 +3,11 @@
   import { joinGame } from '$lib/api/actions'
   import { yourActiveSessions } from '$lib/api/sessions'
   import { onMount } from 'svelte'
-  let { availableSessions, availableSessionMetas } = $props<{
+
+  let { availableSessions, availableSessionMetas, contractCall } = $props<{
     availableSessions: Session[] | null
     availableSessionMetas: SessionMeta[] | null
+    contractCall: boolean
   }>()
 
   let isLoadingJoin = $state(false)
@@ -37,7 +39,11 @@
   )
 
   function joiningGame(sessionId: number) {
-    window.location.href = `/slot/game/${sessionId}`
+    if (!contractCall) {
+      window.location.href = `/slot/game/${sessionId}`
+    } else {
+      //TODO handle call to contract + listner
+    }
     // isLoadingJoin = true
   }
 </script>

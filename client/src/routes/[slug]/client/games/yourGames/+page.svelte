@@ -56,6 +56,7 @@
       <GameList
         availableSessions={activeSessions}
         availableSessionMetas={activeSessionMetas}
+        contractCall={false}
         on:select={(session) => goToSession(session.detail)}
       />
     </div>
@@ -65,6 +66,7 @@
       <GameList
         availableSessions={unstartedSessions}
         availableSessionMetas={unstartedSessionsMetas}
+        contractCall={false}
         on:select={(session) => goToSession(session.detail)}
       />
     </div>
@@ -74,6 +76,7 @@
       <GameList
         availableSessions={finishedSessions}
         availableSessionMetas={finishedSessionMetas}
+        contractCall={false}
         on:select={(session) => goToSession(session.detail)}
       />
     </div>

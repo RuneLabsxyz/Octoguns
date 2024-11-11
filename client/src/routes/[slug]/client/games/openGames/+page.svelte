@@ -27,7 +27,11 @@
   >
     {#if availableSessions && availableSessions.length > 0}
       <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
-      <GameList {availableSessions} {availableSessionMetas} />
+      <GameList
+        {availableSessions}
+        {availableSessionMetas}
+        contractCall={true}
+      />
     {:else}
       <div class="self-center align-middle flex flex-col gap-2">
         <p>No games are currently available.</p>
