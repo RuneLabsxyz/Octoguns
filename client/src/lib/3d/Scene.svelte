@@ -19,7 +19,6 @@
     resetCamera,
   } from './components/Cameras/SplitScreen/CameraUtils'
   import { birdView } from '$stores/cameraStores'
-  import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { Controls, PerspectiveCamera } from 'three'
   import Bullets from './components/Bullets.svelte'
   import { shoot, replayShot, simulate } from './utils/shootUtils'
@@ -93,7 +92,6 @@
           console.log('eyyy, tf')
           replayMode.set(false)
         }
-        replayMove($recordedMove, characterId)
         replayShot($recordedMove, cameras[0])
       }
 
