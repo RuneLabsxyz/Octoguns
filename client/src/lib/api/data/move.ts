@@ -131,13 +131,11 @@ function recordMove(ctx: Context, camera: Camera) {
       SUBMOVE_SCALE / 3
     )
 
-    console.log(normalized)
     moveDirection.x = normalized.x
     moveDirection.z = normalized.y
 
     // Ensure y-axis movement is zero (assuming 2D movement)
     moveDirection.y = 0
-
     // Update player coordinates with clamped values to stay within grid bounds
     ctx.characterStore.update((character) => {
       if (character == null) {
@@ -147,19 +145,11 @@ function recordMove(ctx: Context, camera: Camera) {
       // Mark the character
       character.__marked = 'moved'
 
-      const newX = character.coords.x + moveDirection.x / SCALING_FACTOR
-      const newY = character.coords.y + moveDirection.z / SCALING_FACTOR
+      const newX = character.coords.x + moveDirection.x
+      const newY = character.coords.y + moveDirection.z
 
-      // Check if new coordinates are out of bounds and set move direction to 0 if they are
-      if (newX < -50 || newX > 50) {
-        moveDirection.x = 0
-      }
-      if (newY < -50 || newY > 50) {
-        moveDirection.z = 0
-      }
-
-      character.coords.x = clamp(newX, -50, 50)
-      character.coords.y = clamp(newY, -50, 50)
+      character.coords.x = newX
+      character.coords.y = newY
 
       return character
     })
@@ -171,9 +161,10 @@ function recordMove(ctx: Context, camera: Camera) {
     })
 
     if (get<number>(ctx.frameCounterStore) % FRAME_INTERVAL === 0) {
+      const submove = get(ctx.currentSubmoveStore)
       const current = normalizeAndScaleVector(
-        get(ctx.currentSubmoveStore).x,
-        get(ctx.currentSubmoveStore).y,
+        submove.x,
+        submove.y,
         SUBMOVE_SCALE
       )
 
@@ -188,6 +179,8 @@ function recordMove(ctx: Context, camera: Camera) {
 
       ctx.currentSubmoveStore.set({ x: 0, y: 0 })
     }
+
+    ctx.incrementFrame()
   }
 
   // Reset move direction is not necessary since moveDirection is now scoped within the function
@@ -365,6 +358,13 @@ export function MoveStore(ctx: {
 
     reset() {
       ctx.resetFrameCounter()
+
+      // Reset the positions to the one present on chain
+
+      const initialCharacter = get(ctx.initialCharacterStore)
+      console.log('Resetting!', initialCharacter)
+      ctx.currentCharacterStore.set(initialCharacter)
+
       hasRecordedStore.set(false)
       isRecordingStore.set(false)
       isReplayingStore.set(false)

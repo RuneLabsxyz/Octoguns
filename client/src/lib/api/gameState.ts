@@ -17,6 +17,7 @@ import type {
   SessionMeta,
   Bullet as BulletTy,
   Bullet,
+  Player,
 } from '$src/dojo/models.gen'
 import { getBulletPosition } from '$lib/helper'
 import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
@@ -26,6 +27,7 @@ import { getDojoContext } from '$src/stores/dojoStore'
 import { ControlsStore } from './controls/controls'
 import { MoveStore } from './data/move'
 import { playSoundEffect } from '$lib/3d/utils/audioUtils'
+import { currentPlayer } from './player'
 
 function handleMove() {
   //console.log('calldata', calldata)
@@ -116,7 +118,8 @@ export function GameState(game: GameStore) {
             return currentCharacter
           }
 
-          return newCharacter
+          // Deep clone the character
+          return window.structuredClone(newCharacter)
         })
       })
     })
@@ -124,23 +127,39 @@ export function GameState(game: GameStore) {
   const controlsStore = ControlsStore()
 
   // Red: This may break badly :/
-  const currentCharacterStore = toStore(
-    () => {
-      const playerId = getValue(game.currentPlayerId)
+  const currentCharacterValue = derived(
+    [game.currentPlayerId, ...characters],
+    ([playerId, ...characters]) => {
       if (playerId == null) {
         return null
       }
-      return getValue(characters[playerId])
+
+      return characters[playerId - 1]
+    }
+  )
+
+  const currentCharacterStore: Writable<Marked<Character> | null> = {
+    ...currentCharacterValue,
+    update(t: (value: Marked<Character> | null) => Marked<Character> | null) {
+      let subscription = () => {}
+      let updated = false
+      subscription = currentCharacterStore.subscribe((val) => {
+        if (!updated) {
+          updated = true
+          currentCharacterStore.set(t(val))
+          subscription()
+        }
+      })
     },
-    (newCharacter) => {
+    set(value: Marked<Character> | null) {
       const playerId = getValue(game.currentPlayerId)
       if (playerId == null) {
         return null
       }
 
-      characters[playerId].set(newCharacter)
-    }
-  )
+      characters[playerId - 1].set(value)
+    },
+  }
 
   const initialCharacterStore = derived(
     [game.currentPlayerId, game.characters],

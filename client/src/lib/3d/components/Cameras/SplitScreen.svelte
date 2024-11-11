@@ -8,10 +8,18 @@
   import Hand from '../models/hand.svelte'
   import getGame from '$lib/api/svelte/context'
   import type { Position } from '$lib/api/gameState'
+  import { onDestroy } from 'svelte'
 
   let { currentCharacter } = getGame()
 
-  let playerCoords = $derived($currentCharacter?.coords ?? { x: 0, y: 0 })
+  let playerCoords: Position | undefined = $state(undefined)
+
+  // Red: For some reason the object is not reactive if I do not subscribe manually
+  const unsubscribe = currentCharacter.subscribe(
+    (char) => (playerCoords = char?.coords)
+  )
+
+  onDestroy(unsubscribe)
 
   function normalizeCoords(coords: Position): Position {
     return {
@@ -20,9 +28,9 @@
     }
   }
 
-  let normalizedPlayerCoords = $derived(normalizeCoords(playerCoords))
-
-  let { renderer } = useThrelte()
+  let normalizedPlayerCoords = $derived(
+    normalizeCoords(playerCoords ?? { x: 0, y: 0 })
+  )
 
   interface Props {
     cameras?: PerspectiveCamera[]
@@ -30,8 +38,6 @@
   }
 
   let { cameras = $bindable([]), numCameras = 1 }: Props = $props()
-
-  $inspect(numCameras, cameras)
 </script>
 
 {#if !$birdView}
