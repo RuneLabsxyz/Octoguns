@@ -11,16 +11,8 @@
 
   // TODO: Migrate this to directly using stores
 
-  let availableSessions: Session[] | null = $state(null)
-  let availableSessionMetas: SessionMeta[] | null = $state(null)
-
-  openSessions.subscribe((sessions) => {
-    availableSessions = sessions
-  })
-
-  openSessionMetas.subscribe((sessions) => {
-    availableSessionMetas = sessions
-  })
+  let availableSessions: Session[] | null = $derived($openSessions)
+  let availableSessionMetas: SessionMeta[] | null = $derived($openSessionMetas)
 </script>
 
 <div class={cn('flex flex-col h-full')}>

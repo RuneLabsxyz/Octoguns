@@ -54,13 +54,14 @@ export const currentSession: Readable<Session | null> = derived(
 export const openSessions: Readable<Session[]> = derived(
   [currentPlayer, currentGlobal],
   ([player, global], set) => {
-    if (global == null || player == null) {
+    if (global == null) {
       set([])
       return
     }
+    console.log(' Getting opensessions:', global.pending_sessions)
     Promise.all(
       global.pending_sessions.map(async (session_id) => {
-        const session = await SessionStore(Number(session_id))
+        const session = await SessionStore(Number(session_id.value))
         return new Promise<Session>((resolve) => {
           session.subscribe((value) => {
             if (value) {
@@ -71,6 +72,10 @@ export const openSessions: Readable<Session[]> = derived(
       })
     ).then((sessions) => {
       // Filter out sessions where player is player1 or player2 and state is not 0
+      if (player == null) {
+        set(sessions)
+        return
+      }
       const filteredSessions = sessions.filter(
         (session) =>
           session.player1 !== player.player &&
