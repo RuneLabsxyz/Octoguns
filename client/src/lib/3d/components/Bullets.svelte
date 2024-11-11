@@ -3,6 +3,8 @@
   import Bullet from './Bullet/Bullet.svelte'
 
   const { bullets } = getGame()
+
+  $inspect($bullets)
 </script>
 
 {#each $bullets ?? [] as bullet}

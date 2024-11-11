@@ -4,6 +4,7 @@ import {
   FRAME_INTERVAL,
   RECORDING_FRAME_LIMIT,
   TURN_COUNT,
+  BULLET_SPEED,
 } from '$lib/consts'
 import { clamp, normalizeAndScaleVector } from '$lib/helper'
 import { birdView, inPointerLock } from '$src/stores/cameraStores'
@@ -34,8 +35,8 @@ export type TurnData = {
 
 function denormalizeCoords(coords: Position): Position {
   return {
-    x: (coords.x + 50) * 100,
-    y: (coords.y + 50) * 100,
+    x: (coords.x + 50) * 1000,
+    y: (coords.y + 50) * 1000,
   }
 }
 
@@ -81,19 +82,23 @@ function shoot(ctx: Context, camera: PerspectiveCamera) {
 
   ctx.addShot(bullet)
 
-  let vx = Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8))
-  let vy = Math.sin(THREE.MathUtils.degToRad(direction / 10 ** 8))
+  let vx =
+    Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8)) *
+    (BULLET_SPEED * SCALING_FACTOR)
+  let vy =
+    Math.sin(THREE.MathUtils.degToRad(direction / 10 ** 8)) *
+    (BULLET_SPEED * SCALING_FACTOR)
 
-  //
-  const cameraPosition = camera.position
+  const cameraPosition = denormalizeCoords({
+    x: camera.position.x,
+    y: camera.position.z,
+  })
+
   // Create a temporary bullet for showing
   const newBullet: Bullet = {
     bullet_id: 0,
     shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
-    shot_at: denormalizeCoords({
-      x: cameraPosition.x,
-      y: cameraPosition.z,
-    }),
+    shot_at: cameraPosition,
     velocity: { x: vx, y: vy, xdir: true, ydir: true },
 
     shot_by: get(ctx.currentPlayerIdStore) ?? 0,
@@ -199,18 +204,24 @@ function replayShot(ctx: Context, camera: PerspectiveCamera) {
 
     console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 
-    let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8))
-    let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8))
+    let vx =
+      Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
+      (BULLET_SPEED * SCALING_FACTOR)
+    let vy =
+      Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
+      (BULLET_SPEED * SCALING_FACTOR)
 
-    const cameraPosition = camera.position
+    const cameraPosition = denormalizeCoords({
+      x: camera.position.x,
+      y: camera.position.z,
+    })
+
+    console.log(cameraPosition)
     // Create a temporary bullet for showing
     const newBullet: Bullet = {
       bullet_id: 0,
       shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
-      shot_at: denormalizeCoords({
-        x: cameraPosition.x,
-        y: cameraPosition.z,
-      }),
+      shot_at: cameraPosition,
       velocity: { x: vx, y: vy, xdir: true, ydir: true },
 
       shot_by: get(ctx.currentPlayerIdStore) ?? 0,

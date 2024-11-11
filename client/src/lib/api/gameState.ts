@@ -58,10 +58,7 @@ function bulletAt(
 
   const position = getBulletPosition(bullet, frameDiff)
 
-  // Ignore all bullets outside of the map boundaries.
-  if (isOutsideMapBoundary(position.x, position.y)) {
-    return null
-  }
+  // TODO: Check the boundaries in world scale
 
   return {
     ...bullet,
