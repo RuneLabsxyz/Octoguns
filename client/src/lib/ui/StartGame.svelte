@@ -12,6 +12,7 @@
   const sessionState: number | undefined = $derived(Number($session?.state))
 
   $effect(() => {
+    console.log('State', sessionState)
     if (sessionState === 1 && $currentPlayerId === 2 && $account) {
       spawn()
     }

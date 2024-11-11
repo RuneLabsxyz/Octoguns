@@ -9,9 +9,7 @@
 
   let { data } = $props()
 
-  const gameStorePromise = $state(
-    Game(parseInt(data.gameId), $account?.address ?? null)
-  )
+  const gameStorePromise = $state(Game(parseInt(data.gameId)))
 
   /*
   onMount(async () => {

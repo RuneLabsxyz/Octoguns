@@ -20,8 +20,10 @@ export default function get<T>(
 }
 
 export function getBigInt(val: U256) {
+  if (val == null) {
+    return null
+  }
   return (
-    BigInt(val.high as bigint) * (BigInt(1) << BigInt(128)) +
-    BigInt(val.low as bigint)
+    BigInt(String(val))
   )
 }

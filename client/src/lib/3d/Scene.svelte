@@ -21,7 +21,6 @@
   import { writable } from 'svelte/store'
 
   import { RECORDING_FRAME_LIMIT } from '$lib/consts'
-  import { Inspector } from 'three-inspect'
   import getGame from '$lib/api/svelte/context'
   import { rendererStore } from '$src/stores/gameStores'
 
@@ -106,5 +105,4 @@
   <Map />
   <Characters />
   <Bullets />
-  <Inspector />
 </T.Group>

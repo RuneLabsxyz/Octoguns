@@ -3,6 +3,10 @@
   import type { Character } from '$lib/api/data/characters'
   import type { Readable } from 'svelte/store'
   import getGame from '$lib/api/svelte/context'
+  import { SCALING_FACTOR } from '$lib/consts'
+  import { accountStore } from '$src/stores/dojoStore'
+  import { areAddressesEqual } from '$lib/helper'
+  import type { Position } from '$lib/api/gameState'
 
   const {
     character,
@@ -13,14 +17,35 @@
   const { currentPlayerId } = getGame()
 
   //TODO(Red): Is this correct?
-  const isAlly = $derived(Number($character?.playerId) == $currentPlayerId)
+  const isAlly = $derived(
+    areAddressesEqual(
+      String($character?.playerId),
+      $accountStore?.address ?? BigInt(0)
+    )
+  )
+
+  function normalizeCoords(coords: Position): Position {
+    return {
+      x: coords.x / 1000 - 50,
+      y: coords.y / 1000 - 50,
+    }
+  }
+
+  const normalizedCoordinates = $derived(
+    normalizeCoords($character?.coords ?? { x: 0, y: 0 })
+  )
+
+  const position: [number, number, number] = $derived(
+    $character
+      ? [normalizedCoordinates.x, 0, normalizedCoordinates.y]
+      : [0, 0, 0]
+  )
+
+  $inspect($character, isAlly, position)
 </script>
 
 {#if $character != null}
-  <T.Mesh
-    position={[$character.coords.x, 0, $character.coords.y]}
-    key={$character.id}
-  >
+  <T.Mesh {position} key={$character.id}>
     <T.BoxGeometry args={[1, 1, 1]} />
     <T.MeshStandardMaterial color={isAlly ? 'blue' : 'red'} />
   </T.Mesh>

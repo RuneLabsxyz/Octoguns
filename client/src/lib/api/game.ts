@@ -1,20 +1,20 @@
-import { getDojo } from '$src/stores/dojoStore'
-import { derived, readable } from 'svelte/store'
+import { accountStore, getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { derived, readable, type Readable } from 'svelte/store'
 import { SessionStore } from './sessions'
 import { SessionMeta } from './sessionMeta'
 import get from './utils'
 import { getMap } from './maps'
 import { areAddressesEqual } from '$lib/helper'
 import { currentPlayerId } from '$src/stores/gameStores'
-import type { Readable } from 'svelte/motion'
 import { BulletsStore } from './data/bullets'
 import { CharactersStore } from './data/characters'
 import type { Map } from '$src/dojo/models.gen'
+import type { Position } from './gameState'
+
 
 export type GameStore = Awaited<ReturnType<typeof Game>>
 
-export async function Game(sessionId: number, player_address: string | null) {
-  const { torii, clientComponents } = await getDojo()
+export async function Game(sessionId: number) {
 
   let sessionStore = await SessionStore(sessionId)
   let sessionMetaStore = await SessionMeta(sessionId)
@@ -44,7 +44,9 @@ export async function Game(sessionId: number, player_address: string | null) {
     }
   )
 
-  let currentPlayerIdStore = derived([sessionStore], ([session]) => {
+  let currentPlayerIdStore = derived([sessionStore, accountStore], ([session, account]) => {
+    const player_address = account?.address
+
     if (session == null) {
       return null
     }

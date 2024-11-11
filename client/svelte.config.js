@@ -16,6 +16,7 @@ const config = {
       $manifests: `../contracts/`,
     },
   },
+  
   preprocess: vitePreprocess(),
 }
 export default config

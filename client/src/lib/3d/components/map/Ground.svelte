@@ -6,5 +6,4 @@
 <T.Mesh receiveShadow position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
   <T.PlaneGeometry args={[100, 100]} />
   <T.MeshPhysicalMaterial color="#ffffff" />
-  <Edges color="white" />
 </T.Mesh>
