@@ -112,6 +112,7 @@ function recordMove(ctx: Context, camera: Camera) {
 
   if (isMouseDown && get(inPointerLock) && !get(ctx.hasShot)) {
     shoot(ctx, camera as PerspectiveCamera)
+    ctx.hasShot.set(true)
   }
 
   if (moveDirection.length() > 0) {
@@ -129,6 +130,8 @@ function recordMove(ctx: Context, camera: Camera) {
       moveDirection.z,
       SUBMOVE_SCALE / 3
     )
+
+    console.log(normalized)
     moveDirection.x = normalized.x
     moveDirection.z = normalized.y
 

@@ -13,7 +13,8 @@
 
   let { bullet, trailSpacing = 0.01, compressionFactor = 1 }: Props = $props()
 
-  let geometry: BufferGeometry | undefined = $state()
+  let geometryRef: any = $state()
+  let geometry: BufferGeometry | undefined = $derived(geometryRef?.geometry)
   let pointsRef: Points | undefined = $state()
 
   function normalizeCoords(coords: Position): Position {
@@ -104,17 +105,17 @@
 <T.Group>
   <!-- Bullet trail -->
   <T.Points bind:ref={pointsRef}>
-    <T.BufferGeometry bind:geometry>
+    <T.BufferGeometry bind:ref={geometryRef}>
       <T.BufferAttribute
         args={[positions.positions, 3]}
-        attach={(parent, self) => {
-          parent.setAttribute('position', self)
+        attach={({ parent, ref }) => {
+          ;(parent as any).setAttribute('position', ref)
         }}
       />
       <T.BufferAttribute
         args={[positions.colors, 3]}
-        attach={(parent, self) => {
-          parent.setAttribute('color', self)
+        attach={({ parent, ref }) => {
+          ;(parent as any).setAttribute('color', ref)
         }}
       />
     </T.BufferGeometry>

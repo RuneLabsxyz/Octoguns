@@ -40,8 +40,6 @@
       ? [normalizedCoordinates.x, 0, normalizedCoordinates.y]
       : [0, 0, 0]
   )
-
-  $inspect($character, isAlly, position)
 </script>
 
 {#if $character != null}
