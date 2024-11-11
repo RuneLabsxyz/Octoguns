@@ -10,20 +10,7 @@
     contractCall: boolean
   }>()
 
-  let isLoadingJoin = $state(false)
   let activeSessions = $derived(yourActiveSessions)
-
-  $effect(() => {
-    if (activeSessions && isLoadingJoin) {
-      window.location.href = `/slot/client/games/session/${$activeSessions[$activeSessions.length - 1].session_id}`
-    }
-  })
-
-  $effect(() => {
-    if (activeSessions && isLoadingJoin) {
-    }
-  })
-
   let pendingSessions: Session[] = $derived(availableSessions)
 
   let showAll = $state(false)
@@ -38,13 +25,13 @@
       : pendingSessions.slice(-9).reverse()
   )
 
-  function joiningGame(sessionId: number) {
+  async function joiningGame(sessionId: number) {
     if (!contractCall) {
       window.location.href = `/slot/game/${sessionId}`
     } else {
-      //TODO handle call to contract + listner
+      await joinGame(sessionId)
+      window.location.href = `/slot/game/${$activeSessions[$activeSessions.length - 1].session_id}`
     }
-    // isLoadingJoin = true
   }
 </script>
 
