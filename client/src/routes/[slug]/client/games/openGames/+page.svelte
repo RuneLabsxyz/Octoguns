@@ -3,7 +3,6 @@
   import { type Entity } from '@dojoengine/recs'
   import Button from '$lib/ui/Button.svelte'
   import { cn } from '$lib/css/cn'
-  import { goToSession, joinSession } from '$lib/game'
   import { env } from '$stores/network'
   import { openSessions } from '$lib/api/sessions'
   import { openSessionMetas } from '$lib/api/sessionMeta'
@@ -28,11 +27,7 @@
   >
     {#if availableSessions && availableSessions.length > 0}
       <h1 class="text-xl ml-5 mb-3 font-bold">Games available</h1>
-      <GameList
-        {availableSessions}
-        {availableSessionMetas}
-        on:select={(session) => joinSession(session.detail)}
-      />
+      <GameList {availableSessions} {availableSessionMetas} />
     {:else}
       <div class="self-center align-middle flex flex-col gap-2">
         <p>No games are currently available.</p>

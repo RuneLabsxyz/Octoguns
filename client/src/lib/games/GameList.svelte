@@ -1,21 +1,30 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
   import type { Session, SessionMeta } from '$src/dojo/models.gen'
-
+  import { joinGame } from '$lib/api/actions'
+  import { yourActiveSessions } from '$lib/api/sessions'
+  import { onMount } from 'svelte'
   let { availableSessions, availableSessionMetas } = $props<{
     availableSessions: Session[] | null
     availableSessionMetas: SessionMeta[] | null
   }>()
 
-  const dispatch = createEventDispatcher()
+  let isLoadingJoin = $state(false)
+  let activeSessions = $derived(yourActiveSessions)
+
+  $effect(() => {
+    if (activeSessions && isLoadingJoin) {
+      window.location.href = `/slot/client/games/session/${$activeSessions[$activeSessions.length - 1].session_id}`
+    }
+  })
+
+  $effect(() => {
+    if (activeSessions && isLoadingJoin) {
+    }
+  })
 
   let pendingSessions: Session[] = $derived(availableSessions)
 
   let showAll = $state(false)
-
-  function onClick(session: any) {
-    dispatch('select', session)
-  }
 
   function toggleShowAll() {
     showAll = !showAll
@@ -26,6 +35,11 @@
       ? pendingSessions.slice().reverse()
       : pendingSessions.slice(-9).reverse()
   )
+
+  function joiningGame(sessionId: number) {
+    window.location.href = `/slot/game/${sessionId}`
+    // isLoadingJoin = true
+  }
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-5 gap-3">
@@ -36,7 +50,7 @@
       >
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
-          onclick={() => onClick(session)}
+          onclick={() => joiningGame(Number(session.session_id))}
         >
           Join
         </button>
