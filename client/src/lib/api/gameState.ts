@@ -52,6 +52,7 @@ function bulletAt(
   frame: number
 ): BulletWithPosition | null {
   const movesPerTurn = Number(SESSION_PRIMITIVES.sub_moves_per_turn)
+  console.log(bullet.shot_step)
   const shotStep = Number(bullet.shot_step)
 
   const frameDiff = movesPerTurn * turn + frame / FRAME_INTERVAL - shotStep

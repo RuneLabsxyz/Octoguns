@@ -12,7 +12,7 @@
 
     return (
       [$sessionMeta?.p1_character, $sessionMeta?.p2_character][
-        $currentPlayerId
+        $currentPlayerId - 1
       ] !== 0
     )
   })
@@ -35,7 +35,7 @@
 
     <Button
       href="/client/games"
-      class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+      className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
       >Back to menu</Button
     >
   </div>
