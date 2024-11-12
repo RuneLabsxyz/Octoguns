@@ -32,7 +32,7 @@ export function BulletsStore(
 
     // Create an array of bullet stores
     const bulletStores = $SessionMeta.bullets.map(async (bulletId) => {
-      return await BulletStore(Number(bulletId))
+      return await BulletStore(Number((bulletId as any).value))
     })
 
     // Combine all bullet stores into a single array
