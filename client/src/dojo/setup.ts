@@ -22,9 +22,9 @@ export async function setup({ ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
     rpcUrl: config.rpcUrl,
-    toriiUrl: config.toriiUrl,
+    toriiUrl: 'http://localhost:8080',
     relayUrl: '',
-    worldAddress: '0x02148d9f41fd5b4687f3753b0e94187a78f46923db0619a4d99c9fd33ce9bf21'
+    worldAddress: '0x761d393cd0e7e91f008395bc1401928c145802b6a3b99bcfb712dc73bf0a1e6'
   })
 
   // create contract components
@@ -35,6 +35,7 @@ export async function setup({ ...config }: DojoConfig) {
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
+  
   console.log(JSON.parse(JSON.stringify(manifest)));
 
   const sync = await getSyncEntities(toriiClient, contractComponents as any, undefined, [])
@@ -43,6 +44,7 @@ export async function setup({ ...config }: DojoConfig) {
   console.log(contracts[0]);
 
   const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
+  console.log(myTestContract);
   planeteloStore.set(myTestContract);
   // setup world
   const client = await setupWorld(dojoProvider)

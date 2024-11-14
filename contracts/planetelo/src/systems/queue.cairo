@@ -15,6 +15,7 @@ trait IQueue<T> {
     fn get_status(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u8;
     fn get_queue_members(self: @T, game: felt252, playlist: u128) -> Array<QueueMember>;
     fn get_player_game_id(self: @T, address: starknet::ContractAddress, game: felt252, playlist: u128) -> u128;
+    fn end_game(ref self: T, game: felt252, game_id: u128);
 }
 
 // dojo decorator
@@ -272,6 +273,25 @@ mod queue {
                 QueueStatus::InGame(id) => id,
                 _ => panic!("Player is not in a game"),
             }        }
+
+        fn end_game(ref self: ContractState, game: felt252, game_id: u128) {
+            let caller = get_caller_address();
+            assert!(caller == starknet::contract_address_const::<0x0737C189b6207e381111E316a0249e4A2bC8fAF0A0d322A85b2dEb7fc2ba427D>(), "Who do you think you are?");
+            let mut world = self.world(@"planetelo");
+            let mut game_model: Game = world.read_model((game, game_id));
+
+            let mut  player_one: PlayerStatus = world.read_model((game_model.player1, game, game_model.playlist));
+            let mut player_two: PlayerStatus = world.read_model((game_model.player2, game, game_model.playlist));
+            player_one.status = QueueStatus::None;
+            player_two.status = QueueStatus::None;
+            player_one.index = 0;
+            player_two.index = 0;
+            game_model.player1 = contract_address_const::<0x0>();
+            game_model.player2 = contract_address_const::<0x0>();
+            world.write_model(@player_one);
+            world.write_model(@player_two);
+            world.write_model(@game_model);
+        }
 
     }
 }

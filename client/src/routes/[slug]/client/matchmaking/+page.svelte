@@ -35,7 +35,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'queue',
-                calldata: ["0x6f63746f67756e75", "0x0"]
+                calldata: ["0x6f63746f67756e77", "0x0"]
             }]
         );
         console.log(res);
@@ -47,7 +47,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'matchmake',
-                calldata: ["0x6f63746f67756e75", "0x0"]
+                calldata: ["0x6f63746f67756e77", "0x0"]
             }]
         );
         console.log(res);
@@ -66,7 +66,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'settle',
-                calldata: ["0x6f63746f67756e75", game_id!]
+                calldata: ["0x6f63746f67756e77", game_id!]
             }]
         );
         console.log(res);
@@ -74,12 +74,12 @@
 
 
     const get_status = async () => {
-        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e75", "0x0"));
-        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e75", "0x0");
+        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e77", "0x0"));
+        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e77", "0x0");
         console.log(elo)
-        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e75", "0x0"));
+        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e77", "0x0"));
         if (status == 2) {
-            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e75", "0x0"));
+            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e77", "0x0"));
             console.log(actions)
         }
         console.log(status)

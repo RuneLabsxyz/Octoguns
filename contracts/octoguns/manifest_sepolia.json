@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc",
-    "seed": "fdsafdasasdsssfasdfssf",
+    "address": "0x761d393cd0e7e91f008395bc1401928c145802b6a3b99bcfb712dc73bf0a1e6",
+    "seed": "fdsafdasasdsssffdsafasdfssf",
     "name": "Octoguns",
     "abi": [
       {
@@ -1121,7 +1121,7 @@
   },
   "contracts": [
     {
-      "address": "0x3451db8ccea9054ec016d1bd9ec40cde6ba895e92762bfb0a7f4136aee7652",
+      "address": "0x512ee5bb61ee5187957c992e1265d47380ffa4dcb74bcc99948dab4a39a795c",
       "class_hash": "0x18ecc8ded7425656bfdf18bf4fcb86a12f6bc94183de10ef17c4e9704fa01e",
       "abi": [
         {
@@ -1375,7 +1375,7 @@
       "systems": []
     },
     {
-      "address": "0x7219a096b58c54f88c9d61943a3e6e278056a7d01e3ad8cb73d778a5aaa364d",
+      "address": "0x1f6970ee775b31b113971912c1cb443944b324358cad9e61ad47c222a3b24e9",
       "class_hash": "0x5ebb65ccfaced79072fed9661f6c70a71389e2ea0bafe73b91ee2da13657f7a",
       "abi": [
         {
@@ -1576,7 +1576,7 @@
       "systems": []
     },
     {
-      "address": "0x4a9b6ecaa6a57875a7e1b3600d42cf6e6fd260dd85e5a4f5aa8288c08dbfd6d",
+      "address": "0x52b152702baaa2fe83e33ef8d75b373c997c6bf944f8258d2a651b417798a98",
       "class_hash": "0x6c3d6a7a56075c6868564c9bae1171a31267c4654d407692137940f9ad94f27",
       "abi": [
         {
@@ -1762,7 +1762,7 @@
       "systems": []
     },
     {
-      "address": "0x7f938d33e2a6938082a094102d9cdd765a7688389b0de5f90e2dc8e4ee6dfcd",
+      "address": "0x3679402ca5cb832a23e5b80aa152a0f3c19712767d396e835ea5c444a2c5669",
       "class_hash": "0xca73b71b52f9ae4fce269442a08868ef9b83aeacfbf9f32eb3e6ff69128d62",
       "abi": [
         {
@@ -2022,7 +2022,7 @@
       "systems": []
     },
     {
-      "address": "0x2adbf7a614d31d427d8227104e6796eb9c88439ccc240c5a5f9d3a19d0ea6d5",
+      "address": "0xe0b3aeb5f98f9944dcf9772264c3f46e1359585977a557f7ca6d1cef20831",
       "class_hash": "0x5e3a52d7af64c0ccba8fa8490cc790ac58c4a7694f3c872f78091e653bbbca1",
       "abi": [
         {

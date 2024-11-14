@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x1924653b0f449dad3ba9b1d3d354a219cd8241b63cf31f8d90728ceb3bfc7cf",
-    "seed": "aaasdfdasdfasffdas",
+    "address": "0x7ffba882af8d1281e5e6eadbe40220d03ae699223d0b3a35170f589b26f301b",
+    "seed": "aaasdfdasdfasdasffdas",
     "name": "Planetelo",
     "abi": [
       {
@@ -1121,8 +1121,8 @@
   },
   "contracts": [
     {
-      "address": "0x5be332148f819892b4f47b6404d04832b9afa9cbca1adf2175842d51be4fcd2",
-      "class_hash": "0x74f099c340933c8552a0616e8b8c91e7b4cd02f849e89de95fc217ff48dfb59",
+      "address": "0x29dfc78a59d3d9413457d9794bf512c46063e5d2ecb47c224d6a657312cf13f",
+      "class_hash": "0x516a604c40dd52e570191bcde8d73f828e250a9d13208f290ee5602ca6c22bb",
       "abi": [
         {
           "type": "impl",
@@ -1378,6 +1378,22 @@
                 }
               ],
               "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "end_game",
+              "inputs": [
+                {
+                  "name": "game",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "game_id",
+                  "type": "core::integer::u128"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
             }
           ]
         },
@@ -1501,7 +1517,7 @@
       "systems": []
     },
     {
-      "address": "0x55782055ef3378f23bb9d73b11112490066e235fb35393dc36ab47247ce17ae",
+      "address": "0x728decca77c863a955e85aa548f00003f48d55808323031b831b348e0d466a8",
       "class_hash": "0x23d67862ab72cf3252f37e2aff0db2cc3eb4d0ed57d10bc35138b4bd162b93a",
       "abi": [
         {
