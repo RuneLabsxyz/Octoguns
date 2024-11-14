@@ -4,7 +4,7 @@
   import { onMount } from 'svelte'
   import { connect } from '$lib/controller'
   import { controllerMainnet, controllerSlot } from '$lib/controller'
-  import { username, account } from '$stores/account'
+  import { username } from '$stores/account'
   import { env } from '$stores/network'
   interface Props {
     children?: import('svelte').Snippet
@@ -44,19 +44,16 @@
     {#if loading}
       <p>Loading</p>
     {/if}
-    {#if $username && $account}
-    <Button on:click={toggleControllerModal}>
-      <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
-      {$username}
-    </Button>
-  {/if}
-  {#if !$username && !$account}
-    <Button on:click={ () => connect('sepolia')}>
-      <img src="/logos/controller/controller.png" alt="Controller" class="inline-block w-8 h-8" />
-      Connect Wallet
+    {#if username}
+      <Button on:click={toggleControllerModal}>
+        <img
+          src="/logos/controller/controller.png"
+          alt="Controller"
+          class="inline-block w-8 h-8"
+        />
+        {$username}
       </Button>
     {/if}
-    <Button href={`/${$env}/client/matchmaking`}>Matchmaking</Button>
     <Button href={`/${$env}/client/games/openGames`}>New Game</Button>
     <Button href={`/${$env}/client/games/yourGames`}>Your Games</Button>
     <Button href={`/${$env}/client/maps`}>Maps</Button>

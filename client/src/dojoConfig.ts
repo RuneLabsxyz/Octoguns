@@ -1,5 +1,5 @@
 import { get } from 'svelte/store'
-import manifest from './dojo/manifest_octoguns_sepolia.json'
+import manifest from '$manifests/manifest_slot.json'
 import { createDojoConfig } from '@dojoengine/core'
 import { CONFIG } from '$stores/network'
 

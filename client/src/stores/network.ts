@@ -16,18 +16,11 @@ export const SLOT = {
     ENV: 'slot'
 };
 
-export const SEPOLIA: any = {
-    PUBLIC_TORII_URL: 'https://api.cartridge.gg/x/planetelo/torii',   
-    PUBLIC_RPC_URL: 'https://api.cartridge.gg/x/starknet/sepolia',       
-    PUBLIC_WORLD_ADDRESS: '0x049d36570d4e46f48e99674bd3fcc84c25dd2c13b1b4909766fee4c92cc389ed', 
-    ENV: 'sepolia'
-};
-
 export interface Config {
     PUBLIC_TORII_URL: string;
     PUBLIC_RPC_URL: string;
     PUBLIC_WORLD_ADDRESS: string;
-    ENV: 'mainnet' | 'slot' | 'sepolia';
+    ENV: 'mainnet' | 'slot';
 }
 
-export const CONFIG = derived(env, $env => ($env === 'mainnet' ? MAINNET : $env === 'slot' ? SLOT : SEPOLIA));
+export const CONFIG = derived(env, $env => ($env === 'mainnet' ? MAINNET : SLOT));
