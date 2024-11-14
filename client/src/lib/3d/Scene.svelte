@@ -3,18 +3,7 @@
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
-  import {
-    recordingMode,
-    replayMode,
-    recordedMove,
-    rendererStore,
-  } from '$stores/gameStores'
-  import {
-    handleKeyDown,
-    handleKeyUp,
-    handleMouseDown,
-    handleMouseUp,
-  } from '$lib/handlers'
+
   import BirdView from './components/Cameras/BirdView.svelte'
   import SplitScreen from './components/Cameras/SplitScreen.svelte'
   import {
@@ -22,47 +11,41 @@
     resetCamera,
   } from './components/Cameras/SplitScreen/CameraUtils'
   import { birdView } from '$stores/cameraStores'
-  import { recordMove, replayMove } from '$lib/3d/utils/moveUtils'
   import { PerspectiveCamera } from 'three'
   import Bullets from './components/Bullets.svelte'
-  import { shoot, replayShot, simulate } from './utils/shootUtils'
-  import {
-    isMouseDownStore,
-    playerCharacterId,
-    frameCounter,
-  } from '$stores/gameStores'
-  import { inPointerLock } from '$stores/cameraStores'
+
   import { writable } from 'svelte/store'
 
-  import { RECORDING_FRAME_LIMIT } from '$lib/consts'
-  import { Inspector } from 'three-inspect'
+  import getGame from '$lib/api/svelte/context'
+  import { rendererStore } from '$src/stores/gameStores'
 
   let { renderer, scene } = useThrelte()
-  let cameras: PerspectiveCamera[] = []
+  const { controls, currentPlayerCharacterId, frameCounter, move } = getGame()
+
+  let cameras: PerspectiveCamera[] = $state([])
   let numCameras = 1
-  let birdViewCamera: any
+  let birdViewCamera: any = $state()
 
-  let characterId: number = 0
-  $: characterId = $playerCharacterId
-
+  let characterId: number = $derived($currentPlayerCharacterId!)
   let hasShotInCurrentRecording = writable(false)
 
   let animationFrameId: number
 
   const addEventListeners = () => {
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-    window.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mouseup', handleMouseUp)
+    window.addEventListener('keydown', controls.handleKeyDown)
+    window.addEventListener('keyup', controls.handleKeyUp)
+    window.addEventListener('mousedown', controls.handleMouseDown)
+    window.addEventListener('mouseup', controls.handleMouseUp)
   }
 
   const removeEventListeners = () => {
-    window.removeEventListener('keydown', handleKeyDown)
-    window.removeEventListener('keyup', handleKeyUp)
-    window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('mouseup', handleMouseUp)
+    window.removeEventListener('keydown', controls.handleKeyDown)
+    window.removeEventListener('keyup', controls.handleKeyUp)
+    window.removeEventListener('mousedown', controls.handleMouseDown)
+    window.removeEventListener('mouseup', controls.handleMouseUp)
   }
 
+  // TODO(Red): Start to refactor this
   const animationLoop = () => {
     try {
       if ($birdView) {
@@ -73,26 +56,12 @@
           }
         }
       } else {
-        if (cameras.length > 0 && cameras.every(cam => cam && cam.isCamera)) {
+        if (cameras.length > 0 && cameras.every((cam) => cam && cam.isCamera)) {
           renderCameras(cameras, numCameras, renderer, scene)
         }
       }
 
-      if ($recordingMode) {
-        recordMove(cameras[0], characterId)
-        if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
-          shoot(cameras[0]) // currently only works with one camera
-          hasShotInCurrentRecording.set(true)
-        }
-      }
-      if ($replayMode) {
-        if ($frameCounter > RECORDING_FRAME_LIMIT) {
-          console.log('eyyy, tf')
-          replayMode.set(false)
-        }
-        replayMove($recordedMove, characterId)
-        replayShot($recordedMove, cameras[0])
-      }
+      move.update(cameras[0])
 
       animationFrameId = requestAnimationFrame(animationLoop)
     } catch (error) {
@@ -101,10 +70,6 @@
         console.warn('Possible issue with buffer or geometry.')
       }
     }
-  }
-
-  $: if ($frameCounter) {
-    simulate()
   }
 
   onMount(() => {
@@ -119,10 +84,6 @@
       cancelAnimationFrame(animationFrameId)
     }
   })
-
-  $: if ($recordingMode) {
-    hasShotInCurrentRecording.set(false)
-  }
 
   onDestroy(() => {
     removeEventListeners()
@@ -139,5 +100,4 @@
   <Map />
   <Characters />
   <Bullets />
-  <Inspector />
 </T.Group>

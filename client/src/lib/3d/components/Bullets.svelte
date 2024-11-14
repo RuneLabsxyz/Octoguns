@@ -1,15 +1,12 @@
 <script lang="ts">
-  import { bulletRender, bulletInitialPosition } from '$stores/coordsStores'
+  import getGame from '$lib/api/svelte/context'
   import Bullet from './Bullet/Bullet.svelte'
 
-  $: bulletPairs = $bulletRender.map((bullet, index) => {
-    console.log('bullet', bullet)
-    const initialBullet = $bulletInitialPosition.find((b) => b.id === bullet.id)
-    const uniqueKey = `${bullet.id}-${index}-${initialBullet?.coords.x}-${initialBullet?.coords.y}`
-    return { bullet, initialBullet, uniqueKey }
-  })
+  const { bullets } = getGame()
+
+  $inspect($bullets)
 </script>
 
-{#each bulletPairs as { bullet, initialBullet, uniqueKey } (uniqueKey)}
-  <Bullet {bullet} initialPosition={initialBullet} />
+{#each $bullets ?? [] as bullet}
+  <Bullet {bullet} />
 {/each}

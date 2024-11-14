@@ -1,9 +1,9 @@
 use octoguns::types::{TurnMove};
 use octoguns::models::bullet::{Bullet, BulletTrait};
 
-#[dojo::interface]
-trait IActions {
-    fn move(ref world: IWorldDispatcher, session_id: u32, moves: TurnMove);
+#[starknet::interface]
+trait IActions<T> {
+    fn move(self: @T, session_id: u32, moves: TurnMove);
 }
 
 #[dojo::contract]
@@ -19,28 +19,35 @@ mod actions {
     use octoguns::lib::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
+    use octoguns::lib::grid::{convert_coords_to_grid_indices, set_grid_bits_from_positions};
+    use octoguns::models::global::{Global, GlobalTrait, GlobalImpl};
+    use octoguns::consts::{GLOBAL_KEY};
 
+    use dojo::model::{ModelStorage, ModelValueStorage, Model};
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn move(ref world: IWorldDispatcher, session_id: u32, mut moves: TurnMove) {
-            let session_primitives = get!(world, session_id, (SessionPrimitives));
+        fn move(self: @ContractState, session_id: u32, mut moves: TurnMove) {
+            let mut world = self.world(@"octoguns");
+
+            let mut global: Global = world.read_model(GLOBAL_KEY);
+            let session_primitives: SessionPrimitives = world.read_model(session_id);
             let max_steps = session_primitives.sub_moves_per_turn;
 
             assert!(moves.shots.len() <= session_primitives.bullets_per_turn, "Invalid number of shots");
             let player = get_caller_address();
-            let mut session = get!(world, session_id, (Session));
+            let mut session: Session = world.read_model(session_id);
             assert!(session.state != 1, "Game doesn't exist");
             assert!(session.state != 3, "Game over");
             assert!(session.state == 2, "Game not active");
 
 
-            let mut session_meta = get!(world, session_id, (SessionMeta));
-            let map = get!(world, session.map_id, (Map));
+            let mut session_meta: SessionMeta = world.read_model(session_id);
+            let mut map: Map = world.read_model(session.map_id);
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
-            let session_primitives = get!(world, session_id, (SessionPrimitives));
+            let session_primitives: SessionPrimitives = world.read_model(session_id);
 
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
@@ -59,8 +66,8 @@ mod actions {
                 _ => { panic!("???"); }
             }
 
-            let mut player_position = get!(world, player_character_id, (CharacterPosition));
-            let mut opp_position = get!(world, opp_character_id, (CharacterPosition));
+            let mut player_position: CharacterPosition = world.read_model(player_character_id);
+            let mut opp_position: CharacterPosition = world.read_model(opp_character_id);
             let mut positions = array![player_position, opp_position];
 
             let mut bullets = get_all_bullets(world, session_id);
@@ -68,21 +75,21 @@ mod actions {
             //start out of bounds so never reached in loop if no shots
 
             let mut next_shot = max_steps + 1;
-            if moves.shots.len() > 0 {
+            if !moves.shots.is_empty() {
                 next_shot = (*moves.shots.at(0)).step;
             }
-
+            let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
 
             while sub_move_index < max_steps {
-                let step = sub_move_index + max_steps * session_meta.turn_count;
+                let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
                     let shot = moves.shots.pop_front();
                     match shot {
                         Option::Some(s) => {
                             let bullet = BulletTrait::new(
-                                world.uuid(),
+                                global.uuid(),
                                 Vec2 { x: player_position.coords.x, y: player_position.coords.y },
                                 s.angle,
                                 player_character_id,
@@ -91,7 +98,7 @@ mod actions {
                                 bullet_sub_steps: session_primitives.bullet_sub_steps,
                             );
                             bullets.append(bullet);
-                            set!(world, (bullet));
+                            world.write_model(@bullet);
 
                             if moves.shots.len() > 0 {
                                 next_shot = *moves.shots.at(0).step;
@@ -102,9 +109,13 @@ mod actions {
                     }
                 }
 
+                // Loop through positions and update the grid
+
+                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(ref positions);
+
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, @map, step, session_primitives.bullet_sub_steps
+                    ref bullets, ref positions, ref map, step, session_primitives.bullet_sub_steps, ref grid1, ref grid2, ref grid3
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;
@@ -185,7 +196,7 @@ mod actions {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
-                        set!(world, (pos));
+                        world.write_model(@pos);
                     },
                     Option::None => { break; }
                 }
@@ -193,7 +204,10 @@ mod actions {
 
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
-            set!(world, (session, session_meta));
+
+            world.write_model(@session);
+            world.write_model(@session_meta);
+            world.write_model(@global);
         }
     }
 }

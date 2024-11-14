@@ -5,11 +5,11 @@
   import { goto } from '$app/navigation'
   import { account } from '$src/stores/account.js'
 
-  let isStoreInitialized = false
+  let isStoreInitialized = $state(false)
 
   async function initStore() {
     try {
-      await initializeStore(true)
+      await initializeStore()
       console.log('Store initialized')
       isStoreInitialized = true
     } catch (error) {
@@ -17,22 +17,17 @@
     }
   }
 
-  export let data
+  let { data, children } = $props()
   let network = data.network
 
   onMount(async () => {
     env.set(network as 'mainnet' | 'slot')
     await initStore()
-
-    if (!$account) {
-      console.warn('No account! Redirecting...')
-      goto('/')
-    }
   })
 </script>
 
 {#if isStoreInitialized}
-  <slot />
+  {@render children?.()}
 {:else}
   <div>Loading...</div>
 {/if}

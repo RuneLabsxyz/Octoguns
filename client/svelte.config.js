@@ -13,9 +13,10 @@ const config = {
       $src: 'src',
       $stores: 'src/stores',
       $dojo: 'src/dojo',
-      $manifests: `../contracts/manifests/${process.env.ENV}`
+      $manifests: `../contracts/`,
     },
   },
+  
   preprocess: vitePreprocess(),
 }
 export default config

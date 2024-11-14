@@ -1,56 +1,35 @@
 <script lang="ts">
-  import { dojoStore } from '$stores/dojoStore'
-  import { componentValueStore } from '$dojo/componentValueStore'
   import { selectedMap } from '$stores/clientStores'
   import { goto } from '$app/navigation'
-  import { type Entity, getComponentValue } from '@dojoengine/recs'
   import MiniMap from '$lib/MiniMap.svelte'
   import Button from '$lib/ui/Button.svelte'
   import TxToast from '$lib/ui/TxToast.svelte'
   import { cn } from '$lib/css/cn'
   import { SESSION_PRIMITIVES } from '$lib/consts'
   import { account, username, clearAccountStorage } from '$stores/account'
-  import { env } from '$stores/network';
+  import { env } from '$stores/network'
+  import { createGame as createGameCall } from '$src/lib/api/actions'
+  import { maps as mapsValue } from '$src/lib/api/maps'
+  import { yourUnstartedSessions } from '$src/lib/api/sessions'
+  import type { Map } from '$src/dojo/models.gen'
+  import { accountStore } from '$src/stores/dojoStore'
+  import { onMount } from 'svelte'
 
   let loadingToGame = false
-  let playerEntity: Entity
-  let localSelectedMap: number | null = null
-  let mapCount: number = 0
+  let localSelectedMap: number | null = $state(null)
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
+  let maps: Map[] | null = $state(null)
 
-  $: globalentity = torii.poseidonHash([BigInt(0).toString()])
+  mapsValue.subscribe((mapValues) => {
+    maps = mapValues
+  })
 
-  $: if ($account) playerEntity = torii.poseidonHash([$account?.address])
-
-  $: player = componentValueStore(clientComponents.Player, playerEntity)
-  $: global = componentValueStore(clientComponents.Global, globalentity)
-  let maps: any[] = []
-
-  $: if ($global) {
-    mapCount = $global.map_count
-    maps = []
-    for (let i = 0; i < mapCount; i++) {
-      const map = getComponentValue(
-        clientComponents.Map,
-        torii.poseidonHash([BigInt(i).toString()])
-      )
-      maps.push(map)
+  yourUnstartedSessions.subscribe((sessions) => {
+    if (loadingToGame) {
+      let session = sessions[-1]
+      startSession(Number(session.session_id))
     }
-  }
-
-  $: console.log('maps', maps)
-  $: {
-    localSelectedMap = $selectedMap
-  }
-
-  $: if ($player) {
-    let lastPlayerGameValue =
-      $player.games.length > 0
-        ? $player.games[$player.games.length - 1].value
-        : null
-    startSession(lastPlayerGameValue)
-  }
+  })
 
   function startSession(lastPlayerGameValue: number) {
     if (loadingToGame) {
@@ -64,46 +43,41 @@
     console.log('selected map', map_id)
   }
 
-  let toastMessage = '';
-  let toastStatus = 'loading';
-  let showToast = false;
+  let toastMessage = $state('')
+  let toastStatus = $state('loading')
+  let showToast = $state(false)
+  const currentAccount = $derived($account ?? $accountStore)
+
+  onMount(() => {
+    window.addEventListener('unhandledrejection', (promiseRejectionEvent) => {
+      console.error('unhandled: ', Error())
+    })
+  })
 
   async function createGame() {
-    if ($account) {
+    if (currentAccount) {
       console.log('SESSION_PRIMITIVES', SESSION_PRIMITIVES)
       console.log('selectedMap', $selectedMap)
-      showToast = true;
-      toastMessage = 'Creating game...';
-      toastStatus = 'loading';
+      showToast = true
+      toastMessage = 'Creating game...'
+      toastStatus = 'loading'
       try {
-        await client.start.create({
-          account: $account,
-          map_id: $selectedMap,
-          session_primitives: SESSION_PRIMITIVES,
-        })
-        toastMessage = 'Game created successfully!';
-        toastStatus = 'success';
-        loadingToGame = true;
+        createGameCall($selectedMap, SESSION_PRIMITIVES)
+        toastMessage = 'Game created successfully!'
+        toastStatus = 'success'
+        loadingToGame = true
       } catch (error) {
-        console.error('Error creating game:', error);
-        toastMessage = 'Failed to create game.';
-        toastStatus = 'error';
-        loadingToGame = false;
+        console.error('Error creating game:', error)
+        toastMessage = 'Failed to create game.'
+        toastStatus = 'error'
+        loadingToGame = false
       }
     } else {
       console.error('No active account found')
-      toastMessage = 'No active account found.';
-      toastStatus = 'error';
-      showToast = true;
+      toastMessage = 'No active account found.'
+      toastStatus = 'error'
+      showToast = true
     }
-  }
-
-  function goBack() {
-    goto('/client/games')
-  }
-
-  function disconnect() {
-    clearAccountStorage();
   }
 </script>
 
@@ -117,17 +91,19 @@
   <div
     class="grid grid-fill justify-around auto-cols-min px-3 overflow-auto overflow-x-hidden"
   >
-    {#each maps as map}
-      {#if map}
-        <Button
-          className="w-fit h-fit"
-          selected={localSelectedMap === map.map_id}
-          on:click={() => selectMap(map.map_id)}
-        >
-          <MiniMap {map} />
-        </Button>
-      {/if}
-    {/each}
+    {#if maps}
+      {#each maps as map}
+        {#if map}
+          <Button
+            className="w-fit h-fit"
+            selected={localSelectedMap === map.map_id}
+            on:click={() => selectMap(Number(map.map_id))}
+          >
+            <MiniMap {map} />
+          </Button>
+        {/if}
+      {/each}
+    {/if}
   </div>
 </div>
 

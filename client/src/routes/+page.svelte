@@ -11,7 +11,7 @@
 
   async function initStore() {
     try {
-      await initializeStore(true)
+      await initializeStore()
       console.log('Store initialized')
     } catch (error) {
       console.error('Failed to initialize store:', error)
@@ -19,22 +19,13 @@
   }
 
   async function connectAndGoto(config: string) {
-    env.set(config as 'mainnet' | 'slot')
-    await initStore()
-    if (!$account) {
-      await connect(config)
-    }
-
-    // If we still don't have an account, we stay on the current page
-    if ($account) {
-      goto(`${config}/client/games/openGames`)
-    } else {
-      console.warn('Connection was cancelled!')
-    }
+    env.set('slot')
+    goto(`/slot/client/games/openGames`)
   }
 
   onMount(() => {
     playSoundEffectLoop('/audio/tracks/underwater.flac', 0.5)
+    initStore()
   })
 </script>
 
@@ -48,8 +39,8 @@
         <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
       </div>
       <div>
-        <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button>
-        <Button on:click={() => connectAndGoto('slot')}>Play Slot</Button>
+        <!-- <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button> -->
+        <Button on:click={() => connectAndGoto('slot')}>Play</Button>
       </div>
     </div>
   </div>
