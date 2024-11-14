@@ -63,8 +63,19 @@
     <div class="flex-grow"></div>
     <Button href="/">Back to home screen</Button>
   </div>
-  <div class="m-7 md:ml-0 bg-white flex-grow border-4 border-black rounded-lg">
-    {@render children?.()}
+  <div
+    class="m-7 md:ml-0 flex-grow border-4 border-black rounded-lg relative"
+    style="background-image: url('/sprites/octopuses.png'); background-size: cover;"
+  >
+    <!-- White bar at the top -->
+    <div class="absolute top-0 left-0 w-full h-20 bg-white"></div>
+
+    <!-- White overlay -->
+    <div class="absolute inset-0 bg-red-100 opacity-50"></div>
+
+    <div class="relative">
+      {@render children?.()}
+    </div>
   </div>
 </div>
 

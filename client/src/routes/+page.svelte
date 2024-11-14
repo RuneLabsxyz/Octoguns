@@ -8,6 +8,8 @@
   import { account } from '$stores/account'
   import { env } from '$stores/network'
   import { initializeStore } from '$stores/dojoStore'
+  import Splash from '$lib/ui/Splash.svelte'
+  import Splat from '$lib/3d/components/map/Splat.svelte'
 
   async function initStore() {
     try {
@@ -29,11 +31,11 @@
   })
 </script>
 
-<Background />
+<Splash />
 <div class="">
   <div class="flex flex-col justify-center items-center h-screen">
     <div
-      class="flex justify-center items-center flex-col bg-white p-10 rounded-lg border-black border-4"
+      class="flex justify-center items-center flex-col bg-white/10 p-10 rounded-lg border-black border-4"
     >
       <div class="text-9xl">
         <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
