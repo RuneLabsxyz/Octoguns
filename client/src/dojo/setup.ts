@@ -22,7 +22,7 @@ export async function setup(
     toriiUrl: config.toriiUrl,
     relayUrl: '',
     worldAddress:
-      '0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2',
+      '0x0254890d63e60b43d0c8cbc6e69044e094cb2abadd01f4ff03786a05a6814cad',
   })
 
   // create contract components
@@ -33,6 +33,8 @@ export async function setup(
 
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
+
+  console.log(dojoProvider)
 
   const sync = await getSyncEntities(
     toriiClient,
