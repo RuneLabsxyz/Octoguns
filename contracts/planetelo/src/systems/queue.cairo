@@ -101,7 +101,7 @@ mod queue {
             let mut player: PlayerStatus = world.read_model((address, game));
 
             assert!(player.status != QueueStatus::None, "Player is not in the queue");
-
+            //todo reimplement this
         }
 
         fn matchmake(ref self: ContractState, game: felt252, playlist: u128) {
@@ -194,10 +194,22 @@ mod queue {
             let mut player_one: PlayerStatus = world.read_model((game_model.player1, game_model.game, game_model.playlist));
             let mut player_two: PlayerStatus = world.read_model((game_model.player2, game_model.game, game_model.playlist));
             if player_one.status != QueueStatus::InGame(game_id) {
-                panic!("Player 1 is not in this game");
+                player_one.status = QueueStatus::None;
+                player_one.index = 0;
+                world.write_model(@player_one);
+                player_two.status = QueueStatus::None;
+                player_two.index = 0;
+                world.write_model(@player_two);
+                return;
             }
             if player_two.status != QueueStatus::InGame(game_id) {
-                panic!("Player 2 is not in this game");
+                player_one.status = QueueStatus::None;
+                player_one.index = 0;
+                world.write_model(@player_one);
+                player_two.status = QueueStatus::None;
+                player_two.index = 0;
+                world.write_model(@player_two);
+                return;
             }
             let mut player_one_elo: Elo = world.read_model((game_model.player1, game_model.game, game_model.playlist));
             let mut one_elo: u64 = player_one_elo.value;
@@ -210,6 +222,8 @@ mod queue {
 
             player_one.status = QueueStatus::None;
             player_two.status = QueueStatus::None;
+            player_one.index = 0;
+            player_two.index = 0;
             player_one_elo.value = one_new;
             player_two_elo.value = two_new;
 
