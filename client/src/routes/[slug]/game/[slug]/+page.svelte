@@ -11,6 +11,9 @@
 
   const gameStorePromise = $state(Game(parseInt(data.gameId)))
 
+  $effect(() => {
+    console.log('gameStorePromise', data)
+  })
   /*
   onMount(async () => {
     if ($env === 'mainnet') {
