@@ -21,7 +21,6 @@
   async function connectAndGoto(config: string) {
     env.set('slot')
     goto(`/slot/client/games/openGames`)
-
   }
 
   onMount(() => {
@@ -40,8 +39,8 @@
         <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
       </div>
       <div>
-        <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button>
-        <Button on:click={() => connectAndGoto('slot')}>Play Slot</Button>
+        <!-- <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button> -->
+        <Button on:click={() => connectAndGoto('slot')}>Play</Button>
       </div>
     </div>
   </div>

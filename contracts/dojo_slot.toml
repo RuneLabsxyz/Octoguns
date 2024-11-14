@@ -17,6 +17,54 @@ default = "octoguns"
 
 [env]
 rpc_url = "https://api.cartridge.gg/x/octoguns-alpha2/katana"
-account_address = "0x68130a51ebac08ecfcc2811a43b9d4f3d72ec28b932caeabc59d1854f9440a0"
-private_key = "0x10ccfdde0f170f2a4cfb98f6ad28e82c8d871b0774a254905844c40bd68c9b2"
-world_address = "0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2"
+account_address = "0x6677fe62ee39c7b07401f754138502bab7fac99d2d3c5d37df7d1c6fab10819"
+private_key = "0x3e3979c1ed728490308054fe357a9f49cf67f80f9721f44cc57235129e090f4"
+world_address = "0x254890d63e60b43d0c8cbc6e69044e094cb2abadd01f4ff03786a05a6814cad"
+
+
+[writers]
+"octoguns-Bullet" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-TurnData" = ["octoguns-actions"]
+"octoguns-CharacterModel" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-CharacterPosition" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-Global" = [
+    "octoguns-mapmaker",
+    "octoguns-start",
+    "octoguns-spawn",
+    "octoguns-actions",
+]
+"octoguns-Map" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-Player" = ["octoguns-spawn", "octoguns-start"]
+"octoguns-Session" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-SessionMeta" = [
+    "octoguns-actions",
+    "octoguns-mapmaker",
+    "octoguns-spawn",
+    "octoguns-start",
+]
+"octoguns-SessionPrimitives" = ["octoguns-start"]
