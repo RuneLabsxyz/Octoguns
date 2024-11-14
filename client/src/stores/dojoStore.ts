@@ -2,6 +2,8 @@ import { dojoConfig } from '../dojoConfig'
 import { setup } from '$dojo/setup'
 import { get, writable } from 'svelte/store'
 import { Account } from 'starknet'
+import { Contract } from 'starknet'
+import { connect } from '$lib/controller'
 
 type SetupResult = Awaited<ReturnType<typeof setup>>
 
@@ -9,6 +11,8 @@ export const dojoStore = writable<SetupResult>()
 export const accountStore = writable<Account | null>()
 export const isSetup = writable(false)
 export const settingUp = writable(false)
+
+export const planeteloStore = writable<Contract | null>()
 
 export async function initializeStore() {
   if (get(settingUp)) {
@@ -20,13 +24,15 @@ export async function initializeStore() {
   try {
     console.log('Initializing store...')
     const result = await setup(
-      '0x0190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2',
+      '0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc',
       dojoConfig
     )
     console.log('setup complete')
     dojoStore.set(result)
 
-    accountStore.set(result.burnerManager.getActiveAccount())
+    let res = await connect('sepolia');
+    console.log(res)
+
     console.log('set stores')
     isSetup.set(true)
 
@@ -56,5 +62,5 @@ export async function getDojo(): Promise<SetupResult> {
 
 export async function getDojoContext(): Promise<[Account, SetupResult]> {
   const dojo = await getDojo()
-  return [dojo.burnerManager.getActiveAccount()!, dojo]
+  return [get(accountStore)!, dojo]
 }
