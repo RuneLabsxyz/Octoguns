@@ -56,28 +56,8 @@ export async function setup(
   // setup world
   const client = await setupWorld(dojoProvider)
   // create burner manager
-  const burnerManager = new BurnerManager({
-    masterAccount: new Account(
-      {
-        nodeUrl: config.rpcUrl,
-      },
-      config.masterAddress,
-      config.masterPrivateKey
-    ),
-    accountClassHash: config.accountClassHash,
-    rpcProvider: dojoProvider.provider,
-    feeTokenAddress: config.feeTokenAddress,
-  })
+ 
 
-  try {
-    console.log('Starting burner!')
-    await burnerManager.init()
-    if (burnerManager.list().length === 0) {
-      await burnerManager.create()
-    }
-  } catch (e) {
-    console.error('An error occurred while creating burner:', e)
-  }
 
   return {
     client,
@@ -88,7 +68,6 @@ export async function setup(
     },
     config,
     dojoProvider,
-    burnerManager,
     toriiClient,
 
     torii,
