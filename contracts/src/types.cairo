@@ -25,9 +25,3 @@ struct IVec2 {
     ydir: bool
 }
 
-#[derive(Clone, Drop, Serde, Introspect)]
-struct MapObjects {
-    objects: Array<u16>,
-}
-
-

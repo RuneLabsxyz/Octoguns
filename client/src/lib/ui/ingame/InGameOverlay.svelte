@@ -1,9 +1,11 @@
 <script lang="ts">
   import { cn } from '$lib/css/cn'
   import { birdView } from '$src/stores/cameraStores'
-  import { turnCount } from '$src/stores/gameStores'
   import { Camera, ArrowLeftRight, User } from 'lucide-svelte'
   import StepBar from '../StepBar.svelte'
+  import getGame from '$lib/api/svelte/context'
+
+  const { turnCount } = getGame()
 </script>
 
 <div class="overflow-hidden">
@@ -23,7 +25,7 @@
           class={cn('rounded-md p-1 border-2', {
             'bg-white': $birdView,
           })}
-          on:click={() => ($birdView = true)}
+          onclick={() => ($birdView = true)}
         >
           <Camera color={$birdView ? 'black' : 'white'} />
         </button>
@@ -33,7 +35,7 @@
           class={cn('rounded-md p-1 border-white border-2', {
             'bg-white': !$birdView,
           })}
-          on:click={() => ($birdView = false)}
+          onclick={() => ($birdView = false)}
         >
           <User color={!$birdView ? 'black' : 'white'} />
         </button>

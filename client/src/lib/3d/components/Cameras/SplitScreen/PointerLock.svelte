@@ -1,22 +1,30 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy'
+
   import { createEventDispatcher, onDestroy } from 'svelte'
   import { Euler, PerspectiveCamera } from 'three'
   import { useThrelte } from '@threlte/core'
   import { birdView, inPointerLock } from '$stores/cameraStores'
-  import { getYawAngle } from '$lib/helper'
-
 
   import * as THREE from 'three'
-  export let cameras: PerspectiveCamera[] = [] // pass all cameras here
-  export let minPolarAngle = 0 // radians
-  export let maxPolarAngle = Math.PI // radians
-  export let pointerSpeed = 1.0
+  interface Props {
+    cameras?: PerspectiveCamera[] // pass all cameras here
+    minPolarAngle?: number // radians
+    maxPolarAngle?: any // radians
+    pointerSpeed?: number
+  }
 
-  let isLocked = false
+  let {
+    cameras = [],
+    minPolarAngle = 0,
+    maxPolarAngle = Math.PI,
+    pointerSpeed = 1.0,
+  }: Props = $props()
+
+  let isLocked = $state(false)
   const { renderer, invalidate } = useThrelte()
   const domElement = renderer.domElement
   const dispatch = createEventDispatcher()
-  const _euler = new Euler(0, 0, 0, 'YXZ')
   const _PI_2 = Math.PI / 2
 
   if (!renderer) {
@@ -103,7 +111,9 @@
     console.error('PointerLockControls: Unable to use Pointer Lock API')
   }
 
-  $: if ($birdView && isLocked) {
-    unlock()
-  }
+  run(() => {
+    if ($birdView && isLocked) {
+      unlock()
+    }
+  })
 </script>

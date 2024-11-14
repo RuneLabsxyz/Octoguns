@@ -1,7 +1,11 @@
 <script lang="ts">
   import { T } from '@threlte/core'
   import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three'
-  export let position: [number, number, number] = [0, 3, 0]
+  interface Props {
+    position?: [number, number, number]
+  }
+
+  let { position = [0, 3, 0] }: Props = $props()
   const [x, y, z] = position
   let material = new MeshStandardMaterial({ color: 'blue' })
 </script>

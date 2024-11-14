@@ -4,7 +4,12 @@
   import { username, account, clearAccountStorage } from '$stores/account';
   import Button from '$lib/ui/Button.svelte';
 
-  export let show = false;
+  interface Props {
+    show?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let { show = false, children }: Props = $props();
   const dispatch = createEventDispatcher();
 
   function closeModal() {
@@ -17,7 +22,7 @@
     goto('/');
   }
 
-  let showCopied = false;
+  let showCopied = $state(false);
 
   function compressAddress(address: string): string {
     if (!address) return 'Not available';
@@ -48,7 +53,7 @@
           <div class="flex items-center">
             <span class="break-all">{compressAddress($account?.address)}</span>
             <button 
-              on:click={copyAddress}
+              onclick={copyAddress}
               class="ml-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm"
             >
               Copy
@@ -61,7 +66,7 @@
             Top up some STARK on this address to start playing!
           </p>
         </div>
-        <slot></slot>
+        {@render children?.()}
       </div>
       <div class="flex justify-between">
         <Button on:click={logout}>Logout</Button>

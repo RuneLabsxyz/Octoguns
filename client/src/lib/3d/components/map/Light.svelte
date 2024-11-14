@@ -1,9 +1,5 @@
 <script lang="ts">
-  import { T, useFrame } from '@threlte/core'
-  import { PointLight } from 'three'
-
-  // This let's light load on mount
-  useFrame(() => {})
+  import { T } from '@threlte/core'
 </script>
 
 <T.Group>

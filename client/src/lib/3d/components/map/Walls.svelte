@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { T } from '@threlte/core'
   import * as THREE from 'three'
   import Container from '../models/container.svelte'
-  import { onMount } from 'svelte'
 
-  let container: THREE.Group = new THREE.Group()
+  let container: THREE.Group = $state(new THREE.Group())
 
   function onCreate({ ref }: any) {
     ref.traverse((object: any) => {

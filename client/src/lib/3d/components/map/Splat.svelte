@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { splat } from '$stores/eyeCandy'
+  import { run } from 'svelte/legacy'
 
-  // Reactive statement to listen for changes in splat
-  $: if ($splat) {
-    triggerParticleExplosion($splat[$splat.length - 1])
-  }
+  import { splat } from '$stores/eyeCandy'
 
   function triggerParticleExplosion(coords: { x: number; y: number }) {
     console.log('Particle explosion at:', coords)
     // TODO - Implement particle explosion
   }
+  // Reactive statement to listen for changes in splat
+  $effect(() => {
+    if ($splat) {
+      triggerParticleExplosion($splat[$splat.length - 1])
+    }
+  })
 </script>

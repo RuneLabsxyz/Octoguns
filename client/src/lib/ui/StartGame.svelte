@@ -1,29 +1,24 @@
 <script lang="ts">
-  import { gameState, sessionId, currentPlayerId } from '$stores/gameStores'
   import { dojoStore } from '$stores/dojoStore'
   import { onMount } from 'svelte'
   import { get } from 'svelte/store'
+
   import SettingUp from './ingame/SettingUp.svelte'
   import { account } from '$stores/account'
+  import getGame from '$lib/api/svelte/context'
 
-  $: ({ clientComponents, torii, client } = $dojoStore as any)
+  const { session, currentPlayerId, spawn } = getGame()
 
+  const sessionState: number | undefined = $derived(Number($session?.state))
 
-
-  async function spawn() {
-    if ($account) {
-      console.log('Spawn')
-      await client.spawn.spawn({ account: $account, session_id: $sessionId })
+  $effect(() => {
+    console.log('State', sessionState)
+    if (sessionState === 1 && $currentPlayerId === 2 && $account) {
+      spawn()
     }
-  }
-
-  $: if ($gameState === 1 && $currentPlayerId === 2 && $account) {
-    console.log('Spawning characters')
-    spawn()
-  }
-
+  })
 </script>
 
-{#if $gameState == 1}
+{#if sessionState === 1}
   <SettingUp />
 {/if}
