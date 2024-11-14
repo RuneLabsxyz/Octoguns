@@ -1,19 +1,21 @@
 <script>
-  import { fade } from 'svelte/transition'
-  import { onMount } from 'svelte'
+  import { fade } from 'svelte/transition';
+  import { onMount } from 'svelte';
 
-  let { message = '', status = 'loading', duration = 3000 } = $props()
+  export let message = '';
+  export let status = 'loading'; // 'loading', 'success', or 'error'
+  export let duration = 3000; // Duration in milliseconds
 
-  let visible = $state(true)
+  let visible = true;
 
   onMount(() => {
     if (status !== 'loading') {
       const timer = setTimeout(() => {
-        visible = false
-      }, duration)
-      return () => clearTimeout(timer)
+        visible = false;
+      }, duration);
+      return () => clearTimeout(timer);
     }
-  })
+  });
 </script>
 
 {#if visible}
@@ -27,9 +29,7 @@
         </svg>
       {:else if status === 'error'}
         <svg class="cross" viewBox="0 0 24 24">
-          <path
-            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
-          />
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
         </svg>
       {/if}
     </div>
@@ -68,28 +68,24 @@
   }
 
   @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
-  .checkmark,
-  .cross {
+  .checkmark, .cross {
     fill: currentColor;
   }
 
   .checkmark {
-    color: #4caf50;
+    color: #4CAF50;
   }
 
   .cross {
-    color: #f44336;
+    color: #F44336;
   }
 
   p {
     margin: 0;
   }
 </style>
+

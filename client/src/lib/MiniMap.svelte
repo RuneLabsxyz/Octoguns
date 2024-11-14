@@ -1,13 +1,14 @@
 <script lang="ts">
-  import type { Map } from '$src/dojo/models.gen'
-  import { selectedMap } from '$stores/clientStores'
-  import { getBigInt } from './api/utils'
+  import { selectedMap } from '$stores/clientStores';
 
-  let { map } = $props<{
-    map: Map | null
-  }>()
+  export let map: {
+    map_id: number;
+    grid1: number;
+    grid2: number;
+    grid3: number;
+  };
 
-  let coordsArray: { x: number; y: number }[] = $state([])
+  let coordsArray: { x: number; y: number }[] = [];
 
   /**
    * Extracts active indices from three u256 bitmaps.
@@ -15,67 +16,56 @@
    * @returns An array of active indices.
    */
   function extractActiveIndices(decimalGrids: bigint[]): number[] {
-    const activeIndices: number[] = []
+    const activeIndices: number[] = [];
 
     // Process grid1 (indices 0 to 207)
     for (let i = 0; i < 208; i++) {
       if ((decimalGrids[0] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i)
+        activeIndices.push(i);
       }
     }
 
     // Process grid2 (indices 208 to 415)
     for (let i = 0; i < 208; i++) {
       if ((decimalGrids[1] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i + 208)
+        activeIndices.push(i + 208);
       }
     }
 
     // Process grid3 (indices 416 to 624)
     for (let i = 0; i < 209; i++) {
       if ((decimalGrids[2] & (1n << BigInt(i))) !== 0n) {
-        activeIndices.push(i + 416)
+        activeIndices.push(i + 416);
       }
     }
 
-    return activeIndices
+    return activeIndices;
   }
 
-  $effect(() => {
-    if (
-      map &&
-      map.grid1 !== undefined &&
-      map.grid2 !== undefined &&
-      map.grid3 !== undefined
-    ) {
-      const grids = [map.grid1, map.grid2, map.grid3]
-      coordsArray = []
-      let decimalGrids: bigint[] = []
+  $: if (map && map.grid1 !== undefined && map.grid2 !== undefined && map.grid3 !== undefined) {
+    const grids = [map.grid1, map.grid2, map.grid3];
+    coordsArray = [];
+    let decimalGrids: bigint[] = [];
 
-      grids.forEach((grid) => {
-        // Convert hex to decimal
-        let decimal = BigInt(grid).toString(10)
-        decimalGrids.push(BigInt(decimal))
-      })
-      let activeIndices = extractActiveIndices(decimalGrids)
-      coordsArray = activeIndices.map((index) => {
-        const x = index % 25
-        const y = Math.floor(index / 25)
-        return { x, y }
-      })
-    }
-  })
+    grids.forEach((grid) => {
+      // Convert hex to decimal
+      let decimal = BigInt(grid.toString(16)).toString(10);
+      decimalGrids.push(BigInt(decimal));
+    });
+    let activeIndices = extractActiveIndices(decimalGrids);
+    coordsArray = activeIndices.map((index) => {
+      const x = index % 25;
+      const y = Math.floor(index / 25);
+      return { x, y };
+    });
+  }
 
   function selectMap() {
-    selectedMap.set(map.map_id)
+    selectedMap.set(map.map_id);
   }
 </script>
 
-<button
-  class="minimap"
-  onclick={selectMap}
-  title={`Select Map ID: ${map.map_id}`}
->
+<button class="minimap" on:click={selectMap} title={`Select Map ID: ${map.map_id}`}>
   {#each coordsArray as coord}
     <div
       class="block"
@@ -92,7 +82,7 @@
     gap: 1px;
     position: relative;
     cursor: pointer;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; 
     padding: 0;
     background-color: #fff;
     box-sizing: border-box;
@@ -107,6 +97,6 @@
   }
 
   .minimap:hover .block {
-    background-color: darkblue;
+    background-color: darkblue; 
   }
 </style>

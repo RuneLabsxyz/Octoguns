@@ -1,8 +1,6 @@
 <script lang="ts">
-  import getGame from '$lib/api/svelte/context'
+  import { frameCounter } from '$src/stores/gameStores'
   import { RECORDING_FRAME_LIMIT } from '$src/lib/consts'
-
-  const { frameCounter } = getGame()
 
   function getColor(frameCount: number) {
     let remaining = RECORDING_FRAME_LIMIT - frameCount
@@ -15,9 +13,7 @@
     return '#4caf50'
   }
 
-  let barWidth = $derived(
-    Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100)
-  )
+  $: barWidth = Math.max(0, 100 - ($frameCounter / RECORDING_FRAME_LIMIT) * 100)
 </script>
 
 <div class="step-bar-container">

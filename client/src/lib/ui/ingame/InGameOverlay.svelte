@@ -1,11 +1,11 @@
 <script lang="ts">
   import { cn } from '$lib/css/cn'
   import { birdView } from '$src/stores/cameraStores'
+  import { turnCount } from '$src/stores/gameStores'
   import { Camera, ArrowLeftRight, User } from 'lucide-svelte'
   import StepBar from '../StepBar.svelte'
-  import getGame from '$lib/api/svelte/context'
-
-  const { turnCount } = getGame()
+  import { connect } from '$lib/controller'
+  import Button from '$lib/ui/Button.svelte'
 </script>
 
 <div class="overflow-hidden">
@@ -25,7 +25,7 @@
           class={cn('rounded-md p-1 border-2', {
             'bg-white': $birdView,
           })}
-          onclick={() => ($birdView = true)}
+          on:click={() => ($birdView = true)}
         >
           <Camera color={$birdView ? 'black' : 'white'} />
         </button>
@@ -35,7 +35,7 @@
           class={cn('rounded-md p-1 border-white border-2', {
             'bg-white': !$birdView,
           })}
-          onclick={() => ($birdView = false)}
+          on:click={() => ($birdView = false)}
         >
           <User color={!$birdView ? 'black' : 'white'} />
         </button>
@@ -46,6 +46,15 @@
       ></div>
     </div>
   </div>
+    <!-- Connect Button -->
+    <div class="fixed top-4 right-4 z-[100]">
+      <Button 
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
+          on:click={() => connect('sepolia')}
+      >
+        Connect
+      </Button>
+    </div>
 </div>
 
 <style>

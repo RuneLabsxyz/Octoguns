@@ -1,21 +1,18 @@
 <script lang="ts">
-  import getGame from '$lib/api/svelte/context'
+  import {
+    characterIds,
+    currentPlayerId,
+    isEnded,
+  } from '$src/stores/gameStores'
   import Button from '$lib/ui/Button.svelte'
   import Banner from './Banner.svelte'
 
-  const { sessionMeta, currentPlayerId } = getGame()
-
-  let isWinner: boolean | null = $derived.by(() => {
-    if ($currentPlayerId == null) {
-      return null
-    }
-
-    return (
-      [$sessionMeta?.p1_character, $sessionMeta?.p2_character][
-        $currentPlayerId - 1
-      ] !== 0
-    )
-  })
+  let isWinner: boolean | null = null
+  $: if ($currentPlayerId != null) {
+    // As defined in the contract, the winner is the player whose character id is not 0
+    // id 0 means character is dead
+    isWinner = !($characterIds[$currentPlayerId] != 0)
+  }
 </script>
 
 <Banner color={isWinner ? '#facc15' : '#2563eb'}>
@@ -34,8 +31,8 @@
     </p>
 
     <Button
-      href="/client/games"
-      className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
+      href="/sepolia/client/matchmaking"
+      class="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
       >Back to menu</Button
     >
   </div>

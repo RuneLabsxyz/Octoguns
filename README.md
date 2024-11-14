@@ -13,7 +13,7 @@ OctoGuns is a fully on-chain 1v1 strategy FPS where players control 8 characters
 
 ### Versions
 
-- Dojo: 1.0.0
+- Dojo: 1.0.0-alpha9
 - Node: 20
 - Cairo: 2.7.0
 
@@ -46,6 +46,7 @@ OctoGuns is a fully on-chain 1v1 strategy FPS where players control 8 characters
 
 - Customizable, no-code maps
 - User-generated content support
+
 
 ## Data
 

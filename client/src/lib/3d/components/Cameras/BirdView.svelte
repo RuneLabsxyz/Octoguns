@@ -2,7 +2,7 @@
   import { T } from '@threlte/core'
   import { OrbitControls } from '@threlte/extras'
   import { useThrelte } from '@threlte/core'
-  let { camera = $bindable() } = $props();
+  export let camera
 
   let {renderer} = useThrelte()
 </script>

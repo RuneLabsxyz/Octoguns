@@ -1,21 +1,12 @@
 <script lang="ts">
   import { cn } from '$lib/css/cn'
 
+  export let absolute = false
+  export let slow = false
+  export let color = ''
 
-  interface Props {
-    absolute?: boolean;
-    slow?: boolean;
-    color?: string;
-    class?: string;
-  }
-
-  let {
-    absolute = false,
-    slow = false,
-    color = '',
-    class: className = ''
-  }: Props = $props();
-  
+  let className = ''
+  export { className as class }
 </script>
 
 <div

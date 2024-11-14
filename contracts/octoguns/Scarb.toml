@@ -1,0 +1,30 @@
+[package]
+cairo-version = "=2.8.4"
+name = "octoguns"
+version = "0.1.0"
+
+[cairo]
+sierra-replace-ids = true
+
+[profile.slot]
+
+[scripts]
+migrate = "sozo build && sozo migrate apply"
+spawn = "./scripts/spawn.sh"
+move = "./scripts/move.sh"
+
+[dependencies]
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0" }
+alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
+planetelo_interface = { path= "../planetelo_interface" }
+
+[[target.starknet-contract]]
+build-external-contracts = [
+  "dojo::world::world_contract::world"
+]
+
+[namespace]
+default = "octoguns"
+
+[profile.mainnet]
+[profile.sepolia]

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { T } from '@threlte/core'
+  import { FakeGlowMaterial } from '@threlte/extras'
+  import { Edges } from '@threlte/extras'
   import { GLTF } from '@threlte/extras'
 </script>
 

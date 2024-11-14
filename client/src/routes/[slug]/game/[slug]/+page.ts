@@ -1,6 +1,5 @@
-export function load({ url }) {
-  const firstSegment = url.pathname.split('/').filter(Boolean)[0]; // Extract the first path segment
+export function load({ params }) {
   return {
-      network: firstSegment,
-  };
+    gameId: params.slug,
+  }
 }

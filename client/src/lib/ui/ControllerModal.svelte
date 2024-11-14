@@ -3,13 +3,8 @@
   import { goto } from '$app/navigation';
   import { username, account, clearAccountStorage } from '$stores/account';
   import Button from '$lib/ui/Button.svelte';
-
-  interface Props {
-    show?: boolean;
-    children?: import('svelte').Snippet;
-  }
-
-  let { show = false, children }: Props = $props();
+  import { connect } from '$lib/controller';
+  export let show = false;
   const dispatch = createEventDispatcher();
 
   function closeModal() {
@@ -19,10 +14,9 @@
   function logout() {
     clearAccountStorage();
     closeModal();
-    goto('/');
   }
 
-  let showCopied = $state(false);
+  let showCopied = false;
 
   function compressAddress(address: string): string {
     if (!address) return 'Not available';
@@ -41,19 +35,20 @@
   }
 </script>
 
-{#if show && $account && $username}
+{#if show && $username}
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white border-4 border-black rounded-lg p-6 w-11/12 max-w-md">
       <div class="flex items-center mb-4">
         <img src="/logos/controller/controller.png" alt="Controller" class="w-12 h-12 mx-auto" />
       </div>
+      {#if $account?.address}
       <div class="mb-4 space-y-4">
         <div class="flex flex-col items-center space-y-2">
           <p class="font-bold text-lg">{$username.toUpperCase()}</p>
           <div class="flex items-center">
             <span class="break-all">{compressAddress($account?.address)}</span>
             <button 
-              onclick={copyAddress}
+              on:click={copyAddress}
               class="ml-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm"
             >
               Copy
@@ -66,8 +61,12 @@
             Top up some STARK on this address to start playing!
           </p>
         </div>
-        {@render children?.()}
+        <slot></slot>
       </div>
+
+        {:else}
+      <button on:click={ () => connect('sepolia')}>Connect Wallet</button> 
+      {/if}
       <div class="flex justify-between">
         <Button on:click={logout}>Logout</Button>
         <Button on:click={closeModal}>Close</Button>
