@@ -2,7 +2,7 @@
 
 import { writable } from 'svelte/store'
 import type { AccountInterface } from 'starknet'
-import { controllerMainnet, controllerSlot } from '$lib/controller' // Add this import
+import { controllerMainnet, controllerSlot, controllerSepolia } from '$lib/controller' // Add this import
 
 function createPersistentStore<T>(key: string, initialValue: T) {
   const storedValue = localStorage.getItem(key)

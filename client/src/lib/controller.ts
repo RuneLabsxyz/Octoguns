@@ -14,6 +14,10 @@ export const controllerSlot = new Controller({
   rpc: "https://api.cartridge.gg/x/octoguns-alpha2/katana"
 })
 
+export const controllerSepolia = new Controller({
+  rpc: "https://api.cartridge.gg/x/starknet/sepolia"
+})
+
 export async function connect(network: string) {
     try {
       if (network === "mainnet") {
@@ -23,12 +27,19 @@ export async function connect(network: string) {
             account.set(controllerMainnet.account);
             username.set(await controllerMainnet.username());
         }      
-      } else {
-        console.log("Connecting to local network");
+      } else if (network === "slot") {
+        console.log("Connecting to slot");
         const res = await controllerSlot.connect();
         if (res) {
             account.set(controllerSlot.account);
             username.set(await controllerSlot.username());
+        }
+      } if (network === "sepolia") {
+        console.log("Connecting to sepolia");
+        const res = await controllerSepolia.connect();
+        if (res) {
+            account.set(controllerSepolia.account);
+            username.set(await controllerSepolia.username());
         }
       }
     } catch (e) {

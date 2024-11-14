@@ -20,7 +20,7 @@
 
   async function connectAndGoto(config: string) {
     env.set('slot')
-    goto(`/slot/client/games/openGames`)
+    goto(`/sepolia/client/matchmaking`)
   }
 
   onMount(() => {

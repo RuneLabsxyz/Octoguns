@@ -10,6 +10,9 @@ import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
 import { account } from '$src/stores/account'
+import manifest from './manifest_sepolia.json'
+import { Contract } from 'starknet'
+import { planeteloStore } from '$src/stores/dojoStore'
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export async function setup(
@@ -18,12 +21,14 @@ export async function setup(
 ) {
   // torii client
   const toriiClient = await torii.createClient({
-    rpcUrl: config.rpcUrl,
-    toriiUrl: config.toriiUrl,
+    rpcUrl: 'https://api.cartridge.gg/x/starknet/sepolia',
+    toriiUrl: 'https://api.cartridge.gg/x/planetelo/torii',
     relayUrl: '',
     worldAddress:
-      '0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2',
+      '0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc',
   })
+
+  
 
   // create contract components
   const contractComponents = defineContractComponents(world)
@@ -32,7 +37,8 @@ export async function setup(
   const clientComponents = createClientComponents({ contractComponents })
 
   // create dojo provider
-  const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
+  const dojoProvider = new DojoProvider(config.manifest, 'https://api.cartridge.gg/x/starknet/sepolia')
+  console.log(dojoProvider)
 
   const sync = await getSyncEntities(
     toriiClient,
@@ -41,6 +47,12 @@ export async function setup(
     []
   )
 
+  let contracts = JSON.parse(JSON.stringify(manifest.contracts));
+  console.log(contracts[0]);
+
+  const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
+  planeteloStore.set(myTestContract);
+  // setup world
   // setup world
   const client = await setupWorld(dojoProvider)
   // create burner manager
