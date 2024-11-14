@@ -34,8 +34,6 @@ export async function setup(
   // create dojo provider
   const dojoProvider = new DojoProvider(config.manifest, config.rpcUrl)
 
-  console.log(dojoProvider)
-
   const sync = await getSyncEntities(
     toriiClient,
     contractComponents as any,
