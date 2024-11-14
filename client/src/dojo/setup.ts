@@ -22,9 +22,9 @@ export async function setup({ ...config }: DojoConfig) {
   // torii client
   const toriiClient = await torii.createClient({
     rpcUrl: config.rpcUrl,
-    toriiUrl: 'http://localhost:8080',
+    toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: '0x761d393cd0e7e91f008395bc1401928c145802b6a3b99bcfb712dc73bf0a1e6'
+    worldAddress: '0x05b92750cd85e7cdb33fd9f03a8ac2222deccfaea94cf8d49737441e90d3ab76'
   })
 
   // create contract components

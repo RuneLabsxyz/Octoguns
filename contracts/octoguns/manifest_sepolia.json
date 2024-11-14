@@ -1,9 +1,32 @@
 {
   "world": {
-    "class_hash": "0x139239a99d627697b19b9856beaef7896fc75375caf3d750dd76982a7afeb78",
-    "address": "0x761d393cd0e7e91f008395bc1401928c145802b6a3b99bcfb712dc73bf0a1e6",
+    "class_hash": "0x79d9ce84b97bcc2a631996c3100d57966fc2f5b061fb1ec4dfd0040976bcac6",
+    "address": "0x26488b187a4d96ce6917ba3271de9f458c9b60166d062c522830cc9bb8cf161",
     "seed": "fdsafdasasdsssffdsafasdfssf",
     "name": "Octoguns",
+    "entrypoints": [
+      "uuid",
+      "set_metadata",
+      "register_namespace",
+      "register_event",
+      "register_model",
+      "register_contract",
+      "init_contract",
+      "upgrade_event",
+      "upgrade_model",
+      "upgrade_contract",
+      "emit_event",
+      "emit_events",
+      "set_entity",
+      "set_entities",
+      "delete_entity",
+      "delete_entities",
+      "grant_owner",
+      "revoke_owner",
+      "grant_writer",
+      "revoke_writer",
+      "upgrade"
+    ],
     "abi": [
       {
         "type": "impl",
@@ -83,16 +106,12 @@
         ]
       },
       {
-        "type": "enum",
-        "name": "core::bool",
-        "variants": [
+        "type": "struct",
+        "name": "core::array::Span::<core::array::Span::<core::felt252>>",
+        "members": [
           {
-            "name": "False",
-            "type": "()"
-          },
-          {
-            "name": "True",
-            "type": "()"
+            "name": "snapshot",
+            "type": "@core::array::Array::<core::array::Span::<core::felt252>>"
           }
         ]
       },
@@ -185,6 +204,30 @@
           {
             "name": "Enum",
             "type": "core::array::Span::<dojo::meta::layout::FieldLayout>"
+          }
+        ]
+      },
+      {
+        "type": "struct",
+        "name": "core::array::Span::<dojo::model::definition::ModelIndex>",
+        "members": [
+          {
+            "name": "snapshot",
+            "type": "@core::array::Array::<dojo::model::definition::ModelIndex>"
+          }
+        ]
+      },
+      {
+        "type": "enum",
+        "name": "core::bool",
+        "variants": [
+          {
+            "name": "False",
+            "type": "()"
+          },
+          {
+            "name": "True",
+            "type": "()"
           }
         ]
       },
@@ -398,10 +441,26 @@
               {
                 "name": "values",
                 "type": "core::array::Span::<core::felt252>"
+              }
+            ],
+            "outputs": [],
+            "state_mutability": "external"
+          },
+          {
+            "type": "function",
+            "name": "emit_events",
+            "inputs": [
+              {
+                "name": "event_selector",
+                "type": "core::felt252"
               },
               {
-                "name": "historical",
-                "type": "core::bool"
+                "name": "keys",
+                "type": "core::array::Span::<core::array::Span::<core::felt252>>"
+              },
+              {
+                "name": "values",
+                "type": "core::array::Span::<core::array::Span::<core::felt252>>"
               }
             ],
             "outputs": [],
@@ -433,6 +492,30 @@
           },
           {
             "type": "function",
+            "name": "entities",
+            "inputs": [
+              {
+                "name": "model_selector",
+                "type": "core::felt252"
+              },
+              {
+                "name": "indexes",
+                "type": "core::array::Span::<dojo::model::definition::ModelIndex>"
+              },
+              {
+                "name": "layout",
+                "type": "dojo::meta::layout::Layout"
+              }
+            ],
+            "outputs": [
+              {
+                "type": "core::array::Span::<core::array::Span::<core::felt252>>"
+              }
+            ],
+            "state_mutability": "view"
+          },
+          {
+            "type": "function",
             "name": "set_entity",
             "inputs": [
               {
@@ -457,6 +540,30 @@
           },
           {
             "type": "function",
+            "name": "set_entities",
+            "inputs": [
+              {
+                "name": "model_selector",
+                "type": "core::felt252"
+              },
+              {
+                "name": "indexes",
+                "type": "core::array::Span::<dojo::model::definition::ModelIndex>"
+              },
+              {
+                "name": "values",
+                "type": "core::array::Span::<core::array::Span::<core::felt252>>"
+              },
+              {
+                "name": "layout",
+                "type": "dojo::meta::layout::Layout"
+              }
+            ],
+            "outputs": [],
+            "state_mutability": "external"
+          },
+          {
+            "type": "function",
             "name": "delete_entity",
             "inputs": [
               {
@@ -466,6 +573,26 @@
               {
                 "name": "index",
                 "type": "dojo::model::definition::ModelIndex"
+              },
+              {
+                "name": "layout",
+                "type": "dojo::meta::layout::Layout"
+              }
+            ],
+            "outputs": [],
+            "state_mutability": "external"
+          },
+          {
+            "type": "function",
+            "name": "delete_entities",
+            "inputs": [
+              {
+                "name": "model_selector",
+                "type": "core::felt252"
+              },
+              {
+                "name": "indexes",
+                "type": "core::array::Span::<dojo::model::definition::ModelIndex>"
               },
               {
                 "name": "layout",
@@ -850,11 +977,6 @@
             "kind": "key"
           },
           {
-            "name": "historical",
-            "type": "core::bool",
-            "kind": "key"
-          },
-          {
             "name": "keys",
             "type": "core::array::Span::<core::felt252>",
             "kind": "data"
@@ -1121,13 +1243,23 @@
   },
   "contracts": [
     {
-      "address": "0x512ee5bb61ee5187957c992e1265d47380ffa4dcb74bcc99948dab4a39a795c",
-      "class_hash": "0x18ecc8ded7425656bfdf18bf4fcb86a12f6bc94183de10ef17c4e9704fa01e",
+      "address": "0x678ce65629a133bf26018a25c8b6f567160b6149eac1aca0eacfae518fe961e",
+      "class_hash": "0x3d827307bf74ed69f047fb9d40d2cf55d2e6bc78aa2f1be06e1a49742df73a0",
       "abi": [
         {
           "type": "impl",
           "name": "actions__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "actions__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
         },
         {
           "type": "struct",
@@ -1149,7 +1281,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo::contract::interface::IContract",
+          "name": "dojo::meta::interface::IDeployedResource",
           "items": [
             {
               "type": "function",
@@ -1372,16 +1504,29 @@
       ],
       "init_calldata": [],
       "tag": "octoguns-actions",
-      "systems": []
+      "selector": "0x3f08332a455f18ae0772a74a542a5bd4079466e26536872d3330fbedcbc756a",
+      "systems": [
+        "upgrade"
+      ]
     },
     {
-      "address": "0x1f6970ee775b31b113971912c1cb443944b324358cad9e61ad47c222a3b24e9",
-      "class_hash": "0x5ebb65ccfaced79072fed9661f6c70a71389e2ea0bafe73b91ee2da13657f7a",
+      "address": "0x6d36d2af10c67bd0765c29c6b32f704f4f541e9eb1679ea9b0b0dbf0b856783",
+      "class_hash": "0xd6fc54aa7fb3c5b88b68e2bbb1133292ff4bc8f6cd54b0d1af021d9cb75964",
       "abi": [
         {
           "type": "impl",
           "name": "mapmaker__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "mapmaker__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
         },
         {
           "type": "struct",
@@ -1403,7 +1548,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo::contract::interface::IContract",
+          "name": "dojo::meta::interface::IDeployedResource",
           "items": [
             {
               "type": "function",
@@ -1573,16 +1718,29 @@
       ],
       "init_calldata": [],
       "tag": "octoguns-mapmaker",
-      "systems": []
+      "selector": "0x14c58c7d4af6ea009d67d5f29afca71f6c1746c2a19346dcc6e7e3b87357abd",
+      "systems": [
+        "upgrade"
+      ]
     },
     {
-      "address": "0x52b152702baaa2fe83e33ef8d75b373c997c6bf944f8258d2a651b417798a98",
-      "class_hash": "0x6c3d6a7a56075c6868564c9bae1171a31267c4654d407692137940f9ad94f27",
+      "address": "0x32a1adac7c97996955d8c49dd55c3ee2f7bb787ba9ef9061134f14d7d978fb2",
+      "class_hash": "0x46c6fc870881e1aacb381fa93626677031b80538fd007bd984e617f0259ce3c",
       "abi": [
         {
           "type": "impl",
           "name": "spawn__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "spawn__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
         },
         {
           "type": "struct",
@@ -1604,7 +1762,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo::contract::interface::IContract",
+          "name": "dojo::meta::interface::IDeployedResource",
           "items": [
             {
               "type": "function",
@@ -1759,16 +1917,30 @@
       ],
       "init_calldata": [],
       "tag": "octoguns-spawn",
-      "systems": []
+      "selector": "0x1acb09805fe4e369b6767b73b42ef9a057b54dddd5bc4a86462ae76225a62db",
+      "systems": [
+        "spawn",
+        "upgrade"
+      ]
     },
     {
-      "address": "0x3679402ca5cb832a23e5b80aa152a0f3c19712767d396e835ea5c444a2c5669",
-      "class_hash": "0xca73b71b52f9ae4fce269442a08868ef9b83aeacfbf9f32eb3e6ff69128d62",
+      "address": "0x291e3c5a71f04c1a2744a33af7d52a005bf0c9048f296865e42343de76658b0",
+      "class_hash": "0x697caa1c9f1de3b5a57d9ea4c4db8666746473291f35dd040b191e1660fe137",
       "abi": [
         {
           "type": "impl",
           "name": "start__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "start__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
         },
         {
           "type": "struct",
@@ -1790,7 +1962,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo::contract::interface::IContract",
+          "name": "dojo::meta::interface::IDeployedResource",
           "items": [
             {
               "type": "function",
@@ -2019,16 +2191,29 @@
       ],
       "init_calldata": [],
       "tag": "octoguns-start",
-      "systems": []
+      "selector": "0x5506b80fd113b1d4c4ced286886d831114e80efb913f71a9ba17e9176c7a034",
+      "systems": [
+        "upgrade"
+      ]
     },
     {
-      "address": "0xe0b3aeb5f98f9944dcf9772264c3f46e1359585977a557f7ca6d1cef20831",
-      "class_hash": "0x5e3a52d7af64c0ccba8fa8490cc790ac58c4a7694f3c872f78091e653bbbca1",
+      "address": "0x776d312ae1606f2dd657eb629ea2c43be55bcc1db02ced37090a3998dbca570",
+      "class_hash": "0x516880d967c104bb71ec5f75198443f890661d723135776a7dde5136f82f324",
       "abi": [
         {
           "type": "impl",
           "name": "planetelo__ContractImpl",
           "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "planetelo__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
         },
         {
           "type": "struct",
@@ -2050,7 +2235,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo::contract::interface::IContract",
+          "name": "dojo::meta::interface::IDeployedResource",
           "items": [
             {
               "type": "function",
@@ -2335,69 +2520,86 @@
       ],
       "init_calldata": [],
       "tag": "planetelo-planetelo",
-      "systems": []
+      "selector": "0x25ac4129b8141e0edb259913ad6700dac2b338bda1ff616e6ae5eaa207c11f1",
+      "systems": [
+        "create_match",
+        "settle_match",
+        "upgrade"
+      ]
     }
   ],
   "models": [
     {
       "members": [],
-      "class_hash": "0x544d7440f53fd5cc2b484764334e97513c5dae47f892fe355f74b6da315e2cb",
-      "tag": "Bullet"
+      "class_hash": "0x3285c16d991ecbaeb9e8b373d84c87d575d9b48f9e0904e92dd92740df08593",
+      "tag": "octoguns-Bullet",
+      "selector": "0x69e7a9ab819210f452c17c76a434db667871d8dc405cd5cb07f0f22ddd86159"
     },
     {
       "members": [],
-      "class_hash": "0x6c2aa2877c5127152ed5e97f4a2c36669b195ec880a7c786772ab274c01ee13",
-      "tag": "CharacterModel"
+      "class_hash": "0x27e921da1ce11b880205b1081a3427ae61d40394a13560849637ca5ed6e10f4",
+      "tag": "octoguns-CharacterModel",
+      "selector": "0x66c7439dca0741e47084887f43d090314244b3a65d887a9e1cef62d49243c04"
     },
     {
       "members": [],
-      "class_hash": "0x7650a39f52821e1d059df1220bc13a9197443a022c53dadfeebccdb083e5e98",
-      "tag": "CharacterPosition"
+      "class_hash": "0x6c167919a3975c414d44e16c9ef512cadb804615987ad8035db3fce023c6bf",
+      "tag": "octoguns-CharacterPosition",
+      "selector": "0x66fdf8ab4a296ccc55fd471785d1c00781334c94d9c975003ebdc8d684a6d79"
     },
     {
       "members": [],
-      "class_hash": "0x262b6417ae8473f6b637cc69bf987cbcf269ca52b90093deafeab7a52a5b9be",
-      "tag": "Global"
+      "class_hash": "0x344e04bee162562ec579b1b3fcdf941560eb7a9d5e7fc8c1a191ae011ef5f27",
+      "tag": "octoguns-Global",
+      "selector": "0x23c9ff9097c00732da80bbba343411cbb82fcfe3bf90faa04ec826f626c2d8a"
     },
     {
       "members": [],
-      "class_hash": "0x56c20192cd4dfc7fa2a2671052e324fa7b0a5ef8cfcea568359a27c006eb1ce",
-      "tag": "Map"
+      "class_hash": "0x53b911759af7d4a4d828e3f549664de97ab66e68e23b11e29352a3cc963fa5d",
+      "tag": "octoguns-Map",
+      "selector": "0x6508b277d565e556123cc393fb6d27b423b6382027ea2a645892cd4e9eac2f1"
     },
     {
       "members": [],
-      "class_hash": "0x2b7cac4dbe2c765532068f745b9405fb4d4e47a8fd9a854c0f2c80dc400ec80",
-      "tag": "Player"
+      "class_hash": "0xd205afb9694998822e8a88007bf44b7d6442341db2ea8978e174ed909aecc",
+      "tag": "octoguns-Player",
+      "selector": "0x5a4c6c7b17296abbf9523ae2ca0009479c31a99e531d47817ec573aaf3cc1f"
     },
     {
       "members": [],
-      "class_hash": "0x548a938b43e277e2d4e666f75f314140d836509a944c900fc9f302516ff36e7",
-      "tag": "Playlist"
+      "class_hash": "0x7fb9ad8b1edd56d49950645db10d34acec707122fcd98570a5ced67578648b5",
+      "tag": "octoguns-Session",
+      "selector": "0x41d1f2ce948d24f5b47796989738e5479ef498706b2fa98e006206a8c31196f"
     },
     {
       "members": [],
-      "class_hash": "0x165b93c1ab8c040de62631000c083e2fa890ab0769c821ee92b9c06bea0304e",
-      "tag": "PlaylistGlobal"
+      "class_hash": "0x553169289920773faf558d94891e063ba6bce66f154a4b33cb4f7ea0244b297",
+      "tag": "octoguns-SessionMeta",
+      "selector": "0x4f7fd982a6d0b8d102d79dd51917ad0146c614253d5d7d548d3d45f963d880d"
     },
     {
       "members": [],
-      "class_hash": "0x55429b96a3e0c2a711cd57ce27c028ce19d1dde7a090ca351743351b1672d28",
-      "tag": "Session"
+      "class_hash": "0x4686eac19d741ac1101b68f5c9ec3f5bd394667c46e651178e7e370a775ea9f",
+      "tag": "octoguns-SessionPrimitives",
+      "selector": "0x29e33ecc26cfa4736dea604724a44fbe5880f3c6735738bbb383424aa934076"
     },
     {
       "members": [],
-      "class_hash": "0x6418324f638b2054ad0c7efd5c3579e90c1be56b44e808eda54e8fcc716677f",
-      "tag": "SessionMeta"
+      "class_hash": "0x1371744660c14d7002e53ac6f234caca68424035b325b1036de35375ab5cdc0",
+      "tag": "octoguns-TurnData",
+      "selector": "0x293d224e3d2f88ee42d736914ad052e280b0777914c71b6289e226091582f09"
     },
     {
       "members": [],
-      "class_hash": "0x68c24665a78264d14c4a58a852a3699563f66889c09b94f32f4144ec9cd6d39",
-      "tag": "SessionPrimitives"
+      "class_hash": "0x711c79f4e1efae1e0cd5a3aaa51897006326e86edf4ff38438d8292723332a5",
+      "tag": "planetelo-Playlist",
+      "selector": "0x68545170c066553f1e76dc72663e4c9ff3f44f6bb4b5a3e4380f4d5152e7091"
     },
     {
       "members": [],
-      "class_hash": "0x2327e0e59700b9c414026b8d39440b27bf57e9cc41f4777834a4bb12caa3970",
-      "tag": "TurnData"
+      "class_hash": "0x422769cd7cdbf612001d98a1ad0cb3cf20be607f92308bcde4b57f543c03192",
+      "tag": "planetelo-PlaylistGlobal",
+      "selector": "0x6d64574a9728f6c2ed31f389f874dda637d627795251eba10353ae362eb2962"
     }
   ],
   "events": []
