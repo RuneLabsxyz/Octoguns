@@ -10,11 +10,11 @@
     contractCall: boolean
   }>()
 
+
   let activeSessions = $derived(yourActiveSessions)
   let pendingSessions: Session[] = $derived(availableSessions)
 
   let showAll = $state(false)
-
   function toggleShowAll() {
     showAll = !showAll
   }
@@ -36,12 +36,12 @@
 </script>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mx-5 gap-3">
-  {#if pendingSessions}
+  {#if pendingSessions.length > 0}
     {#each displayedSessions as session}
       <div
         class="flex justify-between items-center border-4 rounded-lg border-black flex-col w-full card"
       >
-        {session.session_id}
+       {session.session_id}
         <button
           class="border-t-4 py-2 w-full border-black hover:bg-gray-300"
           onclick={() => joiningGame(Number(session.session_id))}
@@ -53,7 +53,7 @@
   {/if}
 </div>
 
-{#if pendingSessions && pendingSessions.length > 9}
+{#if pendingSessions.length > 9}
   <div class="flex justify-center mt-4">
     <button
       class="border-4 rounded-lg border-black py-2 px-4 hover:bg-gray-300"

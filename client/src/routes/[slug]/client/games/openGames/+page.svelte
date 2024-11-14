@@ -12,6 +12,7 @@
 
   let availableSessions: Session[] | null = $derived($openSessions)
   let availableSessionMetas: SessionMeta[] | null = $derived($openSessionMetas)
+
 </script>
 
 <div class={cn('flex flex-col h-full')}>

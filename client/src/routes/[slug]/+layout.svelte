@@ -2,6 +2,8 @@
   import { initializeStore } from '$stores/dojoStore'
   import { onMount } from 'svelte'
   import { env } from '$stores/network'
+  import { goto } from '$app/navigation'
+  import { account } from '$src/stores/account.js'
 
   let isStoreInitialized = $state(false)
 
