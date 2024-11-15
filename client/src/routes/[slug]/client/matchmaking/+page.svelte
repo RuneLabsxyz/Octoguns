@@ -23,19 +23,23 @@
     let game_id: number;
     let winner: number = 0;
     let intervalId: any;
+    let result: number;
 
     let planetelo: any = get(planeteloStore);
     let {config, dojoProvider}: any = get(dojoStore);
 
     const actions = new Contract(config.manifest.contracts[4].abi, config.manifest.contracts[4].address, dojoProvider.provider).typedv2(config.manifest.contracts[4].abi);
-
+    //@ts-ignore
+    let name = "octoguns".toString(16);
+    console.log(name)
+    let game_key = "0x6f63746f67756e79"
     async function handleQueue() {
         console.log(planetelo.address);
         let res = await $account?.execute(
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'queue',
-                calldata: ["0x6f63746f67756e77", "0x0"]
+                calldata: [game_key, "0x0"]
             }]
         );
         console.log(res);
@@ -47,7 +51,7 @@
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'matchmake',
-                calldata: ["0x6f63746f67756e77", "0x0"]
+                calldata: [game_key, "0x0"]
             }]
         );
         console.log(res);
@@ -55,32 +59,37 @@
 
     $: buttonText = status === 0 ? 'Queue' 
                   : status === 1 ? 'Matchmake' 
-                  : 'Play';
+                  : status === 2 && result == 1 ? 'Play' : 'Settle';
 
     $: buttonClass = status === 0 ? '' 
                   : status === 1 ? 'queuing'
-                  : 'playing';
+                  : status === 2 && result == 1 ? 'playing' : 'settle';
 
     async function handleSettle() {
         let res = await $account?.execute(
             [{
                 contractAddress: planetelo.address,
                 entrypoint: 'settle',
-                calldata: ["0x6f63746f67756e77", game_id!]
+                calldata: [game_key, game_id!]
             }]
         );
         console.log(res);
     }
 
+    async function handleGame() {
+        goto(`/sepolia/game/${game_id}`);
+    }
+
 
     const get_status = async () => {
-        status = parseInt(await planetelo.get_status($account!.address, "0x6f63746f67756e77", "0x0"));
-        elo = await planetelo.get_elo($account!.address, "0x6f63746f67756e77", "0x0");
+        status = parseInt(await planetelo.get_status($account!.address, game_key, "0x0"));
+        elo = await planetelo.get_elo($account!.address, game_key, "0x0");
         console.log(elo)
-        queue_length = parseInt(await planetelo.get_queue_length("0x6f63746f67756e77", "0x0"));
+        queue_length = parseInt(await planetelo.get_queue_length(game_key, "0x0"));
         if (status == 2) {
-            game_id = parseInt(await planetelo.get_player_game_id($account!.address, "0x6f63746f67756e77", "0x0"));
-            console.log(actions)
+            game_id = parseInt(await planetelo.get_player_game_id($account!.address, game_key, "0x0"));
+            let result = parseInt(await actions.get_result(game_id));
+            console.log(result)
         }
         console.log(status)
     }
@@ -106,33 +115,12 @@
                 <p>ELO: {elo}</p>
                 <p>Players in Queue: {queue_length}</p>
             </div>
-            {#if status === 2}
-                    <div class="winner-container">
-                        <p class="winner-text">Game Over!</p>
-                        <button 
-                            class="queue-button settle" 
-                            on:click={handleSettle}
-                        >
-                            Settle
-                        </button>
-                    </div>
-                    <div class="guess-container">
-                      <p>In Game</p>
-                        <button 
-                            class="queue-button playing" 
-                            on:click={() => goto(`/sepolia/game/${game_id}`)}
-                        >
-                            Go To Game
-                        </button>
-                    </div>
-            {:else}
                 <button 
                     class="queue-button {buttonClass}" 
-                    on:click={status == 0 ? handleQueue : handleMatchmake}
+                    on:click={status == 0 ? handleQueue : status == 1 ? handleMatchmake : status == 2 && result == 1 ? handleGame : handleSettle}
                 >
                     {buttonText}
                 </button>
-            {/if}
             {#if status === 1}
                 <p class="status">Finding a match...</p>
             {/if}

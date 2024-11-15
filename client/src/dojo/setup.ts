@@ -24,7 +24,7 @@ export async function setup({ ...config }: DojoConfig) {
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: '0x05b92750cd85e7cdb33fd9f03a8ac2222deccfaea94cf8d49737441e90d3ab76'
+    worldAddress: '0x026488b187a4d96ce6917ba3271de9f458c9b60166d062c522830cc9bb8cf161'
   })
 
   // create contract components
@@ -72,6 +72,7 @@ export async function setup({ ...config }: DojoConfig) {
   //   console.error(e)
   // }
 
+  console.log(dojoProvider)
   return {
     client,
     clientComponents,

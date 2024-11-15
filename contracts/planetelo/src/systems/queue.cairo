@@ -120,7 +120,6 @@ mod queue {
 
             let time_diff = timestamp - p1.timestamp;
             let time_diff_secs = time_diff;
-            assert!(time_diff_secs > 30, "Must be in queue for at least 30 seconds to refresh");
 
             let mut queue: Queue = world.read_model((game, playlist));
             assert!(queue.length > 1, "There must be at least 2 players in the queue to matchmake");
@@ -276,10 +275,16 @@ mod queue {
 
         fn end_game(ref self: ContractState, game: felt252, game_id: u128) {
             let caller = get_caller_address();
-            assert!(caller == starknet::contract_address_const::<0x0737C189b6207e381111E316a0249e4A2bC8fAF0A0d322A85b2dEb7fc2ba427D>(), "Who do you think you are?");
+            assert!(
+                caller == starknet::contract_address_const::<0x0737C189b6207e381111E316a0249e4A2bC8fAF0A0d322A85b2dEb7fc2ba427D>()
+                || , "Who do you think you are?");
             let mut world = self.world(@"planetelo");
             let mut game_model: Game = world.read_model((game, game_id));
 
+
+            assert!(
+                caller == starknet::contract_address_const::<0x0737C189b6207e381111E316a0249e4A2bC8fAF0A0d322A85b2dEb7fc2ba427D>()
+                || game_model.timestamp + 1000 < get_block_timestamp(), "Game has expired");
             let mut  player_one: PlayerStatus = world.read_model((game_model.player1, game, game_model.playlist));
             let mut player_two: PlayerStatus = world.read_model((game_model.player2, game, game_model.playlist));
             player_one.status = QueueStatus::None;

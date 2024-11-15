@@ -22,7 +22,7 @@ impl SessionImpl of SessionTrait {
     fn new_closed(
         session_id: u32, player1: ContractAddress, player2: ContractAddress, map_id: u32
     ) -> Session {
-        Session { session_id, player1, player2, map_id, state: 2 }
+        Session { session_id, player1, player2, map_id, state: 1 }
     }
 
     fn join(ref self: Session, player2: ContractAddress) {

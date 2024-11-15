@@ -89,9 +89,6 @@ mod start {
             let position_1 = Vec2 { x: 50000, y: 20000 };
             let position_2 = Vec2 { x: 50000, y: 80000 };
 
-            assert!(session.state == 1, "Not spawnable");
-            let caller = get_caller_address();
-
             let id1 = global.uuid();
 
             let default_steps = 10;
@@ -107,6 +104,7 @@ mod start {
                 id2, position_2, session_primitives.settings.sub_moves_per_turn
             );
             session_meta.p2_character = id2;
+            session.state = 2;
 
 
             world.write_model(@c1);
