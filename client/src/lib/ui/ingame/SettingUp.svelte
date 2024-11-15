@@ -3,7 +3,7 @@
   import Background from '$lib/ui/Background.svelte'
   import { onMount } from 'svelte'
   import Overlay from './Overlay.svelte'
-  import { accountStore } from '$src/stores/dojoStore'
+  import { account as accountStore } from '$src/stores/account'
   const { currentPlayerId, session, spawn } = getGame()
 
   // Spawn if the setup is ready

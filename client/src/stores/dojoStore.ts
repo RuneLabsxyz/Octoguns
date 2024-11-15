@@ -4,11 +4,11 @@ import { get, writable } from 'svelte/store'
 import { Account } from 'starknet'
 import { Contract } from 'starknet'
 import { connect } from '$lib/controller'
+import { account as accountStore } from '$src/stores/account'
 
 type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export const dojoStore = writable<SetupResult>()
-export const accountStore = writable<Account | null>()
 export const isSetup = writable(false)
 export const settingUp = writable(false)
 
@@ -27,10 +27,11 @@ export async function initializeStore() {
       '0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc',
       dojoConfig
     )
+    console.log('dojo store', result)
     console.log('setup complete')
     dojoStore.set(result)
 
-    let res = await connect('sepolia');
+    let res = await connect('sepolia')
     console.log(res)
 
     console.log('set stores')
@@ -62,5 +63,5 @@ export async function getDojo(): Promise<SetupResult> {
 
 export async function getDojoContext(): Promise<[Account, SetupResult]> {
   const dojo = await getDojo()
-  return [get(accountStore)!, dojo]
+  return [get(accountStore as any)!, dojo]
 }

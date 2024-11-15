@@ -1,7 +1,8 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { SessionMeta, Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore, getDojoContext } from '$src/stores/dojoStore'
+import { getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { account as accountStore } from '$stores/account'
 import {
   derived,
   readable,
@@ -45,13 +46,12 @@ export const currentSessionMeta = derived(
   ([currentSession], set) => {
     if (currentSession == undefined) {
       set(null)
-      return;
+      return
     }
 
-    SessionMeta(currentSession).then(val => val.subscribe(set))
+    SessionMeta(currentSession).then((val) => val.subscribe(set))
   }
 )
-
 
 export const openSessionMetas: Readable<SessionMeta[]> = derived(
   [openSessions],

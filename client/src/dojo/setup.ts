@@ -28,8 +28,6 @@ export async function setup(
       '0x633afc7ba46094bb158889ba55487886c5748439433a555ca3ac16f502d7dc',
   })
 
-  
-
   // create contract components
   const contractComponents = defineContractComponents(world)
 
@@ -37,7 +35,10 @@ export async function setup(
   const clientComponents = createClientComponents({ contractComponents })
 
   // create dojo provider
-  const dojoProvider = new DojoProvider(config.manifest, 'https://api.cartridge.gg/x/starknet/sepolia')
+  const dojoProvider = new DojoProvider(
+    config.manifest,
+    'https://api.cartridge.gg/x/starknet/sepolia'
+  )
   console.log(dojoProvider)
 
   const sync = await getSyncEntities(
@@ -47,37 +48,41 @@ export async function setup(
     []
   )
 
-  let contracts = JSON.parse(JSON.stringify(manifest.contracts));
-  console.log(contracts[0]);
+  let contracts = JSON.parse(JSON.stringify(manifest.contracts))
+  console.log(contracts[0])
 
-  const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
-  planeteloStore.set(myTestContract);
+  const myTestContract = new Contract(
+    contracts[0].abi,
+    contracts[0].address,
+    dojoProvider.provider
+  ).typedv2(contracts[0].abi)
+  planeteloStore.set(myTestContract)
   // setup world
   // setup world
   const client = await setupWorld(dojoProvider)
   // create burner manager
-  const burnerManager = new BurnerManager({
-    masterAccount: new Account(
-      {
-        nodeUrl: config.rpcUrl,
-      },
-      config.masterAddress,
-      config.masterPrivateKey
-    ),
-    accountClassHash: config.accountClassHash,
-    rpcProvider: dojoProvider.provider,
-    feeTokenAddress: config.feeTokenAddress,
-  })
+  // const burnerManager = new BurnerManager({
+  //   masterAccount: new Account(
+  //     {
+  //       nodeUrl: config.rpcUrl,
+  //     },
+  //     config.masterAddress,
+  //     config.masterPrivateKey
+  //   ),
+  //   accountClassHash: config.accountClassHash,
+  //   rpcProvider: dojoProvider.provider,
+  //   feeTokenAddress: config.feeTokenAddress,
+  // })
 
-  try {
-    console.log('Starting burner!')
-    await burnerManager.init()
-    if (burnerManager.list().length === 0) {
-      await burnerManager.create()
-    }
-  } catch (e) {
-    console.error('An error occurred while creating burner:', e)
-  }
+  // try {
+  //   console.log('Starting burner!')
+  //   await burnerManager.init()
+  //   if (burnerManager.list().length === 0) {
+  //     await burnerManager.create()
+  //   }
+  // } catch (e) {
+  //   console.error('An error occurred while creating burner:', e)
+  // }
 
   return {
     client,
@@ -88,7 +93,7 @@ export async function setup(
     },
     config,
     dojoProvider,
-    burnerManager,
+    // burnerManager,
     toriiClient,
 
     torii,

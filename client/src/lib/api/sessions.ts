@@ -1,7 +1,8 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Session, Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore, getDojoContext } from '$src/stores/dojoStore'
+import { getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { account as accountStore } from '$stores/account'
 import {
   derived,
   readable,
@@ -108,7 +109,7 @@ export const yourSessions: Readable<Session[]> = derived(
         })
       })
     ).then((sessions) => {
-      console.log("Got sessions", sessions)
+      console.log('Got sessions', sessions)
       set(sessions)
     })
   }
@@ -118,11 +119,12 @@ export const yourActiveSessions: Readable<Session[]> = derived(
   [yourSessions],
   ([sessions]) => {
     if (sessions != null) {
-      return sessions.filter((session) => session.state === 1 || session.state === 2)
+      return sessions.filter(
+        (session) => session.state === 1 || session.state === 2
+      )
     } else {
-      return [];
+      return []
     }
-    
   }
 )
 
@@ -132,7 +134,7 @@ export const yourUnstartedSessions: Readable<Session[]> = derived(
     if (sessions != null) {
       return sessions.filter((session) => session.state === 0)
     } else {
-      return [];
+      return []
     }
   }
 )
@@ -143,7 +145,7 @@ export const yourFinishedSessions: Readable<Session[]> = derived(
     if (sessions != null) {
       return sessions.filter((session) => session.state === 3)
     } else {
-      return [];
+      return []
     }
   }
 )

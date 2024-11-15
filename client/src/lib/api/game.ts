@@ -1,4 +1,5 @@
-import { accountStore, getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { account as accountStore } from '$stores/account'
 import { derived, readable, type Readable } from 'svelte/store'
 import { SessionStore } from './sessions'
 import { SessionMeta } from './sessionMeta'
@@ -10,11 +11,9 @@ import { CharactersStore } from './data/characters'
 import type { Map } from '$src/dojo/models.gen'
 import type { Position } from './gameState'
 
-
 export type GameStore = Awaited<ReturnType<typeof Game>>
 
 export async function Game(sessionId: number) {
-
   let sessionStore = await SessionStore(sessionId)
   let sessionMetaStore = await SessionMeta(sessionId)
 
@@ -43,31 +42,34 @@ export async function Game(sessionId: number) {
     }
   )
 
-  let currentPlayerIdStore = derived([sessionStore, accountStore], ([session, account]) => {
-    const player_address = account?.address
+  let currentPlayerIdStore = derived(
+    [sessionStore, accountStore],
+    ([session, account]) => {
+      const player_address = account?.address
 
-    if (session == null) {
-      return null
+      if (session == null) {
+        return null
+      }
+
+      let isFirstPlayer = areAddressesEqual(
+        session.player1.toString(),
+        player_address ?? ''
+      )
+
+      let isSecondPlayer = areAddressesEqual(
+        session.player2.toString(),
+        player_address ?? ''
+      )
+
+      if (isFirstPlayer) {
+        return 1
+      } else if (isSecondPlayer) {
+        return 2
+      } else {
+        return null
+      }
     }
-
-    let isFirstPlayer = areAddressesEqual(
-      session.player1.toString(),
-      player_address ?? ''
-    )
-
-    let isSecondPlayer = areAddressesEqual(
-      session.player2.toString(),
-      player_address ?? ''
-    )
-
-    if (isFirstPlayer) {
-      return 1
-    } else if (isSecondPlayer) {
-      return 2
-    } else {
-      return null
-    }
-  })
+  )
 
   let currentPlayerCharacterIdStore = derived(
     [currentPlayerIdStore, sessionMetaStore],

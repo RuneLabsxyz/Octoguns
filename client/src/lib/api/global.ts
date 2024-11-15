@@ -1,7 +1,8 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore } from '$src/stores/dojoStore'
+import { getDojo } from '$src/stores/dojoStore'
+import { account as accountStore } from '$stores/account'
 import { derived, type Readable } from 'svelte/store'
 
 async function GlobalValue() {
@@ -21,6 +22,7 @@ async function GlobalValue() {
 export const currentGlobal: Readable<Global | null> = derived(
   [accountStore],
   ([account], set) => {
+    console.log('currentGlobal:', account)
     if (account?.address == undefined) {
       return
     }

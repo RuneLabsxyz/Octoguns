@@ -1,6 +1,7 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Player } from '$src/dojo/models.gen'
-import { getDojo, accountStore } from '$src/stores/dojoStore'
+import { getDojo } from '$src/stores/dojoStore'
+import { account as accountStore } from '$stores/account'
 import { derived, type Readable } from 'svelte/store'
 import get from './utils'
 

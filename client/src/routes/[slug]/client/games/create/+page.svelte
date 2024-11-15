@@ -12,7 +12,7 @@
   import { maps as mapsValue } from '$src/lib/api/maps'
   import { yourUnstartedSessions } from '$src/lib/api/sessions'
   import type { Map } from '$src/dojo/models.gen'
-  import { accountStore } from '$src/stores/dojoStore'
+  import { account as accountStore } from '$src/stores/account'
   import { onMount } from 'svelte'
 
   let loadingToGame = false
