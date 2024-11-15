@@ -29,7 +29,8 @@ export const recordedMove = writable<TurnData>({
 
 export const currentSubMove = writable<{ x: number; y: number }>({ x: 0, y: 0 })
 
-export const frameCounter = writable<number>(0)
+export const timer = writable<number>(0)
+export const stepCounter = writable<number>(0)
 export const isMoveRecorded = writable<boolean>(false)
 
 export type TurnData = {

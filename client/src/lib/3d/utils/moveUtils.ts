@@ -4,10 +4,11 @@ import {
   isMouseDownStore,
   recordedMove,
   currentSubMove,
-  frameCounter,
+  stepCounter,
   recordingMode,
   isMoveRecorded,
   replayMode,
+  timer,
 } from '$stores/gameStores'
 import { playerCharacterCoords } from '$stores/coordsStores'
 import { inPointerLock } from '$stores/cameraStores'
@@ -79,7 +80,7 @@ export function recordMove(camera: Camera, characterId: number) {
       return subMove
     })
 
-    if (get(frameCounter) % FRAME_INTERVAL === 0) {
+    if (get(stepCounter) % FRAME_INTERVAL === 0) {
       const current = normalizeAndScaleVector(
         get(currentSubMove).x,
         get(currentSubMove).y,
@@ -100,10 +101,15 @@ export function recordMove(camera: Camera, characterId: number) {
     }
 
     // Increment frame counter
-    frameCounter.update((fc) => fc + 1)
+    stepCounter.update((fc) => {
+      if(get(timer) > 1) {
+        fc + 1
+      }
+      return fc
+    })
   }
 
-  if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
+  if (get(stepCounter) === RECORDING_FRAME_LIMIT) {
     recordingMode.set(false)
     isMoveRecorded.set(true)
     document.exitPointerLock()
@@ -115,12 +121,12 @@ export function recordMove(camera: Camera, characterId: number) {
 }
 
 export function replayMove(move: TurnData, characterId: number) {
-  if (get(frameCounter) === RECORDING_FRAME_LIMIT) {
-    frameCounter.set(0)
+  if (get(stepCounter) === RECORDING_FRAME_LIMIT) {
+    stepCounter.set(0)
     replayMode.set(false)
   }
 
-  let move_index = Math.floor(get(frameCounter) / FRAME_INTERVAL)
+  let move_index = Math.floor(get(stepCounter) / FRAME_INTERVAL)
   if (move_index >= move.sub_moves.length) {
     console.warn('Move index exceeds recorded sub-moves.')
     return
@@ -129,8 +135,8 @@ export function replayMove(move: TurnData, characterId: number) {
   console.log(move)
 
   if (
-    get(frameCounter) % FRAME_INTERVAL === 0 &&
-    get(frameCounter) < RECORDING_FRAME_LIMIT
+    get(stepCounter) % FRAME_INTERVAL === 0 &&
+    get(stepCounter) < RECORDING_FRAME_LIMIT
   ) {
     let x_dif = sub_move.x
     let y_dif = sub_move.y
@@ -143,5 +149,10 @@ export function replayMove(move: TurnData, characterId: number) {
     })
   }
 
-  frameCounter.update((fc) => fc + 1)
+  stepCounter.update((fc) => {
+    if(get(timer) > 1) {
+      fc + 1
+    }
+    return fc
+  })
 }

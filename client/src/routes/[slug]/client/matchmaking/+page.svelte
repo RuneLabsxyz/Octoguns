@@ -59,11 +59,11 @@
 
     $: buttonText = status === 0 ? 'Queue' 
                   : status === 1 ? 'Matchmake' 
-                  : status === 2 && result == 1 ? 'Play' : 'Settle';
+                  : status === 2 && result ==0 ? 'Play' : 'Settle';
 
     $: buttonClass = status === 0 ? '' 
                   : status === 1 ? 'queuing'
-                  : status === 2 && result == 1 ? 'playing' : 'settle';
+                  : status === 2 && result == 0 ? 'playing' : 'settle';
 
     async function handleSettle() {
         let res = await $account?.execute(
@@ -88,7 +88,7 @@
         queue_length = parseInt(await planetelo.get_queue_length(game_key, "0x0"));
         if (status == 2) {
             game_id = parseInt(await planetelo.get_player_game_id($account!.address, game_key, "0x0"));
-            let result = parseInt(await actions.get_result(game_id));
+            result = parseInt(await actions.get_result(game_id));
             console.log(result)
         }
         console.log(status)
@@ -117,7 +117,7 @@
             </div>
                 <button 
                     class="queue-button {buttonClass}" 
-                    on:click={status == 0 ? handleQueue : status == 1 ? handleMatchmake : status == 2 && result == 1 ? handleGame : handleSettle}
+                    on:click={status == 0 ? handleQueue : status == 1 ? handleMatchmake : status == 2 && result == 0 ? handleGame : handleSettle}
                 >
                     {buttonText}
                 </button>

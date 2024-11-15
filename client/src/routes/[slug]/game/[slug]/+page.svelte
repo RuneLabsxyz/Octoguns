@@ -13,7 +13,8 @@
     playerCharacterId,
     enemyCharacterId,
     isTurnPlayer,
-    frameCounter,
+    stepCounter,
+    timer,
     recordingMode,
     replayMode,
     mapObjects,
@@ -257,7 +258,8 @@
     //REMOVE
     //@ts-ignore
     move(client, $account, $sessionId, calldata)
-    frameCounter.set(0)
+    stepCounter.set(0)
+    timer.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
     recordingMode.set(false)

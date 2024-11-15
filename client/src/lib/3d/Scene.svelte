@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { T, useThrelte } from '@threlte/core'
+  import { T, useTask, useThrelte } from '@threlte/core'
   import { onDestroy, onMount } from 'svelte'
   import Map from './components/Map.svelte'
   import Characters from './components/Characters.svelte'
@@ -29,7 +29,7 @@
   import {
     isMouseDownStore,
     playerCharacterId,
-    frameCounter,
+    timer,
   } from '$stores/gameStores'
   import { inPointerLock } from '$stores/cameraStores'
   import { writable } from 'svelte/store'
@@ -48,6 +48,7 @@
   let hasShotInCurrentRecording = writable(false)
 
   let animationFrameId: number
+  let lastTime: number | null = null;
 
   const addEventListeners = () => {
     window.addEventListener('keydown', handleKeyDown)
@@ -63,7 +64,14 @@
     window.removeEventListener('mouseup', handleMouseUp)
   }
 
-  const animationLoop = () => {
+
+  const animationLoop = (currentTime: number) => {
+    if (lastTime === null) {
+      lastTime = currentTime;
+    }
+    const delta = (currentTime - lastTime) / 1000; // Convert to seconds
+    lastTime = currentTime;
+
     try {
       if ($birdView) {
         if (birdViewCamera && birdViewCamera.isCamera) {
@@ -83,10 +91,11 @@
         if ($isMouseDownStore && $inPointerLock && !$hasShotInCurrentRecording) {
           shoot(cameras[0]) // currently only works with one camera
           hasShotInCurrentRecording.set(true)
+          $timer += delta
         }
       }
       if ($replayMode) {
-        if ($frameCounter > RECORDING_FRAME_LIMIT) {
+        if ($timer > RECORDING_FRAME_LIMIT) {
           console.log('eyyy, tf')
           replayMode.set(false)
         }
@@ -103,13 +112,13 @@
     }
   }
 
-  $: if ($frameCounter) {
+  $: if ($timer) {
     simulate()
   }
 
   onMount(() => {
     addEventListeners()
-    animationLoop()
+    animationFrameId = requestAnimationFrame(animationLoop)
     rendererStore.set(renderer)
 
     renderer.shadowMap.enabled = false

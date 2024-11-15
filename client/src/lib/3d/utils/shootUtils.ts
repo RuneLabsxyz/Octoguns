@@ -1,4 +1,4 @@
-import { frameCounter, recordedMove } from '$stores/gameStores'
+import { stepCounter, recordedMove } from '$stores/gameStores'
 import { get } from 'svelte/store'
 import type { TurnData } from '$stores/gameStores'
 import { PerspectiveCamera } from 'three'
@@ -13,7 +13,7 @@ import {
 } from '$stores/coordsStores'
 import { playSoundEffect } from './audioUtils'
 import { splat } from '$stores/eyeCandy'
-import { isTurnPlayer } from '$stores/gameStores'
+import { isTurnPlayer, timer } from '$stores/gameStores'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 import { BULLET_SPEED, BULLET_SUBSTEPS } from '$lib/consts'
 
@@ -38,7 +38,7 @@ export function shoot(camera: PerspectiveCamera) {
     return
   }
 
-  let move_index = Math.floor(get(frameCounter) / 3)
+  let move_index = get(stepCounter)
 
   let direction = getYawAngle(camera)
   if (direction < 0) {
@@ -84,7 +84,7 @@ export function shoot(camera: PerspectiveCamera) {
 }
 
 export function replayShot(move: TurnData, camera: PerspectiveCamera) {
-  let move_index = Math.floor((get(frameCounter) + 1) / 3)
+  let move_index = get(stepCounter) + 1
 
   let shot = move.shots.find((shot) => shot.step === move_index)
   if (shot) {
@@ -95,7 +95,12 @@ export function replayShot(move: TurnData, camera: PerspectiveCamera) {
     let vx = Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8))
     let vy = Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8))
 
-    frameCounter.update((fc) => fc + 1)
+    stepCounter.update((fc) => {
+      if(get(timer) > 1) {
+        fc + 1
+      }
+      return fc
+    })
 
     const cameraPosition = camera.position
     const newBullet = {

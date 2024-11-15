@@ -24,7 +24,7 @@
     if (!$account) {
         await connect(config);
      }    
-    goto(`${config}/client/games/openGames`);
+    goto(`${config}/client/matchmaking`);
   }
 
   onMount(() => {
@@ -40,8 +40,6 @@
         <img src="/logos/LOGO_15.png" alt="OCTOGUNS" width="300" height="300" />
       </div>
       <div>
-          <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button>
-          <Button on:click={() => connectAndGoto('slot')}>Play Slot</Button>
           <Button on:click={() => connectAndGoto('sepolia')}>Play Sepolia</Button>
       </div>
     </div>

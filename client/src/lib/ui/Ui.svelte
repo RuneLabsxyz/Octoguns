@@ -8,7 +8,8 @@
     recordedMove,
     isMoveRecorded,
     playerCharacterId,
-    frameCounter,
+    stepCounter,
+    timer,
     isTurnPlayer,
     rendererStore,
     gameState,
@@ -57,7 +58,8 @@
 
   function setReplayMode(e: Event) {
     recordingMode.set(false)
-    frameCounter.set(0)
+    stepCounter.set(0)
+    timer.set(0)
     setPlayerCharacterCoords(
       $playerCharacterId,
       $playerStartCoords[$playerCharacterId]
@@ -72,7 +74,8 @@
       $playerCharacterId,
       $playerStartCoords[$playerCharacterId]
     )
-    frameCounter.set(0)
+    stepCounter.set(0)
+    timer.set(0)
     recordedMove.set({ sub_moves: [], shots: [] })
     isMoveRecorded.set(false)
     hasReset = true
