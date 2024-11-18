@@ -19,8 +19,8 @@
   }
 
   async function connectAndGoto(config: string) {
-    env.set('slot')
-    goto(`/slot/client/games/openGames`)
+    env.set(config)
+    goto(`/${config}/client/matchmaking`)
   }
 
   onMount(() => {
@@ -40,7 +40,9 @@
       </div>
       <div>
         <!-- <Button on:click={() => connectAndGoto('mainnet')}>Play Mainnet</Button> -->
-        <Button on:click={() => connectAndGoto('slot')}>Play</Button>
+        <Button on:click={() => connectAndGoto('slot')}>Play Slot</Button>
+        <Button on:click={() => connectAndGoto('sepolia')}>Play Sepolia</Button>
+
       </div>
     </div>
   </div>

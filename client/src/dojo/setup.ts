@@ -10,6 +10,10 @@ import type { ArraySignatureType } from 'starknet'
 import { BurnerManager } from '@dojoengine/create-burner'
 import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
 import { account } from '$src/stores/account'
+import { env } from '$src/stores/network'
+import { get } from 'svelte/store'
+
+
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
 export async function setup(
@@ -21,8 +25,7 @@ export async function setup(
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress:
-      '0x190ca7e6b8c28576ae3616add6f7ff4cf454ee60460238226d8284ca77445e2',
+    worldAddress: '0x05a968e49c6395f4d1137d579b2e02c342484cbaf33a535a2a6ba1c33a6c705a',
   })
 
   // create contract components
@@ -43,29 +46,8 @@ export async function setup(
 
   // setup world
   const client = await setupWorld(dojoProvider)
-  // create burner manager
-  const burnerManager = new BurnerManager({
-    masterAccount: new Account(
-      {
-        nodeUrl: config.rpcUrl,
-      },
-      config.masterAddress,
-      config.masterPrivateKey
-    ),
-    accountClassHash: config.accountClassHash,
-    rpcProvider: dojoProvider.provider,
-    feeTokenAddress: config.feeTokenAddress,
-  })
+  console.log('client', client)
 
-  try {
-    console.log('Starting burner!')
-    await burnerManager.init()
-    if (burnerManager.list().length === 0) {
-      await burnerManager.create()
-    }
-  } catch (e) {
-    console.error('An error occurred while creating burner:', e)
-  }
 
   return {
     client,
@@ -76,7 +58,6 @@ export async function setup(
     },
     config,
     dojoProvider,
-    burnerManager,
     toriiClient,
 
     torii,

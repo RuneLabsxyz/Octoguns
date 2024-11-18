@@ -1,0 +1,31 @@
+[package]
+cairo-version = "=2.8.4"
+name = "octoguns"
+version = "0.1.0"
+
+[cairo]
+sierra-replace-ids = true
+
+[profile.slot]
+
+[scripts]
+migrate_sepolia = "sozo build -P sepolia && sozo migrate -P sepolia --keystore '../sepolia_key' --fee eth"
+spawn_sepolia = "./scripts/spawn_sepolia.sh"
+
+[dependencies]
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0" }
+origami_algebra = { git = "https://github.com/dojoengine/origami" }
+alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
+planetelo_interface = { path = "../planetelo_interface" }
+
+[[target.starknet-contract]]
+build-external-contracts = ["dojo::world::world_contract::world"]
+
+[namespace]
+default = "octoguns"
+mappings = { "planetelo" = ["planetelo", "PlaylistGlobal", "Playlist"]}
+
+
+
+[profile.mainnet]
+[profile.sepolia]

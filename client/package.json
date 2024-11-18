@@ -36,10 +36,8 @@
     "@dojoengine/torii-client": "^1.0.0-alpha.30",
     "@dojoengine/torii-wasm": "^1.0.0-alpha.30",
     "@dojoengine/utils": "^1.0.0-alpha.30",
-
     "@threlte/core": "^8.0.0-next.30",
     "@threlte/extras": "^9.0.0-next.39",
-    
     "clsx": "^2.1.1",
     "lucide-svelte": "^0.445.0",
     "prettier": "^3.3.3",
@@ -48,6 +46,7 @@
     "tailwind-merge": "^2.5.4",
     "three": "^0.168.0",
     "three-inspect": "^0.7.2",
+    "vite-plugin-mkcert": "^1.17.6",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0"
   },

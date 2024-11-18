@@ -4,7 +4,8 @@
   import { Camera, ArrowLeftRight, User } from 'lucide-svelte'
   import StepBar from '../StepBar.svelte'
   import getGame from '$lib/api/svelte/context'
-
+  import { connect } from '$lib/controller'
+  import Button from '$lib/ui/Button.svelte'
   const { turnCount } = getGame()
 </script>
 
@@ -40,6 +41,15 @@
           <User color={!$birdView ? 'black' : 'white'} />
         </button>
       </div>
+    <!-- Connect Button -->
+    <div class="fixed top-4 right-4 z-[100]">
+      <Button 
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
+          on:click={() => connect('sepolia')}
+      >
+        Connect
+      </Button>
+    </div>
 
       <div
         class="absolute right-0 bottom-0 overflow-hidden bg left-0 top-0"
