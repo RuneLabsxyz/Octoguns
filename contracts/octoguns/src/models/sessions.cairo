@@ -35,6 +35,7 @@ pub struct Settings {
     pub bullets_per_turn: u32,
     pub sub_moves_per_turn: u32,
     pub max_distance_per_sub_move: u32,
+    pub characters: u64
 }
 
 #[derive(Drop, Serde)]
@@ -43,8 +44,8 @@ pub struct SessionMeta {
     #[key]
     pub session_id: u32,
     pub turn_count: u32, // mod 2 = 1 is player 2 and mod 2 = 0 is player 1
-    pub p1_character: u32,
-    pub p2_character: u32,
+    pub p1_characters: Array<u32>, 
+    pub p2_characters: Array<u32>,
     pub bullets: Array<u32>,
 }
 
@@ -52,7 +53,11 @@ pub struct SessionMeta {
 impl SessionMetaImpl of SessionMetaTrait {
     fn new(session_id: u32) -> SessionMeta {
         SessionMeta {
-            session_id, turn_count: 0, bullets: ArrayTrait::new(), p1_character: 0, p2_character: 0
+            session_id, 
+            turn_count: 0, 
+            bullets: ArrayTrait::new(), 
+            p1_characters: ArrayTrait::new(), 
+            p2_characters: ArrayTrait::new()
         }
     }
     fn next_turn(ref self: SessionMeta) {
@@ -61,8 +66,66 @@ impl SessionMetaImpl of SessionMetaTrait {
     fn add_bullet(ref self: SessionMeta, bullet_id: u32) {
         self.bullets.append(bullet_id);
     }
-    fn set_new_bullets(ref self: SessionMeta, bullets: Array<u32>) {
-        self.bullets = bullets;
+    fn add_character(ref self: SessionMeta, id: u32, player: u8) {
+
+        if(player == 1) {
+            self.p1_characters.append(id);
+        }
+        else if (player == 2) {
+            self.p2_characters.append(id);
+        }
+        else {
+            panic!("player must be 1 or 2");
+        }
+    }
+
+    fn remove_bullet(ref self: SessionMeta, id: u32) {
+        let mut new = ArrayTrait::new();
+        loop {
+            if let Option::Some(bullet) = self.bullets.pop_front() {
+                if bullet != id {
+                    new.append(bullet);
+                }
+            }
+            else {
+                break;
+            }
+        };
+        self.bullets = new;
+    }
+
+    fn remove_character(ref self: SessionMeta, id: u32, player: u8) {
+        let mut new = ArrayTrait::new();
+
+        if(player == 1) {
+            loop {
+                if let Option::Some(char) = self.p1_characters.pop_front() {
+                    if char != id {
+                        new.append(char);
+                    }
+                }
+                else {
+                    break;
+                }
+            };
+            self.p1_characters = new;
+        }
+        else if (player == 2) {
+            loop {
+                if let Option::Some(char) = self.p2_characters.pop_front() {
+                    if char != id {
+                        new.append(char);
+                    }
+                }
+                else {
+                    break;
+                }
+            };
+            self.p2_characters = new;
+        }
+        else {
+            panic!("player must be 1 or 2");
+        }
     }
 }
 

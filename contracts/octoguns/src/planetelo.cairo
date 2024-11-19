@@ -90,6 +90,7 @@ mod planetelo {
                 bullets_per_turn: 1,
                 sub_moves_per_turn: 100,
                 max_distance_per_sub_move: 400,
+                characters: 3
             };
             let playlist: Playlist = Playlist {
                 id: 0,
@@ -104,9 +105,9 @@ mod planetelo {
         fn get_result(self: @ContractState, session_id: u32) -> u8 {
             let mut world = self.world(@"octoguns");
             let session: SessionMeta = world.read_model(session_id);
-            if session.p1_character == 0 {
+            if session.p1_characters.len() == 0 {
                 return 2;
-            } else if session.p2_character == 0 {
+            } else if session.p2_characters.len() == 0 {
                 return 1;
             } else {
                 return 0;
@@ -160,12 +161,11 @@ mod planetelo {
                     Status::Active
                 },
                 3 => {
-                    if session_meta.p1_character == 0 && session_meta.p2_character == 0 {
-                        panic!("both ids 0");
+                    if session_meta.p1_characters.len() == 0 && session_meta.p2_characters.len() == 0 {
                         Status::Draw
-                    } else if session_meta.p1_character == 0 {
+                    } else if session_meta.p1_characters.len() == 0 {
                         Status::Winner(session.player2)
-                    } else if session_meta.p2_character == 0 {
+                    } else if session_meta.p2_characters.len() == 0 {
                         Status::Winner(session.player1)
                     } else {
                         Status::Draw

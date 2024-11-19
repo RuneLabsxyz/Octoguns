@@ -23,22 +23,40 @@ mod spawn {
         fn spawn(self: @ContractState, session_id: u32) {
             let mut world = self.world(@"octoguns");
             let mut global: Global = world.read_model(GLOBAL_KEY);
-            let position_1 = Vec2 { x: 50000, y: 20000 };
-            let position_2 = Vec2 { x: 50000, y: 80000 };
-
             let mut session: Session = world.read_model(session_id);
             assert!(session.state == 1, "Not spawnable");
             let caller = get_caller_address();
             let mut session_meta: SessionMeta = world.read_model(session_id);
             assert!(caller == session.player1 || caller == session.player2, "Not player");
 
+            let position_1 = Vec2 { x: 50000, y: 20000 };
+            let position_2 = Vec2 { x: 50000, y: 80000 };
+
             let mut session_primitives: SessionPrimitives = world.read_model(session_id);
+
+            let offset = 100_000 / (session_primitives.characters + 1);
 
             let id1 = global.uuid();
 
             let default_steps = 10;
             let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
             let p1 = CharacterPositionTrait::new(
+                id1, position_1, session_primitives.settings.sub_moves_per_turn
+            );
+            session_meta.p1_character = id1;
+
+            let id2 = global.uuid();
+            let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
+            let p2 = CharacterPositionTrait::new(
+                id2, position_2, session_primitives.settings.sub_moves_per_turn
+            );
+            session_meta.p2_character = id2;
+
+
+            let id3 = global.uuid();
+
+            let c3 = CharacterModelTrait::new(global.uuid(), session_id, session.player1, default_steps);
+            let p3 = CharacterPositionTrait::new(
                 id1, position_1, session_primitives.settings.sub_moves_per_turn
             );
             session_meta.p1_character = id1;
