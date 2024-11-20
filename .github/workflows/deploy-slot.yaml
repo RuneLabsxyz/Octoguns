@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy contract
         working-directory: ./contracts
-        run: sozo migrate apply -P slot
+        run: sozo migrate -P slot
         env:
           DOJO_ACCOUNT_ADDRESS: ${{ secrets.DOJO_ACCOUNT_ADDRESS }}
           DOJO_PRIVATE_KEY: ${{ secrets.DOJO_PRIVATE_KEY }}
