@@ -82,33 +82,13 @@ mod start {
                 settings
             );
 
-            let session_id = id;
-
-            let position_1 = Vec2 { x: 50000, y: 20000 };
-            let position_2 = Vec2 { x: 50000, y: 80000 };
-
-            let id1 = global.uuid();
-
-            let default_steps = 10;
-            let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
-            let p1 = CharacterPositionTrait::new(
-                id1, position_1, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p1_character = id1;
-
-            let id2 = global.uuid();
-            let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
-            let p2 = CharacterPositionTrait::new(
-                id2, position_2, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p2_character = id2;
-            session.state = 2;
+            //TODO: READD SPAWN LOGIC FOR MULTIPLE CHARACTERS
 
 
-            world.write_model(@c1);
-            world.write_model(@p1);
-            world.write_model(@c2);
-            world.write_model(@p2);
+        //    world.write_model(@c1);
+        //    world.write_model(@p1);
+        //    world.write_model(@c2);
+        //    world.write_model(@p2);
 
 
             world.write_model(@session);

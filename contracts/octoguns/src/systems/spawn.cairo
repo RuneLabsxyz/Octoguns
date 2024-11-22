@@ -33,49 +33,46 @@ mod spawn {
             let position_2 = Vec2 { x: 50000, y: 80000 };
 
             let mut session_primitives: SessionPrimitives = world.read_model(session_id);
+            let settings = session_primitives.settings;
 
-            let offset = 100_000 / (session_primitives.characters + 1);
+            let offset = 100_000 / (settings.characters + 1);
 
-            let id1 = global.uuid();
 
             let default_steps = 10;
-            let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
-            let p1 = CharacterPositionTrait::new(
-                id1, position_1, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p1_character = id1;
 
-            let id2 = global.uuid();
-            let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
-            let p2 = CharacterPositionTrait::new(
-                id2, position_2, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p2_character = id2;
+            let mut i =0;
 
+            //TODO: FIX POSITIONS
+            while i < settings.characters {
 
-            let id3 = global.uuid();
+                let id1 = global.uuid();
+                let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
+                let p1 = CharacterPositionTrait::new(
+                    id1, position_1, session_primitives.settings.sub_moves_per_turn
+                );
+                session_meta.add_character(id1, 1);
 
-            let c3 = CharacterModelTrait::new(global.uuid(), session_id, session.player1, default_steps);
-            let p3 = CharacterPositionTrait::new(
-                id1, position_1, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p1_character = id1;
+                let id2 = global.uuid();
+                let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
+                let p2 = CharacterPositionTrait::new(
+                    id2, position_2, session_primitives.settings.sub_moves_per_turn
+                );
+                session_meta.add_character(id2, 2);
 
-            let id2 = global.uuid();
-            let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
-            let p2 = CharacterPositionTrait::new(
-                id2, position_2, session_primitives.settings.sub_moves_per_turn
-            );
-            session_meta.p2_character = id2;
+                i+=1;
+                world.write_model(@c1);
+                world.write_model(@p1);
+                world.write_model(@c2);
+                world.write_model(@p2);
+
+            };
 
             session.state = 2;
+
             world.write_model(@session);
             world.write_model(@session_meta);
-            world.write_model(@c1);
-            world.write_model(@p1);
-            world.write_model(@c2);
-            world.write_model(@p2);
             world.write_model(@global);
+
         }
     }
 }

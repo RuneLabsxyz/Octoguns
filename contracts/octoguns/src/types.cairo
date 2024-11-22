@@ -12,10 +12,18 @@ struct Shot {
 }
 
 #[derive(Clone, Drop, Serde, Introspect)]
-struct TurnMove {
+struct Action {
+    characters: Array<u32>,
     sub_moves: Array<IVec2>,
     shots: Array<Shot>,
 }
+
+#[derive(Drop, Serde, Introspect)]
+struct TurnMove {
+    actions: Array<Action>,
+}
+
+
 
 #[derive(Copy, Drop, Serde, Introspect)]
 struct IVec2 {
