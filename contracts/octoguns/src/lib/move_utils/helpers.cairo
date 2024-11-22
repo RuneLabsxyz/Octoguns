@@ -82,3 +82,30 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
     }
 }
 
+fn get_next_shot(ref moves: TurnMove) -> (u32, u32) {
+    let mut result = (0, 0);
+
+    //start out of bounds
+    let mut current_lowest_step = moves.actions[0].shots.len() + 1;
+    let mut current_lowest_action = moves.actions.len() + 1;
+
+    let mut i = 0;
+    while i < moves.actions.len() {
+        if moves.actions[i].shots.len() == 0 {
+            i += 1;
+            continue;
+        }
+        let next = moves.actions[i].shots[0].step;
+        
+        if next < current_lowest_step {
+            current_lowest_step = next;
+            current_lowest_action = i;
+        }
+        i += 1;
+    }
+
+    moves.actions[current_lowest_action].shots.pop_front();
+    
+    return (current_lowest_step, current_lowest_action);
+}
+

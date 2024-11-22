@@ -33,10 +33,9 @@ mod actions {
             let mut global: Global = world.read_model(GLOBAL_KEY);
             let session_primitives: SessionPrimitives = world.read_model(session_id);
             let settings = session_primitives.settings;
-            
-            let max_steps = settings.sub_moves_per_turn;
 
-            assert!(moves.shots.len() <= settings.bullets_per_turn, "Invalid number of shots");
+
+            assert!(moves.actions.len() <= settings.actions && moves.actions.len() > 0, "Invalid number of actions");
             let player = get_caller_address();
             let mut session: Session = world.read_model(session_id);
             assert!(session.state != 1, "Game doesn't exist");
@@ -75,9 +74,9 @@ mod actions {
             //start out of bounds so never reached in loop if no shots
 
             let mut next_shot = max_steps + 1;
-            if !moves.shots.is_empty() {
-                next_shot = (*moves.shots.at(0)).step;
-            }
+
+            let mut (next_shot_step, next_shot_action) = get_next_shot(moves);
+
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
 
@@ -127,6 +126,7 @@ mod actions {
                 positions = new_positions;
 
                 //get next sub_move
+                //TODO: FIX FOR MULTIPLE CHARACTERS
                 if filtered_character_ids.len() < 2 {
                     match filtered_character_ids.len() {
                         0 => {
