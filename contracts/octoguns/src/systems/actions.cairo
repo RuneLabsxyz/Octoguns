@@ -42,7 +42,6 @@ mod actions {
             assert!(session.state != 3, "Game over");
             assert!(session.state == 2, "Game not active");
 
-
             let mut session_meta: SessionMeta = world.read_model(session_id);
             let mut map: Map = world.read_model(session.map_id);
 
@@ -51,23 +50,27 @@ mod actions {
             let mut player_character_id = 0;
             let mut opp_character_id = 0;
 
-            match session_meta.turn_count % 2 {
-                0 => {
-                    assert!(player == session.player1, "not turn player, 1s turn");
-                    player_character_id = session_meta.p1_character;
-                    opp_character_id = session_meta.p2_character;
-                },
-                1 => {
-                    assert!(player == session.player2, "not turn player, 2s turn");
-                    player_character_id = session_meta.p2_character;
-                    opp_character_id = session_meta.p1_character;
-                },
-                _ => { panic!("???"); }
-            }
+   
+            //GET ALL POSITIONS, MAYBE SEPARTE BY ACTION FOR PLAYER CHARACTGERS?
 
-            let mut player_position: CharacterPosition = world.read_model(player_character_id);
-            let mut opp_position: CharacterPosition = world.read_model(opp_character_id);
-            let mut positions = array![player_position, opp_position];
+            // match session_meta.turn_count % 2 {
+            //     0 => {
+            //         assert!(player == session.player1, "not turn player, 1s turn");
+            //         player_character_id = session_meta.p1_character;
+            //         opp_character_id = session_meta.p2_character;
+            //     },
+            //     1 => {
+            //         assert!(player == session.player2, "not turn player, 2s turn");
+            //         player_character_id = session_meta.p2_character;
+            //         opp_character_id = session_meta.p1_character;
+            //     },
+            //     _ => { panic!("???"); }
+            // }
+
+            // player_positions is array of arrays where each sub array are the character positions for that action
+            //let mut player_position: CharacterPosition = world.read_model(player_character_id);
+            //let mut opp_position: CharacterPosition = world.read_model(opp_character_id);
+            //let mut positions = array![player_position, opp_position];
 
             let mut bullets = get_all_bullets(world, session_id);
 
@@ -75,7 +78,7 @@ mod actions {
 
             let mut next_shot = max_steps + 1;
 
-            let mut (next_shot_step, next_shot_action) = get_next_shot(moves);
+            let mut (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
 
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
@@ -83,29 +86,10 @@ mod actions {
             while sub_move_index < max_steps {
                 let step = sub_move_index + total_steps;
 
-                if sub_move_index == next_shot.into() {
-                    let shot = moves.shots.pop_front();
-                    match shot {
-                        Option::Some(s) => {
-                            let bullet = BulletTrait::new(
-                                global.uuid(),
-                                Vec2 { x: player_position.coords.x, y: player_position.coords.y },
-                                s.angle,
-                                player_character_id,
-                                step.try_into().unwrap(),
-                                settings.bullet_speed,
-                                settings.bullet_sub_steps,
-                            );
-                            bullets.append(bullet);
-                            world.write_model(@bullet);
+                if sub_move_index == next_shot_step.into() {
+                    shoot(ref world, ref player_positions[next_shot_action], next_shot_shot);
+                    let (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
 
-                            if moves.shots.len() > 0 {
-                                next_shot = *moves.shots.at(0).step;
-                            }
-                        },
-                        Option::None => { //shouldn't reach
-                        }
-                    }
                 }
 
                 // Loop through positions and update the grid
@@ -125,72 +109,23 @@ mod actions {
 
                 positions = new_positions;
 
-                //get next sub_move
-                //TODO: FIX FOR MULTIPLE CHARACTERS
-                if filtered_character_ids.len() < 2 {
-                    match filtered_character_ids.len() {
-                        0 => {
-                            //draw
-                            break;
-                        },
-                        1 => {
-                            let winner = filtered_character_ids.pop_front().unwrap();
-                            if session_meta.p1_character == winner {
-                                //p1 wins
-                                session.state = 3;
-                                session_meta.p2_character = 0;
-                            }
-                            if session_meta.p2_character == winner {
-                                //p2 wins
-                                session.state = 3;
-                                session_meta.p1_character = 0;
-                            }
-                            break;
-                        },
-                        _ => {}
-                    }
+                let res = check_win(ref filtered_character_ids, ref positions);
+
+                //if win, set session state to 3 and break
+                if res {
+                    session.state = 3;
+                    break;
                 }
 
-                match moves.sub_moves.pop_front() {
-                    Option::Some(mut vec) => {
-                        //check move valid
-                        if !check_is_valid_move(vec, settings.max_distance_per_sub_move) {
-                            vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
-                        }
-                        //apply move
-
-                        if vec.xdir {
-                            player_position
-                                .coords
-                                .x =
-                                    min(
-                                        100_000,
-                                        player_position.coords.x + vec.x.try_into().unwrap()
-                                    );
-                        } else {
-                            vec.x = min(vec.x, player_position.coords.x.into());
-                            player_position.coords.x -= vec.x.try_into().unwrap();
-                        }
-                        if vec.ydir {
-                            player_position
-                                .coords
-                                .y =
-                                    min(
-                                        100_000,
-                                        player_position.coords.y + vec.y.try_into().unwrap()
-                                    );
-                        } else {
-                            vec.y = min(vec.y, player_position.coords.y.into());
-                            player_position.coords.y -= vec.y.try_into().unwrap();
-                        }
-                    },
-                    Option::None => {}
-                }
-                positions = array![player_position, opp_position];
+                update_positions(ref positions, ref moves);
+                
+                // positions = array![player_position, opp_position];
 
                 sub_move_index += 1;
                 //END MOVE LOOP
             };
+
+
             //set new positions
             loop {
                 let next_position = positions.pop_front();

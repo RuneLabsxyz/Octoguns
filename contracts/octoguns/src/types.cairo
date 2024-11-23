@@ -23,8 +23,6 @@ struct TurnMove {
     actions: Array<Action>,
 }
 
-
-
 #[derive(Copy, Drop, Serde, Introspect)]
 struct IVec2 {
     x: u64,

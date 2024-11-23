@@ -1,8 +1,7 @@
-use octoguns::types::{TurnMove};
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait, CharacterModel};
 use octoguns::models::bullet::{Bullet};
 use octoguns::models::sessions::{SessionMeta};
-use octoguns::types::IVec2;
+use octoguns::types::{TurnMove, IVec2, Shot};
 use starknet::{ContractAddress, get_caller_address};
 use dojo::world::WorldStorage;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
@@ -82,7 +81,7 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
     }
 }
 
-fn get_next_shot(ref moves: TurnMove) -> (u32, u32) {
+fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Shot) {
     let mut result = (0, 0);
 
     //start out of bounds
@@ -104,8 +103,104 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32) {
         i += 1;
     }
 
-    moves.actions[current_lowest_action].shots.pop_front();
+    let shot = moves.actions[current_lowest_action].shots.pop_front();
+
+    return (current_lowest_step, current_lowest_action, shot);
+}
+
+fn shoot(world: WorldStorage, positions: Array<CharacterPosition>, shot: Shot) {
+
+    //TODO LOOP THROUGH ALL POSITIONS
+    match shot {
+        Option::Some(s) => {
+            let bullet = BulletTrait::new(
+                global.uuid(),
+                Vec2 { x: player_position.coords.x, y: player_position.coords.y },
+                s.angle,
+                player_character_id,
+                step.try_into().unwrap(),
+                settings.bullet_speed,
+                settings.bullet_sub_steps,
+            );
+            bullets.append(bullet);
+            world.write_model(@bullet);
+
+            if moves.shots.len() > 0 {
+                next_shot = *moves.shots.at(0).step;
+            }
+        },
+        Option::None => { //shouldn't reach
+        }
+    }
     
-    return (current_lowest_step, current_lowest_action);
+}
+
+
+fn check_win(player_characters: Array<u32>, : Array<u32>) {
+    if filtered_character_ids.len() < 2 {
+        match filtered_character_ids.len() {
+            0 => {
+                //draw
+                break;
+            },
+            1 => {
+                let winner = filtered_character_ids.pop_front().unwrap();
+                if session_meta.p1_character == winner {
+                    //p1 wins
+                    session.state = 3;
+                    session_meta.p2_character = 0;
+                }
+                if session_meta.p2_character == winner {
+                    //p2 wins
+                    session.state = 3;
+                    session_meta.p1_character = 0;
+                }
+                break;
+            },
+            _ => {}
+        }
+    }
+}
+
+fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: TurnMove) {
+
+    //TODO: LOOP TRHOUGH EACH ACTION
+
+
+    match moves.sub_moves.pop_front() {
+        Option::Some(mut vec) => {
+            //check move valid
+            if !check_is_valid_move(vec, settings.max_distance_per_sub_move) {
+                vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
+            }
+            //apply move
+
+            if vec.xdir {
+                player_position
+                    .coords
+                    .x =
+                        min(
+                            100_000,
+                            player_position.coords.x + vec.x.try_into().unwrap()
+                        );
+            } else {
+                vec.x = min(vec.x, player_position.coords.x.into());
+                player_position.coords.x -= vec.x.try_into().unwrap();
+            }
+            if vec.ydir {
+                player_position
+                    .coords
+                    .y =
+                        min(
+                            100_000,
+                            player_position.coords.y + vec.y.try_into().unwrap()
+                        );
+            } else {
+                vec.y = min(vec.y, player_position.coords.y.into());
+                player_position.coords.y -= vec.y.try_into().unwrap();
+            }
+        },
+        Option::None => {}
+    }
 }
 
