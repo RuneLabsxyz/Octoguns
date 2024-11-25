@@ -16,6 +16,7 @@ mod actions {
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::models::turndata::{TurnData};
     use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
+    use octoguns::lib::get_positions::{get_move_positions, get_rest_positions};
     use octoguns::lib::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
@@ -47,30 +48,26 @@ mod actions {
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
-            let mut player_character_id = 0;
-            let mut opp_character_id = 0;
+            let mut action_positions: Array<Array<CharacterPosition>> = get_character_positions(ref world, ref moves);
 
+            let all_positions = ArrayTrait::new();
+            let opp_positions = ArrayTrait::new();
    
             //GET ALL POSITIONS, MAYBE SEPARTE BY ACTION FOR PLAYER CHARACTGERS?
 
-            // match session_meta.turn_count % 2 {
-            //     0 => {
-            //         assert!(player == session.player1, "not turn player, 1s turn");
-            //         player_character_id = session_meta.p1_character;
-            //         opp_character_id = session_meta.p2_character;
-            //     },
-            //     1 => {
-            //         assert!(player == session.player2, "not turn player, 2s turn");
-            //         player_character_id = session_meta.p2_character;
-            //         opp_character_id = session_meta.p1_character;
-            //     },
-            //     _ => { panic!("???"); }
-            // }
+             match session_meta.turn_count % 2 {
+                 0 => {
+                    assert!(player == session.player1, "not turn player, 1s turn");
+                    let (mut all_positions, mut opp_positions) = get_rest_positions(ref world, ref session_meta, 1);
 
-            // player_positions is array of arrays where each sub array are the character positions for that action
-            //let mut player_position: CharacterPosition = world.read_model(player_character_id);
-            //let mut opp_position: CharacterPosition = world.read_model(opp_character_id);
-            //let mut positions = array![player_position, opp_position];
+                 },
+                 1 => {
+                    assert!(player == session.player2, "not turn player, 2s turn");
+                    let (mut all_positions, mut opp_positions) = get_rest_positions(ref world, ref session_meta, 2);
+
+                 },
+                 _ => { panic!("???"); }
+             }
 
             let mut bullets = get_all_bullets(world, session_id);
 

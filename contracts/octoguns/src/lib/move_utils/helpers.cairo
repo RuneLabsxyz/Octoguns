@@ -163,10 +163,7 @@ fn check_win(player_characters: Array<u32>, : Array<u32>) {
 }
 
 fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: TurnMove) {
-
     //TODO: LOOP TRHOUGH EACH ACTION
-
-
     match moves.sub_moves.pop_front() {
         Option::Some(mut vec) => {
             //check move valid
@@ -204,3 +201,22 @@ fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: T
     }
 }
 
+
+fn get_character_positions(world: WorldStorage, moves: TurnMove, world: WorldStorage) -> Array<Array<CharacterPosition>> {
+    let mut positions: Array<CharacterPosition> = ArrayTrait::new();
+    let mut i = 0;
+    while i < moves.actions.len() {
+        let mut temp = ArrayTrait::new();
+        let action = moves.actions[i];
+        let mut j = 0;
+        while j < action.characters.len() {
+            let position: CharacterPosition = world.read_model(*action.characters[j]);
+            temp.append(position);
+        }
+        let character_id = action.character_id;
+        let position: CharacterPosition = world.read_model(character_id);
+        positions.append(temp);
+        i += 1;
+    }
+    positions
+}

@@ -16,9 +16,14 @@ mod models {
 }
 
 mod lib {
+    
+    mod move_utils {
+        mod helpers;
+        mod simulate;
+        mod get_positions;
+    }
+
     mod default_spawns;
-    mod helpers;
-    mod simulate;
     mod grid;
     mod trig;
     mod bitwise;

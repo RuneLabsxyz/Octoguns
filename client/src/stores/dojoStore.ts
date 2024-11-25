@@ -14,14 +14,11 @@ export const settingUp = writable(false)
 export const planeteloStore = writable<Contract>()
 
 export async function initializeStore() {
-  if (get(settingUp)) {
-    console.warn('Concurrent setting up!')
-    return await getDojo()
-  }
   settingUp.set(true)
 
   try {
     console.log('Initializing store...')
+    console.log(dojoConfig)
     const result = await setup(
       '0x05a968e49c6395f4d1137d579b2e02c342484cbaf33a535a2a6ba1c33a6c705a',
       dojoConfig
@@ -49,22 +46,4 @@ export async function initializeStore() {
   } finally {
     settingUp.set(false)
   }
-}
-
-export async function getDojo(): Promise<SetupResult> {
-  return new Promise((ok, err) => {
-    dojoStore.subscribe((val) => {
-      if (val) {
-        ok(val)
-      }
-    })
-    isSetup.subscribe((val) => {
-      err('Failed to initalize store.')
-    })
-  })
-}
-
-export async function getDojoContext(): Promise<[Account, SetupResult]> {
-  const dojo = await getDojo()
-  return [dojo.burnerManager.getActiveAccount()!, dojo]
 }
