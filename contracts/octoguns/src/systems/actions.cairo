@@ -61,7 +61,7 @@ mod actions {
             let mut all_positions = ArrayTrait::new();
             let mut opp_positions = ArrayTrait::new();
    
-            //GET ALL POSITIONS, MAYBE SEPARTE BY ACTION FOR PLAYER CHARACTGERS?
+            //GET ALL POSITIONS
 
              match session_meta.turn_count % 2 {
                  0 => {
@@ -91,7 +91,7 @@ mod actions {
                 let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
-                    shoot(ref world, ref action_positions[next_shot_action], next_shot_shot);
+                    shoot(ref world, ref action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
                     let (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
 
                 }

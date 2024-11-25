@@ -1,7 +1,8 @@
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait, CharacterModel};
-use octoguns::models::bullet::{Bullet};
-use octoguns::models::sessions::{SessionMeta};
-use octoguns::types::{TurnMove, IVec2, Shot};
+use octoguns::models::bullet::{Bullet, BulletTrait};
+use octoguns::models::sessions::{SessionMeta, Settings};
+use octoguns::models::global::{Global, GlobalTrait};
+use octoguns::types::{TurnMove, IVec2, Shot, Vec2};
 use starknet::{ContractAddress, get_caller_address};
 use dojo::world::WorldStorage;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
@@ -81,9 +82,7 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
     }
 }
 
-fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Shot) {
-    let mut result = (0, 0);
-
+fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Option<Shot>) {
     //start out of bounds
     let mut current_lowest_step = moves.actions[0].shots.len() + 1;
     let mut current_lowest_action = moves.actions.len() + 1;
@@ -94,44 +93,48 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Shot) {
             i += 1;
             continue;
         }
-        let next = moves.actions[i].shots[0].step;
+        let next = *moves.actions[i].shots[0].step;
         
         if next < current_lowest_step {
             current_lowest_step = next;
             current_lowest_action = i;
         }
         i += 1;
-    }
+    };
 
-    let shot = moves.actions[current_lowest_action].shots.pop_front();
+    let mut shots: Array<Shot> = moves.actions[current_lowest_action].shots.clone();
+
+    let shot = shots.pop_front();
 
     return (current_lowest_step, current_lowest_action, shot);
 }
 
-fn shoot(world: WorldStorage, positions: @Array<CharacterPosition>, shot: Shot) {
+fn shoot(ref world: WorldStorage, ref positions: @Array<CharacterPosition>, shot: Option<Shot>, settings: Settings, step: u32, ref bullets: Array<Bullet>) {
+    let mut global: Global = world.read_model(0);
+
 
     //TODO LOOP THROUGH ALL POSITIONS
-    match shot {
-        Option::Some(s) => {
-            let bullet = BulletTrait::new(
-                global.uuid(),
-                Vec2 { x: player_position.coords.x, y: player_position.coords.y },
-                s.angle,
-                player_character_id,
-                step.try_into().unwrap(),
-                settings.bullet_speed,
-                settings.bullet_sub_steps,
-            );
-            bullets.append(bullet);
-            world.write_model(@bullet);
-
-            if moves.shots.len() > 0 {
-                next_shot = *moves.shots.at(0).step;
-            }
-        },
-        Option::None => { //shouldn't reach
+    let mut i = 0;
+    while i < positions.len() {
+        let position = *positions[i];
+        i += 1;
+        match shot {
+            Option::Some(s) => {
+                let bullet = BulletTrait::new(
+                    global.uuid(),
+                    Vec2 { x: position.coords.x, y: position.coords.y },
+                    s.angle,
+                    position.id,
+                    step.try_into().unwrap(),
+                    settings.bullet_speed,
+                    settings.bullet_steps,
+                );
+                bullets.append(bullet);
+                world.write_model(@bullet);
+            },
+            Option::None => {}
         }
-    }
+    };
     
 }
 
