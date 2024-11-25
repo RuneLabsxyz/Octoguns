@@ -1,3 +1,9 @@
+use octoguns::types::TurnMove;
+use octoguns::models::characters::CharacterPosition;
+use dojo::world::WorldStorage;
+use dojo::model::{ModelStorage, ModelValueStorage, Model};
+use octoguns::models::sessions::SessionMeta;
+
 fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Array<CharacterPosition>> {
     let mut positions: Array<Array<CharacterPosition>> = ArrayTrait::new();
     let mut i = 0;
@@ -8,9 +14,7 @@ fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Arr
         while j < action.characters.len() {
             let position: CharacterPosition = world.read_model(*action.characters[j]);
             temp.append(position);
-        }
-        let character_id = action.character_id;
-        let position: CharacterPosition = world.read_model(character_id);
+        };
         positions.append(temp);
         i += 1;
     }

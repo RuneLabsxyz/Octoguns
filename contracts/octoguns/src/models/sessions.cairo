@@ -35,7 +35,7 @@ pub struct Settings {
     pub bullets: u32,
     pub sub_moves: u32,
     pub sub_move_distance: u32,
-    pub characters: u64
+    pub characters: u64,
     pub actions: u64
 }
 

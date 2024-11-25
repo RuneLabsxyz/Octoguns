@@ -108,7 +108,7 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Shot) {
     return (current_lowest_step, current_lowest_action, shot);
 }
 
-fn shoot(world: WorldStorage, positions: Array<CharacterPosition>, shot: Shot) {
+fn shoot(world: WorldStorage, positions: @Array<CharacterPosition>, shot: Shot) {
 
     //TODO LOOP THROUGH ALL POSITIONS
     match shot {
@@ -136,7 +136,7 @@ fn shoot(world: WorldStorage, positions: Array<CharacterPosition>, shot: Shot) {
 }
 
 
-fn check_win(player_characters: Array<u32>, : Array<u32>) {
+fn check_win(player_characters: Array<u32>, opponent_characters: Array<u32>) {
     if filtered_character_ids.len() < 2 {
         match filtered_character_ids.len() {
             0 => {
@@ -202,21 +202,3 @@ fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: T
 }
 
 
-fn get_character_positions(world: WorldStorage, moves: TurnMove, world: WorldStorage) -> Array<Array<CharacterPosition>> {
-    let mut positions: Array<CharacterPosition> = ArrayTrait::new();
-    let mut i = 0;
-    while i < moves.actions.len() {
-        let mut temp = ArrayTrait::new();
-        let action = moves.actions[i];
-        let mut j = 0;
-        while j < action.characters.len() {
-            let position: CharacterPosition = world.read_model(*action.characters[j]);
-            temp.append(position);
-        }
-        let character_id = action.character_id;
-        let position: CharacterPosition = world.read_model(character_id);
-        positions.append(temp);
-        i += 1;
-    }
-    positions
-}

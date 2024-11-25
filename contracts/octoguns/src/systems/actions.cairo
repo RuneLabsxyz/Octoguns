@@ -15,9 +15,17 @@ mod actions {
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::models::turndata::{TurnData};
-    use octoguns::lib::helpers::{get_all_bullets, filter_out_dead_characters, check_is_valid_move};
-    use octoguns::lib::get_positions::{get_move_positions, get_rest_positions};
-    use octoguns::lib::simulate::{simulate_bullets};
+    use octoguns::lib::move_utils::helpers::{
+        get_all_bullets, 
+        filter_out_dead_characters, 
+        check_is_valid_move, 
+        get_next_shot, 
+        shoot, 
+        check_win, 
+        update_positions
+    };
+    use octoguns::lib::move_utils::get_positions::{get_move_positions, get_rest_positions};
+    use octoguns::lib::move_utils::simulate::{simulate_bullets};
     use starknet::{ContractAddress, get_caller_address};
     use core::cmp::{max, min};
     use octoguns::lib::grid::{convert_coords_to_grid_indices, set_grid_bits_from_positions};
@@ -36,7 +44,7 @@ mod actions {
             let settings = session_primitives.settings;
 
 
-            assert!(moves.actions.len() <= settings.actions && moves.actions.len() > 0, "Invalid number of actions");
+            assert!(moves.actions.len().into() <= settings.actions && moves.actions.len() > 0, "Invalid number of actions");
             let player = get_caller_address();
             let mut session: Session = world.read_model(session_id);
             assert!(session.state != 1, "Game doesn't exist");
@@ -48,10 +56,10 @@ mod actions {
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
-            let mut action_positions: Array<Array<CharacterPosition>> = get_character_positions(ref world, ref moves);
+            let mut action_positions: Array<Array<CharacterPosition>> = get_move_positions(ref world, ref moves);
 
-            let all_positions = ArrayTrait::new();
-            let opp_positions = ArrayTrait::new();
+            let mut all_positions = ArrayTrait::new();
+            let mut opp_positions = ArrayTrait::new();
    
             //GET ALL POSITIONS, MAYBE SEPARTE BY ACTION FOR PLAYER CHARACTGERS?
 
@@ -72,10 +80,9 @@ mod actions {
             let mut bullets = get_all_bullets(world, session_id);
 
             //start out of bounds so never reached in loop if no shots
+            let max_steps = settings.sub_moves;
 
-            let mut next_shot = max_steps + 1;
-
-            let mut (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
+            let (next_shot, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
 
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
@@ -83,30 +90,30 @@ mod actions {
             while sub_move_index < max_steps {
                 let step = sub_move_index + total_steps;
 
-                if sub_move_index == next_shot_step.into() {
-                    shoot(ref world, ref player_positions[next_shot_action], next_shot_shot);
+                if sub_move_index == next_shot.into() {
+                    shoot(ref world, ref action_positions[next_shot_action], next_shot_shot);
                     let (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
 
                 }
 
                 // Loop through positions and update the grid
 
-                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(ref positions);
+                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(ref all_positions);
 
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref positions, ref map, step, settings.bullet_sub_steps, ref grid1, ref grid2, ref grid3
+                    ref bullets, ref opp_positions, ref map, step, settings.bullet_steps, ref grid1, ref grid2, ref grid3
                 );
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;
 
                 let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(
-                    ref positions, dead_characters
+                    ref all_positions, dead_characters
                 );
 
-                positions = new_positions;
+                all_positions = new_positions;
 
-                let res = check_win(ref filtered_character_ids, ref positions);
+                let res = check_win(ref filtered_character_ids, ref opp_positions);
 
                 //if win, set session state to 3 and break
                 if res {
