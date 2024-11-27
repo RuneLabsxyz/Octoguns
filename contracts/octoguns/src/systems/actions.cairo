@@ -122,13 +122,12 @@ mod actions {
                 action_positions = new_action_positions;
                 opp_positions = new_opp_positions;
 
-                let res = check_win(@action_positions, @opp_positions);
+                let over = check_win(@action_positions, @opp_positions);
 
                 //if win, set session state to 3 and break
-                match res {
-                    0 => {
-
-                    }
+                if over {
+                    session.state = 3;
+                    break;
                 }
 
                 let new_positions = update_positions(ref action_positions, ref moves, settings, step);

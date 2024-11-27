@@ -153,8 +153,29 @@ fn shoot(ref world: WorldStorage, positions: @Array<CharacterPosition>, shot: Op
 }
 
 
-fn check_win(positions: Array<CharacterPosition>) {
+fn check_win(player_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>) -> bool {
     //todo
+
+    let mut player_lost = false;
+    let mut opp_lost = false;
+    let mut i = 0;
+    while i < player_positions.len() {
+        if player_positions[i].len() == 0 {
+            player_lost = true;
+            break;
+        }
+        i += 1;
+    };
+
+    if (opp_positions.len() == 0) {
+        opp_lost = true;
+    }
+
+    if (player_lost || opp_lost) {
+        return true;
+    }
+    return false;
+    
 }
 
 fn update_positions(ref player_positions: Array<Array<CharacterPosition>>, ref moves: TurnMove, settings: Settings, index: u32) -> Array<Array<CharacterPosition>> {
