@@ -5,6 +5,7 @@ use dojo::model::{ModelStorage, ModelValueStorage, Model};
 use octoguns::models::sessions::SessionMeta;
 
 fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Array<CharacterPosition>> {
+    //TODO: ASSERT ALL CHARACTERS ARE MOVED AND ONLY ONE MOVE PER CHARACTER >
     let mut positions: Array<Array<CharacterPosition>> = ArrayTrait::new();
     let mut i = 0;
     while i < moves.actions.len() {

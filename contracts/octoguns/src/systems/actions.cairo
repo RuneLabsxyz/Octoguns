@@ -22,7 +22,9 @@ mod actions {
         get_next_shot, 
         shoot, 
         check_win, 
-        update_positions
+        update_positions,
+        flatten_positions,
+        get_character_ids
     };
     use octoguns::lib::move_utils::get_positions::{get_move_positions, get_rest_positions};
     use octoguns::lib::move_utils::simulate::{simulate_bullets};
@@ -139,7 +141,7 @@ mod actions {
             };
 
             //
-
+            let mut positions = flatten_positions(@action_positions, @opp_positions);
 
             //set new positions
             loop {
@@ -152,10 +154,12 @@ mod actions {
                 }
             };
 
-            //TODO: UPDATE IDS IN SESSION META
+            let (new_p1_ids, new_p2_ids) = get_character_ids(@action_positions, @opp_positions, player_no);
 
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;
+            session_meta.p1_characters = new_p1_ids;
+            session_meta.p2_characters = new_p2_ids;
 
             world.write_model(@session);
             world.write_model(@session_meta);

@@ -258,4 +258,39 @@ fn flatten_positions(move_positions: @Array<Array<CharacterPosition>>, opp_posit
     return flat_positions;
 }
 
+fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>, player_no: u8) -> (Array<u32>, Array<u32>) {
+    //todo
+    let mut action_ids: Array<u32> = ArrayTrait::new();
+    let mut opp_ids: Array<u32> = ArrayTrait::new();
+
+    let mut i = 0;
+    let mut k = 0;
+
+    while i < move_positions.len() {
+        let action_positions: @Array<CharacterPosition> = move_positions.at(i);
+        let mut j = 0;
+        while j < action_positions.len() {
+            let position = *action_positions.at(j);
+            action_ids.append(position.id);
+            j += 1;
+
+            if k < opp_positions.len() {
+                let opp_position = *opp_positions.at(k);
+                opp_ids.append(opp_position.id);
+                k += 1;
+            }
+        };
+        i += 1;
+    };
+    if player_no == 1 {
+        return (action_ids, opp_ids);
+    }
+    else if player_no == 2 {
+        return (opp_ids, action_ids);
+    }
+    else {
+        return (ArrayTrait::new(), ArrayTrait::new());
+    }
+
+}
 
