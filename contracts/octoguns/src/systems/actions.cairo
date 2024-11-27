@@ -43,7 +43,6 @@ mod actions {
             let session_primitives: SessionPrimitives = world.read_model(session_id);
             let settings = session_primitives.settings;
 
-
             assert!(moves.actions.len().into() <= settings.actions && moves.actions.len() > 0, "Invalid number of actions");
             let player = get_caller_address();
             let mut session: Session = world.read_model(session_id);
@@ -56,78 +55,91 @@ mod actions {
 
             let mut updated_bullet_ids = ArrayTrait::new();
 
+            //TODO: MAKE SURE THAT THIS ACTUALLY CHECKS THE CALLER IS THE TURN PLAYER
+            let mut player_no = 0;
+            if player == session.player1 {
+                if session_meta.turn_count % 2 == 0 {
+                    player_no = 1;
+                }
+                else {
+                    panic!("not turn player, 2s turn");
+                }
+            }
+            else if player == session.player2 {
+                if session_meta.turn_count % 2 == 1 {
+                    player_no = 2;
+                }
+                else {
+                    panic!("not turn player, 1s turn");
+                }
+            }
+            else {
+                panic!("player");
+            }
+
             let mut action_positions: Array<Array<CharacterPosition>> = get_move_positions(ref world, ref moves);
 
-            let mut all_positions = ArrayTrait::new();
-            let mut opp_positions = ArrayTrait::new();
-   
-            //GET ALL POSITIONS
-
-             match session_meta.turn_count % 2 {
-                 0 => {
-                    assert!(player == session.player1, "not turn player, 1s turn");
-                    let (mut all_positions, mut opp_positions) = get_rest_positions(ref world, ref session_meta, 1);
-
-                 },
-                 1 => {
-                    assert!(player == session.player2, "not turn player, 2s turn");
-                    let (mut all_positions, mut opp_positions) = get_rest_positions(ref world, ref session_meta, 2);
-
-                 },
-                 _ => { panic!("???"); }
-             }
+            let mut opp_positions = get_rest_positions(ref world, ref session_meta, player_no);
 
             let mut bullets = get_all_bullets(world, session_id);
 
-            //start out of bounds so never reached in loop if no shots
             let max_steps = settings.sub_moves;
 
-            let (next_shot, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
+            let (mut next_shot, mut next_shot_action, mut next_shot_shot) = get_next_shot(ref moves);
 
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
 
+             //MOVE LOOP
             while sub_move_index < max_steps {
                 let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
-                    shoot(ref world, ref action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
-                    let (next_shot_step, next_shot_action, next_shot_shot) = get_next_shot(ref moves);
+                    shoot(ref world, action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
+                    let (new_next_shot, new_next_shot_action, new_next_shot_shot) = get_next_shot(ref moves);
+                    next_shot = new_next_shot;
+                    next_shot_action = new_next_shot_action;
+                    next_shot_shot = new_next_shot_shot;
 
                 }
 
                 // Loop through positions and update the grid
 
-                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(ref all_positions);
+                let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(@action_positions, @opp_positions);
 
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
-                    ref bullets, ref opp_positions, ref map, step, settings.bullet_steps, ref grid1, ref grid2, ref grid3
+                    ref bullets, @action_positions, @opp_positions, ref map, step, settings.bullet_steps, ref grid1, ref grid2, ref grid3
                 );
+
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;
 
-                let (new_positions, mut filtered_character_ids) = filter_out_dead_characters(
-                    ref all_positions, dead_characters
+                let (new_action_positions, new_opp_positions) = filter_out_dead_characters(
+                    @action_positions, @opp_positions, dead_characters
                 );
 
-                all_positions = new_positions;
+                action_positions = new_action_positions;
+                opp_positions = new_opp_positions;
 
-                let res = check_win(ref filtered_character_ids, ref opp_positions);
+                let res = check_win(@action_positions, @opp_positions);
 
                 //if win, set session state to 3 and break
-                if res {
-                    session.state = 3;
-                    break;
+                match res {
+                    0 => {
+
+                    }
                 }
 
-                update_positions(ref positions, ref moves);
-                
+                let new_positions = update_positions(ref action_positions, ref moves, settings, step);
+                action_positions = new_positions;
                 // positions = array![player_position, opp_position];
 
                 sub_move_index += 1;
                 //END MOVE LOOP
             };
+
+            //
 
 
             //set new positions
@@ -140,6 +152,8 @@ mod actions {
                     Option::None => { break; }
                 }
             };
+
+            //TODO: UPDATE IDS IN SESSION META
 
             session_meta.turn_count += 1;
             session_meta.bullets = updated_bullet_ids;

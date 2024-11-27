@@ -6,6 +6,7 @@ use octoguns::types::{TurnMove, IVec2, Shot, Vec2};
 use starknet::{ContractAddress, get_caller_address};
 use dojo::world::WorldStorage;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
+use core::cmp::{min, max};
 
 use octoguns::consts::MOVE_SPEED;
 
@@ -32,44 +33,58 @@ fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
 
 
 fn filter_out_dead_characters(
-    ref all_character_positions: Array<CharacterPosition>, dead_characters: Array<u32>
-) -> (Array<CharacterPosition>, Array<u32>) {
-    let mut filtered_positions: Array<CharacterPosition> = ArrayTrait::new();
-    let mut filtered_ids: Array<u32> = ArrayTrait::new();
-
-    let mut all_ids = ArrayTrait::new();
-    let mut i = 0;
-    while i < all_character_positions.len() {
-        all_ids.append((*all_character_positions.at(i)).id);
-        i += 1;
-    };
+    move_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>, dead_characters: Array<u32>
+) -> (Array<Array<CharacterPosition>>, Array<CharacterPosition>) {
+    let mut filtered_move_positions: Array<Array<CharacterPosition>> = ArrayTrait::new();
+    let mut filtered_opp_positions: Array<CharacterPosition> = ArrayTrait::new();
 
     if dead_characters.len() == 0 {
-        return (all_character_positions.clone(), all_ids);
+        return (move_positions.clone(), opp_positions.clone());
     }
 
-    loop {
-        let character = all_character_positions.pop_front();
-        match character {
-            Option::Some(character) => {
-                let mut is_dead = false;
-                let mut j = 0;
-                while j < dead_characters.len() {
-                    if character.id == *dead_characters.at(j) {
-                        is_dead = true;
-                        break;
-                    }
-                    j += 1;
-                };
-                if !is_dead {
-                    filtered_positions.append(character);
-                    filtered_ids.append(character.id);
+    let mut i = 0;
+    let mut j = 0;
+
+    while i < move_positions.len() {
+        let action_positions = move_positions[i];
+        let mut filtered_action_positions: Array<CharacterPosition> = ArrayTrait::new();
+        while j < action_positions.len() && dead_characters.len() > 0 {
+            let position = *action_positions.at(j);
+            let mut is_dead = false;
+            let mut k = 0;
+            while k < dead_characters.len() {
+                if position.id == *dead_characters.at(k) {
+                    is_dead = true;
+                    break;
                 }
-            },
-            Option::None => { break; }
-        }
+                k += 1;
+            };
+            if !is_dead {
+                filtered_action_positions.append(position);
+            }
+            j += 1;
+        };
+        filtered_move_positions.append(filtered_action_positions);
+        i += 1;
     };
-    return (filtered_positions, filtered_ids);
+    i = 0;
+    while i < opp_positions.len() {
+        let position = *opp_positions.at(i);
+        let mut is_dead = false;
+        let mut k = 0;
+        while k < dead_characters.len() {
+            if position.id == *dead_characters.at(k) {
+                is_dead = true;
+                break;
+            }
+            k += 1;
+        };
+        if !is_dead {
+            filtered_opp_positions.append(position);
+        }
+        i += 1;
+    };
+    return (filtered_move_positions, filtered_opp_positions);
 }
 
 
@@ -109,11 +124,9 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Option<Shot>) {
     return (current_lowest_step, current_lowest_action, shot);
 }
 
-fn shoot(ref world: WorldStorage, ref positions: @Array<CharacterPosition>, shot: Option<Shot>, settings: Settings, step: u32, ref bullets: Array<Bullet>) {
+fn shoot(ref world: WorldStorage, positions: @Array<CharacterPosition>, shot: Option<Shot>, settings: Settings, step: u32, ref bullets: Array<Bullet>) {
     let mut global: Global = world.read_model(0);
 
-
-    //TODO LOOP THROUGH ALL POSITIONS
     let mut i = 0;
     while i < positions.len() {
         let position = *positions[i];
@@ -135,47 +148,36 @@ fn shoot(ref world: WorldStorage, ref positions: @Array<CharacterPosition>, shot
             Option::None => {}
         }
     };
+    world.write_model(@global);
     
 }
 
 
-fn check_win(player_characters: Array<u32>, opponent_characters: Array<u32>) {
-    if filtered_character_ids.len() < 2 {
-        match filtered_character_ids.len() {
-            0 => {
-                //draw
-                break;
-            },
-            1 => {
-                let winner = filtered_character_ids.pop_front().unwrap();
-                if session_meta.p1_character == winner {
-                    //p1 wins
-                    session.state = 3;
-                    session_meta.p2_character = 0;
-                }
-                if session_meta.p2_character == winner {
-                    //p2 wins
-                    session.state = 3;
-                    session_meta.p1_character = 0;
-                }
-                break;
-            },
-            _ => {}
-        }
-    }
+fn check_win(positions: Array<CharacterPosition>) {
+    //todo
 }
 
-fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: TurnMove) {
-    //TODO: LOOP TRHOUGH EACH ACTION
-    match moves.sub_moves.pop_front() {
-        Option::Some(mut vec) => {
-            //check move valid
-            if !check_is_valid_move(vec, settings.max_distance_per_sub_move) {
+fn update_positions(ref player_positions: Array<Array<CharacterPosition>>, ref moves: TurnMove, settings: Settings, index: u32) -> Array<Array<CharacterPosition>> {
+    let mut new_positions: Array<Array<CharacterPosition>> = ArrayTrait::new();
+
+        let mut i = 0;
+
+        while i < moves.actions.len() {
+            let action = moves.actions[i];
+            let mut action_positions: Array<CharacterPosition> = ArrayTrait::new();
+
+            let mut vec = *action.sub_moves[index];
+            
+            if !check_is_valid_move(vec, settings.sub_move_distance) {
                 vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
             }
             //apply move
+            let mut j = 0;
+            while j < player_positions.at(i).len() {
+                let character_id = *player_positions.at(i).at(j).id;
+                let mut player_position: CharacterPosition = world.read_model(character_id);
 
-            if vec.xdir {
+                if vec.xdir {
                 player_position
                     .coords
                     .x =
@@ -183,25 +185,56 @@ fn update_positions(ref player_positions: Array<CharacterPosition>, ref moves: T
                             100_000,
                             player_position.coords.x + vec.x.try_into().unwrap()
                         );
-            } else {
-                vec.x = min(vec.x, player_position.coords.x.into());
-                player_position.coords.x -= vec.x.try_into().unwrap();
+                } else {
+                    vec.x = min(vec.x, player_position.coords.x.into());
+                    player_position.coords.x -= vec.x.try_into().unwrap();
+                }
+                if vec.ydir {
+                    player_position
+                        .coords
+                        .y =
+                            min(
+                                100_000,
+                                player_position.coords.y + vec.y.try_into().unwrap()
+                            );
+                } else {
+                    vec.y = min(vec.y, player_position.coords.y.into());
+                    player_position.coords.y -= vec.y.try_into().unwrap();
+                }
+                j += 1;
+                action_positions.append(player_position);
+            };
+            new_positions.append(action_positions);
+            i+=1;
+    };
+    new_positions
+    
+}
+
+fn flatten_positions(move_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>) -> Array<CharacterPosition> {
+    let mut flat_positions: Array<CharacterPosition> = ArrayTrait::new();
+
+    let mut i = 0;
+    let mut j = 0;
+    let mut k = 0;
+    while i < move_positions.len() {
+        let action_positions: @Array<CharacterPosition> = move_positions.at(i);
+        j = 0;
+        while j < action_positions.len() {
+            let position = *action_positions.at(j);
+            flat_positions.append(position);
+            j += 1;
+
+            if k < opp_positions.len() {
+                let opp_position = *opp_positions.at(k);
+                flat_positions.append(opp_position);
+                k += 1;
             }
-            if vec.ydir {
-                player_position
-                    .coords
-                    .y =
-                        min(
-                            100_000,
-                            player_position.coords.y + vec.y.try_into().unwrap()
-                        );
-            } else {
-                vec.y = min(vec.y, player_position.coords.y.into());
-                player_position.coords.y -= vec.y.try_into().unwrap();
-            }
-        },
-        Option::None => {}
-    }
+        };
+        i += 1;
+    };
+
+    return flat_positions;
 }
 
 

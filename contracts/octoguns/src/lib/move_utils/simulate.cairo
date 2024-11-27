@@ -4,13 +4,15 @@ use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
 use alexandria_math::trigonometry::{fast_cos, fast_sin};
 use octoguns::consts::{ONE_E_8, BULLET_SPEED, BULLET_SUBSTEPS};
 use octoguns::models::map::{Map, MapTrait};
+use octoguns::lib::move_utils::helpers::{flatten_positions};
 
 // Tuple to hold bullet_ids and character_ids to drop
 pub type SimulationResult = (Array<Bullet>, Array<u32>, Array<u32>);
 
 pub fn simulate_bullets(
     ref bullets: Array<Bullet>,
-    ref character_positions: Array<CharacterPosition>,
+    action_positions: @Array<Array<CharacterPosition>>,
+    opp_positions: @Array<CharacterPosition>,
     ref map: Map,
     step: u32,
     bullet_sub_steps: u32,
@@ -21,6 +23,9 @@ pub fn simulate_bullets(
     let mut updated_bullets = ArrayTrait::new();
     let mut updated_bullet_ids = ArrayTrait::new();
     let mut dead_characters_ids = ArrayTrait::new();
+
+
+    let character_positions = flatten_positions(action_positions, opp_positions);
     loop {
         match bullets.pop_front() {
             Option::Some(mut bullet) => {

@@ -21,22 +21,46 @@ fn set_grid_bit(character_x: u64, character_y: u64, grid_1: u256, grid_2: u256, 
 }
 
 
-fn set_grid_bits_from_positions(ref positions: Array<CharacterPosition>) -> (u256, u256, u256) {
+fn set_grid_bits_from_positions(move_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>) -> (u256, u256, u256) {
     let mut grid1: u256 = 0;
     let mut grid2: u256 = 0;
     let mut grid3: u256 = 0;
     let mut i = 0;
+
+
     loop {
-        if i >= positions.len() {
+        if i >= opp_positions.len() {
             break;
         }
-        let position = *positions.at(i);
+        let position = *opp_positions.at(i);
         let (new_grid1, new_grid2, new_grid3) = set_grid_bit(position.coords.x, position.coords.y, grid1, grid2, grid3);
         grid1 = new_grid1;
         grid2 = new_grid2;
         grid3 = new_grid3;
         i += 1;
     };
+
+    let mut i = 0;
+    let mut j = 0;
+    loop {
+        if i >= move_positions.len() {
+            break;
+        }
+        let positions = move_positions.at(i);
+        loop {
+            if j >= positions.len() {
+                break;
+            }
+            let position = *positions.at(j);
+            let (new_grid1, new_grid2, new_grid3) = set_grid_bit(position.coords.x, position.coords.y, grid1, grid2, grid3);
+            grid1 = new_grid1;
+            grid2 = new_grid2;
+            grid3 = new_grid3;
+            j += 1;
+        };
+        i += 1;
+    };
+
     (grid1, grid2, grid3)
 }
 
