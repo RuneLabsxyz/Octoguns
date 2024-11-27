@@ -48,14 +48,14 @@ mod spawn {
                 let id1 = global.uuid();
                 let c1 = CharacterModelTrait::new(id1, session_id, session.player1, default_steps);
                 let p1 = CharacterPositionTrait::new(
-                    id1, position_1, session_primitives.settings.sub_moves_per_turn
+                    id1, position_1, session_primitives.settings.sub_moves
                 );
                 session_meta.add_character(id1, 1);
 
                 let id2 = global.uuid();
                 let c2 = CharacterModelTrait::new(id2, session_id, session.player2, default_steps);
                 let p2 = CharacterPositionTrait::new(
-                    id2, position_2, session_primitives.settings.sub_moves_per_turn
+                    id2, position_2, session_primitives.settings.sub_moves
                 );
                 session_meta.add_character(id2, 2);
 

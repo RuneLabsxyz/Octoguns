@@ -86,11 +86,12 @@ mod planetelo {
             let maps = array![0];
             let settings = Settings {
                 bullet_speed: 300,
-                bullet_sub_steps: 3,
-                bullets_per_turn: 1,
-                sub_moves_per_turn: 100,
-                max_distance_per_sub_move: 400,
-                characters: 3
+                bullet_steps: 3,
+                bullets: 1,
+                sub_moves: 100,
+                sub_move_distance: 400,
+                characters: 3,
+                actions: 3
             };
             let playlist: Playlist = Playlist {
                 id: 0,

@@ -18,7 +18,7 @@ struct Action {
     shots: Array<Shot>,
 }
 
-#[derive(Drop, Serde, Introspect)]
+#[derive(Drop, Serde, Clone, Introspect)]
 struct TurnMove {
     actions: Array<Action>,
 }

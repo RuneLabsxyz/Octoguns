@@ -17,13 +17,16 @@ pub struct SessionMeta {
     pub bullets: Array<u32>,
 }
 
+
 #[derive(Copy, Drop, Serde, Introspect)]
 pub struct Settings {
     pub bullet_speed: u64,
-    pub bullet_sub_steps: u32,
-    pub bullets_per_turn: u32,
-    pub sub_moves_per_turn: u32,
-    pub max_distance_per_sub_move: u32,
+    pub bullet_steps: u32,
+    pub bullets: u32,
+    pub sub_moves: u32,
+    pub sub_move_distance: u32,
+    pub characters: u64,
+    pub actions: u64
 }
 
 #[derive(Copy, Drop, Serde, Introspect)]
@@ -33,9 +36,15 @@ struct Shot {
 }
 
 #[derive(Clone, Drop, Serde, Introspect)]
-struct TurnMove {
+struct Action {
+    characters: Array<u32>,
     sub_moves: Array<IVec2>,
     shots: Array<Shot>,
+}
+
+#[derive(Drop, Serde, Clone, Introspect)]
+struct TurnMove {
+    actions: Array<Action>,
 }
 
 #[derive(Copy, Drop, Serde, Introspect)]

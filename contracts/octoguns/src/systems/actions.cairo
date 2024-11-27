@@ -56,11 +56,11 @@ mod actions {
             let mut map: Map = world.read_model(session.map_id);
 
             let mut updated_bullet_ids = ArrayTrait::new();
+            let turn_count = session_meta.turn_count;
 
-            //TODO: MAKE SURE THAT THIS ACTUALLY CHECKS THE CALLER IS THE TURN PLAYER
             let mut player_no = 0;
             if player == session.player1 {
-                if session_meta.turn_count % 2 == 0 {
+                if turn_count % 2 == 0 {
                     player_no = 1;
                 }
                 else {
@@ -68,7 +68,7 @@ mod actions {
                 }
             }
             else if player == session.player2 {
-                if session_meta.turn_count % 2 == 1 {
+                if turn_count % 2 == 1 {
                     player_no = 2;
                 }
                 else {
@@ -81,7 +81,7 @@ mod actions {
 
             let mut action_positions: Array<Array<CharacterPosition>> = get_move_positions(ref world, ref moves);
 
-            let mut opp_positions = get_rest_positions(ref world, ref session_meta, player_no);
+            let mut opp_positions = get_rest_positions(ref world, @session_meta, player_no);
 
             let mut bullets = get_all_bullets(world, session_id);
 
@@ -97,6 +97,7 @@ mod actions {
                 let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
+                    //TODO: FIX IF MULTIPLE ACTIONS SHOOT AT THE SAME STEP
                     shoot(ref world, action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
                     let (new_next_shot, new_next_shot_action, new_next_shot_shot) = get_next_shot(ref moves);
                     next_shot = new_next_shot;
@@ -106,7 +107,6 @@ mod actions {
                 }
 
                 // Loop through positions and update the grid
-
                 let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(@action_positions, @opp_positions);
 
                 //advance bullets + check collisions
@@ -134,7 +134,6 @@ mod actions {
 
                 let new_positions = update_positions(ref action_positions, ref moves, settings, step);
                 action_positions = new_positions;
-                // positions = array![player_position, opp_position];
 
                 sub_move_index += 1;
                 //END MOVE LOOP

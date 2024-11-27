@@ -23,7 +23,7 @@ fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Arr
 }
 
 // returns (all_positions, opp_positions)
-fn get_rest_positions(ref world: WorldStorage, ref meta: SessionMeta, player: u8) -> Array<CharacterPosition> {
+fn get_rest_positions(ref world: WorldStorage, meta: @SessionMeta, player: u8) -> Array<CharacterPosition> {
     let mut opp = ArrayTrait::new();
 
     let mut i = 0;

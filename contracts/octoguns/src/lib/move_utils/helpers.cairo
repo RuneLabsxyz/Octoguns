@@ -195,8 +195,7 @@ fn update_positions(ref player_positions: Array<Array<CharacterPosition>>, ref m
             //apply move
             let mut j = 0;
             while j < player_positions.at(i).len() {
-                let character_id = *player_positions.at(i).at(j).id;
-                let mut player_position: CharacterPosition = world.read_model(character_id);
+                let mut player_position: CharacterPosition = *player_positions.at(i).at(j);
 
                 if vec.xdir {
                 player_position
@@ -293,4 +292,3 @@ fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_posit
     }
 
 }
-
