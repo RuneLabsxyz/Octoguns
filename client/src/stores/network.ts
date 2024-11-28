@@ -17,9 +17,9 @@ export const SLOT = {
 };
 
 export const SEPOLIA = {
-    PUBLIC_TORII_URL: 'https://api.cartridge.gg/planetelo/torii',   
+    PUBLIC_TORII_URL: 'https://api.cartridge.gg/octoguns-sepolia/torii',   
     PUBLIC_RPC_URL: 'https://api.cartridge.gg/starknet/sepolia',       
-    PUBLIC_WORLD_ADDRESS: import.meta.env.VITE_SEPOLIA_PUBLIC_WORLD_ADDRESS, 
+    PUBLIC_WORLD_ADDRESS: '0x6040f9fc60298b4f01526ea9ee4bdbfcbd1e3842ddafcb223e684cc8f3e6efd', 
     ENV: 'sepolia'
 };
 

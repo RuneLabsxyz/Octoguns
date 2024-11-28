@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x79d9ce84b97bcc2a631996c3100d57966fc2f5b061fb1ec4dfd0040976bcac6",
-    "address": "0x5a968e49c6395f4d1137d579b2e02c342484cbaf33a535a2a6ba1c33a6c705a",
-    "seed": "abc",
+    "address": "0x6040f9fc60298b4f01526ea9ee4bdbfcbd1e3842ddafcb223e684cc8f3e6efd",
+    "seed": "abcas",
     "name": "Octoguns",
     "entrypoints": [
       "uuid",
@@ -1243,8 +1243,8 @@
   },
   "contracts": [
     {
-      "address": "0x122c19c2371280016e0a4f7cb351b9521dae3509bbcee454bbea38d2de6f710",
-      "class_hash": "0x4f909fbb46f994f9c3b9fc08d18a1ad6808ee812aa825844627fe2cc8b180c2",
+      "address": "0x493e8a314a4c9e3861b9b501479e24f2f58c0e7412a6714eea004765a97aba3",
+      "class_hash": "0x6bd9460521da2cc028c64b87d074743ede889e75478f6c0abdcf624d34d66af",
       "abi": [
         {
           "type": "impl",
@@ -1353,8 +1353,12 @@
         },
         {
           "type": "struct",
-          "name": "octoguns::types::TurnMove",
+          "name": "octoguns::types::Action",
           "members": [
+            {
+              "name": "characters",
+              "type": "core::array::Array::<core::integer::u32>"
+            },
             {
               "name": "sub_moves",
               "type": "core::array::Array::<octoguns::types::IVec2>"
@@ -1362,6 +1366,16 @@
             {
               "name": "shots",
               "type": "core::array::Array::<octoguns::types::Shot>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "octoguns::types::TurnMove",
+          "members": [
+            {
+              "name": "actions",
+              "type": "core::array::Array::<octoguns::types::Action>"
             }
           ]
         },
@@ -1510,7 +1524,7 @@
       ]
     },
     {
-      "address": "0x2366da7e16792261357b8bca6be31c2e5e45e25fd9b1aff35ecaa2c1b8c14e7",
+      "address": "0x40afd024e1fdf3ad0a17b898b1a931d6149502cb584d724d0d2bd20e4c6569",
       "class_hash": "0xd6fc54aa7fb3c5b88b68e2bbb1133292ff4bc8f6cd54b0d1af021d9cb75964",
       "abi": [
         {
@@ -1724,8 +1738,8 @@
       ]
     },
     {
-      "address": "0x1151777f334a270a21d52299545e854d0e1fa9881ee0661aa130df18868cbfd",
-      "class_hash": "0x1d3f6aba15da0da82743533dfe090640917577e40ae55f210b99ba7ce097a7c",
+      "address": "0x2b06bf189f7629f240a9b8d4b82924fc5559f3f3d7f85b3833c2114b431888",
+      "class_hash": "0x7dfd0159bd867b35988152835dea41e92e76646098ab26a58fb312b3b17374a",
       "abi": [
         {
           "type": "impl",
@@ -1923,8 +1937,8 @@
       ]
     },
     {
-      "address": "0x7b8b6c8eadf98e08dc63ab93d3c5c366acb4a8056931628d2da7870ca697c0c",
-      "class_hash": "0x5ba3efcf63d2b2399e45d20fb0f6a69e994561f59149d40a9d9530351c37bc",
+      "address": "0x4f300ced466c918b29ce8b651ad48d3dea7059eed55c216303297957e06691e",
+      "class_hash": "0x4485c2ca8c146b1ab3028391e1ed716e668c62a9e7b7efe2b3e073aba740468",
       "abi": [
         {
           "type": "impl",
@@ -1990,20 +2004,28 @@
               "type": "core::integer::u64"
             },
             {
-              "name": "bullet_sub_steps",
+              "name": "bullet_steps",
               "type": "core::integer::u32"
             },
             {
-              "name": "bullets_per_turn",
+              "name": "bullets",
               "type": "core::integer::u32"
             },
             {
-              "name": "sub_moves_per_turn",
+              "name": "sub_moves",
               "type": "core::integer::u32"
             },
             {
-              "name": "max_distance_per_sub_move",
+              "name": "sub_move_distance",
               "type": "core::integer::u32"
+            },
+            {
+              "name": "characters",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "actions",
+              "type": "core::integer::u64"
             }
           ]
         },
@@ -2196,8 +2218,8 @@
       ]
     },
     {
-      "address": "0x795b07cf4d496a166d58107240ab82a8d46271b85d8875128eddea2dd464cb8",
-      "class_hash": "0x516880d967c104bb71ec5f75198443f890661d723135776a7dde5136f82f324",
+      "address": "0x30cd86024da2a917cb4da0df7fe77e11a1065a8c11a939061e4d8526866a9cc",
+      "class_hash": "0xc69b8d981ab32332c21bb6b47292072b21c8f77fe000dbabd6fcee60568d58",
       "abi": [
         {
           "type": "impl",
@@ -2263,20 +2285,28 @@
               "type": "core::integer::u64"
             },
             {
-              "name": "bullet_sub_steps",
+              "name": "bullet_steps",
               "type": "core::integer::u32"
             },
             {
-              "name": "bullets_per_turn",
+              "name": "bullets",
               "type": "core::integer::u32"
             },
             {
-              "name": "sub_moves_per_turn",
+              "name": "sub_moves",
               "type": "core::integer::u32"
             },
             {
-              "name": "max_distance_per_sub_move",
+              "name": "sub_move_distance",
               "type": "core::integer::u32"
+            },
+            {
+              "name": "characters",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "actions",
+              "type": "core::integer::u64"
             }
           ]
         },
@@ -2572,25 +2602,25 @@
     },
     {
       "members": [],
-      "class_hash": "0x553169289920773faf558d94891e063ba6bce66f154a4b33cb4f7ea0244b297",
+      "class_hash": "0x7952158b58f4f21f0202ad595be66db79e05965e96bf66e7ad60088662b82d",
       "tag": "octoguns-SessionMeta",
       "selector": "0x4f7fd982a6d0b8d102d79dd51917ad0146c614253d5d7d548d3d45f963d880d"
     },
     {
       "members": [],
-      "class_hash": "0x300c0210b3966dcb0fc33152336c7c04ce6f24a6e8a6775d939ff96b34b6526",
+      "class_hash": "0x3356026a8e1ac9ef1aab32b48161905dc80a5f60355e03a221b7954b881386c",
       "tag": "octoguns-SessionPrimitives",
       "selector": "0x29e33ecc26cfa4736dea604724a44fbe5880f3c6735738bbb383424aa934076"
     },
     {
       "members": [],
-      "class_hash": "0x1371744660c14d7002e53ac6f234caca68424035b325b1036de35375ab5cdc0",
+      "class_hash": "0x7094b9096c2080452fd4ce252b30ab83014c894c0d1fea2473cc9a070e022ab",
       "tag": "octoguns-TurnData",
       "selector": "0x293d224e3d2f88ee42d736914ad052e280b0777914c71b6289e226091582f09"
     },
     {
       "members": [],
-      "class_hash": "0x711c79f4e1efae1e0cd5a3aaa51897006326e86edf4ff38438d8292723332a5",
+      "class_hash": "0x1f77d9dfa1f1db7b8d04508c2b8ea1d51eba64e7252d3c5ee824af6d6e484f7",
       "tag": "planetelo-Playlist",
       "selector": "0x68545170c066553f1e76dc72663e4c9ff3f44f6bb4b5a3e4380f4d5152e7091"
     },

@@ -12,7 +12,9 @@ import { getSyncEntities, getSyncEvents } from '@dojoengine/state'
 import { account } from '$src/stores/account'
 import { env } from '$src/stores/network'
 import { get } from 'svelte/store'
-
+import { planeteloStore } from '$src/stores/dojoStore'
+import manifest from './planetelo_sepolia_manifeset.json'
+import { Contract } from 'starknet'
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>
 
@@ -25,7 +27,7 @@ export async function setup(
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: '0x05a968e49c6395f4d1137d579b2e02c342484cbaf33a535a2a6ba1c33a6c705a',
+    worldAddress: '0x06040f9fc60298b4f01526ea9ee4bdbfcbd1e3842ddafcb223e684cc8f3e6efd',
   })
 
   // create contract components
@@ -44,10 +46,29 @@ export async function setup(
     []
   )
 
+  let contracts = JSON.parse(JSON.stringify(manifest.contracts));
+  console.log(contracts[0]);
+
+  const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
+  console.log(myTestContract);
+  planeteloStore.set(myTestContract);
+
   // setup world
   const client = await setupWorld(dojoProvider)
   console.log('client', client)
 
+  const burnerManager = new BurnerManager({
+    masterAccount: new Account(
+      {
+        nodeUrl: config.rpcUrl,
+      },
+      config.masterAddress,
+      config.masterPrivateKey
+    ),
+    accountClassHash: config.accountClassHash,
+    rpcProvider: dojoProvider.provider,
+    feeTokenAddress: config.feeTokenAddress,
+  })
 
   return {
     client,
@@ -58,8 +79,8 @@ export async function setup(
     },
     config,
     dojoProvider,
+    burnerManager,
     toriiClient,
-
     torii,
     sync,
   }
