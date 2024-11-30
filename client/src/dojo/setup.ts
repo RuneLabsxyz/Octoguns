@@ -27,7 +27,7 @@ export async function setup(
     rpcUrl: config.rpcUrl,
     toriiUrl: config.toriiUrl,
     relayUrl: '',
-    worldAddress: '0x06040f9fc60298b4f01526ea9ee4bdbfcbd1e3842ddafcb223e684cc8f3e6efd',
+    worldAddress: '0x5fc7c43609c968a82ad003e33cbdc2171649cea8dd2a3944dd0525d68bbee3a',
   })
 
   // create contract components

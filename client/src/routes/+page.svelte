@@ -19,7 +19,8 @@
   }
 
   async function connectAndGoto(config: string) {
-    env.set(config)
+    env.set(config == 'slot' ? 'slot' : 'sepolia')
+    await connect('sepolia');
     goto(`/${config}/client/matchmaking`)
   }
 

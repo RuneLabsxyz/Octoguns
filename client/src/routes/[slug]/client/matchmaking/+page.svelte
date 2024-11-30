@@ -33,7 +33,7 @@
     //@ts-ignore
     let name = "octoguns".toString(16);
     console.log(name)
-    let game_key = "0x1"
+    let game_key = "0xabcd"
     async function handleQueue() {
         console.log(planetelo.address);
         let res = await $account?.execute(
@@ -99,9 +99,6 @@
     }
 
     onMount(() => {
-        if (!$account) {
-            connect('sepolia');
-        }
         get_status();
         // Poll status every 2 seconds
         intervalId = setInterval(get_status, 2000);

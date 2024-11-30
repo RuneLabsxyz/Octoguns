@@ -13,7 +13,7 @@ migrate_sepolia = "sozo build -P sepolia && sozo migrate -P sepolia --keystore '
 spawn_sepolia = "./scripts/spawn_sepolia.sh"
 
 [dependencies]
-dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.3" }
 origami_algebra = { git = "https://github.com/dojoengine/origami" }
 alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
 planetelo_interface = { path = "../planetelo_interface" }

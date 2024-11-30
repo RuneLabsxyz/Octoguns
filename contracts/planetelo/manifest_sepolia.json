@@ -1,7 +1,7 @@
 {
   "world": {
-    "class_hash": "0x79d9ce84b97bcc2a631996c3100d57966fc2f5b061fb1ec4dfd0040976bcac6",
-    "address": "0x64fa455bd7343c050bd88d0c68fabb8c46110cf42a5944e9c1994d572b59fd4",
+    "class_hash": "0x45575a88cc5cef1e444c77ce60b7b4c9e73a01cbbe20926d5a4c72a94011410",
+    "address": "0x5899f83c271e431d11f5ff031417b80156a4d1c1f50c6f706e635d9d00bbd65",
     "seed": "aaasdfdasdfasasddasffasddas",
     "name": "Planetelo",
     "entrypoints": [
@@ -92,6 +92,10 @@
           {
             "name": "metadata_uri",
             "type": "core::byte_array::ByteArray"
+          },
+          {
+            "name": "metadata_hash",
+            "type": "core::felt252"
           }
         ]
       },
@@ -1002,6 +1006,11 @@
             "name": "uri",
             "type": "core::byte_array::ByteArray",
             "kind": "data"
+          },
+          {
+            "name": "hash",
+            "type": "core::felt252",
+            "kind": "data"
           }
         ]
       },
@@ -1243,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x70477df9a612d0193aa8084e8b0f734c1915ae9c35ae860e2d5adc89b961b2c",
-      "class_hash": "0x2d839d282a59af3b85d4c7de9dd3c0d80c3aa68ca6324a7826f8dc11fb873b",
+      "address": "0x8431e278f1fa7fd7ceb087018d8c77415bf8401005fb4bd0680ffc91c6ad11",
+      "class_hash": "0x333e3bb48c9501c91e12acb8272a449121891330a190d1151b622909ddcb007",
       "abi": [
         {
           "type": "impl",
@@ -1657,7 +1666,7 @@
       ]
     },
     {
-      "address": "0x342949e466e8c2b261caeb1f8fb0b0cd288c98291467b599f90f375283b288f",
+      "address": "0x7ec754cd95ad1c9d41821f259796b1caa160e7c35db6f4dcba77d827a764de8",
       "class_hash": "0x104c485b854c8426efb2aa51c1ff2d0294ba959ed217b058fe29ef29824d2b",
       "abi": [
         {

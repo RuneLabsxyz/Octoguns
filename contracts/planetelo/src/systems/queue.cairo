@@ -146,6 +146,8 @@ mod queue {
 
             let game_id = dispatcher.create_match(  *p1_address, *p2_address, playlist);
 
+            let mut opponent_status: PlayerStatus = world.read_model((*p2_address, game, playlist));
+
             status = QueueStatus::InGame(game_id);
             assert!(p1.player != contract_address_const::<0x0>(), "Player 1 should be set");
             assert!(p2.player != contract_address_const::<0x0>(), "Player 2 should be set");

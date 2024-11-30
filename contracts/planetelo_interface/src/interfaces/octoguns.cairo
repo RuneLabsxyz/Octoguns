@@ -86,9 +86,11 @@ struct OctogunsInterface {
 
 #[generate_trait]
 impl OctogunsImpl of OctogunsTrait {
+    
     fn new(contract_address: ContractAddress) -> WorldStorage {
-        OctogunsTrait::new(contract_address)
+        WorldStorage { dispatcher: IWorldDispatcher { contract_address }, namespace_hash: 'octoguns'}
     }
+
     fn actions_dispatcher(self: OctogunsInterface) -> IOctogunsActionsDispatcher {
         let (contract_address, _) = self.world.dns(@"actions").unwrap();
         (IOctogunsActionsDispatcher{contract_address})
