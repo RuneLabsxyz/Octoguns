@@ -10,13 +10,13 @@
   import type { Position } from '$lib/api/gameState'
   import { onDestroy } from 'svelte'
 
-  let { currentCharacter } = getGame()
+  let { currentCharacters } = getGame()
 
-  let playerCoords: Position | undefined = $state(undefined)
+  let playerCoords: Position[] | undefined = $state(undefined)
 
   // Red: For some reason the object is not reactive if I do not subscribe manually
-  const unsubscribe = currentCharacter.subscribe(
-    (char) => (playerCoords = char?.coords)
+  const unsubscribe = currentCharacters.subscribe(
+    (chars) => (playerCoords = chars?.coords)
   )
 
   onDestroy(unsubscribe)

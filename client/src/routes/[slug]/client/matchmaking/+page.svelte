@@ -33,7 +33,7 @@
     //@ts-ignore
     let name = "octoguns".toString(16);
     console.log(name)
-    let game_key = "0xabcd"
+    let game_key = "0xabdcef"
     async function handleQueue() {
         console.log(planetelo.address);
         let res = await $account?.execute(

@@ -1,8 +1,8 @@
 {
   "world": {
     "class_hash": "0x45575a88cc5cef1e444c77ce60b7b4c9e73a01cbbe20926d5a4c72a94011410",
-    "address": "0x5fc7c43609c968a82ad003e33cbdc2171649cea8dd2a3944dd0525d68bbee3a",
-    "seed": "abcas",
+    "address": "0x65bfb537a1ef3d1d1ebe31e76c12847daeeace25ff251dd36258c5b19ced5e3",
+    "seed": "abcasasaasdssss",
     "name": "Octoguns",
     "entrypoints": [
       "uuid",
@@ -1252,7 +1252,7 @@
   },
   "contracts": [
     {
-      "address": "0x46f90372319eedffc78a961bafd761327daa83e7f08a9bba90c8607e6a1ae9e",
+      "address": "0x459fb5d053126f72330228a746b849e360d70ef6b316bc880c38dd42379a3fb",
       "class_hash": "0x6bd9460521da2cc028c64b87d074743ede889e75478f6c0abdcf624d34d66af",
       "abi": [
         {
@@ -1533,7 +1533,7 @@
       ]
     },
     {
-      "address": "0x36d0e1e8607d065c1a14e53b95c684365c1dc45c1a88f788d2260a9d33eb82b",
+      "address": "0x5466d95969d786d6dc787ef6af683b2bf8b318678da8c944a9621d0999d5749",
       "class_hash": "0xd6fc54aa7fb3c5b88b68e2bbb1133292ff4bc8f6cd54b0d1af021d9cb75964",
       "abi": [
         {
@@ -1747,7 +1747,7 @@
       ]
     },
     {
-      "address": "0x786f78813225b5f110ea4db3385fdb75e7836ec3eaaeea6b209ea39f79b0c0",
+      "address": "0x6a2260cd056810e861ce3464c6b82f90747fe8e33644fc1f054ca35ec7769d5",
       "class_hash": "0x7dfd0159bd867b35988152835dea41e92e76646098ab26a58fb312b3b17374a",
       "abi": [
         {
@@ -1946,8 +1946,8 @@
       ]
     },
     {
-      "address": "0x41f86bec60d357ef28e7eb450853904729737f80a092565d2c3698aa26062a5",
-      "class_hash": "0x4485c2ca8c146b1ab3028391e1ed716e668c62a9e7b7efe2b3e073aba740468",
+      "address": "0x3d5254971855bf764390469dc939ac0cd3ff734869bb581496fa0bcafc96582",
+      "class_hash": "0x2c7de350a23b60d564426e2952aeeb7c33577741f5010db39c95094c4354012",
       "abi": [
         {
           "type": "impl",
@@ -2227,7 +2227,7 @@
       ]
     },
     {
-      "address": "0x3db9a90b7e64995c7ca7e703a1576b417a39ae69e0aa14d2b272b5e6d5f82fa",
+      "address": "0x102e5714a3287550515399940adefc488861f3847feb843c56e53f1a0889df1",
       "class_hash": "0xc69b8d981ab32332c21bb6b47292072b21c8f77fe000dbabd6fcee60568d58",
       "abi": [
         {

@@ -23,6 +23,7 @@ export async function Game(sessionId: number) {
   let mapStore: Readable<Map | null> = derived(
     [sessionStore],
     ([session], set) => {
+      console.log(session)
       if (session == null) {
         set(null)
         return
@@ -69,7 +70,7 @@ export async function Game(sessionId: number) {
     }
   })
 
-  let currentPlayerCharacterIdStore = derived(
+  let currentPlayerCharacterIdsStore = derived(
     [currentPlayerIdStore, sessionMetaStore],
     ([playerId, sessionMeta]) => {
       if (playerId == null) {
@@ -77,8 +78,8 @@ export async function Game(sessionId: number) {
       }
 
       return [
-        Number(sessionMeta?.p1_character),
-        Number(sessionMeta?.p2_character),
+        sessionMeta?.p1_characters,
+        sessionMeta?.p2_characters,
       ][playerId]
     }
   )
@@ -107,7 +108,7 @@ export async function Game(sessionId: number) {
     map: mapStore,
     turnCount: turnCountStore,
     currentPlayerId: currentPlayerIdStore,
-    currentPlayerCharacterId: currentPlayerCharacterIdStore,
+    currentPlayerCharacterId: currentPlayerCharacterIdsStore,
     isCurrentPlayersTurn: isCurrentPlayersTurnStore,
     bullets: bulletStore,
     characters: charactersStore,

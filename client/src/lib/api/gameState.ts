@@ -99,10 +99,7 @@ export function GameState(game: GameStore) {
   )
 
   // We also have to offer a way to temporarily move the characters.
-  const characters: Writable<Marked<Character> | null>[] = [
-    writable(),
-    writable(),
-  ]
+  const characters: Writable<Marked<Character> | null>[] = getValue(game.characters)!.map(() => writable(null))
 
   unsubscribes.push(
     game.characters.subscribe((updatedCharacters) => {
@@ -124,61 +121,86 @@ export function GameState(game: GameStore) {
   )
   const controlsStore = ControlsStore()
 
-  // Red: This may break badly :/
-  const currentCharacterValue = derived(
+  const currentCharactersValue = derived(
     [game.currentPlayerId, ...characters],
     ([playerId, ...characters]) => {
       if (playerId == null) {
         return null
       }
+      let res = []
+      for (let i = 0; i < characters.length; i++) {
+        if (Number(characters[i]?.playerId) != playerId || !characters[i]) {
+          continue
+        }
+        res.push(characters[i])
+      }
 
-      return characters[playerId - 1]
+      return res as Marked<Character>[]
     }
   )
 
-  const initialCharacterStore = derived(
+  const initialCharactersStore = derived(
     [game.currentPlayerId, game.characters],
     ([playerId, characters]) => {
       if (playerId == null) {
         return null
       }
-      return (characters ?? [null, null])[playerId - 1]
+      let res = []
+      for (let i = 0; i < characters!.length; i++) {
+        if (Number(characters![i].playerId) != playerId) {
+          continue
+        }
+        res.push(characters![i])
+      }
+
+      return res
     }
   )
 
-  const currentCharacterStore: Writable<Marked<Character> | null> & {
+  const currentCharactersStore: Writable<Marked<Character>[] | null> & {
     reset: () => void
   } = {
-    ...currentCharacterValue,
-    update(t: (value: Marked<Character> | null) => Marked<Character> | null) {
+    ...currentCharactersValue,
+    update(t: (value: Marked<Character>[] | null) => Marked<Character>[] | null) {
       let subscription = () => {}
       let updated = false
-      subscription = currentCharacterStore.subscribe((val) => {
+      subscription = currentCharactersStore.subscribe((val) => {
+        let new_val: Marked<Character>[] | null = val!;
         if (!updated) {
           updated = true
-          currentCharacterStore.set(t(val))
+          currentCharactersStore.set(t(new_val))
           subscription()
         }
+        return t(new_val)
       })
     },
-    set(value: Marked<Character> | null) {
+    set(value: Marked<Character>[] | null) {
       const playerId = getValue(game.currentPlayerId)
       if (playerId == null) {
         return null
       }
+      characters.forEach((character) => {
 
-      characters[playerId - 1].set(value)
+        let id = getValue(character)!.id;
+
+        value?.forEach((new_character) => {
+          if (Number(new_character?.id) != Number(id)) {
+            return
+          }
+          character.set(new_character)
+        })
+      })
     },
     reset() {
-      currentCharacterStore.set(
-        window.structuredClone(getValue(initialCharacterStore))
+      currentCharactersStore.set(
+        window.structuredClone(getValue(initialCharactersStore))
       )
     },
   }
 
   const moveStore = MoveStore({
     controlsStore,
-    currentCharacterStore: currentCharacterStore,
+    currentCharactersStore: currentCharactersStore,
     sessionIdStore: game.sessionId,
     frameCounterStore: frameCounter,
     currentPlayerIdStore: game.currentPlayerId,
@@ -211,7 +233,7 @@ export function GameState(game: GameStore) {
     characters,
     controls: controlsStore,
     move: moveStore,
-    currentCharacter: currentCharacterStore,
+    currentCharacters: currentCharactersStore,
 
     spawn: async () => {
       const [account, { client }] = await getDojoContext()

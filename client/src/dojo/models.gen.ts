@@ -206,16 +206,16 @@ export const SessionDefinition = {
 export interface SessionMeta {
     session_id: Number;
     turn_count: Number;
-    p1_character: Number;
-    p2_character: Number;
+    p1_characters: Number[];
+    p2_characters: Number[];
     bullets: Number[];
     
 }
 export const SessionMetaDefinition = {
     session_id: RecsType.Number,
     turn_count: RecsType.Number,
-    p1_character: RecsType.Number,
-    p2_character: RecsType.Number,
+    p1_characters: RecsType.NumberArray,
+    p2_characters: RecsType.NumberArray,
     bullets: RecsType.NumberArray,
     
 };
@@ -439,8 +439,8 @@ export function defineContractComponents(world: World) {
                 {
                     session_id: RecsType.Number,
                     turn_count: RecsType.Number,
-                    p1_character: RecsType.Number,
-                    p2_character: RecsType.Number,
+                    p1_characters: RecsType.NumberArray,
+                    p2_characters: RecsType.NumberArray,
                     bullets: RecsType.NumberArray,
                 },
                 {

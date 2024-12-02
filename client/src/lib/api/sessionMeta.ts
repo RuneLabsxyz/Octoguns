@@ -35,6 +35,7 @@ export async function SessionMeta(
       let result: SessionMeta = {
         ...val,
       }
+      console.log(result)
       set(result)
     }
   )
@@ -114,6 +115,7 @@ export const yourActiveSessionMetas: Readable<SessionMeta[]> = derived(
         return new Promise<SessionMeta>((resolve) => {
           sessionMetaValue.subscribe((value) => {
             if (value) {
+              console.log(value)
               resolve(value)
             }
           })

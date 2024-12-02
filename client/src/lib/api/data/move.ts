@@ -48,7 +48,7 @@ type Context = {
   keyStateStore: Readable<KeyState>
   isMouseDownStore: Readable<boolean>
   hasShot: Writable<boolean>
-  characterStore: Writable<Marked<Character> | null> & {
+  charactersStore: Writable<Marked<Character>[] | null> & {
     reset: () => void
   }
   currentSubmoveStore: Writable<Position>
@@ -144,21 +144,25 @@ function recordMove(ctx: Context, camera: Camera) {
     // Ensure y-axis movement is zero (assuming 2D movement)
     moveDirection.y = 0
     // Update player coordinates with clamped values to stay within grid bounds
-    ctx.characterStore.update((character) => {
-      if (character == null) {
-        return character
+    ctx.charactersStore.update((characters) => {
+      if (characters == null) {
+        return characters
       }
+      let newCharacters: Marked<Character>[] = []
 
-      // Mark the character
-      character.__marked = 'moved'
+      characters.forEach((character) => {
+        // Mark the character
+        character.__marked = 'moved'
 
-      const newX = character.coords.x + moveDirection.x
-      const newY = character.coords.y + moveDirection.z
+        const newX = character.coords.x + moveDirection.x
+        const newY = character.coords.y + moveDirection.z
 
-      character.coords.x = newX
-      character.coords.y = newY
+        character.coords.x = newX
+        character.coords.y = newY
+        newCharacters.push(character)
+      })
 
-      return character
+      return newCharacters
     })
 
     ctx.currentSubmoveStore.update((subMove) => {
@@ -248,13 +252,15 @@ function replayMove(ctx: Context) {
     if (!sub_move.xdir) x_dif *= -1
     if (!sub_move.ydir) y_dif *= -1
 
-    ctx.characterStore.update((character) => {
-      if (character == null) {
-        return null
+    ctx.charactersStore.update((characters) => {
+      if (characters == null) {
+        return characters
       }
-      character.coords.x += x_dif
-      character.coords.y += x_dif
-      return character
+      characters.forEach((character) => {
+        character.coords.x += x_dif
+        character.coords.y += y_dif
+      })
+      return characters
     })
   }
 
@@ -265,7 +271,7 @@ export type MoveStore = ReturnType<typeof MoveStore>
 
 export function MoveStore(ctx: {
   controlsStore: ControlsStore
-  currentCharacterStore: Writable<Marked<Character> | null> & {
+  currentCharactersStore: Writable<Marked<Character[]> | null> & {
     reset: () => void
   }
   frameCounterStore: Readable<number>
@@ -295,7 +301,7 @@ export function MoveStore(ctx: {
   const context: Context = {
     keyStateStore: ctx.controlsStore.keyStateStore,
     isMouseDownStore: ctx.controlsStore.isMouseDownStore,
-    characterStore: ctx.currentCharacterStore,
+    charactersStore: ctx.currentCharactersStore,
     frameCounterStore: ctx.frameCounterStore,
     hasShot: hasShotStore,
     currentTurnStore: ctx.currentTurnStore,
@@ -366,7 +372,7 @@ export function MoveStore(ctx: {
       // Reset the frame counter
       ctx.resetFrameCounter()
       // Reset the positions to the one present on chain
-      ctx.currentCharacterStore.reset()
+      ctx.currentCharactersStore.reset()
 
       isReplayingStore.set(true)
     },
@@ -375,7 +381,7 @@ export function MoveStore(ctx: {
       ctx.resetFrameCounter()
 
       // Reset the positions to the one present on chain
-      ctx.currentCharacterStore.reset()
+      ctx.currentCharactersStore.reset()
 
       hasRecordedStore.set(false)
       isRecordingStore.set(false)
@@ -395,11 +401,11 @@ export function MoveStore(ctx: {
       console.log('callData', callData)
 
       // Unmark the character, so it is updated
-      ctx.currentCharacterStore.update((character) => {
-        if (character?.__marked) {
-          delete character.__marked
+      ctx.currentCharactersStore.update((characters) => {
+        if (characters?.__marked) {
+          delete characters.__marked
         }
-        return character
+        return characters
       })
       const [account, { client }] = await getDojoContext()
       client.actions.move({

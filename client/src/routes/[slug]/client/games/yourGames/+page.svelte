@@ -42,6 +42,8 @@
     $yourFinishedSessionsMetas
   )
   let sessionMetas: SessionMeta[] | null = $derived($yourSessionMetas)
+
+  console.log(activeSessions)
 </script>
 
 <div class={cn('flex flex-col h-full')}>
