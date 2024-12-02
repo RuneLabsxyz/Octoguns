@@ -17,6 +17,10 @@
 
   console.log('Game', GameState(gameStore));
 
+  const unsubscribe = $derived(gameStore.characters.subscribe((chars) => {
+    console.log('Characters', chars)
+  }))
+
   const { session } = gameStore
 </script>
 

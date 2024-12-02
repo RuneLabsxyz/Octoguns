@@ -22,7 +22,7 @@ import type {
 import { getBulletPosition } from '$lib/helper'
 import { isOutsideMapBoundary } from '$lib/3d/utils/shootUtils'
 import type { GameStore } from './game'
-import type { Character } from './data/characters'
+import { CharacterStore, type Character } from './data/characters'
 import { getDojoContext } from '$src/stores/dojoStore'
 import { ControlsStore } from './controls/controls'
 import { MoveStore } from './data/move'
@@ -99,8 +99,24 @@ export function GameState(game: GameStore) {
   )
 
   // We also have to offer a way to temporarily move the characters.
-  const characters: Writable<Marked<Character> | null>[] = getValue(game.characters)?.map(() => writable(null)) ?? []
+  const p1_characters: Writable<Marked<Character> | null>[] = getValue(game.sessionMeta)?.p1_characters.map((val) => 
+    {
+      //@ts-ignore
+      let character = getValue(CharacterStore(val.value));
+      console.log('Character', character)
+      return writable(character)
+    }) ?? []
 
+  const p2_characters: Writable<Marked<Character> | null>[] = getValue(game.sessionMeta)?.p2_characters.map((val) => 
+    {
+      //@ts-ignore
+      let character = getValue(CharacterStore(val.value));
+      console.log('Character', character)
+      return writable(character)
+    }) ?? []
+
+  const characters: Writable<Marked<Character> | null>[] = [...p1_characters, ...p2_characters]
+  
   unsubscribes.push(
     game.characters.subscribe((updatedCharacters) => {
       if (updatedCharacters == null) {
@@ -127,15 +143,15 @@ export function GameState(game: GameStore) {
       if (playerId == null) {
         return null
       }
-      let res = []
+      let res: Marked<Character>[] = []
       for (let i = 0; i < characters.length; i++) {
         if (Number(characters[i]?.playerId) != playerId || !characters[i]) {
           continue
         }
-        res.push(characters[i])
+        res.push(characters[i]!)
       }
 
-      return res as Marked<Character>[]
+      return res
     }
   )
 
@@ -180,9 +196,7 @@ export function GameState(game: GameStore) {
         return null
       }
       characters.forEach((character) => {
-
         let id = getValue(character)!.id;
-
         value?.forEach((new_character) => {
           if (Number(new_character?.id) != Number(id)) {
             return

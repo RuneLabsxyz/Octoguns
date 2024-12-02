@@ -31,6 +31,7 @@ export async function CharacterModelStore(
       let result: CharacterModel = {
         ...val,
       }
+      console.log('CharacterModelStore', result)
 
       set(result)
     }
@@ -65,6 +66,8 @@ export function CharacterStore(
   return derived(
     [characterModelStore, characterPositionStore],
     ([model, position]) => {
+      console.log('CharacterStore', model, position)
+
       if (model == null || position == null) {
         return null
       }
@@ -100,6 +103,7 @@ export function CharactersStore(
       (chars) => chars
     ).subscribe((val) => {
       if (val.length == 0) {
+        console.log('No characters')
         set(null)
       } else {
         // For some reason, the derived above is removing the size information,

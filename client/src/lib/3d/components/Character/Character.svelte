@@ -35,6 +35,8 @@
     normalizeCoords($character?.coords ?? { x: 0, y: 0 })
   )
 
+  console.log('Character', $character)
+
   const position: [number, number, number] = $derived(
     $character
       ? [normalizedCoordinates.x, 0, normalizedCoordinates.y]
