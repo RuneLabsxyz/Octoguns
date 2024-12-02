@@ -15,6 +15,8 @@
 
   setGame(GameState(gameStore))
 
+  console.log('Game', GameState(gameStore));
+
   const { session } = gameStore
 </script>
 

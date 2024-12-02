@@ -86,26 +86,25 @@ export function CharacterStore(
 
 export function CharactersStore(
   sessionMetaStore: Readable<SessionMeta | null>
-): Readable<[Character, Character] | null> {
+): Readable<Character[] | null> {
   return derived([sessionMetaStore], ([sessionMeta], set) => {
     if (sessionMeta == null) {
       set(null)
       return
     }
-
+    let p1 = sessionMeta.p1_characters.map((character) => CharacterStore(Number(character)))
+    let p2 = sessionMeta.p2_characters.map((character) => CharacterStore(Number(character)))
+    
     return derived(
-      [
-        CharacterStore(Number(sessionMeta.p1_character)),
-        CharacterStore(Number(sessionMeta.p2_character)),
-      ],
-      ([p1, p2]) => [p1, p2]
+      [...p1, ...p2],
+      (chars) => chars
     ).subscribe((val) => {
-      if (val[0] == null || val[1] == null) {
+      if (val.length == 0) {
         set(null)
       } else {
         // For some reason, the derived above is removing the size information,
         // so "as" it is
-        set(val as [Character, Character])
+        set(val as Character[])
       }
     })
   })

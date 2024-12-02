@@ -99,7 +99,7 @@ export function GameState(game: GameStore) {
   )
 
   // We also have to offer a way to temporarily move the characters.
-  const characters: Writable<Marked<Character> | null>[] = getValue(game.characters)!.map(() => writable(null))
+  const characters: Writable<Marked<Character> | null>[] = getValue(game.characters)?.map(() => writable(null)) ?? []
 
   unsubscribes.push(
     game.characters.subscribe((updatedCharacters) => {
@@ -224,6 +224,7 @@ export function GameState(game: GameStore) {
       additionalBullets.set([])
     },
   })
+
 
   return {
     ...game,

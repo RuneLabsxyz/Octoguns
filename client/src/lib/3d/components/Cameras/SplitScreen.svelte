@@ -13,11 +13,12 @@
   let { currentCharacters } = getGame()
 
   let playerCoords: Position[] | undefined = $state(undefined)
-
+  let numCameras = $state(1)
   // Red: For some reason the object is not reactive if I do not subscribe manually
-  const unsubscribe = currentCharacters.subscribe(
-    (chars) => (playerCoords = chars?.coords)
-  )
+  const unsubscribe = currentCharacters.subscribe((chars) => {
+    playerCoords = chars?.map((c) => c.coords)
+    numCameras = chars?.length ?? 1
+  })
 
   onDestroy(unsubscribe)
 
@@ -37,7 +38,7 @@
     numCameras?: number
   }
 
-  let { cameras = $bindable([]), numCameras = 1 }: Props = $props()
+  let { cameras = $bindable([]) }: Props = $props()
 </script>
 
 {#if !$birdView}
