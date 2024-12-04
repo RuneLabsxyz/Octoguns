@@ -20,13 +20,13 @@
   import { rendererStore } from '$src/stores/gameStores'
 
   let { renderer, scene } = useThrelte()
-  const { controls, currentPlayerCharacterId, frameCounter, move } = getGame()
+  const { controls, currentPlayerCharacterIds, frameCounter, move } = getGame()
 
   let cameras: PerspectiveCamera[] = $state([])
   let numCameras = 1
   let birdViewCamera: any = $state()
 
-  let characterId: number = $derived($currentPlayerCharacterId!)
+  let characterIds: Number[] = $derived($currentPlayerCharacterIds!)
   let hasShotInCurrentRecording = writable(false)
 
   let animationFrameId: number

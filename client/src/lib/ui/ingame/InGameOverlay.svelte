@@ -4,9 +4,10 @@
   import { Camera, ArrowLeftRight, User } from 'lucide-svelte'
   import StepBar from '../StepBar.svelte'
   import getGame from '$lib/api/svelte/context'
-  import { connect } from '$lib/controller'
+  import { connect, disconnect } from '$lib/controller'
   import Button from '$lib/ui/Button.svelte'
   const { turnCount } = getGame()
+  import { account } from '$stores/account'
 </script>
 
 <div class="overflow-hidden">
@@ -45,9 +46,9 @@
     <div class="fixed top-4 right-4 z-[100]">
       <Button 
           class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
-          on:click={() => connect('sepolia')}
+          on:click={() => {if ($account?.address) {connect('sepolia')} else {disconnect()}}}
       >
-        Connect
+        { $account?.address ? 'Disconnect' : 'Connect' }
       </Button>
     </div>
 

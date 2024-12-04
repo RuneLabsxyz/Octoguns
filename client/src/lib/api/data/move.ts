@@ -111,6 +111,7 @@ function recordMove(ctx: Context, camera: Camera) {
   const moveDirection = new Vector3()
   const { forward, backward, left, right } = get<KeyState>(ctx.keyStateStore)
   const isMouseDown = get(ctx.isMouseDownStore)
+  console.log('Characters', get(ctx.charactersStore))
 
   if (forward) moveDirection.z -= 1
   if (backward) moveDirection.z += 1
@@ -271,7 +272,7 @@ export type MoveStore = ReturnType<typeof MoveStore>
 
 export function MoveStore(ctx: {
   controlsStore: ControlsStore
-  currentCharactersStore: Writable<Marked<Character[]> | null> & {
+  currentCharactersStore: Writable<Marked<Character>[] | null> & {
     reset: () => void
   }
   frameCounterStore: Readable<number>
@@ -283,6 +284,7 @@ export function MoveStore(ctx: {
   addAdditionalBullet: (bullet: Bullet) => void
   resetAdditionalBullets: () => void
 }) {
+  console.log('Characters', get(ctx.currentCharactersStore))
   const currentSubmoveStore = writable<Position>({
     x: 0,
     y: 0,
@@ -335,6 +337,8 @@ export function MoveStore(ctx: {
 
     update: (camera: Camera) => {
       if (get(isRecordingStore)) {
+        console.log(get(ctx.currentCharactersStore))
+        console.log(get(ctx.currentPlayerIdStore))
         recordMove(context, camera)
 
         // Stop the recording if finished
@@ -402,11 +406,14 @@ export function MoveStore(ctx: {
 
       // Unmark the character, so it is updated
       ctx.currentCharactersStore.update((characters) => {
-        if (characters?.__marked) {
-          delete characters.__marked
-        }
+        characters?.forEach((character) => {
+          if (character.__marked) {
+            delete character.__marked
+          }
+        })
         return characters
       })
+      
       const [account, { client }] = await getDojoContext()
       client.actions.move({
         account,

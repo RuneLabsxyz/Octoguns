@@ -23,6 +23,8 @@
   } = getGame()
 
   let justRecorded: boolean = $state(false)
+
+  console.log('Session', $session)
 </script>
 
 <div class="pointer-events-auto" style="justify-content: space-between;">

@@ -1,4 +1,4 @@
-import { accountStore, getDojo, getDojoContext } from '$src/stores/dojoStore'
+import { getDojo, getDojoContext } from '$src/stores/dojoStore'
 import { derived, readable, type Readable } from 'svelte/store'
 import { SessionStore } from './sessions'
 import { SessionMeta } from './sessionMeta'
@@ -9,7 +9,7 @@ import { BulletsStore } from './data/bullets'
 import { CharactersStore } from './data/characters'
 import type { Map } from '$src/dojo/models.gen'
 import type { Position } from './gameState'
-
+import { account } from '$stores/account'
 
 export type GameStore = Awaited<ReturnType<typeof Game>>
 
@@ -34,6 +34,10 @@ export async function Game(sessionId: number) {
 
   let charactersStore = CharactersStore(sessionMetaStore)
 
+  charactersStore.subscribe((characters) => {
+    console.log('Characters', characters)
+  })
+
   let turnCountStore: Readable<number | null> = derived(
     [sessionMetaStore],
     ([sessionMeta]) => {
@@ -44,8 +48,11 @@ export async function Game(sessionId: number) {
     }
   )
 
-  let currentPlayerIdStore = derived([sessionStore, accountStore], ([session, account]) => {
+  let currentPlayerIdStore = derived([sessionStore, account], ([session, account]) => {
     const player_address = account?.address
+
+    console.log('Session', session)
+    console.log('Account', account)
 
     if (session == null) {
       return null
@@ -60,6 +67,7 @@ export async function Game(sessionId: number) {
       session.player2.toString(),
       player_address ?? ''
     )
+    
 
     if (isFirstPlayer) {
       return 1
@@ -87,6 +95,8 @@ export async function Game(sessionId: number) {
   let isCurrentPlayersTurnStore = derived(
     [sessionMetaStore, currentPlayerIdStore],
     ([sessionMeta, currentPlayer]) => {
+      console.log('SessionMeta', sessionMeta)
+      console.log('CurrentPlayer', currentPlayer)
       if (sessionMeta == null || currentPlayer == null) {
         return null
       }
@@ -108,7 +118,7 @@ export async function Game(sessionId: number) {
     map: mapStore,
     turnCount: turnCountStore,
     currentPlayerId: currentPlayerIdStore,
-    currentPlayerCharacterId: currentPlayerCharacterIdsStore,
+    currentPlayerCharacterIds: currentPlayerCharacterIdsStore,
     isCurrentPlayersTurn: isCurrentPlayersTurnStore,
     bullets: bulletStore,
     characters: charactersStore,

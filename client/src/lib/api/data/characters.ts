@@ -51,6 +51,7 @@ export async function CharacterPositionStore(
       let result: CharacterPosition = {
         ...val,
       }
+      console.log('CharacterPositionStore', result)
 
       set(result)
     }
@@ -95,8 +96,10 @@ export function CharactersStore(
       set(null)
       return
     }
-    let p1 = sessionMeta.p1_characters.map((character) => CharacterStore(Number(character)))
-    let p2 = sessionMeta.p2_characters.map((character) => CharacterStore(Number(character)))
+    //@ts-ignore
+    let p1 = sessionMeta.p1_characters.map((character) => CharacterStore(character.value))
+    //@ts-ignore
+    let p2 = sessionMeta.p2_characters.map((character) => CharacterStore(character.value))
     
     return derived(
       [...p1, ...p2],

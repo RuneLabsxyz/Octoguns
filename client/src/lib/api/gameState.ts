@@ -98,24 +98,31 @@ export function GameState(game: GameStore) {
     }
   )
 
+  let characters: Writable<Marked<Character> | null>[] = []
   // We also have to offer a way to temporarily move the characters.
-  const p1_characters: Writable<Marked<Character> | null>[] = getValue(game.sessionMeta)?.p1_characters.map((val) => 
+  getValue(game.sessionMeta)?.p1_characters.map((val) => 
     {
+      console.log('Key', val.value)
+      let character: Character | null = null;
       //@ts-ignore
-      let character = getValue(CharacterStore(val.value));
+      character = getValue(CharacterStore(val.value));
       console.log('Character', character)
-      return writable(character)
+      characters.push(writable(character))
     }) ?? []
 
-  const p2_characters: Writable<Marked<Character> | null>[] = getValue(game.sessionMeta)?.p2_characters.map((val) => 
+  getValue(game.sessionMeta)?.p2_characters.map((val) => 
     {
+      let character: Character | null = null;
       //@ts-ignore
-      let character = getValue(CharacterStore(val.value));
+      character = getValue(CharacterStore(val.value));
       console.log('Character', character)
-      return writable(character)
+      characters.push(writable(character))
     }) ?? []
 
-  const characters: Writable<Marked<Character> | null>[] = [...p1_characters, ...p2_characters]
+  characters.forEach((character) => {
+    console.log('Character', getValue(character))
+  })
+  
   
   unsubscribes.push(
     game.characters.subscribe((updatedCharacters) => {
@@ -144,10 +151,13 @@ export function GameState(game: GameStore) {
         return null
       }
       let res: Marked<Character>[] = []
+      console.log('Characters', characters)
+      console.log('PlayerId', playerId)
       for (let i = 0; i < characters.length; i++) {
         if (Number(characters[i]?.playerId) != playerId || !characters[i]) {
           continue
         }
+        console.log('Adding Current Character', characters[i])
         res.push(characters[i]!)
       }
 
@@ -166,6 +176,7 @@ export function GameState(game: GameStore) {
         if (Number(characters![i].playerId) != playerId) {
           continue
         }
+        console.log('Adding Initial Character', characters![i])
         res.push(characters![i])
       }
 
@@ -175,7 +186,8 @@ export function GameState(game: GameStore) {
 
   const currentCharactersStore: Writable<Marked<Character>[] | null> & {
     reset: () => void
-  } = {
+  } =
+  {
     ...currentCharactersValue,
     update(t: (value: Marked<Character>[] | null) => Marked<Character>[] | null) {
       let subscription = () => {}

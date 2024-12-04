@@ -70,3 +70,11 @@ export async function connect(network: string) {
         console.log(e);
     }
 }
+
+export async function disconnect() {
+  await controllerMainnet.disconnect();
+  await controllerSepolia.disconnect();
+  await controllerSlot.disconnect();
+  account.set(undefined);
+  username.set(undefined);
+}

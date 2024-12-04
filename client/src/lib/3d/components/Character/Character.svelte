@@ -7,6 +7,7 @@
   import { accountStore } from '$src/stores/dojoStore'
   import { areAddressesEqual } from '$lib/helper'
   import type { Position } from '$lib/api/gameState'
+  import { get } from 'svelte/store'
 
   const {
     character,
@@ -19,7 +20,7 @@
   //TODO(Red): Is this correct?
   const isAlly = $derived(
     areAddressesEqual(
-      String($character?.playerId),
+      String(get(character)?.playerId),
       $accountStore?.address ?? BigInt(0)
     )
   )
@@ -34,8 +35,6 @@
   const normalizedCoordinates = $derived(
     normalizeCoords($character?.coords ?? { x: 0, y: 0 })
   )
-
-  console.log('Character', $character)
 
   const position: [number, number, number] = $derived(
     $character
