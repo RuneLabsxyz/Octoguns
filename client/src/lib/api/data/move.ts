@@ -19,7 +19,7 @@ import { Camera, PerspectiveCamera, Vector3 } from 'three'
 import * as THREE from 'three'
 import { type KeyState, ControlsStore } from '../controls/controls'
 import type { Marked, Position } from '../gameState'
-import type { Character } from './characters'
+import { CharacterStore, type Character } from './characters'
 import { rendererStore } from '$src/stores/gameStores'
 import { getDojoContext } from '$src/stores/dojoStore'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
@@ -29,6 +29,10 @@ export type Submove = { x: number; y: number; xdir: boolean; ydir: boolean }
 export type Shot = { angle: number; step: number }
 
 export type TurnData = {
+  actions: Action[]
+}
+export type Action = {
+  characters: number[]
   sub_moves: Submove[]
   shots: Shot[]
 }
@@ -54,6 +58,7 @@ type Context = {
   currentSubmoveStore: Writable<Position>
   frameCounterStore: Readable<number>
   recordedMoveStore: Readable<TurnData>
+  recordedActionStore: Readable<Action>
   currentPlayerIdStore: Readable<number | null>
   currentTurnStore: Readable<number | null>
 }
@@ -203,69 +208,80 @@ function replayShot(ctx: Context, camera: PerspectiveCamera) {
   let frame = get(ctx.frameCounterStore)
   let move_index = Math.floor(frame / FRAME_INTERVAL)
 
-  let shot = move.shots.find((shot) => shot.step === move_index)
-  if (shot) {
-    let angle = shot.angle
+  let i = 0;
+  while (i< move.actions.length) {
+    let action = move.actions[i];
+    let shot = action.shots.find((shot) => shot.step === move_index)
+    if (shot) {
+      let angle = shot.angle
 
-    console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
+      console.log(`Bullet shot at move index ${move_index} with angle ${angle}`)
 
-    let vx =
-      Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
-      (BULLET_SPEED * SCALING_FACTOR)
-    let vy =
-      Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
-      (BULLET_SPEED * SCALING_FACTOR)
+      let vx =
+        Math.cos(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
+        (BULLET_SPEED * SCALING_FACTOR)
+      let vy =
+        Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
+        (BULLET_SPEED * SCALING_FACTOR)
 
-    const cameraPosition = denormalizeCoords({
-      x: camera.position.x,
-      y: camera.position.z,
-    })
+      const cameraPosition = denormalizeCoords({
+        x: camera.position.x,
+        y: camera.position.z,
+      })
 
-    console.log(cameraPosition)
-    // Create a temporary bullet for showing
-    const newBullet: Bullet = {
-      bullet_id: 0,
-      shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
-      shot_at: cameraPosition,
-      velocity: { x: vx, y: vy, xdir: true, ydir: true },
+      console.log(cameraPosition)
+      // Create a temporary bullet for showing
+      const newBullet: Bullet = {
+        bullet_id: 0,
+        shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
+        shot_at: cameraPosition,
+        velocity: { x: vx, y: vy, xdir: true, ydir: true },
 
-      shot_by: get(ctx.currentPlayerIdStore) ?? 0,
+        shot_by: get(ctx.currentPlayerIdStore) ?? 0,
+      }
+
+      ctx.addAdditionalBullet(newBullet)
     }
-
-    ctx.addAdditionalBullet(newBullet)
   }
+
+  
 }
 
 function replayMove(ctx: Context) {
   let move: TurnData = get(ctx.recordedMoveStore)
   let frame = get(ctx.frameCounterStore)
   let move_index = Math.floor(frame / FRAME_INTERVAL)
-  if (move_index >= move.sub_moves.length) {
-    console.warn('Move index exceeds recorded sub-moves.')
-    return
-  }
-  let sub_move = move.sub_moves[move_index]
-  console.log(sub_move)
 
-  if (frame % FRAME_INTERVAL === 0 && frame < RECORDING_FRAME_LIMIT) {
-    let x_dif = sub_move.x
-    let y_dif = sub_move.y
-    if (!sub_move.xdir) x_dif *= -1
-    if (!sub_move.ydir) y_dif *= -1
+  let i = 0; 
+  while (i < move.actions.length) {
+    let action = move.actions[i];
+    if (move_index >= action.sub_moves.length) {
+      console.warn('Move index exceeds recorded sub-moves.')
+      return
+    }
+    let sub_move = action.sub_moves[move_index]
+    console.log(sub_move)
 
-    ctx.charactersStore.update((characters) => {
-      if (characters == null) {
+    if (frame % FRAME_INTERVAL === 0 && frame < RECORDING_FRAME_LIMIT) {
+      let x_dif = sub_move.x
+      let y_dif = sub_move.y
+      if (!sub_move.xdir) x_dif *= -1
+      if (!sub_move.ydir) y_dif *= -1
+
+      ctx.charactersStore.update((characters) => {
+        if (characters == null) {
+          return characters
+        }
+        characters.forEach((character) => {
+          character.coords.x += x_dif
+          character.coords.y += y_dif
+        })
         return characters
-      }
-      characters.forEach((character) => {
-        character.coords.x += x_dif
-        character.coords.y += y_dif
       })
-      return characters
-    })
-  }
+    }
 
-  ctx.incrementFrame()
+    ctx.incrementFrame()
+  }
 }
 
 export type MoveStore = ReturnType<typeof MoveStore>
@@ -290,8 +306,12 @@ export function MoveStore(ctx: {
     y: 0,
   })
   const recordedMoveStore = writable<TurnData>({
+    actions: [],
+  })
+  const recordedActionStore = writable<Action>({
+    characters: [],
     shots: [],
-    sub_moves: [],
+    sub_moves: []
   })
 
   // TODO: Encode this as a statemachine as some point
@@ -309,18 +329,19 @@ export function MoveStore(ctx: {
     currentTurnStore: ctx.currentTurnStore,
     currentPlayerIdStore: ctx.currentPlayerIdStore,
     recordedMoveStore: readonly(recordedMoveStore),
+    recordedActionStore: readonly(recordedActionStore),
     incrementFrame: ctx.incrementFrame,
     addAdditionalBullet: ctx.addAdditionalBullet,
 
     currentSubmoveStore: currentSubmoveStore,
     addMove(move) {
-      recordedMoveStore.update((val) => {
+      recordedActionStore.update((val) => {
         val.sub_moves.push(move)
         return val
       })
     },
     addShot(shot) {
-      recordedMoveStore.update((val) => {
+      recordedActionStore.update((val) => {
         val.shots.push(shot)
         return val
       })
@@ -371,6 +392,16 @@ export function MoveStore(ctx: {
       get(rendererStore).domElement.requestPointerLock()
     },
 
+    addCharacter(id: number) {
+      ctx.currentCharactersStore.update((chars) => {
+        let char = get(CharacterStore(id)) as Marked<Character>;
+        let charsval: Marked<Character>[] = chars!;
+        let new_chars = [...charsval, char]
+
+        return new_chars
+      })
+    },
+
     replay() {
       isRecordingStore.set(false)
       // Reset the frame counter
@@ -393,8 +424,7 @@ export function MoveStore(ctx: {
       hasShotStore.set(false)
       currentSubmoveStore.set({ x: 0, y: 0 })
       recordedMoveStore.set({
-        shots: [],
-        sub_moves: [],
+        actions: [],
       })
       ctx.resetAdditionalBullets()
     },
@@ -413,7 +443,7 @@ export function MoveStore(ctx: {
         })
         return characters
       })
-      
+
       const [account, { client }] = await getDojoContext()
       client.actions.move({
         account,

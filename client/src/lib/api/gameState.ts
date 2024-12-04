@@ -99,10 +99,10 @@ export function GameState(game: GameStore) {
   )
 
   let characters: Writable<Marked<Character> | null>[] = []
+
   // We also have to offer a way to temporarily move the characters.
   getValue(game.sessionMeta)?.p1_characters.map((val) => 
     {
-      console.log('Key', val.value)
       let character: Character | null = null;
       //@ts-ignore
       character = getValue(CharacterStore(val.value));
@@ -119,9 +119,6 @@ export function GameState(game: GameStore) {
       characters.push(writable(character))
     }) ?? []
 
-  characters.forEach((character) => {
-    console.log('Character', getValue(character))
-  })
   
   
   unsubscribes.push(
@@ -154,7 +151,8 @@ export function GameState(game: GameStore) {
       console.log('Characters', characters)
       console.log('PlayerId', playerId)
       for (let i = 0; i < characters.length; i++) {
-        if (Number(characters[i]?.playerId) != playerId || !characters[i]) {
+        if (characters[i]?.playerId! != BigInt(playerId) || !characters[i]) {
+          console.log(characters[i])
           continue
         }
         console.log('Adding Current Character', characters[i])
