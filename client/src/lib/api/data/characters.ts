@@ -31,7 +31,6 @@ export async function CharacterModelStore(
       let result: CharacterModel = {
         ...val,
       }
-      console.log('CharacterModelStore', result)
 
       set(result)
     }
@@ -51,7 +50,6 @@ export async function CharacterPositionStore(
       let result: CharacterPosition = {
         ...val,
       }
-      console.log('CharacterPositionStore', result)
 
       set(result)
     }

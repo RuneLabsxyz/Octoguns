@@ -8,28 +8,26 @@
   import get from '$lib/api/utils'
   import { get as getValue } from 'svelte/store'
   
-  let {currentPlayerId, currentPlayerCharacterIds, move } = getGame()
+  let {currentPlayerId, currentPlayerCharacterIds, move, currentCharacters } = getGame()
 
-  let charactersStore: Readable<Character[] | null>
-
-  $: playerCharacters = derived(charactersStore, ($characters) => {
-    if (!$characters) return []
-    return $characters.filter(char => char.playerId === BigInt(getValue(currentPlayerId)!))
-  })
+  console.log($currentCharacters)
 </script>
 
 <div class="character-select">
   <h2>Select Your Character</h2>
   
-  {#if $playerCharacters && $playerCharacters.length > 0}
+  {#if $currentCharacters && $currentCharacters.length > 0}
     <div class="character-grid">
-      {#each $currentPlayerCharacterIds! as id}
+      {#each $currentCharacters as character}
         <button
           class="character-card"
-          on:click={() => move.addCharacter(id.value)}
+          on:click={() => {
+            //@ts-ignore
+            move.addCharacter(character.id.value)
+          }}
         >
           <div class="character-info">
-            <span>Character #{id}</span>
+            <span>Character #{character.id}</span>
           </div>
         </button>
       {/each}

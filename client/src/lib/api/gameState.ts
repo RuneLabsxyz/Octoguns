@@ -28,6 +28,7 @@ import { ControlsStore } from './controls/controls'
 import { MoveStore } from './data/move'
 import { playSoundEffect } from '$lib/3d/utils/audioUtils'
 import { currentPlayer } from './player'
+import { account } from '$stores/account'
 
 function handleMove() {
   //console.log('calldata', calldata)
@@ -142,16 +143,17 @@ export function GameState(game: GameStore) {
   const controlsStore = ControlsStore()
 
   const currentCharactersValue = derived(
-    [game.currentPlayerId, ...characters],
-    ([playerId, ...characters]) => {
-      if (playerId == null) {
+    [account, ...characters],
+    ([player, ...characters]) => {
+      if (player == null) {
         return null
       }
       let res: Marked<Character>[] = []
       console.log('Characters', characters)
-      console.log('PlayerId', playerId)
+      console.log('PlayerId', player)
       for (let i = 0; i < characters.length; i++) {
-        if (characters[i]?.playerId! != BigInt(playerId) || !characters[i]) {
+        console.log(characters[i])
+        if (characters[i]?.playerId! != BigInt(player.address) || !characters[i]) {
           console.log(characters[i])
           continue
         }
@@ -172,6 +174,7 @@ export function GameState(game: GameStore) {
       let res = []
       for (let i = 0; i < characters!.length; i++) {
         if (Number(characters![i].playerId) != playerId) {
+          console.log('Skipping Character', characters![i])
           continue
         }
         console.log('Adding Initial Character', characters![i])
@@ -191,13 +194,11 @@ export function GameState(game: GameStore) {
       let subscription = () => {}
       let updated = false
       subscription = currentCharactersStore.subscribe((val) => {
-        let new_val: Marked<Character>[] | null = val!;
         if (!updated) {
           updated = true
-          currentCharactersStore.set(t(new_val))
+          currentCharactersStore.set(t(val))
           subscription()
         }
-        return t(new_val)
       })
     },
     set(value: Marked<Character>[] | null) {
@@ -211,6 +212,7 @@ export function GameState(game: GameStore) {
           if (Number(new_character?.id) != Number(id)) {
             return
           }
+          console.log('Setting Character', new_character.id)
           character.set(new_character)
         })
       })

@@ -6,11 +6,17 @@
   import getGame from '$lib/api/svelte/context'
   import { connect, disconnect } from '$lib/controller'
   import Button from '$lib/ui/Button.svelte'
-  const { turnCount } = getGame()
+  const { turnCount, currentPlayerId, move } = getGame()
   import { account } from '$stores/account'
+  import CharSelect from './CharSelect.svelte'
 </script>
 
 <div class="overflow-hidden">
+  <!-- Character Selection Overlay -->
+  <div class="fixed left-4 top-4 z-[100] w-[300px] bg-black/80 rounded-lg border-2 border-white/20">
+    <CharSelect />
+  </div>
+
   <div class="fixed w-screen flex bottom-0 overflow-hidden">
     <div class="flex-grow self-end h-5">
       <StepBar />
@@ -42,15 +48,16 @@
           <User color={!$birdView ? 'black' : 'white'} />
         </button>
       </div>
-    <!-- Connect Button -->
-    <div class="fixed top-4 right-4 z-[100]">
-      <Button 
+
+      <!-- Connect Button -->
+      <div class="fixed top-4 right-4 z-[100]">
+        <Button 
           class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
           on:click={() => {if ($account?.address) {connect('sepolia')} else {disconnect()}}}
-      >
-        { $account?.address ? 'Disconnect' : 'Connect' }
-      </Button>
-    </div>
+        >
+          { $account?.address ? 'Disconnect' : 'Connect' }
+        </Button>
+      </div>
 
       <div
         class="absolute right-0 bottom-0 overflow-hidden bg left-0 top-0"

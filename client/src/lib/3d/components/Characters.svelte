@@ -11,7 +11,6 @@
     console.log('Characters', get(character))
   })
 
-
 </script>
 
 <T.Group>

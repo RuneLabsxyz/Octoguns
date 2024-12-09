@@ -117,6 +117,7 @@ function recordMove(ctx: Context, camera: Camera) {
   const { forward, backward, left, right } = get<KeyState>(ctx.keyStateStore)
   const isMouseDown = get(ctx.isMouseDownStore)
   console.log('Characters', get(ctx.charactersStore))
+  console.log(ctx)
 
   if (forward) moveDirection.z -= 1
   if (backward) moveDirection.z += 1
