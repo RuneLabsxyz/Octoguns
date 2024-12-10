@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "3d:process": "node ./scripts/gltf.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.3.1",
