@@ -265,7 +265,6 @@ function replayMove(ctx: Context) {
       return
     }
     let sub_move = action.sub_moves[move_index]
-    console.log(sub_move)
 
     if (frame % FRAME_INTERVAL === 0 && frame < RECORDING_FRAME_LIMIT) {
       let x_dif = sub_move.x
@@ -448,12 +447,13 @@ export function MoveStore(ctx: {
       })
 
       const [account, { client }] = await getDojoContext()
-      client.actions.move({
+      let res = await client.actions.move({
         account,
         session_id: get(ctx.sessionIdStore),
         //@ts-expect-error - This is just sad...
         moves: callData,
       })
+      console.log('res', res)
 
       value.reset()
     },

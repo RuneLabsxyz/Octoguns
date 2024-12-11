@@ -9,11 +9,12 @@
   import getGame from '$lib/api/svelte/context'
   import type { Position } from '$lib/api/gameState'
   import { onDestroy } from 'svelte'
+  import { get } from 'svelte/store'
 
   let { currentCharacters } = getGame()
 
   let playerCoords: Position[] | undefined = $state(undefined)
-  let numCameras = $state(1)
+  let numCameras = $state(get(currentCharacters)?.length ?? 1)
   // Red: For some reason the object is not reactive if I do not subscribe manually
   const unsubscribe = currentCharacters.subscribe((chars) => {
     playerCoords = chars?.map((c) => c.coords)
@@ -32,7 +33,6 @@
   let normalizedPlayerCoords: Position[] = $derived(
     playerCoords!.map((coords) => normalizeCoords(coords)) ?? [{ x: 0, y: 0 }]
   )
-  $inspect(normalizedPlayerCoords)
 
   interface Props {
     cameras?: PerspectiveCamera[]
@@ -51,8 +51,10 @@
     position={[normalizedPlayerCoords[index].x, 1, normalizedPlayerCoords[index].y]}
     oncreate={(obj) => {
       console.log('plz')
-      cameras[index] = obj
+      cameras.push(obj)
       obj.lookAt(0, 1, 0)
+      $inspect(cameras)
+      console.log([normalizedPlayerCoords[index].x, 1, normalizedPlayerCoords[index].y])
     }}
   >
     <Hand position={[0.1, -0.16, -0.6]} rotation={[0, Math.PI, 0]} />

@@ -18,14 +18,16 @@
 
   import getGame from '$lib/api/svelte/context'
   import { rendererStore } from '$src/stores/gameStores'
+  import { get } from 'svelte/store'
 
   let { renderer, scene } = useThrelte()
-  const { controls, currentPlayerCharacterIds, frameCounter, move } = getGame()
+  const { controls, currentPlayerCharacterIds, frameCounter, move, currentCharacters } = getGame()
 
   let cameras: PerspectiveCamera[] = $state([])
-  let numCameras = 1
+  let numCameras = $state(1)
   let birdViewCamera: any = $state()
   let animationFrameId: number
+
 
   const addEventListeners = () => {
     window.addEventListener('keydown', controls.handleKeyDown)
@@ -43,6 +45,7 @@
 
   // TODO(Red): Start to refactor this
   const animationLoop = () => {
+
     try {
       if ($birdView) {
         if (birdViewCamera && birdViewCamera.isCamera) {
@@ -53,8 +56,7 @@
         }
       } else {
         if (cameras.length > 0 && cameras.every((cam) => cam && cam.isCamera)) {
-          console.log('Rendering Cameras', cameras)
-          renderCameras(cameras, numCameras, renderer, scene)
+          renderCameras(cameras, renderer, scene)
         }
       }
 
@@ -93,7 +95,7 @@
   {#if $birdView}
     <BirdView bind:camera={birdViewCamera} />
   {:else}
-    <SplitScreen bind:cameras {numCameras} />
+    <SplitScreen bind:cameras={cameras} {numCameras} />
   {/if}
   <Map />
   <Characters />
