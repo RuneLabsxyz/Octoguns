@@ -3,7 +3,7 @@ use octoguns::models::bullet::{Bullet, BulletTrait};
 
 #[starknet::interface]
 trait IActions<T> {
-    fn move(self: @T, session_id: u32, moves: TurnMove);
+    fn move(ref self: T, session_id: u32, moves: TurnMove);
 }
 
 #[dojo::contract]
@@ -38,7 +38,7 @@ mod actions {
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn move(self: @ContractState, session_id: u32, mut moves: TurnMove) {
+        fn move(ref self: ContractState, session_id: u32, mut moves: TurnMove) {
             let mut world = self.world(@"octoguns");
 
             let mut global: Global = world.read_model(GLOBAL_KEY);

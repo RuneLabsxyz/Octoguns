@@ -112,7 +112,7 @@ function shoot(ctx: Context, camera: PerspectiveCamera) {
   ctx.addAdditionalBullet(newBullet)
 }
 
-function recordMove(ctx: Context, camera: Camera) {
+function recordMove(ctx: Context, cameras: Camera[]) {
   const moveDirection = new Vector3()
   const { forward, backward, left, right } = get<KeyState>(ctx.keyStateStore)
   const isMouseDown = get(ctx.isMouseDownStore)
@@ -125,15 +125,18 @@ function recordMove(ctx: Context, camera: Camera) {
   if (right) moveDirection.x += 1
 
   if (isMouseDown && get(inPointerLock) && !get(ctx.hasShot)) {
-    shoot(ctx, camera as PerspectiveCamera)
+    cameras.forEach((camera) => {
+      shoot(ctx, camera as PerspectiveCamera )
+    })
+
     ctx.hasShot.set(true)
   }
 
   if (moveDirection.length() > 0) {
     // Scale move direction and convert to integers using Math.round
 
-    if (camera.quaternion) {
-      moveDirection.applyQuaternion(camera.quaternion)
+    if (cameras[0].quaternion) {
+      moveDirection.applyQuaternion(cameras[0].quaternion)
     } else {
       console.warn('Camera quaternion is undefined.')
     }
@@ -204,7 +207,7 @@ function recordMove(ctx: Context, camera: Camera) {
   // Reset move direction is not necessary since moveDirection is now scoped within the function
 }
 
-function replayShot(ctx: Context, camera: PerspectiveCamera) {
+function replayShot(ctx: Context, cameras: PerspectiveCamera[]) {
   let move: TurnData = get(ctx.recordedMoveStore)
   let frame = get(ctx.frameCounterStore)
   let move_index = Math.floor(frame / FRAME_INTERVAL)
@@ -225,23 +228,24 @@ function replayShot(ctx: Context, camera: PerspectiveCamera) {
         Math.sin(THREE.MathUtils.degToRad(angle / 10 ** 8)) *
         (BULLET_SPEED * SCALING_FACTOR)
 
-      const cameraPosition = denormalizeCoords({
-        x: camera.position.x,
-        y: camera.position.z,
+      cameras.forEach((camera) => {
+        const cameraPosition = denormalizeCoords({
+         x: camera.position.x,
+          y: camera.position.z,
+        })
+
+        // Create a temporary bullet for showing
+        const newBullet: Bullet = {
+          bullet_id: 0,
+          shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
+          shot_at: cameraPosition,
+          velocity: { x: vx, y: vy, xdir: true, ydir: true },
+
+          shot_by: get(ctx.currentPlayerIdStore) ?? 0,
+        }
+
+        ctx.addAdditionalBullet(newBullet)
       })
-
-      console.log(cameraPosition)
-      // Create a temporary bullet for showing
-      const newBullet: Bullet = {
-        bullet_id: 0,
-        shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
-        shot_at: cameraPosition,
-        velocity: { x: vx, y: vy, xdir: true, ydir: true },
-
-        shot_by: get(ctx.currentPlayerIdStore) ?? 0,
-      }
-
-      ctx.addAdditionalBullet(newBullet)
     }
   }
 
@@ -357,11 +361,9 @@ export function MoveStore(ctx: {
     currentSubmove: readonly(currentSubmoveStore),
     recordedMove: readonly(recordedMoveStore),
 
-    update: (camera: Camera) => {
+    update: (cameras: Camera[]) => {
       if (get(isRecordingStore)) {
-        console.log(get(ctx.currentCharactersStore))
-        console.log(get(ctx.currentPlayerIdStore))
-        recordMove(context, camera)
+        recordMove(context, cameras)
 
         // Stop the recording if finished
         if (get(ctx.frameCounterStore) === RECORDING_FRAME_LIMIT) {
@@ -373,7 +375,7 @@ export function MoveStore(ctx: {
 
       if (get(isReplayingStore)) {
         replayMove(context)
-        replayShot(context, camera as PerspectiveCamera)
+        replayShot(context, cameras as PerspectiveCamera[])
 
         // Increment frame counter
         ctx.incrementFrame()

@@ -29,9 +29,10 @@
     }
   }
 
-  let normalizedPlayerCoords = $derived(
-    normalizeCoords(playerCoords ?? { x: 0, y: 0 })
+  let normalizedPlayerCoords: Position[] = $derived(
+    playerCoords!.map((coords) => normalizeCoords(coords)) ?? [{ x: 0, y: 0 }]
   )
+  $inspect(normalizedPlayerCoords)
 
   interface Props {
     cameras?: PerspectiveCamera[]
@@ -47,7 +48,7 @@
 
 {#each Array(numCameras) as _, index}
   <T.PerspectiveCamera
-    position={[normalizedPlayerCoords.x, 1, normalizedPlayerCoords.y]}
+    position={[normalizedPlayerCoords[index].x, 1, normalizedPlayerCoords[index].y]}
     oncreate={(obj) => {
       console.log('plz')
       cameras[index] = obj

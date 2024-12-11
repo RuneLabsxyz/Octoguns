@@ -25,10 +25,6 @@
   let cameras: PerspectiveCamera[] = $state([])
   let numCameras = 1
   let birdViewCamera: any = $state()
-
-  let characterIds: Number[] = $derived($currentPlayerCharacterIds!)
-  let hasShotInCurrentRecording = writable(false)
-
   let animationFrameId: number
 
   const addEventListeners = () => {
@@ -57,11 +53,12 @@
         }
       } else {
         if (cameras.length > 0 && cameras.every((cam) => cam && cam.isCamera)) {
+          console.log('Rendering Cameras', cameras)
           renderCameras(cameras, numCameras, renderer, scene)
         }
       }
 
-      move.update(cameras[0])
+      move.update(cameras)
 
       animationFrameId = requestAnimationFrame(animationLoop)
     } catch (error) {
@@ -76,6 +73,7 @@
     addEventListeners()
     animationLoop()
     rendererStore.set(renderer)
+
 
     renderer.shadowMap.enabled = false
 

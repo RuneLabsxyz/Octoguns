@@ -1253,7 +1253,7 @@
   "contracts": [
     {
       "address": "0x459fb5d053126f72330228a746b849e360d70ef6b316bc880c38dd42379a3fb",
-      "class_hash": "0x6bd9460521da2cc028c64b87d074743ede889e75478f6c0abdcf624d34d66af",
+      "class_hash": "0x213c60b14b6c021d4e922673d4784b5fb5320c15b1c57cef488ffa59a5e12df",
       "abi": [
         {
           "type": "impl",
@@ -1406,7 +1406,7 @@
                 }
               ],
               "outputs": [],
-              "state_mutability": "view"
+              "state_mutability": "external"
             }
           ]
         },
@@ -1529,6 +1529,7 @@
       "tag": "octoguns-actions",
       "selector": "0x3f08332a455f18ae0772a74a542a5bd4079466e26536872d3330fbedcbc756a",
       "systems": [
+        "move",
         "upgrade"
       ]
     },
