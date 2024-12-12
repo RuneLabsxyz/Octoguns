@@ -5,6 +5,7 @@
 import { Account, byteArray } from "starknet";
 import { DojoProvider } from "@dojoengine/core";
 import * as models from "./models.gen";
+import { type TurnData } from "$lib/api/data/move";
 
 export type IWorld = Awaited<ReturnType<typeof setupWorld>>;
 
@@ -55,16 +56,14 @@ export async function setupWorld(provider: DojoProvider) {
 
     
         // Call the `move` system with the specified Account and calldata
-        const move = async (props: { account: Account, session_id: number, moves: models.TurnMove }) => {
+        const move = async (props: { account: Account, session_id: number, moves: TurnData }) => {
             try {
                 return await provider.execute(
                     props.account,
                     {
                         contractName: contract_name,
                         entrypoint: "move",
-                        calldata: [props.session_id,
-                props.moves.sub_moves,
-                    props.moves.shots],
+                        calldata: [props.session_id, props.moves],
                     },
                     "octoguns"
                 );

@@ -1,9 +1,9 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore } from '$src/stores/dojoStore'
+import { getDojo } from '$src/stores/dojoStore'
 import { derived, type Readable } from 'svelte/store'
-
+import { account } from '$src/stores/account'
 async function GlobalValue() {
   const { torii, clientComponents } = await getDojo()
   const valueHash = torii.poseidonHash([BigInt(0).toString()]) // global uses 0 as id
@@ -19,7 +19,7 @@ async function GlobalValue() {
 }
 
 export const currentGlobal: Readable<Global | null> = derived(
-  [accountStore],
+  [account],
   ([account], set) => {
     if (account?.address == undefined) {
       return

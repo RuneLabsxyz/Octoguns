@@ -34,10 +34,6 @@ export async function Game(sessionId: number) {
 
   let charactersStore = CharactersStore(sessionMetaStore)
 
-  charactersStore.subscribe((characters) => {
-    console.log('Characters', characters)
-  })
-
   let turnCountStore: Readable<number | null> = derived(
     [sessionMetaStore],
     ([sessionMeta]) => {
@@ -50,9 +46,6 @@ export async function Game(sessionId: number) {
 
   let currentPlayerIdStore = derived([sessionStore, account], ([session, account]) => {
     const player_address = account?.address
-
-    console.log('Session', session)
-    console.log('Account', account)
 
     if (session == null) {
       return null

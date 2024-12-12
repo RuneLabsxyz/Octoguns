@@ -254,14 +254,6 @@ export const ShotDefinition = {
     
 };
 
-// Type definition for `octoguns::models::turndata::TurnData` struct
-export interface TurnData {
-    session_id: Number;
-    turn_number: Number;
-    moves: TurnMove;
-    
-}
-
 export const TurnMoveDefinition = {
     sub_moves: RecsType.StringArray,
     shots: RecsType.StringArray,
@@ -274,14 +266,6 @@ export const TurnDataDefinition = {
     moves: TurnMoveDefinition,
     
 };
-
-// Type definition for `octoguns::types::TurnMove` struct
-export interface TurnMove {
-    sub_moves: String[];
-    shots: String[];
-    
-}
-
 
 export function defineContractComponents(world: World) {
     return {

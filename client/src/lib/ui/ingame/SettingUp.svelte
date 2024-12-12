@@ -3,12 +3,12 @@
   import Background from '$lib/ui/Background.svelte'
   import { onMount } from 'svelte'
   import Overlay from './Overlay.svelte'
-  import { accountStore } from '$src/stores/dojoStore'
+  import { account } from '$src/stores/account'
   const { currentPlayerId, session, spawn } = getGame()
 
   // Spawn if the setup is ready
   $effect(() => {
-    if ($session?.state === 1 && $accountStore && $currentPlayerId === 2) {
+    if ($session?.state === 1 && $account && $currentPlayerId === 2) {
       console.log('Spawning characters!')
       spawn()
     }

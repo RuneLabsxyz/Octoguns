@@ -1,7 +1,7 @@
 import { getDojoContext } from '$src/stores/dojoStore'
-import type { TurnMove, SessionPrimitives } from '$src/dojo/models.gen'
-
-export async function move(session_id: number, moves: TurnMove) {
+import type { SessionPrimitives } from '$src/dojo/models.gen'
+import type { TurnData } from './data/move'
+export async function move(session_id: number, moves: TurnData) {
   // Get the context
   const [account, { client }] = await getDojoContext()
   try {
@@ -41,6 +41,7 @@ export async function spawn(session_id: number) {
   }
 }
 
+//TODO: UPDATE TO SETTINGS
 export async function createGame(
   map_id: number,
   session_primitives: SessionPrimitives

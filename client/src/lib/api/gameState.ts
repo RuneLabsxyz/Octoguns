@@ -29,7 +29,7 @@ import { MoveStore } from './data/move'
 import { playSoundEffect } from '$lib/3d/utils/audioUtils'
 import { currentPlayer } from './player'
 import { account } from '$stores/account'
-
+import type { Action } from '$lib/api/data/move'
 function handleMove() {
   //console.log('calldata', calldata)
   //TEMPORARY
@@ -107,7 +107,6 @@ export function GameState(game: GameStore) {
       let character: Character | null = null;
       //@ts-ignore
       character = getValue(CharacterStore(val.value));
-      console.log('Character', character)
       characters.push(writable(character))
     }) ?? []
 
@@ -116,7 +115,6 @@ export function GameState(game: GameStore) {
       let character: Character | null = null;
       //@ts-ignore
       character = getValue(CharacterStore(val.value));
-      console.log('Character', character)
       characters.push(writable(character))
     }) ?? []
 
@@ -149,15 +147,10 @@ export function GameState(game: GameStore) {
         return null
       }
       let res: Marked<Character>[] = []
-      console.log('Characters', characters)
-      console.log('PlayerId', player)
       for (let i = 0; i < characters.length; i++) {
-        console.log(characters[i])
         if (characters[i]?.playerId! != BigInt(player.address) || !characters[i]) {
-          console.log(characters[i])
           continue
         }
-        console.log('Adding Current Character', characters[i])
         res.push(characters[i]!)
       }
 
@@ -166,14 +159,14 @@ export function GameState(game: GameStore) {
   )
 
   const initialCharactersStore = derived(
-    [game.currentPlayerId, game.characters],
+    [account, game.characters],
     ([playerId, characters]) => {
       if (playerId == null) {
         return null
       }
-      let res = []
+      let res: Marked<Character>[] = []
       for (let i = 0; i < characters!.length; i++) {
-        if (Number(characters![i].playerId) != playerId) {
+        if (BigInt(characters![i].playerId) != BigInt(playerId.address)) {
           console.log('Skipping Character', characters![i])
           continue
         }
@@ -212,7 +205,6 @@ export function GameState(game: GameStore) {
           if (Number(new_character?.id) != Number(id)) {
             return
           }
-          console.log('Setting Character', new_character.id)
           character.set(new_character)
         })
       })
@@ -244,6 +236,9 @@ export function GameState(game: GameStore) {
 
       // Add the sound
       playSoundEffect('/audio/sfx/shot.wav')
+    },
+    addAction() {
+      moveStore.addAction()
     },
     currentTurnStore: game.turnCount,
     resetAdditionalBullets() {

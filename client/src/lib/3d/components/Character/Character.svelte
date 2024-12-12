@@ -4,7 +4,7 @@
   import type { Readable } from 'svelte/store'
   import getGame from '$lib/api/svelte/context'
   import { SCALING_FACTOR } from '$lib/consts'
-  import { accountStore } from '$src/stores/dojoStore'
+  import { account } from '$src/stores/account'
   import { areAddressesEqual } from '$lib/helper'
   import type { Position } from '$lib/api/gameState'
   import { get } from 'svelte/store'
@@ -21,7 +21,7 @@
   const isAlly = $derived(
     areAddressesEqual(
       String(get(character)?.playerId),
-      $accountStore?.address ?? BigInt(0)
+      get(account)?.address ?? BigInt(0)
     )
   )
 

@@ -5,12 +5,6 @@
   import { get } from 'svelte/store'
 
   const { characters } = getGame()
-  console.log(getGame())
-
-  characters?.forEach((character) => {
-    console.log('Characters', get(character))
-  })
-
 </script>
 
 <T.Group>

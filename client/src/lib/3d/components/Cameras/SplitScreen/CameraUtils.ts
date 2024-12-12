@@ -8,8 +8,6 @@ export function renderCameras(
 ) {
   try {
     const { width, height } = renderer.domElement
-    console.log('width', width)
-    console.log('height', height)
     cameras = [...cameras]
 
       try {

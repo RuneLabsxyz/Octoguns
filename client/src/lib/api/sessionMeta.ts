@@ -1,7 +1,7 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { SessionMeta, Global } from '$src/dojo/models.gen'
 import get from './utils'
-import { getDojo, accountStore, getDojoContext } from '$src/stores/dojoStore'
+import { getDojo, getDojoContext } from '$src/stores/dojoStore'
 import {
   derived,
   readable,

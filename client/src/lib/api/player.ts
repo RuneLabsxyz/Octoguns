@@ -1,6 +1,7 @@
 import { componentValueStore } from '$src/dojo/componentValueStore'
 import type { Player } from '$src/dojo/models.gen'
-import { getDojo, accountStore } from '$src/stores/dojoStore'
+import { getDojo } from '$src/stores/dojoStore'
+import { account } from '$src/stores/account'
 import { derived, type Readable } from 'svelte/store'
 import get from './utils'
 
@@ -14,7 +15,7 @@ async function Player(address: string) {
 }
 
 export const currentPlayer: Readable<Player | null> = derived(
-  [accountStore],
+  [account],
   ([account], set) => {
     if (account?.address == undefined) {
       return

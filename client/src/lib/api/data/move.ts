@@ -24,6 +24,7 @@ import { rendererStore } from '$src/stores/gameStores'
 import { getDojoContext } from '$src/stores/dojoStore'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
 import type { Bullet } from '$src/dojo/models.gen'
+import { account } from '$src/stores/account'
 
 export type Submove = { x: number; y: number; xdir: boolean; ydir: boolean }
 export type Shot = { angle: number; step: number }
@@ -47,6 +48,7 @@ function denormalizeCoords(coords: Position): Position {
 type Context = {
   incrementFrame: () => void
   addMove: (move: Submove) => void
+  addAction: (action: Action) => void
   addShot: (shot: Shot) => void
   addAdditionalBullet: (bullet: Bullet) => void
   keyStateStore: Readable<KeyState>
@@ -303,6 +305,7 @@ export function MoveStore(ctx: {
   resetFrameCounter: () => void
   addAdditionalBullet: (bullet: Bullet) => void
   resetAdditionalBullets: () => void
+  addAction: () => void
 }) {
   console.log('Characters', get(ctx.currentCharactersStore))
   const currentSubmoveStore = writable<Position>({
@@ -350,6 +353,17 @@ export function MoveStore(ctx: {
         return val
       })
     },
+    addAction() {
+      recordedMoveStore.update((val) => {
+        val.actions.push(get(recordedActionStore))
+        recordedActionStore.set({
+          characters: [],
+          shots: [],
+          sub_moves: []
+        })
+        return val
+      })
+    }
   }
 
   const value = {
@@ -359,6 +373,7 @@ export function MoveStore(ctx: {
 
     currentSubmove: readonly(currentSubmoveStore),
     recordedMove: readonly(recordedMoveStore),
+    recordedAction: readonly(recordedActionStore),
 
     update: (cameras: Camera[]) => {
       if (get(isRecordingStore)) {
@@ -368,6 +383,8 @@ export function MoveStore(ctx: {
         if (get(ctx.frameCounterStore) === RECORDING_FRAME_LIMIT) {
           isRecordingStore.set(false)
           hasRecordedStore.set(true)
+          console.log('adding action to move', get(recordedActionStore))
+          ctx.addAction()
           document.exitPointerLock()
         }
       }
@@ -404,6 +421,10 @@ export function MoveStore(ctx: {
       })
     },
 
+    addAction() {
+      ctx.addAction()
+    },
+
     replay() {
       isRecordingStore.set(false)
       // Reset the frame counter
@@ -434,7 +455,6 @@ export function MoveStore(ctx: {
     async submit() {
       // TODO: Handle the submit
       const callData = get(recordedMoveStore)
-      console.log('callData', callData)
 
       // Unmark the character, so it is updated
       ctx.currentCharactersStore.update((characters) => {
@@ -447,10 +467,12 @@ export function MoveStore(ctx: {
       })
 
       const [account, { client }] = await getDojoContext()
+
+      console.log('callData', callData)
+
       let res = await client.actions.move({
-        account,
+        account: account,
         session_id: get(ctx.sessionIdStore),
-        //@ts-expect-error - This is just sad...
         moves: callData,
       })
       console.log('res', res)

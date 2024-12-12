@@ -11,9 +11,8 @@
     }
 
     return (
-      [$sessionMeta?.p1_character, $sessionMeta?.p2_character][
-        $currentPlayerId - 1
-      ] !== 0
+      ($sessionMeta?.p1_characters.length === 0 && $currentPlayerId == 2) ||
+      ($sessionMeta?.p2_characters.length === 0 && $currentPlayerId == 1)
     )
   })
 </script>
