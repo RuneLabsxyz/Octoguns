@@ -300,16 +300,44 @@ fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_posit
 mod helpers_tests {
     use super::{
         get_character_ids,
+        flatten_positions,
+        update_positions
+    };
+    use octoguns::tests::helpers::{
+        get_test_player_character_array, 
+        get_test_opp_character_array, 
+        get_test_settings,
+        get_test_turn_move
     };
 
 
     #[test]
     fn test_get_character_ids() {
-        let mut move_positions = ArrayTrait::new();
-        let mut opp_positions = ArrayTrait::new();
+        let mut move_positions = get_test_player_character_array(3);
+        let mut opp_positions = get_test_opp_character_array(3);
         let player_no = 1;
         let (action_ids, opp_ids) = get_character_ids(@move_positions, @opp_positions, player_no);
-        assert!(action_ids.len() == 0);
-        assert!(opp_ids.len() == 0);
+        assert!(action_ids.len() == 3);
+        assert!(opp_ids.len() == 3);
     }
+
+    #[test]
+    fn test_flatten_positions() {
+        let mut move_positions = get_test_player_character_array(3);
+        let mut opp_positions = get_test_opp_character_array(3);
+        let flat_positions = flatten_positions(@move_positions, @opp_positions);
+        assert!(flat_positions.len() == 6);
+    }
+
+    #[test]
+    fn test_update_positions(){
+        let mut move_positions = get_test_player_character_array(3);
+        let mut opp_positions = get_test_opp_character_array(3);
+        let settings = get_test_settings();
+        let mut turn_move = get_test_turn_move();
+        let updated_positions = update_positions(ref move_positions, ref turn_move, settings, 0);
+        assert!(updated_positions.len() == 3);
+    }
+
+    
 }
