@@ -44,10 +44,11 @@ fn filter_out_dead_characters(
 
     let mut i = 0;
     let mut j = 0;
-
+    let mut k = 0;
     while i < move_positions.len() {
         let action_positions = move_positions[i];
         let mut filtered_action_positions: Array<CharacterPosition> = ArrayTrait::new();
+        j = 0;
         while j < action_positions.len() && dead_characters.len() > 0 {
             let position = *action_positions.at(j);
             let mut is_dead = false;

@@ -47,6 +47,7 @@ fn set_grid_bits_from_positions(move_positions: @Array<Array<CharacterPosition>>
             break;
         }
         let positions = move_positions.at(i);
+        let mut j = 0;
         loop {
             if j >= positions.len() {
                 break;

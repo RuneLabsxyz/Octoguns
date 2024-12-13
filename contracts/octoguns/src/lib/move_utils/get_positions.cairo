@@ -15,6 +15,7 @@ fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Arr
         while j < action.characters.len() {
             let position: CharacterPosition = world.read_model(*action.characters[j]);
             temp.append(position);
+            j+=1;
         };
         positions.append(temp);
         i += 1;
