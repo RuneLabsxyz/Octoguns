@@ -23,8 +23,9 @@ import { CharacterStore, type Character } from './characters'
 import { rendererStore } from '$src/stores/gameStores'
 import { getDojoContext } from '$src/stores/dojoStore'
 import { truncate, getYawAngle, inverseMapAngle } from '$lib/helper'
-import type { Bullet } from '$src/dojo/models.gen'
+import type { Bullet, TurnMove } from '$src/dojo/models.gen'
 import { account } from '$src/stores/account'
+import { CallData, type Call } from 'starknet'
 
 export type Submove = { x: number; y: number; xdir: boolean; ydir: boolean }
 export type Shot = { angle: number; step: number }
@@ -48,7 +49,7 @@ function denormalizeCoords(coords: Position): Position {
 type Context = {
   incrementFrame: () => void
   addMove: (move: Submove) => void
-  addAction: (action: Action) => void
+  addAction: () => void
   addShot: (shot: Shot) => void
   addAdditionalBullet: (bullet: Bullet) => void
   keyStateStore: Readable<KeyState>
@@ -84,10 +85,6 @@ function shoot(ctx: Context, camera: PerspectiveCamera) {
   console.log(
     `Bullet shot at move index ${move_index} with angle ${direction} degrees`
   )
-
-  const bullet = { angle: direction, step: move_index }
-
-  ctx.addShot(bullet)
 
   let vx =
     Math.cos(THREE.MathUtils.degToRad(direction / 10 ** 8)) *
@@ -127,11 +124,24 @@ function recordMove(ctx: Context, cameras: Camera[]) {
   if (right) moveDirection.x += 1
 
   if (isMouseDown && get(inPointerLock) && !get(ctx.hasShot)) {
+    const frame = get(ctx.frameCounterStore)
+    let move_index = Math.floor(frame / 3)
+
+    let direction = getYawAngle(cameras[0] as PerspectiveCamera)
+    if (direction < 0) {
+      direction = 360 + direction
+    }
+
+    direction = Math.round(truncate(direction, 8) * 10 ** 8)
+
+    const bullet = { angle: direction, step: move_index }
+    ctx.addShot(bullet)
+    ctx.hasShot.set(true)
+
     cameras.forEach((camera) => {
+
       shoot(ctx, camera as PerspectiveCamera )
     })
-
-    ctx.hasShot.set(true)
   }
 
   if (moveDirection.length() > 0) {
@@ -305,7 +315,6 @@ export function MoveStore(ctx: {
   resetFrameCounter: () => void
   addAdditionalBullet: (bullet: Bullet) => void
   resetAdditionalBullets: () => void
-  addAction: () => void
 }) {
   console.log('Characters', get(ctx.currentCharactersStore))
   const currentSubmoveStore = writable<Position>({
@@ -317,8 +326,8 @@ export function MoveStore(ctx: {
   })
   const recordedActionStore = writable<Action>({
     characters: [],
+    sub_moves: [],
     shots: [],
-    sub_moves: []
   })
 
   // TODO: Encode this as a statemachine as some point
@@ -384,7 +393,7 @@ export function MoveStore(ctx: {
           isRecordingStore.set(false)
           hasRecordedStore.set(true)
           console.log('adding action to move', get(recordedActionStore))
-          ctx.addAction()
+          context.addAction()
           document.exitPointerLock()
         }
       }
@@ -408,6 +417,11 @@ export function MoveStore(ctx: {
       birdView.set(false)
       isReplayingStore.set(false)
       inPointerLock.set(true)
+      recordedActionStore.update((val) => {
+        val.characters = get(ctx.currentCharactersStore)?.map((character) => character.id) ?? []
+        return val
+      })
+      
       get(rendererStore).domElement.requestPointerLock()
     },
 
@@ -422,7 +436,7 @@ export function MoveStore(ctx: {
     },
 
     addAction() {
-      ctx.addAction()
+      context.addAction()
     },
 
     replay() {
@@ -454,7 +468,7 @@ export function MoveStore(ctx: {
 
     async submit() {
       // TODO: Handle the submit
-      const callData = get(recordedMoveStore)
+      const actions = get(recordedMoveStore)
 
       // Unmark the character, so it is updated
       ctx.currentCharactersStore.update((characters) => {
@@ -466,16 +480,9 @@ export function MoveStore(ctx: {
         return characters
       })
 
-      const [account, { client }] = await getDojoContext()
-
-      console.log('callData', callData)
-
-      let res = await client.actions.move({
-        account: account,
-        session_id: get(ctx.sessionIdStore),
-        moves: callData,
-      })
-      console.log('res', res)
+      const [account, { client, config, dojoProvider }] = await getDojoContext()
+      
+      client.actions.move(account, get(ctx.sessionIdStore), actions)
 
       value.reset()
     },

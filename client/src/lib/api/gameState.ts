@@ -237,9 +237,6 @@ export function GameState(game: GameStore) {
       // Add the sound
       playSoundEffect('/audio/sfx/shot.wav')
     },
-    addAction() {
-      moveStore.addAction()
-    },
     currentTurnStore: game.turnCount,
     resetAdditionalBullets() {
       additionalBullets.set([])

@@ -47,7 +47,7 @@ export async function setup(
   )
 
   let contracts = JSON.parse(JSON.stringify(manifest.contracts));
-  console.log(contracts[0]);
+  console.log(contracts);
 
   const myTestContract = new Contract(contracts[0].abi, contracts[0].address, dojoProvider.provider).typedv2(contracts[0].abi);
   console.log(myTestContract);

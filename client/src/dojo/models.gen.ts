@@ -3,7 +3,7 @@
 // Import the necessary types from the recs SDK
 // generate again with `sozo build --typescript` 
 import { defineComponent, Type as RecsType, type World } from "@dojoengine/recs";
-
+import type { Action } from "$lib/api/data/move";
 export type ContractComponents = Awaited<ReturnType<typeof defineContractComponents>>;
 
 
@@ -254,18 +254,10 @@ export const ShotDefinition = {
     
 };
 
-export const TurnMoveDefinition = {
-    sub_moves: RecsType.StringArray,
-    shots: RecsType.StringArray,
-    
-};
-
-export const TurnDataDefinition = {
-    session_id: RecsType.Number,
-    turn_number: RecsType.Number,
-    moves: TurnMoveDefinition,
-    
-};
+export interface TurnMove {
+	fieldOrder: string[];
+	actions: Array<Action>;
+}
 
 export function defineContractComponents(world: World) {
     return {
@@ -461,24 +453,5 @@ export function defineContractComponents(world: World) {
             );
         })(),
 
-        // Model definition for `octoguns::models::turndata::TurnData` model
-        TurnData: (() => {
-            return defineComponent(
-                world,
-                {
-                    session_id: RecsType.Number,
-                    turn_number: RecsType.Number,
-                    moves: TurnMoveDefinition,
-                },
-                {
-                    metadata: {
-                        namespace: "octoguns",
-                        name: "TurnData",
-                        types: ["u32", "u32"],
-                        customTypes: ["TurnMove"],
-                    },
-                }
-            );
-        })(),
     };
 }
