@@ -58,7 +58,7 @@ mod simulate_tests {
     use super::{simulate_bullets, SimulationResult};
     use octoguns::lib::grid::{pow2_const};
 
-    use octoguns::tests::helpers::{get_test_character_array};
+    use octoguns::tests::helpers::{get_test_player_character_array, get_test_opp_character_array};
 
     #[test]
     fn test_4_bullets_sim() {
@@ -77,11 +77,12 @@ mod simulate_tests {
         let bullet_3 = BulletTrait::new(1, Vec2 { x: 6, y: 1 }, 4 * ONE_E_8, 3, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let bullet_4 = BulletTrait::new(1, Vec2 { x: 3, y: 0 }, 90 * ONE_E_8, 4, 0, BULLET_SPEED, BULLET_SUBSTEPS);
 
-        let mut characters = get_test_character_array();
+        let p_characters = ArrayTrait::new();
+        let o_characters = ArrayTrait::new();
 
         let mut bullets = array![bullet_1, bullet_2, bullet_3, bullet_4];
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
@@ -99,13 +100,11 @@ mod simulate_tests {
 
         let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 63, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let mut bullets = array![bullet];
-        let mut characters = array![
-            CharacterPositionTrait::new(1, Vec2 { x: 0, y: 75000 }, STEP_COUNT),
-            CharacterPositionTrait::new(2, Vec2 { x: 45800, y: 23400 }, STEP_COUNT)
-        ];
+        let mut p_characters = get_test_player_character_array(1);
+        let mut o_characters = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.len() == 1, "Bullet should not be removed");
@@ -125,10 +124,11 @@ mod simulate_tests {
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let mut bullets = array![];
-        let mut characters = array![];
+        let mut p_characters = get_test_player_character_array(1);
+        let mut o_characters = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
     }
 
@@ -147,10 +147,11 @@ mod simulate_tests {
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let mut bullets = array![bullet];
-        let mut characters = array![CharacterPositionTrait::new(1, Vec2 { x: 0, y: 0 }, STEP_COUNT)];
+        let mut p_characters = get_test_player_character_array(1);
+        let mut o_characters = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
-            ref bullets, ref characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
+            ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
 
         assert!(updated_bullets.is_empty(), "Bullet should be removed when out of bounds");

@@ -169,7 +169,7 @@ mod grid_tests {
         let character_position_2 = CharacterPositionTrait::new(2, position_2, 10);
         positions.append(character_position_1);
         positions.append(character_position_2);
-        let (grid1, grid2, grid3) = set_grid_bits_from_positions(ref positions);
+        let (grid1, grid2, grid3) = set_grid_bits_from_positions( @ArrayTrait::new(), @positions);
         println!("grid1: {}", grid1);
         println!("grid2: {}", grid2);
         println!("grid3: {}", grid3);

@@ -209,7 +209,7 @@ mod simulate_tests {
     use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
     use super::{Bullet, BulletTrait};
     use octoguns::types::{Vec2};
-    use octoguns::tests::helpers::{get_test_character_array};
+    use octoguns::tests::helpers::{get_test_player_character_array, get_test_opp_character_array};
     use octoguns::consts::{BULLET_SPEED, BULLET_SUBSTEPS, ONE_E_8, STEP_COUNT};
     use octoguns::models::map::{Map, MapTrait};
     use octoguns::lib::grid::{set_grid_bit, check_collision};
@@ -271,6 +271,7 @@ mod simulate_tests {
         grid3 = new_grid3;
 
         let mut bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 1, 0, BULLET_SPEED, BULLET_SUBSTEPS);
+        
         let characters = array![CharacterPositionTrait::new(69, character_coords, STEP_COUNT)];
         let (hit_character, dropped) = bullet.simulate(@characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3);
         match hit_character {

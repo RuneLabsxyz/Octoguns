@@ -245,14 +245,14 @@ fn flatten_positions(move_positions: @Array<Array<CharacterPosition>>, opp_posit
             let position = *action_positions.at(j);
             flat_positions.append(position);
             j += 1;
-
-            if k < opp_positions.len() {
-                let opp_position = *opp_positions.at(k);
-                flat_positions.append(opp_position);
-                k += 1;
-            }
         };
         i += 1;
+    };
+
+    while k < opp_positions.len() {
+        let opp_position = *opp_positions.at(k);
+        flat_positions.append(opp_position);
+        k += 1;
     };
 
     return flat_positions;
@@ -273,15 +273,16 @@ fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_posit
             let position = *action_positions.at(j);
             action_ids.append(position.id);
             j += 1;
-
-            if k < opp_positions.len() {
-                let opp_position = *opp_positions.at(k);
-                opp_ids.append(opp_position.id);
-                k += 1;
-            }
         };
         i += 1;
     };
+
+    while k < opp_positions.len() {
+        let opp_position = *opp_positions.at(k);
+        opp_ids.append(opp_position.id);
+        k += 1;
+    };
+
     if player_no == 1 {
         return (action_ids, opp_ids);
     }
@@ -292,4 +293,23 @@ fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_posit
         return (ArrayTrait::new(), ArrayTrait::new());
     }
 
+}
+
+
+#[cfg(test)]
+mod helpers_tests {
+    use super::{
+        get_character_ids,
+    };
+
+
+    #[test]
+    fn test_get_character_ids() {
+        let mut move_positions = ArrayTrait::new();
+        let mut opp_positions = ArrayTrait::new();
+        let player_no = 1;
+        let (action_ids, opp_ids) = get_character_ids(@move_positions, @opp_positions, player_no);
+        assert!(action_ids.len() == 0);
+        assert!(opp_ids.len() == 0);
+    }
 }
