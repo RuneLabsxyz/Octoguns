@@ -314,8 +314,8 @@ mod helpers_tests {
 
     #[test]
     fn test_get_character_ids() {
-        let mut move_positions = get_test_player_character_array(3);
-        let mut opp_positions = get_test_opp_character_array(3);
+        let (mut move_positions, ids) = get_test_player_character_array(3);
+        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
         let player_no = 1;
         let (action_ids, opp_ids) = get_character_ids(@move_positions, @opp_positions, player_no);
         assert!(action_ids.len() == 3);
@@ -324,18 +324,18 @@ mod helpers_tests {
 
     #[test]
     fn test_flatten_positions() {
-        let mut move_positions = get_test_player_character_array(3);
-        let mut opp_positions = get_test_opp_character_array(3);
+        let (mut move_positions, ids) = get_test_player_character_array(3);
+        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
         let flat_positions = flatten_positions(@move_positions, @opp_positions);
         assert!(flat_positions.len() == 6);
     }
 
     #[test]
     fn test_update_positions(){
-        let mut move_positions = get_test_player_character_array(3);
-        let mut opp_positions = get_test_opp_character_array(3);
+        let (mut move_positions, ids) = get_test_player_character_array(3);
+        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
         let settings = get_test_settings();
-        let mut turn_move = get_test_turn_move();
+        let mut turn_move = get_test_turn_move(ids.clone());
         println!("turn_move: {}", turn_move.actions.len());
         println!("move_positions: {}", move_positions.len());
         let updated_positions = update_positions(ref move_positions, ref turn_move, settings, 0);

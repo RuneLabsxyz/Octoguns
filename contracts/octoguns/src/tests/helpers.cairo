@@ -4,28 +4,32 @@ use octoguns::models::sessions::Settings;
 use octoguns::types::{Vec2, TurnMove, Shot, IVec2, Action};
 
 
-fn get_test_player_character_array(size: u8) -> Array<Array<CharacterPosition>> {
+fn get_test_player_character_array(size: u8) -> (Array<Array<CharacterPosition>>, Array<u32>) {
     let mut index: u8 = 0;
     let mut chars: Array<CharacterPosition> = ArrayTrait::new();
+    let mut ids = ArrayTrait::new();
     while index < size {
         chars.append(CharacterPositionTrait::new(index.into(), Vec2 { x: 20000, y: 20000 }, 100));
+        ids.append(index.into());
         index += 1;
     };
     let mut res: Array<Array<CharacterPosition>> = ArrayTrait::new();
     res.append(chars);
     res.append(ArrayTrait::new());
     res.append(ArrayTrait::new());
-    res
+    (res, ids)
 }
 
-fn get_test_opp_character_array(size: u8) -> Array<CharacterPosition> {
+fn get_test_opp_character_array(size: u8) -> (Array<CharacterPosition>, Array<u32>) {
     let mut index: u8 = 0;
     let mut res: Array<CharacterPosition> = ArrayTrait::new();
+    let mut ids = ArrayTrait::new();
     while index < size.into() {
         res.append(CharacterPositionTrait::new(index.into(), Vec2 { x: 80000, y: 20000 }, 100));
+        ids.append(index.into());
         index += 1;
     };
-    res
+    (res, ids)
 }
 
 fn get_test_settings() -> Settings {
@@ -40,7 +44,7 @@ fn get_test_settings() -> Settings {
     }
 }
 
-fn get_test_turn_move() -> TurnMove {
+fn get_test_turn_move(ids: Array<u32>) -> TurnMove {
     let mut sub_moves: Array<IVec2> = ArrayTrait::new();
     let mut i: u32 = 0;
     while i < 100 {
@@ -55,20 +59,10 @@ fn get_test_turn_move() -> TurnMove {
     shots.append(shot);
     let actions: Array<Action> = array![
         Action {
-            characters: array![0],
+            characters: ids.clone(),
             sub_moves: sub_moves.clone(),
             shots: shots.clone()
         },
-        Action {
-            characters: array![1],
-            sub_moves: sub_moves.clone(),
-            shots: shots.clone()
-        },
-        Action {
-            characters: array![2],
-            sub_moves: sub_moves.clone(),
-            shots: shots.clone()
-        }
     ];
     assert!(actions.len() == 3, "actions len should be 3");
     TurnMove {

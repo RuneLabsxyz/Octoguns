@@ -2624,12 +2624,6 @@
     },
     {
       "members": [],
-      "class_hash": "0x7094b9096c2080452fd4ce252b30ab83014c894c0d1fea2473cc9a070e022ab",
-      "tag": "octoguns-TurnData",
-      "selector": "0x293d224e3d2f88ee42d736914ad052e280b0777914c71b6289e226091582f09"
-    },
-    {
-      "members": [],
       "class_hash": "0x1f77d9dfa1f1db7b8d04508c2b8ea1d51eba64e7252d3c5ee824af6d6e484f7",
       "tag": "planetelo-Playlist",
       "selector": "0x68545170c066553f1e76dc72663e4c9ff3f44f6bb4b5a3e4380f4d5152e7091"

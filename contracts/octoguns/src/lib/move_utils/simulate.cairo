@@ -100,8 +100,8 @@ mod simulate_tests {
 
         let bullet = BulletTrait::new(1, Vec2 { x: 0, y: 0 }, 0, 63, 0, BULLET_SPEED, BULLET_SUBSTEPS);
         let mut bullets = array![bullet];
-        let mut p_characters = get_test_player_character_array(1);
-        let mut o_characters = get_test_opp_character_array(1);
+        let (mut p_characters, mut p_ids) = get_test_player_character_array(1);
+        let (mut o_characters, mut o_ids) = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
             ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
@@ -124,8 +124,8 @@ mod simulate_tests {
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let mut bullets = array![];
-        let mut p_characters = get_test_player_character_array(1);
-        let mut o_characters = get_test_opp_character_array(1);
+        let (mut p_characters, mut p_ids) = get_test_player_character_array(1);
+        let (mut o_characters, mut o_ids) = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
             ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
@@ -147,8 +147,8 @@ mod simulate_tests {
         let mut map = MapTrait::new(0, map_grid1, map_grid2, map_grid3);
 
         let mut bullets = array![bullet];
-        let mut p_characters = get_test_player_character_array(1);
-        let mut o_characters = get_test_opp_character_array(1);
+        let (p_characters, p_ids) = get_test_player_character_array(1);
+        let (o_characters, o_ids) = get_test_opp_character_array(1);
 
         let (updated_bullets, updated_bullet_ids, dead_characters_ids) = simulate_bullets(
             ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3

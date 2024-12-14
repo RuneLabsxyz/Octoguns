@@ -123,7 +123,7 @@ mod tests {
 
 
         set_contract_address(player1);
-        let turn_move = get_test_turn_move();
+        let turn_move = get_test_turn_move(session_meta.p1_characters);
 
         actions.move(session_id, turn_move);
 
