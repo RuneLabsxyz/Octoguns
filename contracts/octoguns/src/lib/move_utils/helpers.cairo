@@ -117,12 +117,15 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Option<Shot>) {
         }
         i += 1;
     };
+    if current_lowest_action <= moves.actions.len() {
+        let mut shots: Array<Shot> = moves.actions[current_lowest_action].shots.clone();
+        let shot = shots.pop_front();
+        return (current_lowest_step, current_lowest_action, shot);
+    }
+    else {
+        return (current_lowest_step, current_lowest_action, Option::None);
+    }
 
-    let mut shots: Array<Shot> = moves.actions[current_lowest_action].shots.clone();
-
-    let shot = shots.pop_front();
-
-    return (current_lowest_step, current_lowest_action, shot);
 }
 
 fn shoot(ref world: WorldStorage, positions: @Array<CharacterPosition>, shot: Option<Shot>, settings: Settings, step: u32, ref bullets: Array<Bullet>) {
@@ -155,8 +158,6 @@ fn shoot(ref world: WorldStorage, positions: @Array<CharacterPosition>, shot: Op
 
 
 fn check_win(player_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>) -> bool {
-    //todo
-
     let mut player_lost = false;
     let mut opp_lost = false;
     let mut i = 0;
@@ -302,7 +303,8 @@ mod helpers_tests {
     use super::{
         get_character_ids,
         flatten_positions,
-        update_positions
+        update_positions,
+        get_next_shot
     };
     use octoguns::tests::helpers::{
         get_test_player_character_array, 
@@ -332,14 +334,22 @@ mod helpers_tests {
 
     #[test]
     fn test_update_positions(){
-        let (mut move_positions, ids) = get_test_player_character_array(3);
+        let (mut move_positions, ids) = get_test_player_character_array(1);
         let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
         let settings = get_test_settings();
         let mut turn_move = get_test_turn_move(ids.clone());
         println!("turn_move: {}", turn_move.actions.len());
         println!("move_positions: {}", move_positions.len());
         let updated_positions = update_positions(ref move_positions, ref turn_move, settings, 0);
-        assert!(updated_positions.len() == 3);
+        assert!(updated_positions.len() == 1);
+    }
+
+    #[test]
+    fn test_get_next_shot(){
+        let (mut move_positions, ids) = get_test_player_character_array(1);
+        let mut turn_move = get_test_turn_move(ids.clone());
+        let settings = get_test_settings();
+        let (step, action_index, shot) = get_next_shot(ref turn_move);
     }
 
     

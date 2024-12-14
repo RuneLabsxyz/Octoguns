@@ -39,7 +39,6 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         fn move(ref self: ContractState, session_id: u32, mut moves: TurnMove) {
             let mut world = self.world(@"octoguns");
-
             let mut global: Global = world.read_model(GLOBAL_KEY);
             let session_primitives: SessionPrimitives = world.read_model(session_id);
             let settings = session_primitives.settings;
@@ -90,11 +89,10 @@ mod actions {
 
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
-
              //MOVE LOOP
-            while sub_move_index < moves.actions.len() {
+            while sub_move_index < moves.actions[0].sub_moves.len() {
                 let step = sub_move_index + total_steps;
-
+                println!("sub_move_index: {}", sub_move_index);
                 if sub_move_index == next_shot.into() {
                     //TODO: FIX IF MULTIPLE ACTIONS SHOOT AT THE SAME STEP
                     shoot(ref world, action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
@@ -133,12 +131,12 @@ mod actions {
 
                 let new_positions = update_positions(ref action_positions, ref moves, settings, step);
                 action_positions = new_positions;
-
+                println!("updated action_positions 0 id: {}", action_positions.at(0).at(0).id);
                 sub_move_index += 1;
                 //END MOVE LOOP
             };
 
-            //
+            
             let mut positions = flatten_positions(@action_positions, @opp_positions);
 
             //set new positions
@@ -146,6 +144,7 @@ mod actions {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
+                        println!("setting postion for char id {}", pos.id);
                         world.write_model(@pos);
                     },
                     Option::None => { break; }

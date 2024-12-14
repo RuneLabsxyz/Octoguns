@@ -125,7 +125,12 @@ mod tests {
         set_contract_address(player1);
         let turn_move = get_test_turn_move(session_meta.p1_characters);
 
+        let session_meta: SessionMeta = world.read_model(session_id);
+        let mut p_characters = session_meta.p1_characters;
+        let char: CharacterPosition = world.read_model(*p_characters.at(0));
         actions.move(session_id, turn_move);
+        let new_char: CharacterPosition = world.read_model(*p_characters.at(0));
+        assert!(char.coords.x != new_char.coords.x || char.coords.y != new_char.coords.y, "Character should have moved");
 
     }
 
