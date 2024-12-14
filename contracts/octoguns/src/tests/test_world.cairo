@@ -8,11 +8,12 @@ mod tests {
     use starknet::{contract_address_const, ContractAddress};
     use starknet::testing::{set_contract_address};
     // import test utils
-    use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, m_CharacterPosition};
+    use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait, m_CharacterPosition, m_CharacterModel};
     use octoguns::models::map::{Map, MapTrait, m_Map};
-    use octoguns::models::sessions::{Session, SessionMeta, m_Session, m_SessionMeta};
+    use octoguns::models::sessions::{Session, SessionMeta, SessionPrimitives, m_SessionPrimitives, m_Session, m_SessionMeta};
     use octoguns::models::bullet::{Bullet, BulletTrait, m_Bullet};
     use octoguns::models::global::{Global, m_Global};
+    use octoguns::models::player::{Player, m_Player};
 
     use octoguns::types::{TurnMove, Vec2, IVec2, Shot};
 
@@ -28,11 +29,14 @@ mod tests {
         let ndef = NamespaceDef {
             namespace: "octoguns", resources: [
                 TestResource::Model(m_CharacterPosition::TEST_CLASS_HASH),
+                TestResource::Model(m_CharacterModel::TEST_CLASS_HASH),
                 TestResource::Model(m_Map::TEST_CLASS_HASH),
                 TestResource::Model(m_Session::TEST_CLASS_HASH),
                 TestResource::Model(m_SessionMeta::TEST_CLASS_HASH),
                 TestResource::Model(m_Bullet::TEST_CLASS_HASH),
                 TestResource::Model(m_Global::TEST_CLASS_HASH),
+                TestResource::Model(m_Player::TEST_CLASS_HASH),
+                TestResource::Model(m_SessionPrimitives::TEST_CLASS_HASH),
                 TestResource::Contract(start::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH),
                 TestResource::Contract(spawn::TEST_CLASS_HASH),
@@ -75,6 +79,8 @@ mod tests {
         let actions_system = IActionsDispatcher {contract_address: actions_address};
         let spawn_system = ISpawnDispatcher {contract_address: spawn_address};
         let mapmaker_system = IMapmakerDispatcher {contract_address: mapmaker_address};
+
+        mapmaker_system.default_map();
 
         (world, start_system, actions_system, spawn_system, mapmaker_system)
     }

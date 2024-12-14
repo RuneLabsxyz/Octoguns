@@ -12,7 +12,6 @@ mod models {
     mod characters;
     mod global;
     mod player;
-    mod turndata;
 }
 
 mod lib {

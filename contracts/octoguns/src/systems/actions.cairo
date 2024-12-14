@@ -14,7 +14,6 @@ mod actions {
     use octoguns::models::characters::{CharacterModel, CharacterPosition, CharacterPositionTrait};
     use octoguns::models::bullet::{Bullet, BulletTrait};
     use octoguns::models::map::{Map, MapTrait};
-    use octoguns::models::turndata::{TurnData};
     use octoguns::lib::move_utils::helpers::{
         get_all_bullets, 
         filter_out_dead_characters, 
