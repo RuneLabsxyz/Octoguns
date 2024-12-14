@@ -18,6 +18,10 @@ origami_algebra = { git = "https://github.com/dojoengine/origami" }
 alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
 planetelo_interface = { path = "../planetelo_interface" }
 
+
+[dev-dependencies]
+dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.3" }
+
 [[target.starknet-contract]]
 build-external-contracts = ["dojo::world::world_contract::world"]
 

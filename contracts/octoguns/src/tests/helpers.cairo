@@ -13,6 +13,8 @@ fn get_test_player_character_array(size: u8) -> Array<Array<CharacterPosition>> 
     };
     let mut res: Array<Array<CharacterPosition>> = ArrayTrait::new();
     res.append(chars);
+    res.append(ArrayTrait::new());
+    res.append(ArrayTrait::new());
     res
 }
 
@@ -51,7 +53,7 @@ fn get_test_turn_move() -> TurnMove {
         angle: 900_000_000
     };
     shots.append(shot);
-    let actions = array![
+    let actions: Array<Action> = array![
         Action {
             characters: array![0],
             sub_moves: sub_moves.clone(),
@@ -68,6 +70,7 @@ fn get_test_turn_move() -> TurnMove {
             shots: shots.clone()
         }
     ];
+    assert!(actions.len() == 3, "actions len should be 3");
     TurnMove {
         actions
     }

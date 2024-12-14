@@ -181,52 +181,53 @@ fn check_win(player_positions: @Array<Array<CharacterPosition>>, opp_positions: 
 
 fn update_positions(ref player_positions: Array<Array<CharacterPosition>>, ref moves: TurnMove, settings: Settings, index: u32) -> Array<Array<CharacterPosition>> {
     let mut new_positions: Array<Array<CharacterPosition>> = ArrayTrait::new();
+    assert!(player_positions.len() == moves.actions.len(), "player_positions len does not match moves len");
+    let mut i = 0;
 
-        let mut i = 0;
+    while i < moves.actions.len() {
+        let action = moves.actions[i];
+        let mut new_action_positions: Array<CharacterPosition> = ArrayTrait::new();
 
-        while i < moves.actions.len() {
-            let action = moves.actions[i];
-            let mut action_positions: Array<CharacterPosition> = ArrayTrait::new();
 
-            let mut vec = *action.sub_moves[index];
-            
-            if !check_is_valid_move(vec, settings.sub_move_distance) {
-                vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
+        let mut vec = *action.sub_moves[index];
+        
+        if !check_is_valid_move(vec, settings.sub_move_distance) {
+            vec = IVec2 { x: 0, y: 0, xdir: true, ydir: true };
+        }
+        let action_positions = player_positions[i];
+        //apply move
+        let mut j = 0;
+        while j < action_positions.len() {
+            let mut player_position: CharacterPosition = *action_positions.at(j);
+            if vec.xdir {
+            player_position
+                .coords
+                .x =
+                    min(
+                        100_000,
+                        player_position.coords.x + vec.x.try_into().unwrap()
+                    );
+            } else {
+                vec.x = min(vec.x, player_position.coords.x.into());
+                player_position.coords.x -= vec.x.try_into().unwrap();
             }
-            //apply move
-            let mut j = 0;
-            while j < player_positions.at(i).len() {
-                let mut player_position: CharacterPosition = *player_positions.at(i).at(j);
-
-                if vec.xdir {
+            if vec.ydir {
                 player_position
                     .coords
-                    .x =
+                    .y =
                         min(
                             100_000,
-                            player_position.coords.x + vec.x.try_into().unwrap()
+                            player_position.coords.y + vec.y.try_into().unwrap()
                         );
-                } else {
-                    vec.x = min(vec.x, player_position.coords.x.into());
-                    player_position.coords.x -= vec.x.try_into().unwrap();
-                }
-                if vec.ydir {
-                    player_position
-                        .coords
-                        .y =
-                            min(
-                                100_000,
-                                player_position.coords.y + vec.y.try_into().unwrap()
-                            );
-                } else {
-                    vec.y = min(vec.y, player_position.coords.y.into());
-                    player_position.coords.y -= vec.y.try_into().unwrap();
-                }
-                j += 1;
-                action_positions.append(player_position);
-            };
-            new_positions.append(action_positions);
-            i+=1;
+            } else {
+                vec.y = min(vec.y, player_position.coords.y.into());
+                player_position.coords.y -= vec.y.try_into().unwrap();
+            }
+            j += 1;
+            new_action_positions.append(player_position);
+        };
+        new_positions.append(new_action_positions);
+        i+=1;
     };
     new_positions
     
@@ -335,6 +336,8 @@ mod helpers_tests {
         let mut opp_positions = get_test_opp_character_array(3);
         let settings = get_test_settings();
         let mut turn_move = get_test_turn_move();
+        println!("turn_move: {}", turn_move.actions.len());
+        println!("move_positions: {}", move_positions.len());
         let updated_positions = update_positions(ref move_positions, ref turn_move, settings, 0);
         assert!(updated_positions.len() == 3);
     }

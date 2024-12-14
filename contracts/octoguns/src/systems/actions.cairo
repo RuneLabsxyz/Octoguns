@@ -93,7 +93,7 @@ mod actions {
             let mut sub_move_index = 0;
 
              //MOVE LOOP
-            while sub_move_index < max_steps {
+            while sub_move_index < moves.actions.len() {
                 let step = sub_move_index + total_steps;
 
                 if sub_move_index == next_shot.into() {
