@@ -24,76 +24,7 @@ mod tests {
     use octoguns::systems::mapmaker::{mapmaker, IMapmakerDispatcher, IMapmakerDispatcherTrait};
 
     use octoguns::tests::helpers::{get_test_settings, get_test_turn_move};
-
-    fn namespace_def() -> NamespaceDef {
-        let ndef = NamespaceDef {
-            namespace: "octoguns", resources: [
-                TestResource::Model(m_CharacterPosition::TEST_CLASS_HASH),
-                TestResource::Model(m_CharacterModel::TEST_CLASS_HASH),
-                TestResource::Model(m_Map::TEST_CLASS_HASH),
-                TestResource::Model(m_Session::TEST_CLASS_HASH),
-                TestResource::Model(m_SessionMeta::TEST_CLASS_HASH),
-                TestResource::Model(m_Bullet::TEST_CLASS_HASH),
-                TestResource::Model(m_Global::TEST_CLASS_HASH),
-                TestResource::Model(m_Player::TEST_CLASS_HASH),
-                TestResource::Model(m_SessionPrimitives::TEST_CLASS_HASH),
-                TestResource::Contract(start::TEST_CLASS_HASH),
-                TestResource::Contract(actions::TEST_CLASS_HASH),
-                TestResource::Contract(spawn::TEST_CLASS_HASH),
-                TestResource::Contract(mapmaker::TEST_CLASS_HASH)
-            ].span()
-        };
-
-        ndef
-    }
-
-    fn contract_defs() -> Span<ContractDef> {
-        [
-            ContractDefTrait::new(@"octoguns", @"start")
-                .with_writer_of([dojo::utils::bytearray_hash(@"octoguns")].span()),
-            ContractDefTrait::new(@"octoguns", @"actions")
-                .with_writer_of([dojo::utils::bytearray_hash(@"octoguns")].span()),
-            ContractDefTrait::new(@"octoguns", @"spawn")
-                .with_writer_of([dojo::utils::bytearray_hash(@"octoguns")].span()),
-            ContractDefTrait::new(@"octoguns", @"mapmaker")
-                .with_writer_of([dojo::utils::bytearray_hash(@"octoguns")].span())
-        ].span()
-    }
-
-    fn setup() -> ( WorldStorage, 
-                    IStartDispatcher, 
-                    IActionsDispatcher,
-                    ISpawnDispatcher,
-                    IMapmakerDispatcher) {
-        
-        let ndef = namespace_def();
-        let world: WorldStorage = spawn_test_world([ndef].span());
-        world.sync_perms_and_inits(contract_defs());
-
-        let (start_address, _) = world.dns(@"start").unwrap();
-        let (actions_address, _) = world.dns(@"actions").unwrap();
-        let (spawn_address, _) = world.dns(@"spawn").unwrap();
-        let (mapmaker_address, _) = world.dns(@"mapmaker").unwrap();
-
-        let start_system = IStartDispatcher {contract_address: start_address}; 
-        let actions_system = IActionsDispatcher {contract_address: actions_address};
-        let spawn_system = ISpawnDispatcher {contract_address: spawn_address};
-        let mapmaker_system = IMapmakerDispatcher {contract_address: mapmaker_address};
-
-        mapmaker_system.default_map();
-
-        (world, start_system, actions_system, spawn_system, mapmaker_system)
-    }
-
-    fn setup_game(start_system: IStartDispatcher, spawn_system: ISpawnDispatcher, p1: ContractAddress, p2: ContractAddress) -> u32 {
-        set_contract_address(p1);
-        let settings = get_test_settings();
-        let session_id = start_system.create(0, settings);
-        set_contract_address(p2);
-        start_system.join(session_id);
-        spawn_system.spawn(session_id);
-        session_id
-    }
+    use octoguns::tests::world_setup::{setup, setup_game};
 
     #[test]
     fn test_setup() {
@@ -118,7 +49,7 @@ mod tests {
         let player1: ContractAddress = contract_address_const::<0x01>();
         let player2: ContractAddress = contract_address_const::<0x02>();
         let session_id = setup_game(start, spawn, player1, player2);
-        let session: Session = world.read_model(session_id);
+        let _session: Session = world.read_model(session_id);
         let session_meta: SessionMeta = world.read_model(session_id);
 
 

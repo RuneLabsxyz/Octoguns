@@ -334,13 +334,15 @@ mod helpers_tests {
     #[test]
     fn test_update_positions(){
         let (mut move_positions, ids) = get_test_player_character_array(array![array![1,3],array![5]]);
-        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
+        let mut _opp_positions = get_test_opp_character_array(array![2,4,6]);
         let settings = get_test_settings();
         let mut turn_move = get_test_turn_move(ids.clone());
         println!("turn_move: {}", turn_move.actions.len());
         println!("move_positions: {}", move_positions.len());
         let updated_positions = update_positions(ref move_positions, ref turn_move, settings, 0);
-        assert!(updated_positions.len() == 1);
+        assert!(updated_positions.len() == 2);
+        assert!(updated_positions[0].len() == 2);
+        assert!(updated_positions[1].len() == 1);
     }
 
     #[test]
@@ -354,18 +356,19 @@ mod helpers_tests {
     #[test]
     fn test_filter_out_dead_characters(){
         let (mut move_positions, ids) = get_test_player_character_array(array![array![1,3],array![5]]);
-        let mut opp_positions = get_test_opp_character_array(array![2,4]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
         assert!(move_positions[0].len() == 2);
         assert!(move_positions[1].len() == 1);
         assert!(ids.len() == 3);
         assert!(opp_positions.len() == 3);
         let mut dead_characters = ArrayTrait::new();
-        dead_characters.append(*ids[0]);
+        dead_characters.append(1);
         let (filtered_move_positions, filtered_opp_positions) = filter_out_dead_characters(@move_positions, @opp_positions, dead_characters);
-        assert!(filtered_move_positions[0].len() == 2);
+        assert!(filtered_move_positions[0].len() == 1);
+        assert!(filtered_move_positions[1].len() == 1);
+
         assert!(filtered_opp_positions.len() == 3);
         
     }
-
     
 }

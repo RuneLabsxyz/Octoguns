@@ -32,6 +32,7 @@ mod lib {
 mod tests {
     mod helpers;
     mod test_world;
+    mod world_setup;
 }
 
 mod consts;

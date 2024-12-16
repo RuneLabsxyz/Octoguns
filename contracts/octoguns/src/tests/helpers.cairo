@@ -1,6 +1,6 @@
 use octoguns::lib::default_spawns::generate_character_positions;
 use octoguns::models::characters::{CharacterPosition, CharacterPositionTrait};
-use octoguns::models::sessions::Settings;
+use octoguns::models::sessions::{Settings, Session, SessionMeta, SessionTrait, SessionMetaTrait};
 use octoguns::types::{Vec2, TurnMove, Shot, IVec2, Action};
 
 
@@ -40,11 +40,12 @@ fn get_test_settings() -> Settings {
         sub_moves: 100,
         sub_move_distance: 400,
         characters: 3,
-        actions: 3
+        actions: 2
     }
 }
 
 fn get_test_turn_move(ids: Array<u32>) -> TurnMove {
+    //todo actually use ids
     let mut sub_moves: Array<IVec2> = ArrayTrait::new();
     let mut i: u32 = 0;
     while i < 100 {
@@ -52,17 +53,22 @@ fn get_test_turn_move(ids: Array<u32>) -> TurnMove {
         i += 1;
     };
     let mut shots: Array<Shot> = ArrayTrait::new();
-    let shot: Shot = Shot {
+    let _shot: Shot = Shot {
         step: 0,
         angle: 900_000_000
     };
   //  shots.append(shot);
     let actions: Array<Action> = array![
         Action {
-            characters: ids.clone(),
+            characters: array![1,3],
             sub_moves: sub_moves.clone(),
             shots: shots.clone()
         },
+        Action {
+            characters: array![5],
+            sub_moves: sub_moves.clone(),
+            shots: shots.clone()
+        }
     ];
     TurnMove {
         actions
