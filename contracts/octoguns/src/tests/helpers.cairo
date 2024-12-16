@@ -4,30 +4,32 @@ use octoguns::models::sessions::Settings;
 use octoguns::types::{Vec2, TurnMove, Shot, IVec2, Action};
 
 
-fn get_test_player_character_array(size: u8) -> (Array<Array<CharacterPosition>>, Array<u32>) {
-    let mut index: u8 = 0;
-    let mut chars: Array<CharacterPosition> = ArrayTrait::new();
-    let mut ids = ArrayTrait::new();
-    while index < size {
-        chars.append(CharacterPositionTrait::new(index.into(), Vec2 { x: 20000, y: 20000 }, 100));
-        ids.append(index.into());
-        index += 1;
-    };
+fn get_test_player_character_array(ids: Array<Array<u32>>) -> (Array<Array<CharacterPosition>>, Array<u32>) {
+    let mut i = 0;
     let mut res: Array<Array<CharacterPosition>> = ArrayTrait::new();
-    res.append(chars);
-    (res, ids)
+    let mut flat_ids: Array<u32> = ArrayTrait::new();
+    while i < ids.len() {
+        let mut chars: Array<CharacterPosition> = ArrayTrait::new();
+        let mut j = 0;
+        while j < ids[i].len() {
+            chars.append(CharacterPositionTrait::new(*ids.at(i).at(j), Vec2 { x: 20000, y: 20000 }, 100));
+            flat_ids.append(*ids.at(i).at(j));
+            j += 1;
+        };
+        res.append(chars);
+        i += 1;
+    };
+    (res, flat_ids)
 }
 
-fn get_test_opp_character_array(size: u8) -> (Array<CharacterPosition>, Array<u32>) {
-    let mut index: u8 = 0;
+fn get_test_opp_character_array(ids: Array<u32>) -> Array<CharacterPosition> {
+    let mut index = 0;
     let mut res: Array<CharacterPosition> = ArrayTrait::new();
-    let mut ids = ArrayTrait::new();
-    while index < size.into() {
-        res.append(CharacterPositionTrait::new(index.into(), Vec2 { x: 80000, y: 20000 }, 100));
-        ids.append(index.into());
+    while index < ids.len() {
+        res.append(CharacterPositionTrait::new(*ids[index], Vec2 { x: 80000, y: 20000 }, 100));
         index += 1;
     };
-    (res, ids)
+    res
 }
 
 fn get_test_settings() -> Settings {

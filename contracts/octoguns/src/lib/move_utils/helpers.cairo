@@ -13,7 +13,7 @@ use octoguns::consts::MOVE_SPEED;
 fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
     let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
     let session_meta: SessionMeta = world.read_model(session_id);
-    let bullets = session_meta.bullets; //  type: array<u32>
+    let bullets: Array<u32> = session_meta.bullets; 
 
     let mut i = 0;
     if bullets.len() == 0 {
@@ -44,7 +44,6 @@ fn filter_out_dead_characters(
 
     let mut i = 0;
     let mut j = 0;
-    let mut k = 0;
     while i < move_positions.len() {
         let action_positions = move_positions[i];
         let mut filtered_action_positions: Array<CharacterPosition> = ArrayTrait::new();
@@ -261,7 +260,6 @@ fn flatten_positions(move_positions: @Array<Array<CharacterPosition>>, opp_posit
 }
 
 fn get_character_ids(move_positions: @Array<Array<CharacterPosition>>, opp_positions: @Array<CharacterPosition>, player_no: u8) -> (Array<u32>, Array<u32>) {
-    //todo
     let mut action_ids: Array<u32> = ArrayTrait::new();
     let mut opp_ids: Array<u32> = ArrayTrait::new();
 
@@ -304,7 +302,8 @@ mod helpers_tests {
         get_character_ids,
         flatten_positions,
         update_positions,
-        get_next_shot
+        get_next_shot,
+        filter_out_dead_characters
     };
     use octoguns::tests::helpers::{
         get_test_player_character_array, 
@@ -316,8 +315,8 @@ mod helpers_tests {
 
     #[test]
     fn test_get_character_ids() {
-        let (mut move_positions, ids) = get_test_player_character_array(3);
-        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
+        let (mut move_positions, _ids) = get_test_player_character_array(array![array![1,3],array![5]]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
         let player_no = 1;
         let (action_ids, opp_ids) = get_character_ids(@move_positions, @opp_positions, player_no);
         assert!(action_ids.len() == 3);
@@ -326,16 +325,16 @@ mod helpers_tests {
 
     #[test]
     fn test_flatten_positions() {
-        let (mut move_positions, ids) = get_test_player_character_array(3);
-        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
+        let (mut move_positions, _ids) = get_test_player_character_array(array![array![1,3],array![5]]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
         let flat_positions = flatten_positions(@move_positions, @opp_positions);
         assert!(flat_positions.len() == 6);
     }
 
     #[test]
     fn test_update_positions(){
-        let (mut move_positions, ids) = get_test_player_character_array(1);
-        let (mut opp_positions, opp_ids) = get_test_opp_character_array(3);
+        let (mut move_positions, ids) = get_test_player_character_array(array![array![1,3],array![5]]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
         let settings = get_test_settings();
         let mut turn_move = get_test_turn_move(ids.clone());
         println!("turn_move: {}", turn_move.actions.len());
@@ -346,10 +345,26 @@ mod helpers_tests {
 
     #[test]
     fn test_get_next_shot(){
-        let (mut move_positions, ids) = get_test_player_character_array(1);
+        let (mut _turn_move_positions, ids) = get_test_player_character_array(array![array![1,3],array![5]]);
         let mut turn_move = get_test_turn_move(ids.clone());
-        let settings = get_test_settings();
-        let (step, action_index, shot) = get_next_shot(ref turn_move);
+        let _settings = get_test_settings();
+        let (_step, _action_index, _shot) = get_next_shot(ref turn_move);
+    }
+
+    #[test]
+    fn test_filter_out_dead_characters(){
+        let (mut move_positions, ids) = get_test_player_character_array(array![array![1,3],array![5]]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4]);
+        assert!(move_positions[0].len() == 2);
+        assert!(move_positions[1].len() == 1);
+        assert!(ids.len() == 3);
+        assert!(opp_positions.len() == 3);
+        let mut dead_characters = ArrayTrait::new();
+        dead_characters.append(*ids[0]);
+        let (filtered_move_positions, filtered_opp_positions) = filter_out_dead_characters(@move_positions, @opp_positions, dead_characters);
+        assert!(filtered_move_positions[0].len() == 2);
+        assert!(filtered_opp_positions.len() == 3);
+        
     }
 
     
