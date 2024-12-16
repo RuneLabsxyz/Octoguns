@@ -3,6 +3,7 @@ use octoguns::models::characters::CharacterPosition;
 use dojo::world::WorldStorage;
 use dojo::model::{ModelStorage, ModelValueStorage, Model};
 use octoguns::models::sessions::SessionMeta;
+use octoguns::models::bullet::Bullet;
 
 fn get_move_positions(ref world: WorldStorage, ref moves: TurnMove) -> Array<Array<CharacterPosition>> {
     //TODO: ASSERT ALL CHARACTERS ARE MOVED AND ONLY ONE MOVE PER CHARACTER >
@@ -55,16 +56,38 @@ fn get_rest_positions(ref world: WorldStorage, meta: @SessionMeta, player: u8) -
     opp
 }
 
+fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
+    let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
+    let session_meta: SessionMeta = world.read_model(session_id);
+    let bullets: Array<u32> = session_meta.bullets; 
+
+    let mut i = 0;
+    if bullets.len() == 0 {
+        return all_live_bullets;
+    }
+
+    while i < bullets.len() {
+        let bullet_id = *bullets.at(i);
+        let bullet: Bullet = world.read_model(bullet_id);
+
+        all_live_bullets.append(bullet);
+        i += 1;
+    };
+
+    return all_live_bullets;
+}
+
+
 #[cfg(test)]
 mod tests {
-    use super::{get_move_positions, get_rest_positions};
+    use super::{get_move_positions, get_rest_positions, get_all_bullets};
     use octoguns::tests::helpers::{get_test_settings, get_test_turn_move};
     use octoguns::tests::world_setup::{setup, setup_game};
 
     use dojo::world::WorldStorage;
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
     use octoguns::models::sessions::SessionMeta;
-
+    use octoguns::models::bullet::Bullet;
 
     #[test]
     fn test_get_move_positions() {
@@ -90,5 +113,16 @@ mod tests {
         let mut meta: SessionMeta = world.read_model(session_id);
         let rest_positions = get_rest_positions(ref world, @meta, 2);
         assert!(rest_positions.len() == 3);
+    }
+
+    #[test]
+    fn test_get_all_bullets() {
+        let (mut world, start, _actions, spawn, _) = setup();
+        let p1 = starknet::contract_address_const::<0x1>();
+        let p2 = starknet::contract_address_const::<0x2>();
+        let session_id = setup_game(start, spawn, p1, p2);
+
+        let all_bullets = get_all_bullets(world, session_id);
+        assert!(all_bullets.len() == 0);
     }
 }

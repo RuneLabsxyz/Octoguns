@@ -10,26 +10,6 @@ use core::cmp::{min, max};
 
 use octoguns::consts::MOVE_SPEED;
 
-fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
-    let mut all_live_bullets: Array<Bullet> = ArrayTrait::new();
-    let session_meta: SessionMeta = world.read_model(session_id);
-    let bullets: Array<u32> = session_meta.bullets; 
-
-    let mut i = 0;
-    if bullets.len() == 0 {
-        return all_live_bullets;
-    }
-
-    while i < bullets.len() {
-        let bullet_id = *bullets.at(i);
-        let bullet: Bullet = world.read_model(bullet_id);
-
-        all_live_bullets.append(bullet);
-        i += 1;
-    };
-
-    return all_live_bullets;
-}
 
 
 fn filter_out_dead_characters(
@@ -99,7 +79,7 @@ fn check_is_valid_move(v: IVec2, max_distance_per_sub_move: u32) -> bool {
 
 fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Option<Shot>) {
     //start out of bounds
-    let mut current_lowest_step = moves.actions[0].shots.len() + 1;
+    let mut current_lowest_step = moves.actions[0].sub_moves.len() + 1;
     let mut current_lowest_action = moves.actions.len() + 1;
 
     let mut i = 0;
@@ -303,7 +283,8 @@ mod helpers_tests {
         flatten_positions,
         update_positions,
         get_next_shot,
-        filter_out_dead_characters
+        filter_out_dead_characters,
+        check_win
     };
     use octoguns::tests::helpers::{
         get_test_player_character_array, 
@@ -369,6 +350,13 @@ mod helpers_tests {
 
         assert!(filtered_opp_positions.len() == 3);
         
+    }
+
+    #[test]
+    fn test_check_win(){
+        let (mut move_positions, _ids) = get_test_player_character_array(array![array![1,3],array![5]]);
+        let mut opp_positions = get_test_opp_character_array(array![2,4,6]);
+        assert!(check_win(@move_positions, @opp_positions) == false);
     }
     
 }
