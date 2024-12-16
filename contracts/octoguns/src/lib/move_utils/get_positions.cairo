@@ -82,7 +82,7 @@ fn get_all_bullets(world: WorldStorage, session_id: u32) -> Array<Bullet> {
 mod tests {
     use super::{get_move_positions, get_rest_positions, get_all_bullets};
     use octoguns::tests::helpers::{get_test_settings, get_test_turn_move};
-    use octoguns::tests::world_setup::{setup, setup_game};
+    use octoguns::tests::world_setup::test_world_setup::{setup, setup_game};
 
     use dojo::world::WorldStorage;
     use dojo::model::{ModelStorage, ModelValueStorage, Model};

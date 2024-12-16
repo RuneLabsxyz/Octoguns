@@ -81,18 +81,14 @@ mod actions {
             let mut opp_positions = get_rest_positions(ref world, @session_meta, player_no);
 
             let mut bullets = get_all_bullets(world, session_id);
-
             let max_steps = settings.sub_moves;
 
             let (mut next_shot, mut next_shot_action, mut next_shot_shot) = get_next_shot(ref moves);
-
             let total_steps = max_steps * session_meta.turn_count;
             let mut sub_move_index = 0;
              //MOVE LOOP
             while sub_move_index < moves.actions[0].sub_moves.len() {
                 let step = sub_move_index + total_steps;
-                println!("sub_move_index: {}", sub_move_index);
-                println!("next_shot: {}", next_shot);
                 if sub_move_index == next_shot.into() {
                     //TODO: FIX IF MULTIPLE ACTIONS SHOOT AT THE SAME STEP
                     shoot(ref world, action_positions[next_shot_action], next_shot_shot, settings, step, ref bullets);
@@ -105,36 +101,28 @@ mod actions {
 
                 // Loop through positions and update the grid
                 let (mut grid1, mut grid2, mut grid3) = set_grid_bits_from_positions(@action_positions, @opp_positions);
-                println!("grid set");
                 //advance bullets + check collisions
                 let (new_bullets, new_bullet_ids, dead_characters) = simulate_bullets(
                     ref bullets, @action_positions, @opp_positions, ref map, step, settings.bullet_steps, ref grid1, ref grid2, ref grid3
                 );
-                println!("simulated");
-
                 bullets = new_bullets;
                 updated_bullet_ids = new_bullet_ids;
 
                 let (new_action_positions, new_opp_positions) = filter_out_dead_characters(
                     @action_positions, @opp_positions, dead_characters
                 );
-                println!("filtered");
-
                 action_positions = new_action_positions;
                 opp_positions = new_opp_positions;
 
                 let over = check_win(@action_positions, @opp_positions);
-                println!("checked win");
                 //if win, set session state to 3 and break
                 if over {
                     session.state = 3;
                     break;
                 }
 
-                let new_positions = update_positions(ref action_positions, ref moves, settings, step);
-                println!("updated");
+                let new_positions = update_positions(ref action_positions, ref moves, settings, sub_move_index);
                 action_positions = new_positions;
-                println!("updated action_positions 0 id: {}", action_positions.at(0).at(0).id);
                 sub_move_index += 1;
                 //END MOVE LOOP
             };
@@ -147,7 +135,6 @@ mod actions {
                 let next_position = positions.pop_front();
                 match next_position {
                     Option::Some(pos) => {
-                        println!("setting postion for char id {}", pos.id);
                         world.write_model(@pos);
                     },
                     Option::None => { break; }

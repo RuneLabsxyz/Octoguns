@@ -24,7 +24,7 @@ mod tests {
     use octoguns::systems::mapmaker::{mapmaker, IMapmakerDispatcher, IMapmakerDispatcherTrait};
 
     use octoguns::tests::helpers::{get_test_settings, get_test_turn_move};
-    use octoguns::tests::world_setup::{setup, setup_game};
+    use octoguns::tests::world_setup::test_world_setup::{setup, setup_game};
 
     #[test]
     fn test_setup() {
@@ -62,6 +62,10 @@ mod tests {
         actions.move(session_id, turn_move);
         let new_char: CharacterPosition = world.read_model(*p_characters.at(0));
         assert!(char.coords.x != new_char.coords.x || char.coords.y != new_char.coords.y, "Character should have moved");
+
+        set_contract_address(player2);
+        let turn_move = get_test_turn_move(session_meta.p2_characters);
+        actions.move(session_id, turn_move);
 
     }
 

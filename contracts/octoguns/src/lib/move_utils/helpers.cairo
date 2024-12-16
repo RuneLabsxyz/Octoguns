@@ -168,7 +168,6 @@ fn update_positions(ref player_positions: Array<Array<CharacterPosition>>, ref m
         let action = moves.actions[i];
         let mut new_action_positions: Array<CharacterPosition> = ArrayTrait::new();
 
-
         let mut vec = *action.sub_moves[index];
         
         if !check_is_valid_move(vec, settings.sub_move_distance) {
