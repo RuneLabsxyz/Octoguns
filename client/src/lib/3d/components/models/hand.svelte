@@ -79,7 +79,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/hand.glb --transform -t
   })
 </script>
 
-<T.Group bind:ref dispose={false} {...props}>
+<T.Group bind:ref dispose={false} {...props} frustumCulled={false}>
   {#await gltf}
     {@render fallback?.()}
   {:then gltf}

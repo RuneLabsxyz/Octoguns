@@ -10,6 +10,7 @@
   import type { Position } from '$lib/api/gameState'
   import { onDestroy } from 'svelte'
   import { get } from 'svelte/store'
+  import { ArrayCamera } from 'three'
 
   let { currentCharacters } = getGame()
 
@@ -54,9 +55,8 @@
       cameras.push(obj)
       obj.lookAt(0, 1, 0)
       $inspect(cameras)
-      console.log([normalizedPlayerCoords[index].x, 1, normalizedPlayerCoords[index].y])
     }}
   >
-    <Hand position={[0.1, -0.16, -0.6]} rotation={[0, Math.PI, 0]} />
+    <Hand position={[0.1, -0.16, -0.6]} rotation={[0, Math.PI, 0]} frustumCulled={false} />
   </T.PerspectiveCamera>
 {/each}

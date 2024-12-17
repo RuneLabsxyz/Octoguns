@@ -132,12 +132,12 @@
     ]}
   >
     <!-- Bullet body (cylinder) -->
-    <T.Mesh position={[0, -0.15, 0]}>
+    <T.Mesh position={[0, -0.15, 0]} frustumCulled={false}>
       <T.CylinderGeometry args={[0.1, 0.1, 0.3, 16]} />
       <T.MeshStandardMaterial color="gray" />
     </T.Mesh>
     <!-- Bullet tip (cone) -->
-    <T.Mesh position={[0, 0.1, 0]}>
+    <T.Mesh position={[0, 0.1, 0]} frustumCulled={false}>
       <T.ConeGeometry args={[0.1, 0.2, 16]} />
       <T.MeshStandardMaterial color="darkgray" />
     </T.Mesh>

@@ -10,7 +10,7 @@
   let material = new MeshStandardMaterial({ color: 'blue' })
 </script>
 
-<T.Group position={[x, y, z]}>
+<T.Group position={[x, y, z]} frustumCulled={false}>
   <T.Mesh>
     <T.BoxGeometry args={[0.1, 0.4, 0.1]} />
     <T is={material} />

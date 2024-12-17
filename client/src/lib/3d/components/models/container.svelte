@@ -4,7 +4,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/container-transformed.glb -
 -->
 
 <script lang="ts">
-  import type * as THREE from 'three'
+  import * as THREE from 'three'
 
   import type { Snippet } from 'svelte'
   import { T, type Props } from '@threlte/core'
@@ -75,7 +75,8 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/container-transformed.glb -
   {#await gltf}
     {@render fallback?.()}
   {:then gltf}
-    <T.Group rotation={[-Math.PI, 0, 0]}>
+    <T.Group rotation={[-Math.PI, 0, 0]}         side={THREE.FrontSide}
+    >
       <T.Mesh
         geometry={gltf.nodes.mesh_0.geometry}
         material={gltf.materials['Material.007']}
@@ -111,6 +112,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/container-transformed.glb -
       <T.Mesh
         geometry={gltf.nodes.mesh_0_8.geometry}
         material={gltf.materials['CENTER TOP']}
+        side={THREE.FrontSide}
       />
       <T.Mesh
         geometry={gltf.nodes.mesh_0_9.geometry}
@@ -119,6 +121,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/container-transformed.glb -
       <T.Mesh
         geometry={gltf.nodes.mesh_0_10.geometry}
         material={gltf.materials['CENTER GLASS ']}
+        side={THREE.FrontSide}
       />
       <T.Mesh
         geometry={gltf.nodes.mesh_0_11.geometry}
@@ -135,6 +138,7 @@ Command: npx @threlte/gltf@3.0.0-next.10 ./static/3d/container-transformed.glb -
       <T.Mesh
         geometry={gltf.nodes.mesh_0_14.geometry}
         material={gltf.materials['Material.006']}
+        
       />
     </T.Group>
     <T.Group rotation={[0, Math.PI / 4, 0]} scale={1.2}>

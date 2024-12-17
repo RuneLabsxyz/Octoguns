@@ -39,8 +39,7 @@ export function renderCameras(
 
         let camera = new ArrayCamera(cameras)
 
-        renderer.setScissorTest(false)
-        renderer.render(scene, camera)
+        return camera
 
       } catch (error) {
         console.error('Error setting up camera layout:', error)

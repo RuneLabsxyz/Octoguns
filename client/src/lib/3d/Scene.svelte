@@ -20,13 +20,14 @@
   import { rendererStore } from '$src/stores/gameStores'
   import { get } from 'svelte/store'
 
-  let { renderer, scene } = useThrelte()
+  import { useTask } from '@threlte/core'
+
+  let { renderer, scene, camera } = useThrelte()
   const { controls, currentPlayerCharacterIds, frameCounter, move, currentCharacters } = getGame()
 
   let cameras: PerspectiveCamera[] = $state([])
   let numCameras = $state(1)
   let birdViewCamera: any = $state()
-  let animationFrameId: number
 
 
   const addEventListeners = () => {
@@ -51,18 +52,19 @@
         if (birdViewCamera && birdViewCamera.isCamera) {
           resetCamera(birdViewCamera, renderer)
           if (scene && scene.isScene) {
-            renderer.render(scene, birdViewCamera)
+            camera.set(birdViewCamera)            
           }
         }
       } else {
         if (cameras.length > 0 && cameras.every((cam) => cam && cam.isCamera)) {
-          renderCameras(cameras, renderer, scene)
+          let split_camera = renderCameras(cameras, renderer, scene)
+          renderer.setScissorTest(false)
+          camera.set(split_camera!)
         }
       }
 
       move.update(cameras)
 
-      animationFrameId = requestAnimationFrame(animationLoop)
     } catch (error) {
       console.error('Error in animation loop:', error)
       if (error instanceof TypeError && error.message.includes('byteLength')) {
@@ -71,9 +73,12 @@
     }
   }
 
+  useTask(() => {  
+    animationLoop();
+  })
+
   onMount(() => {
     addEventListeners()
-    animationLoop()
     rendererStore.set(renderer)
 
 
@@ -81,13 +86,11 @@
 
     return () => {
       removeEventListeners()
-      cancelAnimationFrame(animationFrameId)
     }
   })
 
   onDestroy(() => {
     removeEventListeners()
-    renderer.setAnimationLoop(null)
   })
 </script>
 

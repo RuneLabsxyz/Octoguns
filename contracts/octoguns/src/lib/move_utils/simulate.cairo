@@ -84,6 +84,8 @@ mod simulate_tests {
         let (_updated_bullets, _updated_bullet_ids, _dead_characters_ids) = simulate_bullets(
             ref bullets, @p_characters, @o_characters, ref map, 1, BULLET_SUBSTEPS, ref grid1, ref grid2, ref grid3
         );
+        assert!(_updated_bullets.len() != 0);
+        assert!(_updated_bullet_ids.len() != 0);
     }
 
     #[test]

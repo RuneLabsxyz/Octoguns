@@ -44,7 +44,7 @@
 </script>
 
 {#if $character != null}
-  <T.Mesh {position} key={$character.id}>
+  <T.Mesh {position} key={$character.id} frustumCulled={false}>
     <T.BoxGeometry args={[1, 1, 1]} />
     <T.MeshStandardMaterial color={isAlly ? 'blue' : 'red'} />
   </T.Mesh>

@@ -367,8 +367,8 @@ export function MoveStore(ctx: {
         val.actions.push(get(recordedActionStore))
         recordedActionStore.set({
           characters: [],
+          sub_moves: [],
           shots: [],
-          sub_moves: []
         })
         return val
       })
@@ -481,6 +481,7 @@ export function MoveStore(ctx: {
       })
 
       const [account, { client, config, dojoProvider }] = await getDojoContext()
+      console.log("actions", actions)
       
       client.actions.move(account, get(ctx.sessionIdStore), actions)
 
