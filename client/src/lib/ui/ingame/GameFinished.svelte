@@ -24,13 +24,6 @@
     {:else}
       <h1 class="text-5xl font-bold text-white">You lose!</h1>
     {/if}
-    <p class="text-white text-center mt-2">
-      {#if isWinner}
-        YOU WIN!
-      {:else}
-        YOU LOSE!
-      {/if}
-    </p>
 
     <Button
       href="/sepolia/client/matchmaking"

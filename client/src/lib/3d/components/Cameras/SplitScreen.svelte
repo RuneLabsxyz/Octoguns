@@ -53,7 +53,6 @@
     oncreate={(obj) => {
       console.log('plz')
       cameras.push(obj)
-      obj.lookAt(0, 1, 0)
       $inspect(cameras)
     }}
   >
