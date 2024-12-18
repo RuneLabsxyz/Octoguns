@@ -5,6 +5,7 @@ import {
   RECORDING_FRAME_LIMIT,
   TURN_COUNT,
   BULLET_SPEED,
+  BULLET_SUBSTEPS,
 } from '$lib/consts'
 import { clamp, normalizeAndScaleVector } from '$lib/helper'
 import { birdView, inPointerLock } from '$src/stores/cameraStores'
@@ -101,7 +102,7 @@ function shoot(ctx: Context, camera: PerspectiveCamera) {
   // Create a temporary bullet for showing
   const newBullet: Bullet = {
     bullet_id: 0,
-    shot_step: move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT,
+    shot_step: (move_index + (get(ctx.currentTurnStore) ?? 0) * TURN_COUNT)*BULLET_SUBSTEPS,
     shot_at: cameraPosition,
     velocity: { x: vx, y: vy, xdir: true, ydir: true },
 

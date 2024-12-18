@@ -109,7 +109,8 @@ fn get_next_shot(ref moves: TurnMove) -> (u32, u32, Option<Shot>) {
 
 fn shoot(ref world: WorldStorage, positions: @Array<CharacterPosition>, shot: Option<Shot>, settings: Settings, step: u32, ref bullets: Array<Bullet>) {
     let mut global: Global = world.read_model(0);
-
+    println!("shoot at step: {}", step);
+    
     let mut i = 0;
     while i < positions.len() {
         let position = *positions[i];

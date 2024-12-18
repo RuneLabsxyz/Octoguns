@@ -53,11 +53,11 @@ fn get_test_turn_move(ids: Array<u32>) -> TurnMove {
         i += 1;
     };
     let mut shots: Array<Shot> = ArrayTrait::new();
-    let _shot: Shot = Shot {
-        step: 0,
+    let shot: Shot = Shot {
+        step: 50,
         angle: 900_000_000
     };
-  //  shots.append(shot);
+    shots.append(shot);
     let actions: Array<Action> = array![
         Action {
             characters: array![1,3],

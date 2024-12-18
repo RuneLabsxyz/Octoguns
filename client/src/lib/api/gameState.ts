@@ -53,11 +53,15 @@ function bulletAt(
   frame: number
 ): BulletWithPosition | null {
   const movesPerTurn = Number(SESSION_PRIMITIVES.sub_moves_per_turn)
-  console.log(bullet.shot_step)
+  const bulletSubSteps = Number(SESSION_PRIMITIVES.bullet_sub_steps)
   const shotStep = Number(bullet.shot_step)
+  console.log(movesPerTurn)
+  console.log(bullet.shot_step)
+  console.log(movesPerTurn * turn)
+  console.log(bullet.shot_by)
 
-  const frameDiff = movesPerTurn * turn + frame / FRAME_INTERVAL - shotStep
-
+  const frameDiff = movesPerTurn * turn + (frame / FRAME_INTERVAL) - (shotStep / bulletSubSteps)
+  console.log(frameDiff)
   const position = getBulletPosition(bullet, frameDiff)
 
   // TODO: Check the boundaries in world scale
