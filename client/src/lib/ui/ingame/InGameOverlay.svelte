@@ -9,6 +9,7 @@
   const { turnCount, currentPlayerId, move } = getGame()
   import { account } from '$stores/account'
   import CharSelect from './CharSelect.svelte'
+  import { clearAccountStorage } from '$stores/account'
 </script>
 
 <div class="overflow-hidden">
@@ -53,7 +54,7 @@
       <div class="fixed top-4 right-4 z-[100]">
         <Button 
           class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md"
-          on:click={() => {if ($account?.address) {connect('sepolia')} else {disconnect()}}}
+          on:click={() => {if ($account) {clearAccountStorage()} else {connect('sepolia')}}}
         >
           { $account?.address ? 'Disconnect' : 'Connect' }
         </Button>

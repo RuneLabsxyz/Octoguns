@@ -27,6 +27,8 @@ mod start {
     use octoguns::consts::GLOBAL_KEY;
     use octoguns::models::player::{Player};
 
+    use octoguns::lib::default_spawns::generate_character_positions;
+
     use dojo::model::{ModelStorage, ModelValueStorage, Model};
 
     use octoguns::models::characters::{
@@ -83,25 +85,24 @@ mod start {
             );
 
             let mut i = 0;
-            //TODO: FIX POSITIONS
 
             let default_steps = session_primitives.settings.sub_moves;
-            let position_1 = Vec2 { x: 50000, y: 20000 };
-            let position_2 = Vec2 { x: 50000, y: 80000 };
+            let p1_positions: Array<Vec2> = generate_character_positions(1, settings.characters);
+            let p2_positions: Array<Vec2> = generate_character_positions(2, settings.characters);
 
-            while i < settings.characters {
+            while i.into() < settings.characters {
 
                 let id1 = global.uuid();
                 let c1 = CharacterModelTrait::new(id1, id, session.player1, default_steps);
                 let p1 = CharacterPositionTrait::new(
-                    id1, position_1, session_primitives.settings.sub_moves
+                    id1, *p1_positions.at(i), session_primitives.settings.sub_moves
                 );
                 session_meta.add_character(id1, 1);
 
                 let id2 = global.uuid();
                 let c2 = CharacterModelTrait::new(id2, id, session.player2, default_steps);
                 let p2 = CharacterPositionTrait::new(
-                    id2, position_2, session_primitives.settings.sub_moves
+                    id2, *p2_positions.at(i), session_primitives.settings.sub_moves
                 );
                 session_meta.add_character(id2, 2);
 

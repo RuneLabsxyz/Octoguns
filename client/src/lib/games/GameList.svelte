@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Session, SessionMeta } from '$src/dojo/models.gen'
-  import { joinGame } from '$lib/api/actions'
   import { yourActiveSessions } from '$lib/api/sessions'
   import { onMount } from 'svelte'
+  import { dojoStore } from '$src/stores/dojoStore';
+  import { account } from '$src/stores/account';
 
   let { availableSessions, availableSessionMetas, contractCall } = $props<{
     availableSessions: Session[] | null
@@ -25,11 +26,13 @@
       : pendingSessions.slice(-9).reverse()
   )
 
+  let { client } = $dojoStore;
+
   async function joiningGame(sessionId: number) {
     if (!contractCall) {
       window.location.href = `/slot/game/${sessionId}`
     } else {
-      await joinGame(sessionId)
+      await client.start.join({account: $account!, session_id: sessionId})
       window.location.href = `/slot/game/${$activeSessions[$activeSessions.length - 1].session_id}`
     }
   }
