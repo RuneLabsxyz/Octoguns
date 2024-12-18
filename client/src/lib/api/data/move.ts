@@ -62,6 +62,7 @@ type Context = {
   currentSubmoveStore: Writable<Position>
   frameCounterStore: Readable<number>
   recordedMoveStore: Readable<TurnData>
+  selectedCharactersStore: Readable<number[]>
   recordedActionStore: Readable<Action>
   currentPlayerIdStore: Readable<number | null>
   currentTurnStore: Readable<number | null>
@@ -174,14 +175,16 @@ function recordMove(ctx: Context, cameras: Camera[]) {
       let newCharacters: Marked<Character>[] = []
 
       characters.forEach((character) => {
-        // Mark the character
-        character.__marked = 'moved'
+        if (get(ctx.selectedCharactersStore).includes(character.id)) {
+          // Mark the character
+          character.__marked = 'moved'
 
         const newX = character.coords.x + moveDirection.x
         const newY = character.coords.y + moveDirection.z
 
-        character.coords.x = newX
-        character.coords.y = newY
+          character.coords.x = newX
+          character.coords.y = newY
+        }
         newCharacters.push(character)
       })
 
@@ -331,6 +334,8 @@ export function MoveStore(ctx: {
     shots: [],
   })
 
+  const selectedCharactersStore = writable<number[]>([])
+
   // TODO: Encode this as a statemachine as some point
   const isRecordingStore = writable<boolean>(false)
   const isReplayingStore = writable<boolean>(false)
@@ -347,6 +352,7 @@ export function MoveStore(ctx: {
     currentPlayerIdStore: ctx.currentPlayerIdStore,
     recordedMoveStore: readonly(recordedMoveStore),
     recordedActionStore: readonly(recordedActionStore),
+    selectedCharactersStore: readonly(selectedCharactersStore),
     incrementFrame: ctx.incrementFrame,
     addAdditionalBullet: ctx.addAdditionalBullet,
 
@@ -384,7 +390,7 @@ export function MoveStore(ctx: {
     currentSubmove: readonly(currentSubmoveStore),
     recordedMove: readonly(recordedMoveStore),
     recordedAction: readonly(recordedActionStore),
-
+    selectedCharacters: readonly(selectedCharactersStore),
     update: (cameras: Camera[]) => {
       if (get(isRecordingStore)) {
         recordMove(context, cameras)
@@ -419,7 +425,7 @@ export function MoveStore(ctx: {
       isReplayingStore.set(false)
       inPointerLock.set(true)
       recordedActionStore.update((val) => {
-        val.characters = get(ctx.currentCharactersStore)?.map((character) => character.id) ?? []
+        val.characters = get(selectedCharactersStore)
         return val
       })
       
@@ -427,12 +433,9 @@ export function MoveStore(ctx: {
     },
 
     addCharacter(id: number) {
-      ctx.currentCharactersStore.update((chars) => {
-        let char = get(CharacterStore(id)) as Marked<Character>;
-        let charsval: Marked<Character>[] = chars!;
-        let new_chars = [...charsval, char]
-
-        return new_chars
+      selectedCharactersStore.update((val) => {
+        val.push(id)
+        return val
       })
     },
 
