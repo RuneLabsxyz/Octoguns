@@ -26,14 +26,14 @@
     {/if}
     <p class="text-white text-center mt-2">
       {#if isWinner}
-        Congratulations! You have won the game.
+        YOU WIN!
       {:else}
-        Better luck next time!
+        YOU LOSE!
       {/if}
     </p>
 
     <Button
-      href="/client/games"
+      href="/sepolia/client/matchmaking"
       className="bg-gray-900 border-gray-900 text-white hover:bg-white hover:text-gray-900 flex gap-2 align-middle"
       >Back to menu</Button
     >
